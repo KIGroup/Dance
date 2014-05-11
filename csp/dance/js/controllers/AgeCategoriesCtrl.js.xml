@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/AgeCategoriesCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/AgeCategoriesCtrl.js" application="/csp/todance/" default="1"><![CDATA[
 'use strict';
 //ddddddddssddd
 
@@ -10,6 +10,7 @@
 
 controllersModule.controller('AgeCategoriesCtrl', function($scope, $window, $filter, UtilsSrvc, AgeCategorySrvc){
 	$scope.page = {};
+	//hello
 });
 
 ]]></CSP>
