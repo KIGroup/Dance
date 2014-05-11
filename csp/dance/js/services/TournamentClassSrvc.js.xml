@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/services/TournamentClassSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//dd
+
+/*===========================================================================================
+TournamentClass service, access to REST API
+===========================================================================================*/
+
+servicesModule.factory('TournamentClassSrvc', function(RESTSrvc) {    
+    return {
+        getAll: function(parentId){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournamentClass/'+parentId});
+        }
+    }
+});
+]]></CSP>
+</Export>

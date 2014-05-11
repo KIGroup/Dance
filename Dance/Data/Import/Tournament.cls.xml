@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Import.Tournament">
+<Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportBase</Super>
+<TimeCreated>63317,82871.710641</TimeCreated>
+
+<Parameter name="JsonClass">
+<Default>Dance.Web.JsonTournamentImport</Default>
+</Parameter>
+
+<Parameter name="CorrelateName">
+<Type>%String</Type>
+<Default>item</Default>
+</Parameter>
+
+<Property name="IdExternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="TournirId"/>
+</Property>
+
+<Property name="IdInternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="TournirIdExt"/>
+</Property>
+
+<Property name="TDate">
+<Type>%String</Type>
+</Property>
+
+<Property name="Hash">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Name">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="3000"/>
+</Property>
+
+<Property name="IsRemoved">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
+<Index name="IdInternalIdx">
+<Properties>IdInternal</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="Save">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>newObj:Dance.Data.Import.Tournament</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	quit:(..IdInternalIdxExists(newObj.IdInternal) = 0) newObj.%Save()
+	 
+	set oldObj = ..IdInternalIdxOpen(newObj.IdInternal)
+	set oldObj.IdExternal = newObj.IdExternal
+	set oldObj.Name = newObj.Name
+	set oldObj.Hash = newObj.Hash
+	set oldObj.TDate = newObj.TDate
+		
+	quit oldObj.%Save()
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+Example:
+
+<item>
+	<TournirId>23</TournirId>
+	<TournirIdExt>13453</TournirIdExt>
+	<TDate>2011-02-23</TDate>
+	<Name>
+	<![CDATA[
+	Кубок Оникса
+	 ]]]]><![CDATA[>
+	</Name>
+	<Hash>630169wefwe30747e</Hash>
+</item>
+*/
+]]></Content>
+</UDLText>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.Import.TournamentD</DataLocation>
+<DefaultData>TournamentDefaultData</DefaultData>
+<IdLocation>^Dance.Data.Import.TournamentD</IdLocation>
+<IndexLocation>^Dance.Data.Import.TournamentI</IndexLocation>
+<StreamLocation>^Dance.Data.Import.TournamentS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="TournamentDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>IdExternal</Value>
+</Value>
+<Value name="3">
+<Value>IdInternal</Value>
+</Value>
+<Value name="4">
+<Value>TDate</Value>
+</Value>
+<Value name="5">
+<Value>Hash</Value>
+</Value>
+<Value name="6">
+<Value>Name</Value>
+</Value>
+<Value name="7">
+<Value>IsRemoved</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

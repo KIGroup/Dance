@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonTournamentRank">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63290,6630.668888</TimeCreated>
+
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "TournamentRank" object to %ZEN.proxyObject (for JSON)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>object:Dance.Data.TournamentRank,isFullInfo:%Boolean=0</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	try{
+		set proxy.id = object.%Id()
+		set proxy.name = object.Name.Value
+	}
+	catch(ex){
+		set proxy = ##class(%ZEN.proxyObject).%New()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllToDevice">
+<Description>
+Write to device "children" array of proxyObjects</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE TRCurFirst CURSOR FOR 
+		 	SELECT ID, Name->Value
+		 	FROM Dance_Data.TournamentRank
+		 	ORDER BY Name->Value)	
+		
+	&sql(OPEN TRCurFirst)
+	for  
+	{	
+		&sql(FETCH TRCurFirst INTO :id, :name) 
+		quit:(SQLCODE '= 0)
+		set rankProxy = ##class(%ZEN.proxyObject).%New()
+		set rankProxy.id = id
+		set rankProxy.name = name
+		do proxy.children.Insert(rankProxy)
+	}
+	&sql(CLOSE TRCurFirst)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>

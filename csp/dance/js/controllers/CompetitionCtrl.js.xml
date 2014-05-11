@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/controllers/CompetitionCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//dedddвв
+
+/*===========================================================================================
+Competition: create or update data 
+===========================================================================================*/
+
+controllersModule.controller('CompetitionCtrl', function($scope, $window, $routeParams, UtilsSrvc, TournamentSrvc, CompetitionSrvc, AgeCategorySrvc, DancerClassSrvc, DisciplineSrvc, OtherSrvc){
+    $scope.page = {};
+    $scope.page.tournament = {rank: {}, 
+                              status: {}, 
+                              organizer:{},
+                              location: {country:{}}};
+
+
+    $scope.page.init = function(){
+	    $scope.page.clear();
+        $scope.page.loadTournament($routeParams.tournamentId);
+        
+        if ($routeParams.competitionId){
+            $scope.page.accordionCaption = "Editing competition";   
+            $scope.page.btnSubmitCaption = "Save";
+            $scope.page.loadCompetition($routeParams.competitionId);
+        }
+        else{
+            $scope.page.accordionCaption = "Creation of the competition";
+            $scope.page.btnSubmitCaption = "Create";
+            $scope.page.loadDancerClasses();
+        }
+    };
+
+
+    /// Clear form fields
+    $scope.page.clear = function(){
+       $scope.page.competition = {startTime: '12:00', discipline:{}, ageCategory: {}, dancerClasses: []};
+    };
+
+
+    /// Load Tournament by ID
+    $scope.page.loadTournament = function(id){
+        TournamentSrvc.getById(id).then(
+            function(data){
+                $scope.page.tournament = data;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load Competition by ID
+    $scope.page.loadCompetition = function(competitionId){
+        CompetitionSrvc.getById(competitionId).then(
+            function(data){
+                $scope.page.competition = data;
+                $scope.page.competition.isInternational = $scope.page.competition.isInternational == 1;
+                $scope.page.loadDancerClasses();
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load Disciplines
+    $scope.page.loadDisciplines = function(){
+        DisciplineSrvc.getAll().then(
+            function(data){
+                $scope.page.disciplines = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load Age Categories
+    $scope.page.loadAgeCategories = function(){
+        AgeCategorySrvc.getAll().then(
+            function(data){
+                $scope.page.ageCategories = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+   
+    /// Load types
+    $scope.page.loadTypes = function(){
+        CompetitionSrvc.getTypes().then(
+            function(data){
+                $scope.page.types = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load Dancer classes
+    $scope.page.loadDancerClasses = function(){
+        DancerClassSrvc.getAll().then(
+            function(data){
+                var allClasses = data.children;
+
+                // mark all the classes that are in the exists competition
+                for(var i=0; i < $scope.page.competition.dancerClasses.length; i++){
+                    for(var j=0; j < allClasses.length; j++){
+                        if ($scope.page.competition.dancerClasses[i].id == allClasses[j].id){
+                            allClasses[j].selected = 1;
+                            break;
+                        }
+                    }
+                }
+
+                $scope.page.competition.dancerClasses = allClasses;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+
+    /// Save Competition or update data
+    $scope.page.saveCompetition = function(){
+	    $scope.page.competition.startDate = UtilsSrvc.getValidDate($scope.page.competition.startDate);
+	    
+   		if ($scope.page.competition.startDate == "")
+   			return;
+   			
+   		CompetitionSrvc.save($scope.page.tournament.id, $scope.page.competition).then(
+            function(data){
+	            if ($scope.page.competition.id){
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
+                }
+                else{
+	                $scope.page.clear();
+                    $scope.page.loadDancerClasses();
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Competition have been created.', 'success', true);   
+                }
+
+                $scope.form_competition.$setPristine();
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Cancel - go to previous page
+    $scope.page.cancel = function(){
+        $window.history.back();
+    };
+
+
+    
+    $scope.page.init();
+    $scope.page.loadTypes();
+    $scope.page.loadDisciplines();
+    $scope.page.loadAgeCategories(); 
+});
+]]></CSP>
+</Export>

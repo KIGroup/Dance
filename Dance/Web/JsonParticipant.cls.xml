@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonParticipant">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63295,5829.157358</TimeCreated>
+
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "Participant" object to %ZEN.proxyObject (for JSON)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>object:Dance.Data.Participant,isFullInfo:%Boolean=0</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	try{
+		set proxy.id = object.%Id()
+		set proxy.couple = ##class(JsonCouple).ConvertToProxyObject(object.Couple)
+		set proxy.isPaid = object.IsPaid
+		
+		if (isFullInfo = 1){ 
+			set proxy.competition = ##class(JsonCompetition).ConvertToProxyObject(object.Competition)
+		}
+	}
+	catch(ex){
+		set proxy = ##class(%ZEN.proxyObject).%New()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(),"I", "UTF8"),,.data, 1))
+      	
+      	
+ 		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitionId)
+ 		set prt = ##class(Dance.Data.Participant).%New()
+ 		
+ 		set prt.Competition = competition
+ 		
+ 		set prt.Man = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
+ 		if ($ISOBJECT(prt.Man) = 0){
+ 			set prt.Man = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
+ 		}
+ 		
+ 		set prt.Women = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
+ 		if ($ISOBJECT(prt.Women) = 0){
+ 			set prt.Women = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
+ 		}
+      	
+      	
+      	
+      	set st = prt.%Save()
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("AddParticipantError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllForGridToDevice">
+<Description>
+Write objects to device, page by page for grid.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+ 		
+ 		set whereCondition = "Competition = '"_..ParseParameter(params.other.competitionId)_"'"     	
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

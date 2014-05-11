@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/services/TournamentSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//dd
+
+/*===========================================================================================
+Tournament service, access to REST API
+===========================================================================================*/
+
+servicesModule.factory('TournamentSrvc', function(RESTSrvc) {    
+    return {
+        getById: function(id){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id});
+        },
+        getParticipantsCountById: function(id){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id + '/participants/count'});
+        }, 
+        getAllForGrid: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
+            var first = pageSize * (pageCurr - 1) + 1;
+            var obj = {sqlName: sqlName, 
+                       isDown: isDown, 
+                       first: first, 
+                       last: first + pageSize - 1,
+                       searchSqlName: searchSqlName, 
+                       searchText: searchText,
+                       other: other};
+            
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/tournament/grid', data: obj});
+        },
+        save: function(data){
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.admin + '/tournament', data: data});
+        },
+        deleteById: function(id){
+            return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});
+        }
+    }
+});
+]]></CSP>
+</Export>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/services/CoupleSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//ddkjh
+
+/*===========================================================================================
+Couple service, access to REST API
+===========================================================================================*/
+
+servicesModule.factory('CoupleSrvc', function(RESTSrvc) {    
+    return {
+        getByNumbers: function(man, women){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/man/' + man + '/women/' + women});
+        },
+        getById: function(id){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/' + id});
+        },
+        registrationExists: function(data){
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/couple/exists', data: data});  
+        },
+        getAllForGrid: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
+            var first = pageSize * (pageCurr - 1) + 1;
+            var obj = {sqlName: sqlName, 
+                       isDown: isDown, 
+                       first: first, 
+                       last: first + pageSize - 1,
+                       searchSqlName: searchSqlName, 
+                       searchText: searchText,
+                       other: other};
+            
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/couple/grid', data: obj});
+        }
+    }
+});
+]]></CSP>
+</Export>

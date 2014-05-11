@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Import.Ticket">
+<Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportBase</Super>
+<TimeCreated>63318,1856.760262</TimeCreated>
+
+<Parameter name="CorrelateName">
+<Type>%String</Type>
+<Default>item</Default>
+</Parameter>
+
+<Property name="IdExternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="biletId"/>
+</Property>
+
+<Property name="TournamentIdExternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="tournirId"/>
+</Property>
+
+<Property name="GroupIdInternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="GroupId"/>
+</Property>
+
+<Property name="ManNumber">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="cplMalePartnerID"/>
+</Property>
+
+<Property name="WomenNumber">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="cplFemalePartnerID"/>
+</Property>
+
+<Property name="Amount">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="sum"/>
+</Property>
+
+<Property name="TStatus">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="status"/>
+</Property>
+
+<Property name="Created">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="datepay"/>
+</Property>
+
+<Property name="OrderIdInternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="ZakazId"/>
+</Property>
+
+<Property name="CodeOne">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="kod"/>
+</Property>
+
+<Property name="CodeTwo">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="kodtwo"/>
+</Property>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+Example:
+
+<item>
+	<biletId>754645</biletId>
+	<tournirId>68</tournirId>
+	<GroupId>1345</GroupId>	
+	<cplMalePartnerID>10345</cplMalePartnerID>
+	<SurnameM>Елагин</SurnameM>
+	<NameM>Андрей</NameM>
+	<AgeM>10</AgeM>
+	<cplFemalePartnerID>10345</cplFemalePartnerID>
+	<SurnameF>Морозова</SurnameF>
+	<NameF>Виктория</NameF>
+	<AgeF>11</AgeF>
+	<Club><![CDATA[Ритм]]]]><![CDATA[></Club>
+	<City><![CDATA[Сыктывкар]]]]><![CDATA[>
+	</City>
+	<Trener><![CDATA[Шульц Елена, Горохов Александр]]]]><![CDATA[>	</Trener>
+	<status>pay</status>
+	<sum>600.00</sum>
+	<datepay>2014-04-07 20:26:07</datepay>
+	<day>2014-05-09</day>
+	<ZakazId>345345</ZakazId>
+	<kod>45345345ee</kod>
+	<kodtwo>erwer4353</kodtwo>
+	
+	<description><![CDATA[09 Мая 2014 10:00  XIX Кубок ЦСКА &quot;Вальс Победы&quot; 9-11 мая 2014. Дети-2 D E St<br> <strong>Партнер</strong>: Елагин Андрей, Книжка: 105500<br> <strong>Партнерша</strong>: Морозова Виктория, Книжка: 105490 <br>]]]]><![CDATA[></description>
+</item>
+
+*/
+]]></Content>
+</UDLText>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.Import.TicketD</DataLocation>
+<DefaultData>TicketDefaultData</DefaultData>
+<IdLocation>^Dance.Data.Import.TicketD</IdLocation>
+<IndexLocation>^Dance.Data.Import.TicketI</IndexLocation>
+<StreamLocation>^Dance.Data.Import.TicketS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="TicketDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>IdExternal</Value>
+</Value>
+<Value name="3">
+<Value>TournamentIdExternal</Value>
+</Value>
+<Value name="4">
+<Value>GroupIdInternal</Value>
+</Value>
+<Value name="5">
+<Value>ManNumber</Value>
+</Value>
+<Value name="6">
+<Value>WomenNumber</Value>
+</Value>
+<Value name="7">
+<Value>Amount</Value>
+</Value>
+<Value name="8">
+<Value>TStatus</Value>
+</Value>
+<Value name="9">
+<Value>Created</Value>
+</Value>
+<Value name="10">
+<Value>OrderIdInternal</Value>
+</Value>
+<Value name="11">
+<Value>CodeOne</Value>
+</Value>
+<Value name="12">
+<Value>CodeTwo</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

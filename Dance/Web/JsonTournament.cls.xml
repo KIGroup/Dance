@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonTournament">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63289,63286.529504</TimeCreated>
+
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "Tournament" object to %ZEN.proxyObject (for JSON)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>object:Dance.Data.Tournament,isFullInfo:%Boolean=0</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	try{
+		set proxy.id = object.%Id()
+		set proxy.idInternal = object.IdInternal
+		set proxy.idExternal = object.IdExternal
+		set proxy.hash = object.Hash
+		
+		set proxy.name = object.Name.Value
+		set proxy.startDate = $ZDATE(object.StartDate, 3)
+		set proxy.endDate = $ZDATE(object.EndDate, 3)
+		set proxy.status = ##class(Dance.Web.JsonTournamentStatus).ConvertToProxyObject(object.TStatus)
+		set proxy.rank = ##class(Dance.Web.JsonTournamentRank).ConvertToProxyObject(object.TRank)
+		set proxy.competitionsCount = object.CompetitionsCount
+		set proxy.participantsCount = object.ParticipantsCount
+		set proxy.participantsUniqueCount = object.ParticipantsUniqueCount
+		
+		
+		set proxy.location = ##class(%ZEN.proxyObject).%New()
+		set proxy.location.country = ##class(JsonCountry).ConvertToProxyObject(object.Country)
+		set proxy.location.cityName = object.City.Value
+		
+		set proxy.organizer = ##class(%ZEN.proxyObject).%New()
+		set proxy.organizer.info = object.OrganizerInfo.Value
+		set proxy.organizer.site = object.OrganizerSite
+	}
+	catch(ex){
+		set proxy = ##class(%ZEN.proxyObject).%New()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Save">
+<Description>
+Create or Update object</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+      	
+      	if (data.id = ""){
+      		set tournament = ##class(Dance.Data.Tournament).%New()
+      		set tournament.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name, "I", "UTF8"))
+      		set tournament.City = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.location.cityName, "I", "UTF8"))
+      		set tournament.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.organizer.info, "I", "UTF8"))
+      	}
+      	else{
+	      	set tournament = ##class(Dance.Data.Tournament).%OpenId(data.id)
+      		set tournament.Name.Value = $ZCVT(data.name, "I", "UTF8")
+      		set tournament.City.Value = $ZCVT(data.location.cityName, "I", "UTF8")
+      		set tournament.OrganizerInfo.Value = $ZCVT(data.organizer.info, "I", "UTF8")
+      	}
+      	
+      	set tournament.IdInternal = data.idInternal
+      	set tournament.IdExternal = data.idExternal
+      	set tournament.Hash = data.hash
+      	
+      	set tournament.OrganizerSite = data.organizer.site
+    
+    	set tournament.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
+      	set tournament.TStatus = ##class(Dance.Data.TournamentStatus).%OpenId(data.status.id)
+      	set tournament.TRank = ##class(Dance.Data.TournamentRank).%OpenId(data.rank.id)
+      	
+      	set tournament.StartDate = $ZDATEH(data.startDate, 15)
+      	set tournament.EndDate = $ZDATEH(data.endDate, 15)
+         		
+      	set st = tournament.%Save()
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveTournamentError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteObjectByIdToDevice">
+<Description>
+Open object by id, convert to proxy and write to device</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ..ConvertToProxyObject(##class(Dance.Data.Tournament).%OpenId(id)).%ToJSON()
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllForGridToDevice">
+<Description>
+Write objects to device, page by page for grid. </Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+      	
+      	set whereCondition = ""
+      	
+      	// filters
+      	if (params.other.rankId '= "") && (params.other.statusId = ""){
+      		set whereCondition = "TRank="_..ParseParameter(params.other.rankId)
+      	}
+      	elseif (params.other.rankId = "") && (params.other.statusId '= ""){
+      		set whereCondition = "TStatus="_..ParseParameter(params.other.statusId)
+      	}
+      	elseif (params.other.rankId '= "") && (params.other.statusId '= ""){
+      		set whereCondition = "TRank="_..ParseParameter(params.other.rankId)_" AND TStatus="_..ParseParameter(params.other.statusId)
+      	}
+      	
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Tournament", "Dance.Data.Tournament", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteParticipantsCountInfoByIdToDevice">
+<Description>
+Write info: total participants count, unique and others</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	try{
+		set proxy = ##class(%ZEN.proxyObject).%New()
+		set proxy.participantsCount = 0
+		set proxy.participantsUniqueCount = 0
+		
+		&sql(SELECT COUNT(prtc.Couple) INTO :proxy.participantsCount
+			 FROM Dance_Data.Participant as prtc 
+			 INNER JOIN 
+			 Dance_Data.Competition as comp ON comp.ID = prtc.Competition
+			 INNER JOIN 
+			 Dance_Data.Tournament as trnm ON trnm.ID = comp.Tournament
+			 WHERE trnm.ID = :tournamentId)
+		
+		&sql(SELECT COUNT(DISTINCT prtc.Couple) INTO :proxy.participantsUniqueCount
+			 FROM Dance_Data.Participant as prtc 
+			 INNER JOIN 
+			 Dance_Data.Competition as comp ON comp.ID = prtc.Competition
+			 INNER JOIN 
+			 Dance_Data.Tournament as trnm ON trnm.ID = comp.Tournament
+			 WHERE trnm.ID = :tournamentId)
+		
+		
+		do proxy.%ToJSON()
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	quit st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

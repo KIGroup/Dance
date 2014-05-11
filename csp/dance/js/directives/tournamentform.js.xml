@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/directives/tournamentform.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//ddddd
+
+directivesModule.directive('tournamentform', function(){
+    return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: 'components/tournamentform.csp',
+        
+        scope: {
+            tournament: '='       
+        },
+        controller: function($scope, TournamentStatusSrvc, TournamentRankSrvc, OtherSrvc, UtilsSrvc){
+            $scope.ranks = [];
+            $scope.statuses = [];
+            $scope.countries = [];
+
+            /// Load all Tournament Statuses for combobox
+            $scope.loadTournamentStatuses = function(){
+                TournamentStatusSrvc.getAll().then(
+                    function(data){
+                        $scope.statuses = data.children;
+                    },
+                    function(data, status, headers, config){
+                    });
+            };
+
+            /// Load all Tournament Ranks for combobox
+            $scope.loadTournamentRanks = function(){
+                TournamentRankSrvc.getAll().then(
+                    function(data){
+                        $scope.ranks = data.children;
+                    },
+                    function(data, status, headers, config){
+                    });
+            };
+
+            /// Load WDSF Countries
+            $scope.loadCountries = function(){
+                OtherSrvc.getCountries().then(
+                    function(data){
+                        $scope.countries = data.children;
+                    },
+                    function(data, status, headers, config){
+                    });
+            };
+
+            $scope.loadTournamentStatuses();
+            $scope.loadTournamentRanks();
+            $scope.loadCountries();
+	   	}
+    }
+});
+]]></CSP>
+</Export>

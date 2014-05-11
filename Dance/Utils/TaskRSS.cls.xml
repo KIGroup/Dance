@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Utils.TaskRSS">
+<Super>%SYS.Task.Definition</Super>
+<TimeCreated>63286,83221.109227</TimeCreated>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+/// do ##class(Dance.Utils.TaskRSS).OnTaskTest()
+ClassMethod OnTaskTest() As %Status
+{
+	do ##class(Dance.Data.Tournament).%KillExtent()
+	do ##class(Dance.Data.RSS).%KillExtent()
+	do ##class(Dance.Data.Localization.LText).%KillExtent()
+	do ##class(Dance.Data.Localization.LTextValue).%KillExtent()
+	
+	set status = $$$OK
+	
+	try{
+		TSTART
+		
+		set httprequest = ##class(%Net.HttpRequest).%New()
+		set httprequest.Server = "www.worlddancesport.org"
+		set httprequest.ContentType = "application/rss+xml"
+		do httprequest.Get("/Calendar/Competition/Upcoming/rss")
+	    
+		#dim stream As %Stream.Object = httprequest.HttpResponse.Data
+		#dim reader As %XML.Reader = ##class(%XML.Reader).%New()
+
+		set status = reader.OpenStream(stream, "literal")
+		
+		do reader.Correlate("item", "Dance.Data.RSS")
+
+		while reader.Next(.obj, .status)
+		{
+			if (##class(Dance.Data.RSS).GuidIdxExists(obj.Guid) = 0){
+				$$$THROWONERROR(status, ..CreateTournament(obj))
+			}
+			
+			set obj = ""
+		}
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		
+	}	
+	Quit $$$OK
+}
+
+ClassMethod GetGroupIdFromTournamentLink(link As %String) As %String
+{
+	set link = $REPLACE($REPLACE(link,"http://",""),"https://","")
+	set httprequest = ##class(%Net.HttpRequest).%New()
+	set idx = $FIND(link, "/")
+	set serverName = $EXTRACT(link, 1, idx-2)
+	set httprequest.Server = serverName
+	do httprequest.Get($EXTRACT(link, idx-1, *))
+	
+	set location = httprequest.Location
+	set location = $EXTRACT(location, $LENGTH(location)-10, *)
+	set groupId = $EXTRACT(location, $FIND(location, "-"), *)
+	w !,location
+	w !,groupId,!
+	q groupId
+}
+
+ClassMethod CreateTournament(rssObj As Dance.Data.RSS) As %Status
+{
+	set tr = ##class(Dance.Data.Tournament).%New()
+	set tr.GroupId = ..GetGroupIdFromTournamentLink(rssObj.Link)
+	set tr.Title = ##class(Dance.Data.Localization.LText).Create(rssObj.Title)
+	do tr.%Save()
+	set rssObj.Tournament = tr
+	q rssObj.%Save()
+}
+*/
+]]></Content>
+</UDLText>
+</Class>
+</Export>

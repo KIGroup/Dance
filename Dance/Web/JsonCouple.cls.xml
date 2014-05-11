@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonCouple">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63295,828.51419</TimeCreated>
+
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "Couple" object to %ZEN.proxyObject (for JSON)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>object:Dance.Data.Couple,isFullInfo:%Boolean=0</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	try{
+		set proxy.id = object.%Id()
+		set proxy.man = ##class(JsonPerson).ConvertToProxyObject(object.Man)
+		set proxy.women = ##class(JsonPerson).ConvertToProxyObject(object.Women)
+		
+		set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
+		set club = object.Man.Club
+		if (club = "") set club = object.Women.Club 
+		
+		set mainTrainer = object.Man.MainTrainer
+		if (mainTrainer = "") set mainTrainer = object.Women.MainTrainer 
+		
+		set otherTrainers = object.Man.OtherTrainers
+		if (otherTrainers = "") set otherTrainers = object.Women.OtherTrainers
+		
+		set proxy.otherInfo.country = ##class(JsonCountry).ConvertToProxyObject(object.Man.Country)
+		set proxy.otherInfo.city = object.Man.City
+		set proxy.otherInfo.club = club
+		set proxy.otherInfo.mainTrainer = mainTrainer
+		set proxy.otherInfo.otherTrainers = otherTrainers
+	}
+	catch(ex){
+		set proxy = ##class(%ZEN.proxyObject).%New()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="WriteObjectByIdToDevice">
+<Description>
+Open object by id, convert to proxy and write to device</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ..ConvertToProxyObject(##class(Dance.Data.Couple).%OpenId(id)).%ToJSON()
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllForGridToDevice">
+<Description>
+Write objects to device, page by page for grid.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+ 		
+ 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"     	
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT DISTINCT(Couple) FROM Dance_Data.Participant", "Dance.Data.Couple", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteObjectByNumbersToDevice">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>manNumber:%String,womenNumber:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		set man = ##class(Dance.Data.Person).GetByNumber(manNumber)
+		if ($ISOBJECT(man) = 0){
+			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("ManNotFoundByNumber"))
+		}
+	
+		set women = ##class(Dance.Data.Person).GetByNumber(womenNumber)
+		if ($ISOBJECT(women) = 0){
+			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WomenNotFoundByNumber"))
+		}
+
+		if (##class(Dance.Data.Couple).CommonIdxExists(man.%Id(), women.%Id())){
+			set couple = ##class(Dance.Data.Couple).CommonIdxOpen(man.%Id(), women.%Id())
+			set proxy  = ..ConvertToProxyObject(couple)
+			do proxy.%ToJSON()
+		}
+		else{
+			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("CoupleNotFound"))
+		}
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(),"I", "UTF8"),,.data, 1))
+      	
+      	
+ 		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitionId)
+ 		set couple = ##class(Dance.Data.Couple).%New()
+ 		
+ 		set couple.Competition = competition
+ 		
+ 		set couple.Man = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
+ 		if ($ISOBJECT(couple.Man) = 0){
+ 			set couple.Man = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
+ 		}
+ 		
+ 		set couple.Women = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
+ 		if ($ISOBJECT(couple.Women) = 0){
+ 			set couple.Women = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
+ 		}
+      	
+      	
+      	
+      	set st = couple.%Save()
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("AddCoupleError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationExists">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(),"I", "UTF8"),,.data, 1))
+      	
+      	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.women.id)
+      	
+      	for i=1:1:data.competitions.Count(){
+	    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+	    	
+	    	set participant = ##class(Dance.Data.Participant).%New()
+	    	set participant.Couple = couple
+	    	set participant.Competition = competition
+	    	set participant.IsPaid = 0
+	    	
+	    	set st = participant.%Save()
+	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+	    }
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/services/TournamentStatusSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//ddd
+
+/*===========================================================================================
+TournamentStatus service, access to REST API
+===========================================================================================*/
+
+servicesModule.factory('TournamentStatusSrvc', function(RESTSrvc) {    
+    return {
+        getAll: function(){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournamentStatus'});
+        }
+    }
+});
+]]></CSP>
+</Export>

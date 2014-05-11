@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Utils.Init.TournamentStatus">
+<Super>Dance.Utils.Init.BaseInit</Super>
+<TimeCreated>63293,10528.110781</TimeCreated>
+
+<Parameter name="PClassName">
+<Default>TournamentStatus</Default>
+</Parameter>
+
+<Method name="Import">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	w !,"=== "_..#PClassName_" ==="
+	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LText", "LTextXData")
+	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LTextValue", "LTextValueXData")
+	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data."_..#PClassName, "ClassXData")
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<XData name="ClassXData">
+<Data><![CDATA[
+<ClassXData>
+<TournamentStatus><Name>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</Name><Code>Registration</Code><Sequence>1</Sequence></TournamentStatus>
+<TournamentStatus><Name>7C33DA68-04AF-4A94-8855-65028F74D091</Name><Code>RegistrationClosed</Code><Sequence>2</Sequence></TournamentStatus>
+<TournamentStatus><Name>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</Name><Code>Canceled</Code><Sequence>3</Sequence></TournamentStatus>
+</ClassXData>
+]]></Data>
+</XData>
+
+<XData name="LTextXData">
+<Data><![CDATA[
+<LTextOrderStatusXData>
+<LText><Guid>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</Guid></LText>
+<LText><Guid>7C33DA68-04AF-4A94-8855-65028F74D091</Guid></LText>
+<LText><Guid>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</Guid></LText>
+</LTextOrderStatusXData>
+]]></Data>
+</XData>
+
+<XData name="LTextValueXData">
+<Data><![CDATA[
+<LTextValueXData>
+<LTextValue><LText>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</LText><Value>Регистрация</Value><Lang>ru</Lang></LTextValue>
+<LTextValue><LText>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</LText><Value>Registration</Value><Lang>en</Lang></LTextValue>
+
+<LTextValue><LText>7C33DA68-04AF-4A94-8855-65028F74D091</LText><Value>Регистрация завершена</Value><Lang>ru</Lang></LTextValue>
+<LTextValue><LText>7C33DA68-04AF-4A94-8855-65028F74D091</LText><Value>Registration closed</Value><Lang>en</Lang></LTextValue>
+
+<LTextValue><LText>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</LText><Value>Отменен</Value><Lang>ru</Lang></LTextValue>
+<LTextValue><LText>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</LText><Value>Canceled</Value><Lang>en</Lang></LTextValue>
+</LTextValueXData>
+]]></Data>
+</XData>
+</Class>
+</Export>

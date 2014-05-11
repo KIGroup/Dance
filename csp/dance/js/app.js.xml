@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/app.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//ddddddddddd
+
+var servicesModule     = angular.module('servicesModule', ['ngRoute','ngCookies','ui.bootstrap']);
+var controllersModule  = angular.module('controllersModule', ['servicesModule']);
+var directivesModule   = angular.module('directivesModule', []);
+var localizationModule = angular.module('localizationModule', []);
+var filterModule       = angular.module('filterModule', []);
+var mainModule         = angular.module('mainModule', ['localizationModule', 'filterModule', 'servicesModule', 'controllersModule', 'directivesModule']);
+
+mainModule.config(['$routeProvider', function($routeProvider) {
+	// All tournaments
+	$routeProvider.when('/tournaments', {templateUrl: 'partials/tournaments.csp', controller: 'TournamentsCtrl'});
+
+	// Registration in the tournament
+	$routeProvider.when('/tournament/:tournamentId/registration', {templateUrl: 'partials/registration.csp' , controller: 'RegistrationCtrl'});
+
+	// Add tournament
+	$routeProvider.when('/tournament', {templateUrl: 'partials/tournament.csp' , controller: 'TournamentCtrl'});
+
+	// Edit tournament
+	$routeProvider.when('/tournament/:id', {templateUrl: 'partials/tournament.csp' , controller: 'TournamentCtrl'});
+
+	// All participants of the tournament
+	$routeProvider.when('/tournament/:tournamentId/participants', {templateUrl: 'partials/tournamentparticipants.csp' , controller: 'TournamentParticipantsCtrl'});
+
+	// Import competitions into tournament	
+	$routeProvider.when('/tournament/:tournamentId/importcompetitions', {templateUrl: 'partials/importcompetitions.csp' , controller: 'ImportCompetitionsCtrl'});
+
+
+	// All competitions of the tournament	
+	$routeProvider.when('/tournament/:id/competitions', {templateUrl: 'partials/tournamentcompetitions.csp' , controller: 'TournamentCompetitionsCtrl'});
+
+	// 
+	$routeProvider.when('/tournament/:tournamentId/couple/:coupleId/competitions', {templateUrl: 'partials/payment.csp' , controller: 'PaymentCtrl'});
+
+	// Add competition	
+	$routeProvider.when('/tournament/:tournamentId/competition', {templateUrl: 'partials/competition.csp' , controller: 'CompetitionCtrl'});
+
+	// Edit competition
+	$routeProvider.when('/tournament/:tournamentId/competition/:competitionId', {templateUrl: 'partials/competition.csp' , controller: 'CompetitionCtrl'});
+
+	// All participants of the competition                                                                                             
+	$routeProvider.when('/competition/:competitionId/participants', {templateUrl: 'partials/competitionparticipants.csp' , controller: 'CompetitionParticipantsCtrl'});
+
+
+
+	// Entities: Age categories
+	$routeProvider.when('/entities/agecategories', {templateUrl: 'partials/agecategories.csp' , controller: 'AgeCategoriesCtrl'});
+
+	
+    $routeProvider.otherwise({redirectTo: '/tournaments'});
+}]);]]></CSP>
+</Export>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Import.ImportBase">
+<Abstract>1</Abstract>
+<TimeCreated>63317,82595.285731</TimeCreated>
+
+<Method name="InitSettings">
+<Description>
+do ##class(Dance.Data.Import.ImportBase).InitSettings()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set ^Settings("Dance", "Import", "Server") = "www.danceplat.ru"
+	set ^Settings("Dance", "Import", "TournamentsPage") = "toursfeed1.php?trn=10122&hash=b3c230573098e6ac0510654af758c227&all=1"
+	set ^Settings("Dance", "Import", "CompetitionsPage") = "groupsfeed2.php"
+	set ^Settings("Dance", "Import", "TicketsPage") = "stsrfeed5.php"
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Import">
+<Description>
+Import all objects from XML to table</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>className:%String,pageWithParameters:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+
+	try{
+		TSTART
+				
+		set httprequest = ##class(%Net.HttpRequest).%New()
+		set httprequest.Server = $G(^Settings("Dance", "Import", "Server"))
+		set httprequest.ContentEncoding = "UTF-8"
+		do httprequest.Get(pageWithParameters)
+		
+		#dim stream As %Stream.Object = httprequest.HttpResponse.Data
+		#dim reader As %XML.Reader = ##class(%XML.Reader).%New()
+
+		$$$THROWONERROR(st, reader.OpenStream(stream, "literal"))
+
+		do reader.Correlate($CLASSMETHOD(className, "%GetParameter", "CorrelateName"), className)
+
+		while reader.Next(.obj, .st)
+		{			
+			$$$THROWONERROR(st, $CLASSMETHOD(className, "Save", obj))
+			kill obj
+		}
+		
+		TCOMMIT		
+	}
+	catch(ex){
+		TROLLBACK
+		
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

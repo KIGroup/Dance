@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Person">
+<Super>%Persistent</Super>
+<TimeCreated>63274,63498.354989</TimeCreated>
+
+<Parameter name="JsonClass">
+<Default>Dance.Web.JsonPerson</Default>
+</Parameter>
+
+<Property name="NumberUDSR">
+<Description>
+Union DanceSport Russia number</Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="NumberWDSF">
+<Description>
+WDSF number</Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="Gender">
+<Description>
+Male or Female</Description>
+<Type>%Char</Type>
+<Parameter name="VALUELIST" value=",M,F"/>
+</Property>
+
+<Property name="FirstName">
+<Description>
+First name</Description>
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="LastName">
+<Description>
+Last name</Description>
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="DOB">
+<Description>
+Date of birth</Description>
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="STClass">
+<Type>DancerClass</Type>
+</Property>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Property STClassDate As %Date(FORMAT = 3);
+
+]]></Content>
+</UDLText>
+
+<Property name="LAClass">
+<Type>DancerClass</Type>
+</Property>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Property LAClassDate As %Date(FORMAT = 3);
+
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Property SportCategoty As %String(MAXLEN = 1000);
+
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Property SportCategotyDate As %Date(FORMAT = 3);
+
+]]></Content>
+</UDLText>
+
+<Property name="Country">
+<Type>Country</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="City">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="MainTrainer">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="OtherTrainers">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Property name="InsuranceValidDate">
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Index name="NumberUDSRIdx">
+<Properties>NumberUDSR</Properties>
+</Index>
+
+<Index name="NumberWDSFIdx">
+<Properties>NumberWDSF</Properties>
+</Index>
+
+<Method name="GetByNumberUSDR">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>number:%String</FormalSpec>
+<ReturnType>Person</ReturnType>
+<Implementation><![CDATA[
+	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberUDSR = :number)
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetByNumberWDSF">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>number:%String</FormalSpec>
+<ReturnType>Person</ReturnType>
+<Implementation><![CDATA[
+	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberWDSF = :number)
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetByNumber">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>number:%String</FormalSpec>
+<ReturnType>Person</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberWDSF = :number OR NumberUDSR = :number)
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="Delete">
+<Description>
+Delete person if it is available</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>personId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set person = ..%OpenId(personId, 4)
+
+	set st = ##class(Dance.Data.Localization.LText).Delete(person.LastName.%Id())
+	quit:$$$ISERR(st) st
+		
+	set st = ##class(Dance.Data.Localization.LText).Delete(person.FirstName.%Id())
+	quit:$$$ISERR(st) st
+	
+	set st = ..%DeleteId(personId,4)
+	quit:$$$ISERR(st) ##class(Dance.Utils.Msg).GetErrorStatus("DeletePerson", " | "_st) 
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.PersonD</DataLocation>
+<DefaultData>PersonDefaultData</DefaultData>
+<IdLocation>^Dance.Data.PersonD</IdLocation>
+<IndexLocation>^Dance.Data.PersonI</IndexLocation>
+<StreamLocation>^Dance.Data.PersonS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="PersonDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>NumberUDSR</Value>
+</Value>
+<Value name="3">
+<Value>Gender</Value>
+</Value>
+<Value name="4">
+<Value>FirstName</Value>
+</Value>
+<Value name="5">
+<Value>LastName</Value>
+</Value>
+<Value name="6">
+<Value>MiddleName</Value>
+</Value>
+<Value name="7">
+<Value>DOB</Value>
+</Value>
+<Value name="8">
+<Value>NumberWDSF</Value>
+</Value>
+<Value name="9">
+<Value>STClass</Value>
+</Value>
+<Value name="10">
+<Value>STClassDate</Value>
+</Value>
+<Value name="11">
+<Value>LAClass</Value>
+</Value>
+<Value name="12">
+<Value>LAClassDate</Value>
+</Value>
+<Value name="13">
+<Value>SportCategoty</Value>
+</Value>
+<Value name="14">
+<Value>SportCategotyDate</Value>
+</Value>
+<Value name="15">
+<Value>Country</Value>
+</Value>
+<Value name="16">
+<Value>City</Value>
+</Value>
+<Value name="17">
+<Value>Club</Value>
+</Value>
+<Value name="18">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="19">
+<Value>OtherTrainers</Value>
+</Value>
+<Value name="20">
+<Value>InsuranceValidDate</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

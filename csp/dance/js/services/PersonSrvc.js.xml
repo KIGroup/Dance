@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/services/PersonSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//dd
+
+/*===========================================================================================
+Person service, access to REST API
+===========================================================================================*/
+
+servicesModule.factory('PersonSrvc', function(RESTSrvc) {    
+    return {
+        getById: function(id){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id});
+        },
+        save: function(data){
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.admin + '/tournament', data: data});
+        },
+        deleteById: function(id){
+            return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});
+        }
+    }
+});
+]]></CSP>
+</Export>

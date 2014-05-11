@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/index.csp" application="/csp/dance/" default="1"><![CDATA[
+<!doctype html>
+
+<html ng-app="mainModule" ng-controller="MainCtrl">
+  <head>
+    <title></title>
+    <link rel="shortcut icon" href="img/icon.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+  
+    <script language="javascript"  src="lib/jquery-1.11.0.min.js"></script>
+    <script language="javascript"  src="lib/bootstrap.min.js"></script>
+    <script language="javascript"  src="lib/angular/angular.min.js"></script>
+    <script language="javascript"  src="lib/angular/angular-route.min.js"></script>
+    <script language="javascript"  src="lib/angular/angular-cookies.min.js"></script>
+
+    <script language="javascript"  src="js/app.js"></script>      
+
+   
+    <script language="javascript">
+
+        function getLocale() {
+            if (navigator) {
+                if (navigator.language) {
+                    return navigator.language;
+                }
+                else if (navigator.browserLanguage) {
+                    return navigator.browserLanguage;
+                }
+                else if (navigator.systemLanguage) {
+                    return navigator.systemLanguage;
+                }
+                else if (navigator.userLanguage) {
+                      return navigator.userLanguage;
+                }
+            }
+        }
+
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"))
+            return matches ? decodeURIComponent(matches[1]) : undefined
+        }
+      
+        function getLang(){
+            var lang = getCookie('lang');
+            
+            if (lang) 
+              return lang;
+
+            return getLocale().substring(0,2);
+        }
+
+
+        // Настройки приложения. Имена веб-приложений для REST, google календарь, язык
+        var AppSettings = {default: '#($GET(^Settings("Dance", "WebApp")))#',
+                          admin: '#($GET(^Settings("Dance", "WebAppAdmin")))#',
+                          user:  '#($GET(^Settings("Dance", "WebAppUser")))#',
+                          lang: getLang()};
+    
+    document.write('<script language="javascript" src="js/localization/locale_' + AppSettings.lang + '.js"><\/script>'); 
+
+    </script>
+
+  </head>
+
+  <body>
+    <div class="container-fluid">
+        <div class="navbar navbar-inverse">
+          <div class="navbar-inner">
+            <div class="container">
+             
+              <a class="brand" href="">Brand</a>
+              
+             
+              <div class="nav-responsive-collapse" >
+
+                <ul class="nav">
+                  <li ng-class="menu.pages.tournaments.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.tournaments.url}}" ng-bind="menu.pages.tournaments.name" ng-click="menu.selectMenu(menu.pages.tournaments)"></a></li>
+                  
+                  <li class="dropdown" ng-class="'dropdown ' + (menu.pages.entities.id==menu.pages.selected.parentId ? 'active' : '')">
+                    <a ng-href="{{menu.pages.entities.url}}" class="dropdown-toggle" data-toggle="dropdown" ng-click="menu.selectMenu(menu.pages.entities.childrens.ageCategories)"><span ng-bind="menu.pages.entities.name + ' '"></span><b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li ng-class="{aSelected: menu.pages.entities.childrens.ageCategories.id==menu.pages.selected.id}"><a ng-href="{{menu.pages.entities.childrens.ageCategories.url}}" ng-bind="menu.pages.entities.childrens.ageCategories.name" ng-click="menu.selectMenu(menu.pages.entities.childrens.ageCategories)"></a></li>
+                      <li ng-class="{aSelected: menu.pages.entities.childrens.dancerClasses.id==menu.pages.selected.id}"><a ng-href="{{menu.pages.entities.childrens.dancerClasses.url}}" ng-bind="menu.pages.entities.childrens.dancerClasses.name" ng-click="menu.selectMenu(menu.pages.entities.childrens.dancerClasses)"></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+
+
+              <ul class="nav pull-right">
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" title="{{'System language'|localize}} " href=""><span ng-bind="menu.lang.name + ' '"></span><b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li ng-repeat="lang in menu.languages">
+                      <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href="" ng-bind="lang.name"></a>
+                    </li>
+                  </ul>
+                </li>
+                <li><a ng-click="menu.login()" href="" ng-bind="menu.loginCaption|localize"></a></li>   
+              </ul> 
+
+            </div>
+          </div>
+        </div>
+        
+      <div ng-view>
+      </div>
+      
+    </div>
+    
+    <script language="javascript">
+ 	jQuery('ul.nav li.dropdown').hover(function() {
+	          jQuery(this).find('.dropdown-menu').stop(true, true).delay(250).show(200);
+            }, function() {
+              jQuery(this).find('.dropdown-menu').stop(true, true).delay(100).hide(50);
+            });
+ 
+   </script>
+   
+    <script language="javascript" src="js/controllers/MainCtrl.js"></script>
+    
+    <script language="javascript" src="js/controllers/TournamentCtrl.js"></script>
+    <script language="javascript" src="js/controllers/TournamentsCtrl.js"></script>
+    <script language="javascript" src="js/controllers/TournamentCompetitionsCtrl.js"></script>
+    <script language="javascript" src="js/controllers/TournamentParticipantsCtrl.js"></script>
+    
+    <script language="javascript" src="js/controllers/RegistrationCtrl.js"></script>
+    <script language="javascript" src="js/controllers/PaymentCtrl.js"></script>
+    
+    <script language="javascript" src="js/controllers/ImportCompetitionsCtrl.js"></script>
+
+    <script language="javascript" src="js/controllers/CompetitionCtrl.js"></script>
+    <script language="javascript" src="js/controllers/CompetitionParticipantsCtrl.js"></script>
+    
+    <script language="javascript" src="js/controllers/AgeCategoriesCtrl.js"></script>
+   
+
+    <script language="javascript" src="js/services/RESTSrvc.js"></script>
+    <script language="javascript" src="js/services/TournamentSrvc.js"></script>
+    <script language="javascript" src="js/services/TournamentRankSrvc.js"></script>
+    <script language="javascript" src="js/services/TournamentStatusSrvc.js"></script>   
+    <script language="javascript" src="js/services/CompetitionSrvc.js"></script>
+    <script language="javascript" src="js/services/CompetitionImportSrvc.js"></script>
+    <script language="javascript" src="js/services/CoupleSrvc.js"></script>
+    <script language="javascript" src="js/services/PersonSrvc.js"></script>
+    <script language="javascript" src="js/services/DisciplineSrvc.js"></script>
+    <script language="javascript" src="js/services/DancerClassSrvc.js"></script>
+    <script language="javascript" src="js/services/AgeCategorySrvc.js"></script>
+    <script language="javascript" src="js/services/ParticipantSrvc.js"></script>
+    <script language="javascript" src="js/services/OtherSrvc.js"></script>
+    <script language="javascript" src="js/services/UtilsSrvc.js"></script>
+
+    <script language="javascript" src="js/directives/stcalert.js"></script>
+    <script language="javascript" src="js/directives/stcgrid.js"></script>
+    <script language="javascript" src="js/directives/tournamentform.js"></script>
+
+    <script language="javascript" src="js/localization/dict.js"></script>
+    <script language="javascript" src="js/localization/filter.js"></script>
+    
+    <script language="javascript" src="js/filters/cacheDate.js"></script>
+
+    <script language="javascript" src="lib/ui-bootstrap-tpls-0.5.0.js"></script>
+  </body>
+  
+  
+
+</html>
+]]></CSP>
+</Export>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Utils.Msg">
+<Abstract>1</Abstract>
+<TimeCreated>63289,61228.306082</TimeCreated>
+
+<Method name="GetErrorStatus">
+<Description>
+Get error status by key</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>errorKey:%String,additionalMsg:%String=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	quit $system.Status.Error(5001, ..GetMsg(errorKey)_" "_additionalMsg)
+]]></Implementation>
+</Method>
+
+<Method name="GetMsg">
+<Description>
+Get localized error message</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>key</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit $GET(^CacheMsg("Dance", $$$SessionLanguage, key), "No msg for key = "_key)
+]]></Implementation>
+</Method>
+
+<Method name="Init">
+<Description>
+do ##class(Dance.Utils.Msg).Init()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set ^CacheMsg("Dance", "ru", "ManNotFoundByNumber") = "Партнер не найден!"
+	set ^CacheMsg("Dance", "en", "ManNotFoundByNumber") = "Man not found!"
+	
+	set ^CacheMsg("Dance", "ru", "WomenNotFoundByNumber") = "Партнерша не найдена!"
+	set ^CacheMsg("Dance", "en", "WomenNotFoundByNumber") = "Women not found!"
+	
+	set ^CacheMsg("Dance", "ru", "CoupleNotFound") = "Пара не найдена!"
+	set ^CacheMsg("Dance", "en", "CoupleNotFound") = "Couple not found!"
+	
+	q $$$OK
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+SaveTournamentError
+
+NoPrivilegeForDelete
+NoPrivilegeForUpdate
+*/
+]]></Content>
+</UDLText>
+</Class>
+</Export>

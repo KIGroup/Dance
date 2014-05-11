@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Ticket">
+<Description>
+Tickets of the participants</Description>
+<Super>%Persistent</Super>
+<TimeCreated>63318,50950.081309</TimeCreated>
+
+<Property name="Participant">
+<Type>Dance.Data.Participant</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Tickets</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.TicketD</DataLocation>
+<DefaultData>TicketDefaultData</DefaultData>
+<IdLocation>^Dance.Data.TicketD</IdLocation>
+<IndexLocation>^Dance.Data.TicketI</IndexLocation>
+<StreamLocation>^Dance.Data.TicketS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="TicketDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Participant</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

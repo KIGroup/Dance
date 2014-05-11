@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Tournament">
+<Description>
+Tournaments</Description>
+<Super>%Persistent</Super>
+<TimeCreated>63274,63417.76954</TimeCreated>
+
+<Parameter name="JsonClass">
+<Default>Dance.Web.JsonTournament</Default>
+</Parameter>
+
+<Property name="IdInternal">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="IdExternal">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Hash">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="100"/>
+</Property>
+
+<Property name="Name">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Country">
+<Type>Country</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="City">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="StartDate">
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="EndDate">
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="OrganizerInfo">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="OrganizerSite">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="500"/>
+</Property>
+
+<Property name="TRank">
+<Type>Dance.Data.TournamentRank</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="TStatus">
+<Type>Dance.Data.TournamentStatus</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="CompetitionsCount">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {CompetitionsCount} = ##class({%%CLASSNAME}).GetCompetitionsCount({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Property name="ParticipantsCount">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {ParticipantsCount} = ##class({%%CLASSNAME}).GetParticipantsCount({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Property name="ParticipantsUniqueCount">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {ParticipantsUniqueCount} = ##class({%%CLASSNAME}).GetParticipantsUniqueCount({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Property name="Competitions">
+<Type>Dance.Data.Competition</Type>
+<Cardinality>many</Cardinality>
+<Inverse>Tournament</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Index name="IdInternalIdx">
+<Properties>IdInternal</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Index name="IdExternalIdx">
+<Properties>IdExternal</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="CheckDeletePrivilege">
+<Description>
+Check delete privilege</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	SET SQLCODE=""
+	&sql(%CHECKPRIV DELETE ON Dance_Data.Tournament)
+	if (SQLCODE = 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("NoPrivilegeForDelete", " USERNAME="_$USERNAME)
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="CheckUpdatePrivilege">
+<Description>
+Check update privilege</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	SET SQLCODE=""
+	&sql(%CHECKPRIV UPDATE ON Dance_Data.Tournament)
+	if (SQLCODE = 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("NoPrivilegeForUpdate", " USERNAME="_$USERNAME)
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetCompetitionsCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set count = 0
+	&sql(SELECT COUNT(ID) INTO :count 
+		 FROM Dance_Data.Competition 
+		 WHERE Tournament = :tournamentId)
+		 
+	quit count
+]]></Implementation>
+</Method>
+
+<Method name="GetParticipantsCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set count = 0
+	&sql(SELECT COUNT(ID) INTO :count
+		 FROM Dance_Data.Participant 
+		 WHERE Competition->Tournament = :tournamentId)
+	
+	quit count
+]]></Implementation>
+</Method>
+
+<Method name="GetParticipantsUniqueCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set count = 0
+	&sql(SELECT COUNT(DISTINCT Couple) INTO :count
+		 FROM Dance_Data.Participant 
+		 WHERE Competition->Tournament = :tournamentId)
+	
+	quit count
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.TournamentD</DataLocation>
+<DefaultData>TournamentDefaultData</DefaultData>
+<IdLocation>^Dance.Data.TournamentD</IdLocation>
+<IndexLocation>^Dance.Data.TournamentI</IndexLocation>
+<StreamLocation>^Dance.Data.TournamentS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="TournamentDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Title</Value>
+</Value>
+<Value name="3">
+<Value>StartDate</Value>
+</Value>
+<Value name="4">
+<Value>EndDate</Value>
+</Value>
+<Value name="5">
+<Value>OrganizerSite</Value>
+</Value>
+<Value name="6">
+<Value>TClass</Value>
+</Value>
+<Value name="7">
+<Value>Name</Value>
+</Value>
+<Value name="8">
+<Value>TRank</Value>
+</Value>
+<Value name="9">
+<Value>TStatus</Value>
+</Value>
+<Value name="10">
+<Value>OrganizerInfo</Value>
+</Value>
+<Value name="11">
+<Value>Country</Value>
+</Value>
+<Value name="12">
+<Value>City</Value>
+</Value>
+<Value name="13">
+<Value>TournirId</Value>
+</Value>
+<Value name="14">
+<Value>TournirIdExt</Value>
+</Value>
+<Value name="15">
+<Value>IdInternal</Value>
+</Value>
+<Value name="16">
+<Value>Hash</Value>
+</Value>
+<Value name="17">
+<Value>IdExternal</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

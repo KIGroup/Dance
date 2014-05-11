@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/partials/importcompetitions.csp" application="/csp/dance/" default="1"><![CDATA[
+<div class="accordion">
+    <div class="accordion-group" style="border-bottom: none;">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" ng-bind="'Import competitions into tournament'|localize"></a>
+        </div>
+        <div class="accordion-body">
+            <div class="accordion-inner">
+                <div class="row-fluid">
+					<div class="span6">
+						<p><span class="spnTitle" ng-bind="'Tournament'|localize"></span>: <span ng-bind="page.tournament.name"></span></p>
+						<p><span class="spnTitle" ng-bind="('City'|localize) + ', ' + ('Country'|localize)"></span>: <span ng-bind="page.tournament.location.cityName + ', ' + page.tournament.location.country.name"></span></p>
+						<p><span class="spnTitle" ng-hide="page.tournament.organizer.info==''" ng-bind="'Organizer'|localize"></span>: <span ng-bind="page.tournament.organizer.info"></span></p>
+						<p><span class="spnTitle" ng-hide="page.tournament.organizer.site==''" ng-bind="'Organizer web-site'|localize" ></span>: <span ng-bind="page.tournament.organizer.site"></span></p>
+					</div>
+					<div class="span6">
+						<p><span class="spnTitle" ng-bind="'Start date / end date'|localize"></span>: <span ng-bind="(page.tournament.startDate|convertCacheDate:('d MMMM y'|localize)) + '  /  ' + (page.tournament.endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>
+						<p><span class="spnTitle" ng-bind="'Rank'|localize"></span>: <span ng-bind="page.tournament.rank.name"></span></p>
+						<p><span class="spnTitle" ng-bind="'Status'|localize"></span>: <span ng-bind="page.tournament.status.name"></span></p>
+						<p><span class="spnTitle" ng-bind="'Total competitions'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/competitions'}}" title="{{'Watch competitions list'|localize}}" ng-bind="page.tournament.competitionsCount + ' &raquo;'"></a></p>
+						<p><span class="spnTitle" ng-bind="'Total participants / unique'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/participants'}}" title="{{'Watch participants list'|localize}}" ng-bind="page.tournament.participantsCount+' / '+page.tournament.participantsUniqueCount + ' &raquo;'"></a></p>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <form name="form_import" style="margin: 0;">
+        <div class="row-fluid">
+            <input type="text" style="height: 16px!important;line-height: 16px!important; width: 450px;" placeholder="{{('URL example:'|localize) + ' view-source:http://www.danceplat.ru/groupsfeed2.php...'}}" ng-model="page.sourceUrl" required/>
+            <button type="submit" class="btn btn-primary btn-small" style="margin-bottom: 10px;" ng-disabled="!form_import.$valid" ng-click="page.table.getAll(true)"><i class="fa fa-download"></i>&nbsp;&nbsp;{{'Load'|localize}}</button>                  
+            <button type="button" class="btn btn-small"             style="margin-bottom: 10px;" ng-disabled="!form_import.$dirty" ng-click="page.clear()"><i class="fa fa-eraser"></i>&nbsp;&nbsp;{{'Clear'|localize}}</button>
+            
+            <button type="button" class="btn btn-success btn-small pull-right" ng-hide="page.table.items.length==0" style="margin-bottom: 10px;" ng-click="page.createAll(page.tournament.id)"><i class="fa fa-check"></i>&nbsp;&nbsp;{{'Import'|localize}}</button>                 
+        </div>
+    </form>
+</div>
+
+<div class="row-fluid" ng-hide="page.table.items.length==0" style="padding-top: 15px;">
+    <div class="span4">
+        <label class="control-label" ng-bind="('TournirId') + '*' + ' (common parameter)'"></label>
+        <div class="controls">
+            <input type="text" class="span6" ng-model="page.table.trnId" required/>
+        </div>
+    </div>
+    <div class="span8">
+        <div class="row-fluid" style="padding-bottom: 8px;">
+            <span ng-bind="'Only competitions without errors will be saved, other - ignored.'|localize"></span>
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <span class="importInfoCube successItem"></span>
+                <span ng-bind="'without errors'|localize"></span>
+            </div>
+            <div class="span3">
+                <span class="importInfoCube errorItem"></span>
+                <span ng-bind="'with errors'|localize"></span>
+            </div>
+            <div class="span3">
+                <span class="importInfoCube existsItem"></span>
+                <span ng-bind="'exists'|localize"></span>
+            </div>
+            <div class="span3">
+                <span class="importInfoCube removedItem"></span>
+                <span ng-bind="'removed'|localize"></span>
+            </div>
+        </div>
+    </div>       
+</div>
+<br>
+<div class="row-fluid" ng-hide="page.table.items.length==0">
+    <stcgrid style="border-radius: 4px 0 4px 4px;"
+        grid="pageStore.import.grid"
+        table-class="table table-bordered table-hover"
+        caption="''"
+        columns="page.table.columns"
+        items="page.table.items"
+        properties="page.table.properties"
+        
+        page-curr="page.table.pageCurr"
+        page-total="page.table.pageTotal"
+        page-size="page.table.pageSize"
+        navigator-visible="false"
+
+        selectable="false"
+        selected-items="page.table.selectedItems"
+        multi-select-mode="page.table.multiSelectMode"
+        
+        action-column-visible="menu.readOnlyMode"
+        action-column-icon="'fa fa-ellipsis-h'"
+ 
+        first-row-action-icon="'fa fa-pencil'"
+        first-row-action-title="'Edit'|localize"
+        first-row-action-method="page.table.edit(item)"
+    />
+</div>
+
+<div class="modal" id="InfoModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="InfoLabel" aria-hidden="true" ng-show="page.infoModalVisible">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"  ng-click="page.infoModalVisible=false">×</button>
+    <h3 id="InfoLabel" ng-bind="'Competition'|localize"></h3>
+  </div>
+  <div class="modal-body">
+    <tabset>
+        <tab heading="{{'Форма'|localize}}" active="page.table.tabFormActive">
+            <form name="form_competition" ng-submit="page.updateCompetition()" style="margin: 0;">
+                <div class="control-group">
+                    <div class="row-fluid">
+                        <div class="span8"> 
+                            <label class="control-label" ng-bind="('Name'|localize) + '*'"></label>
+                            <div class="controls">
+                                <input class="span12" type="text" ng-model="page.table.selected.name" required></input>
+                            </div>
+                        </div>
+                        <div class="span2"> 
+                            <label class="control-label" ng-bind="('GroupId') + ''"></label>
+                            <div class="controls">
+                                <input class="span12" type="text" ng-model="page.table.selected.groupId" required></input>
+                            </div>
+                        </div>
+                        <div class="span2"> 
+                            <label class="control-label" ng-bind="('GroupIdExt') + ''"></label>
+                            <div class="controls">
+                                <input class="span12" type="text" ng-model="page.table.selected.groupIdExt" required></input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="row-fluid">
+                        <div class="span6"> 
+                            <div class="control-group">
+                                <label class="control-label" ng-bind="('Discipline'|localize) + '*'"></label>
+                                <div class="controls">
+                                    <select class="span12" ng-model="page.table.selected.discipline.id" ng-options="discipline.id as discipline.name for discipline in page.disciplines" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span3"> 
+                            <label class="control-label" ng-bind="('Date'|localize) + '*'"></label>
+                            <div class="controls">
+                                <input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.table.selected.date" show-weeks="false" ng-required="true" />
+                            </div>
+                        </div>
+                        <div class="span3">
+                            <label class="control-label" ng-bind="('Start time'|localize) + ''"></label>
+                            <div class="controls">
+                                 <input type="text" class="span12" placeholder="{{'HH:MM'|localize}}" pattern="([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]" ng-model="page.table.selected.startTime"></input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="row-fluid">
+                        <div class="span6"> 
+                            <label class="control-label" ng-bind="('Age category'|localize) + '*'"></label>
+                            <div class="controls">
+                                <select class="span12" ng-model="page.table.selected.ageCategory.id" ng-options="age.id as (age.name + ' ('+ age.minAge + ' - ' + age.maxAge +')') for age in page.ageCategories" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="span2"> 
+                            <label class="control-label" ng-bind="('Price'|localize) + '*'"></label>
+                            <div class="controls">
+                                 <input type="text" class="span12" ng-model="page.table.selected.price" required></input>
+                            </div>
+                        </div>
+                        <div class="span2"> 
+                            <label class="control-label" ng-bind="('Type'|localize) + '*'"></label>
+                            <div class="controls">
+                                 <select class="span12" ng-model="page.table.selected.type.id" ng-options="type.id as type.name for type in page.types" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="span2"> 
+                            <label class="control-label" ng-bind="('Limit'|localize) + ''"></label>
+                            <div class="controls">
+                                 <input type="text" class="span12" ng-model="page.table.selected.limit" required></input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="row-fluid">
+                        <div class="span9"> 
+                            <label class="control-label" ng-bind="('Classes'|localize) + '*'"></label>
+                            <div class="btn-group" style="margin-bottom: 15px;">
+                                <button type="button" class="btn btn-mini btnCheckBox" style="padding: 0 15px 0 15px;" ng-repeat="class in page.table.selected.dancerClasses"  ng-model="class.selected" ng-bind="class.name|localize"  btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0"></button>
+                            </div>
+                        </div>
+                        <div class="span3">
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-success btn-small" ng-bind="'Save'|localize" ng-disabled="form_competition.$pristine"></button>
+                        <button type="button" class="btn btn-small" ng-click="page.cancel()" ng-bind="'Cancel'|localize" data-dismiss="modal" aria-hidden="true"></button>
+                        <button type="button" class="btn btn-danger btn-small pull-right" ng-hide="page.table.selected.isRemoved" ng-bind="'Remove'|localize" ng-click="page.removeOrRestore()"></button>
+                        <button type="button" class="btn btn-success btn-small pull-right" ng-show="page.table.selected.isRemoved" ng-bind="'Restore'|localize" ng-click="page.removeOrRestore()"></button>
+                    </div>
+                </div>                          
+            </form>
+        </tab>
+        <tab heading="{{('Ошибки'|localize) + ' (' + page.table.selected.errorMessages.length + ')'}}" disabled="page.table.selected.errorMessages.length==0">
+            <div ng-repeat="error in page.table.selected.errorMessages">
+                <span ng-bind="($index + 1) + '. ' + error + '\n'"></span><br>
+                
+            </div>
+        </tab>
+  </div>
+</div>
+<stcalert data="page.alert"/>
+]]></CSP>
+</Export>

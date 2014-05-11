@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.BrokerAdmin">
+<Description>
+Protected REST URLs</Description>
+<Super>Dance.Web.BrokerBase</Super>
+<TimeCreated>63289,65480.266604</TimeCreated>
+
+<XData name="UrlMap">
+<Data><![CDATA[
+<Routes>
+
+<!--========================================= TOURNAMENT ================================================-->	
+<!-- SAVE Tournament -->
+<Route Method="POST"   Url="/tournament"     Call="Dance.Web.JsonTournament:Save"/>
+
+<!-- DELETE Tournament -->
+<Route Method="DELETE" Url="/tournament/:id" Call="Dance.Web.JsonTournament:Delete"/>
+
+
+<!--========================================= COMPETITION ===============================================-->	
+<!-- SAVE Competition -->
+<Route Method="POST"   Url="/tournament/:id/competition"     Call="Dance.Web.JsonCompetition:Save"/>
+
+<!-- DELETE Competition -->
+<Route Method="DELETE" Url="/tournament/:id/competition/:id" Call="Dance.Web.JsonCompetition:Delete"/>
+
+<Route Method="POST" Url="/competition/import"     Call="Dance.Web.JsonCompetitionImport:WriteAllToDevice"/>
+
+
+<Route Method="POST" Url="/competition/imported"   Call="Dance.Web.JsonCompetitionImport:Update"/>
+
+
+<Route Method="DELETE" Url="/competition/imported/:id/removeorrestore"   Call="Dance.Web.JsonCompetitionImport:RemoveOrRestore"/>
+
+<Route Method="POST" Url="/competition/createall"     Call="Dance.Web.JsonCompetitionImport:CreateAll"/>
+
+</Routes>
+]]></Data>
+</XData>
+</Class>
+</Export>

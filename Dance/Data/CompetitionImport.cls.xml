@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.CompetitionImport">
+<Super>%Persistent,%XML.Adaptor</Super>
+<TimeCreated>63312,80183.917226</TimeCreated>
+
+<Property name="SourceUrl">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="5000"/>
+</Property>
+
+<Property name="TournirId">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="TournirId"/>
+</Property>
+
+<Property name="GroupId">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="GroupId"/>
+</Property>
+
+<Property name="GroupIdExt">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="GroupIdExt"/>
+</Property>
+
+<Property name="Name">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="3000"/>
+<Parameter name="XMLNAME" value="name"/>
+</Property>
+
+<Property name="Rank">
+<Type>%String</Type>
+<InitialExpression>0</InitialExpression>
+<Parameter name="XMLNAME" value="rang"/>
+</Property>
+
+<Property name="Discipline">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="prog"/>
+</Property>
+
+<Property name="AgeCategory">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="cat"/>
+</Property>
+
+<Property name="DancerClasses">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="class"/>
+</Property>
+
+<Property name="Date">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="day"/>
+</Property>
+
+<Property name="Limit">
+<Type>%Integer</Type>
+<InitialExpression>0</InitialExpression>
+<Required>1</Required>
+<Parameter name="XMLNAME" value="limit"/>
+</Property>
+
+<Property name="Solo">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+<Required>1</Required>
+<Parameter name="XMLNAME" value="solo"/>
+</Property>
+
+<Property name="MaxAge">
+<Type>%Integer</Type>
+<Parameter name="XMLNAME" value="ageto"/>
+</Property>
+
+<Property name="MinAge">
+<Type>%Integer</Type>
+<Parameter name="XMLNAME" value="agefrom"/>
+</Property>
+
+<Property name="Price">
+<Type>%Float</Type>
+<Parameter name="XMLNAME" value="price"/>
+</Property>
+
+<Property name="IsRemoved">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+<Required>1</Required>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.CompetitionImportD</DataLocation>
+<DefaultData>CompetitionImportDefaultData</DefaultData>
+<IdLocation>^Dance.Data.CompetitionImportD</IdLocation>
+<IndexLocation>^Dance.Data.CompetitionImportI</IndexLocation>
+<StreamLocation>^Dance.Data.CompetitionImportS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="CompetitionImportDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>SourceUrl</Value>
+</Value>
+<Value name="3">
+<Value>TournirId</Value>
+</Value>
+<Value name="4">
+<Value>GroupId</Value>
+</Value>
+<Value name="5">
+<Value>GroupIdExt</Value>
+</Value>
+<Value name="6">
+<Value>Name</Value>
+</Value>
+<Value name="7">
+<Value>Rank</Value>
+</Value>
+<Value name="8">
+<Value>Discipline</Value>
+</Value>
+<Value name="9">
+<Value>AgeCategory</Value>
+</Value>
+<Value name="10">
+<Value>DancerClasses</Value>
+</Value>
+<Value name="11">
+<Value>Date</Value>
+</Value>
+<Value name="12">
+<Value>Limit</Value>
+</Value>
+<Value name="13">
+<Value>Solo</Value>
+</Value>
+<Value name="14">
+<Value>MaxAge</Value>
+</Value>
+<Value name="15">
+<Value>MinAge</Value>
+</Value>
+<Value name="16">
+<Value>Price</Value>
+</Value>
+<Value name="17">
+<Value>IsRemoved</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

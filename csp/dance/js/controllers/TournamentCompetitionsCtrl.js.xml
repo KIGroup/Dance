@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/controllers/TournamentCompetitionsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//ddc
+
+/*===========================================================================================
+Tournament Competitions
+===========================================================================================*/
+
+controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc){
+	//$scope.menu.selectMenu('tournaments');;
+
+	$scope.page = {};
+    $scope.page.competitionTable = {filterDate: ''};
+
+ 	if (!$scope.pageStore.tournamentDetails) $scope.pageStore.tournamentDetails = {gridCompetitions:{filterDate: ''}};
+
+    
+    $scope.page.init = function(){
+        // 
+    	// Competition table
+    	//
+        $scope.page.competitionTable.columns = [
+                          {name: 'Date'              , sqlName: 'StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date'},
+                          {name: 'Time'              , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Discipline'        , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Age category'      , sqlName: 'AgeCategory'             , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Class'             , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Price'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right'}},
+                          {name: 'Total participants', sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}}];
+        
+        $scope.page.competitionTable.properties = [
+        				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
+                          {name:'startTime'},
+                          {name:'discipline.name'},
+                          {name:'ageCategory.name'},
+                          {name:'dancerClassesString', calculate: function(item){
+                                                            item.dancerClassesString = '';
+                                                            for(var i=0; i < item.dancerClasses.length; i++){
+                                                                item.dancerClassesString = item.dancerClassesString + ', ' + item.dancerClasses[i].name;
+                                                            }
+
+                                                            item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
+                                                        }},
+                          {name:'price', cellStyle: {textAlign: 'right'}},
+                          {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch participants list'), 
+                                                    calculate: function(item){
+                                                        item.participantsCountString = item.participantsCount + ' »';
+                                                    },
+                                                    getCssClass: function(item){ 
+                                                        return 'cellLink';
+                                                    },
+                                                    onClickCell: function(id){
+                                                        $location.path("/competition/" + id +"/participants"); 
+                                                    }}];  
+
+        $scope.page.competitionTable.pageSize = 500;
+        $scope.page.competitionTable.pageCurr = 1;
+        $scope.page.competitionTable.itemsTotal = 0;
+        $scope.page.competitionTable.selectedItems = [];
+        $scope.page.competitionTable.multiSelectMode = false;
+        $scope.page.competitionTable.forciblyUpdate = 0;
+        $scope.page.competitionTable.refresh();
+    };
+
+
+    // 
+    $scope.page.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        CompetitionSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {date: $scope.pageStore.tournamentDetails.gridCompetitions.filterDate, tournamentId: $routeParams.id}).then(
+            function(data){
+	            data = data.children;
+                $scope.page.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
+                $scope.page.competitionTable.itemsTotal = data.itemsTotal;
+                $scope.page.competitionTable.items = data.items;
+
+                if ($scope.page.competitionTable.selectedItems && $scope.page.competitionTable.items && $scope.page.competitionTable.selectedItems.length == 0 && $scope.page.competitionTable.items.length != 0){
+                    var selected = $scope.page.competitionTable.items[0];
+                    selected.rowClass = 'info';
+                    $scope.page.competitionTable.selectedItems = [selected];
+                }
+            },
+            function(data){
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+    $scope.page.competitionTable.onSelect = function(item){
+        if (!item)  return;
+    };
+
+    $scope.page.competitionTable.onSelectCell = function(item, property){ 
+        if (!item) return;
+
+        property.onClickCell(item.id);
+    };
+ 
+    $scope.page.competitionTable.refresh = function(){ 
+        $scope.page.competitionTable.forciblyUpdate++; 
+    };
+
+	$scope.page.competitionTable.import = function(){
+		$location.path("/tournament/" + $routeParams.id + "/importcompetitions"); 
+	};
+
+    $scope.page.competitionTable.add = function(){
+        $location.path("/tournament/" + $routeParams.id + "/competition"); 
+    };
+
+    $scope.page.competitionTable.edit = function(item){
+        $location.path("/tournament/" + $routeParams.id + "/competition/" + item.id); 
+    };
+
+    $scope.page.competitionTable.remove = function(item){
+         alert('remove competition');
+    };
+    
+    $scope.page.competitionTable.open = function(item){
+        $location.path("/competition/" + item.id + "/participants"); 
+    };
+
+    /// 
+    $scope.page.competitionTable.loadDates = function(tournamentId){
+        CompetitionSrvc.getDates(tournamentId).then(
+            function(data){
+                $scope.pageStore.tournamentDetails.gridCompetitions.filterDate = '';
+                $scope.page.competitionTable.dates = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+    $scope.page.competitionTable.changeDateFilter = function(date){
+        $scope.pageStore.tournamentDetails.gridCompetitions.filterDate = date;
+        $scope.page.competitionTable.refresh();
+    };  
+
+    /// Load Tournament by ID
+    $scope.page.loadTournament = function(id){
+        TournamentSrvc.getById(id).then(
+            function(data){
+                $scope.page.tournament = data;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load participants count for tournament
+    $scope.page.loadParticipantsCount = function(id){
+        TournamentSrvc.getParticipantsCountById(id).then(
+            function(data){
+                $scope.page.participantsInfo = {total: data.participantsCount, unique: data.participantsUniqueCount};
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+    $scope.page.init();
+    $scope.page.loadTournament($routeParams.id);
+    $scope.page.loadParticipantsCount($routeParams.id);
+    $scope.page.competitionTable.loadDates($routeParams.id);
+});
+
+]]></CSP>
+</Export>

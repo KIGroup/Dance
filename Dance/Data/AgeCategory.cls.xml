@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.AgeCategory">
+<Description>
+Age categories, Young, Adult etc. </Description>
+<Super>%Persistent,%XML.Adaptor</Super>
+<TimeCreated>63289,4616.303823</TimeCreated>
+
+<Parameter name="JsonClass">
+<Default>Dance.Web.JsonAgeCategory</Default>
+</Parameter>
+
+<Property name="Name">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+<Parameter name="XMLREFERENCE" value="ID"/>
+</Property>
+
+<Property name="MaxAge">
+<Type>%Integer</Type>
+<Required>1</Required>
+<Parameter name="MAXVAL" value="100"/>
+<Parameter name="MINVAL" value="0"/>
+</Property>
+
+<Property name="MinAge">
+<Type>%Integer</Type>
+<Required>1</Required>
+<Parameter name="MAXVAL" value="100"/>
+<Parameter name="MINVAL" value="0"/>
+</Property>
+
+<Property name="Code">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="CodeIdx">
+<Properties>Code</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.AgeCategoryD</DataLocation>
+<DefaultData>AgeCategoryDefaultData</DefaultData>
+<IdLocation>^Dance.Data.AgeCategoryD</IdLocation>
+<IndexLocation>^Dance.Data.AgeCategoryI</IndexLocation>
+<StreamLocation>^Dance.Data.AgeCategoryS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="AgeCategoryDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>MaxAge</Value>
+</Value>
+<Value name="4">
+<Value>MinAge</Value>
+</Value>
+<Value name="5">
+<Value>Code</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

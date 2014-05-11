@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/controllers/TournamentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//dd 
+
+/*===========================================================================================
+Tournament: create or update data 
+===========================================================================================*/
+
+controllersModule.controller('TournamentCtrl', function($scope, $window, $routeParams, UtilsSrvc, OtherSrvc, TournamentSrvc, TournamentStatusSrvc, TournamentRankSrvc){
+    $scope.page = {};
+
+    $scope.page.init = function(){
+	    $scope.page.clear();
+
+        if ($routeParams.id){
+            $scope.page.accordionCaption = "Editing tournament";   
+            $scope.page.btnSubmitCaption = "Save";
+            $scope.page.loadTournament($routeParams.id);
+        }
+        else{
+            $scope.page.accordionCaption = "Creation of the tournament";
+            $scope.page.btnSubmitCaption = "Create";
+        }
+    };
+
+    /// Clear tournament form
+    $scope.page.clear = function(){
+        $scope.page.tournament = {rank: {}, 
+                                  status: {}, 
+                                  organizer:{},
+                                  location: {country:{}}};
+    };
+
+    /// Load Tournament by ID
+    $scope.page.loadTournament = function(id){
+        TournamentSrvc.getById(id).then(
+            function(data){
+                $scope.page.tournament = data;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /*// Load all Tournament Statuses for combobox
+    $scope.page.loadTournamentStatuses = function(){
+        TournamentStatusSrvc.getAll().then(
+            function(data){
+                $scope.page.statuses = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load all Tournament Ranks for combobox
+    $scope.page.loadTournamentRanks = function(){
+        TournamentRankSrvc.getAll().then(
+            function(data){
+                $scope.page.ranks = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Load WDSF Countries
+    $scope.page.loadCountries = function(){
+        OtherSrvc.getCountries().then(
+            function(data){
+                $scope.page.countries = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+	*/
+    /// Save Tournament or update data
+    $scope.page.saveTournament = function(){
+	    $scope.page.tournament.startDate = UtilsSrvc.getValidDate($scope.page.tournament.startDate);
+	    $scope.page.tournament.endDate = UtilsSrvc.getValidDate($scope.page.tournament.endDate);
+   		
+   		if ($scope.page.tournament.endDate == "" || $scope.page.tournament.startDate == "")
+   			return;
+   
+        TournamentSrvc.save($scope.page.tournament).then(
+            function(data){
+	            if ($scope.page.tournament.id){
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
+                }
+                else{
+	                $scope.page.clear();
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Tournament created.', 'success', true);   
+                }
+
+                $scope.form_tournament.$setPristine();
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+
+    /// Cancel - go to previous page
+    $scope.page.cancel = function(){
+        $window.history.back();
+    };
+
+    
+    $scope.page.init();
+    //$scope.page.loadTournamentStatuses();
+    //$scope.page.loadTournamentRanks();
+    //$scope.page.loadCountries();    
+});
+]]></CSP>
+</Export>

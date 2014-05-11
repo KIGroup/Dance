@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonCompetitionType">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63303,62545.408124</TimeCreated>
+
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "CompetitionType" object to %ZEN.proxyObject (for JSON)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>object:Dance.Data.CompetitionType,isFullInfo:%Boolean=0</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	try{
+		set proxy.id = object.%Id()
+		set proxy.name = object.Name.Value
+	}
+	catch(ex){
+		set proxy = ##class(%ZEN.proxyObject).%New()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllToDevice">
+<Description>
+Write to device "children" array of proxyObjects</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE Curr1 CURSOR FOR 
+		 	SELECT ID, Name->Value
+		 	FROM Dance_Data.CompetitionType)	
+		
+	&sql(OPEN Curr1)
+	for  
+	{	
+		&sql(FETCH Curr1 INTO :id, :name) 
+		quit:(SQLCODE '= 0)
+		
+		set type = ##class(%ZEN.proxyObject).%New()	
+		set type.id = id
+		set type.name = name
+		
+		do proxy.children.Insert(type)	
+	}
+	
+	&sql(CLOSE Curr1)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>

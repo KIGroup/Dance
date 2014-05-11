@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/components/tournamentform.csp" application="/csp/dance/" default="1"><![CDATA[
+<div class="row-fluid">
+	<div class="row-fluid">
+		<div class="span6">
+			<div class="control-group">
+		        <label class="control-label" ng-bind="('Name'|localize) + '*'"></label>
+		        <div class="controls">
+		            <input class="span12" type="text" ng-model="tournament.name" required></input>
+		        </div>
+		    </div>
+		</div>
+		<div class="span2">
+			<div class="control-group">
+		        <label class="control-label" ng-bind="('Internal ID') + '*'"></label>
+		        <div class="controls">
+		            <input class="span12" type="text" ng-model="tournament.idInternal" required></input>
+		        </div>
+		    </div>
+		</div>
+		<div class="span2">
+			<div class="control-group">
+		        <label class="control-label" ng-bind="('External ID') + '*'"></label>
+		        <div class="controls">
+		            <input class="span12" type="text" ng-model="tournament.idExternal" required></input>
+		        </div>
+		    </div>
+		</div>
+		<div class="span2">
+			<div class="control-group">
+		        <label class="control-label" ng-bind="('Hash') + '*'"></label>
+		        <div class="controls">
+		            <input class="span12" type="text" ng-model="tournament.hash"></input>
+		        </div>
+		    </div>
+		</div>
+	</div>
+    <div class="row-fluid">
+		<div class="span7">
+			<div class="control-group">
+	            <label class="control-label" ng-bind="('Country'|localize) + '*'"></label>
+	            <div class="controls">
+					<select class="span12" ng-model="tournament.location.country.id" ng-options="country.id as country.name for country in countries" required>
+        			</select>           
+     			</div>
+	        </div>
+	    </div>    
+	    <div class="span5">    
+	        <div class="control-group">
+	        	<label class="control-label" ng-bind="('City'|localize) + '*'"></label>
+	        	<div class="controls">
+	    			<input class="span12" type="text" ng-model="tournament.location.cityName" required></input>
+            	</div>
+	    	</div>
+	    </div>
+	</div>
+    <div class="control-group">
+        <label class="control-label" ng-bind="('Rank'|localize) + '*'"></label>
+        <div class="controls">
+            <select class="span12" ng-model="tournament.rank.id" ng-options="rank.id as rank.name for rank in ranks" required>
+            </select>
+        </div>
+    </div>
+    <div class="row-fluid">
+		<div class="span4">
+			<div class="control-group">
+	        	<label class="control-label" ng-bind="('Start date'|localize) + '*'"></label>
+	        	<div class="controls">
+	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tournament.startDate" show-weeks="false" ng-required="true" />
+	        	</div>
+	    	</div>
+		</div>
+		<div class="span4">
+			<div class="control-group">
+	        	<label class="control-label" ng-bind="('End date'|localize) + '*'"></label>
+	        	<div class="controls">
+	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tournament.endDate" show-weeks="false" ng-required="true" />
+	        	</div>
+	    	</div>
+		</div>
+		<div class="span4">
+    		<label class="control-label" ng-bind="('Status'|localize) + '*'"></label>
+            <div class="controls">
+                <select class="span12" ng-model="tournament.status.id" ng-options="status.id as status.name for status in statuses" required>
+                </select>
+            </div>
+		</div>
+	</div>
+    <div class="control-group">
+        <label class="control-label" ng-bind="('Organizer'|localize) + ''"></label>
+        <div class="controls">
+            <input class="span12" type="text" ng-model="tournament.organizer.info"></input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" ng-bind="('Organizer web-site'|localize) + ''"></label>
+        <div class="controls">
+            <input class="span12" type="text" ng-model="tournament.organizer.site"></input>
+        </div>
+    </div>
+</div>]]></CSP>
+</Export>
