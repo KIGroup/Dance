@@ -20,13 +20,18 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
                    loginCaption: ($cookies.admin === 'true' ? 'Выход' : 'Вход')};
     
     $scope.menu.pages = {selected: {},
-	    				 tournaments: {id: 'tournaments', url: '#/tournaments'           , css: '', name: $filter('localize')('Tournaments')},
-                         entities   : {id: 'entities'   , url: '#/entities/agecategories', css: '', name: $filter('localize')('Entities'), 
-                                            childrens: {ageCategories : {id: 'ageCategories', url: '#/entities/agecategories', css: '', name: $filter('localize')('Age categories'), parentId: '#/entities/agecategories'},
-                                                        dancerClasses : {id: 'dancerClasses', url: '#/entities/dancerclasses', css: '', name: $filter('localize')('Dancer classes'), parentId: '#/entities/dancerclasses'}
-                                                        }}
-                        };
-
+	    				 tournaments: {id: 'tournaments', url: '#/tournaments'           , name: $filter('localize')('Tournaments')},
+                         
+                         entities : {id: 'entities', url: '#/entities/agecategories', name: $filter('localize')('Entities'), 
+                                        childrens: {ageCategories : {id: 'ageCategories', url: '#/entities/agecategories', name: $filter('localize')('Age categories'), parentId: 'entities'},
+                                                    dancerClasses : {id: 'dancerClasses', url: '#/entities/dancerclasses', name: $filter('localize')('Dancer classes'), parentId: 'entities'}}},
+                         
+                         import : {id: 'import', url: '#/import/tournaments', name: $filter('localize')('Import'),
+                                      childrens: {tournaments : {id: 'import-tournaments' , url: '#/import/tournaments' , parentId: 'import', name: $filter('localize')('Tournaments')},
+                                                  competitions: {id: 'import-competitions', url: '#/import/competitions', parentId: 'import', name: $filter('localize')('Competitions')},
+                                                  tickets     : {id: 'import-tickets'     , url: '#/import/tickets'     , parentId: 'import', name: $filter('localize')('Tickets')}}}
+                        }; 
+ 
     $scope.menu.selectMenu = function(menuItem){
         $scope.menu.pages.selected = menuItem;
     };

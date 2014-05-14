@@ -51,6 +51,14 @@ mainModule.config(['$routeProvider', function($routeProvider) {
 	// Entities: Age categories
 	$routeProvider.when('/entities/agecategories', {templateUrl: 'partials/agecategories.csp' , controller: 'AgeCategoriesCtrl'});
 
+
+
+
+	// Import: Tournaments
+	$routeProvider.when('/import/tournaments', {templateUrl: 'partials/importtournaments.csp' , controller: 'ImportTournamentsCtrl'});
+
+	// Import: Competitions
+	$routeProvider.when('/import/competitions', {templateUrl: 'partials/importcompetitions.csp' , controller: 'ImportCompetitionsCtrl'});
 	
     $routeProvider.otherwise({redirectTo: '/tournaments'});
 }]);]]></CSP>

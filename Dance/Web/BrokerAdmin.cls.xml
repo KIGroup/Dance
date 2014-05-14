@@ -9,6 +9,14 @@ Protected REST URLs</Description>
 <XData name="UrlMap">
 <Data><![CDATA[
 <Routes>
+<!--========================================= IMPORT ================================================-->
+<!-- GET ALL [GRID], Tournament Import -->
+<Route Method="POST" Url="/import/tournament/grid" Call="Dance.Web.JsonTournamentImport:WriteAllForGridToDevice"/>
+
+<!-- GET ALL [GRID], Competition Import -->
+<Route Method="POST" Url="/import/competition/grid" Call="Dance.Web.JsonCompetitionImport:WriteAllForGridToDevice"/>
+
+
 
 <!--========================================= TOURNAMENT ================================================-->	
 <!-- SAVE Tournament -->
@@ -21,6 +29,9 @@ Protected REST URLs</Description>
 <!--========================================= COMPETITION ===============================================-->	
 <!-- SAVE Competition -->
 <Route Method="POST"   Url="/tournament/:id/competition"     Call="Dance.Web.JsonCompetition:Save"/>
+
+<!-- SAVE ALL Competitions -->
+<Route Method="POST"   Url="/tournament/:id/competition/all"  Call="Dance.Web.JsonCompetition:SaveAll"/>
 
 <!-- DELETE Competition -->
 <Route Method="DELETE" Url="/tournament/:id/competition/:id" Call="Dance.Web.JsonCompetition:Delete"/>

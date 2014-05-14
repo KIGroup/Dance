@@ -57,6 +57,9 @@ servicesModule.factory('CompetitionSrvc', function(RESTSrvc) {
         save: function(tournamentId, data){
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.admin + '/tournament/'+tournamentId+'/competition', data: data});
         },
+        saveAll: function(tournamentId, data){
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.admin + '/tournament/'+tournamentId+'/competition/all', data: data});
+        },
         deleteById: function(tournamentId, competitionId){
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + tournamentId + '/competition/' + competitionId});
         }

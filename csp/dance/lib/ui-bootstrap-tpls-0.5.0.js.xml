@@ -5,7 +5,7 @@ angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","
 angular.module("ui.bootstrap.tpls", ["template/accordion/accordion-group.html","template/accordion/accordion.html","template/alert/alert.html","template/carousel/carousel.html","template/carousel/slide.html","template/datepicker/datepicker.html","template/datepicker/popup.html","template/dialog/message.html","template/pagination/pager.html","template/pagination/pagination.html","template/tooltip/tooltip-html-unsafe-popup.html","template/tooltip/tooltip-popup.html","template/popover/popover.html","template/progressbar/bar.html","template/progressbar/progress.html","template/rating/rating.html","template/tabs/tab.html","template/tabs/tabset-titles.html","template/tabs/tabset.html","template/timepicker/timepicker.html","template/typeahead/typeahead-match.html","template/typeahead/typeahead-popup.html"]);
 angular.module('ui.bootstrap.transition', [])
 
-/**
+/*
  * $trdnsidddtion service provides a consistent interface to trigger CSS 3 transitions and to be informed when they complete.
  * @param  {DOMElement} element  The DOMElement that will be animated.
  * @param  {string|object|function} trigger  The thing that will cause the transition to start:
@@ -1292,9 +1292,9 @@ dialogModule.provider("$dialog", function(){
     keyboard: true, // close with esc key
     backdropClick: true // only in conjunction with backdrop=true
     /* other options: template, templateUrl, controller */
-	};
+  };
 
-	var globalOptions = {};
+  var globalOptions = {};
 
   var activeBackdrops = {value : 0};
 
@@ -1304,21 +1304,21 @@ dialogModule.provider("$dialog", function(){
   //        // don't close dialog when backdrop is clicked by default
   //        $dialogProvider.options({backdropClick: false});
   //      });
-	this.options = function(value){
-		globalOptions = value;
-	};
+  this.options = function(value){
+    globalOptions = value;
+  };
 
   // Returns the actual `$dialog` service that is injected in controllers
-	this.$get = ["$http", "$document", "$compile", "$rootScope", "$controller", "$templateCache", "$q", "$transition", "$injector",
+  this.$get = ["$http", "$document", "$compile", "$rootScope", "$controller", "$templateCache", "$q", "$transition", "$injector",
   function ($http, $document, $compile, $rootScope, $controller, $templateCache, $q, $transition, $injector) {
 
-		var body = $document.find('body');
+    var body = $document.find('body');
 
-		function createElement(clazz) {
-			var el = angular.element("<div>");
-			el.addClass(clazz);
-			return el;
-		}
+    function createElement(clazz) {
+      var el = angular.element("<div>");
+      el.addClass(clazz);
+      return el;
+    }
 
     // The `Dialog` class represents a modal dialog. The dialog class can be invoked by providing an options object
     // containing at lest template or templateUrl and controller:
@@ -1328,7 +1328,7 @@ dialogModule.provider("$dialog", function(){
     // Dialogs can also be created using templateUrl and controller as distinct arguments:
     //
     //     var d = new Dialog('path/to/dialog.html', MyDialogController);
-		function Dialog(opts) {
+    function Dialog(opts) {
 
       var self = this, options = this.options = angular.extend({}, defaults, globalOptions, opts);
       this._open = false;
@@ -1882,9 +1882,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position' ] )
    *     $tooltipProvider.options( { placement: 'left' } );
    *   });
    */
-	this.options = function( value ) {
-		angular.extend( globalOptions, value );
-	};
+  this.options = function( value ) {
+    angular.extend( globalOptions, value );
+  };
 
   /**
    * This allows you to extend the set of trigger mappings available. E.g.:
@@ -3268,9 +3268,9 @@ angular.module("template/datepicker/datepicker.html", []).run(["$templateCache",
     "<table>\n" +
     "  <thead>\n" +
     "    <tr class=\"text-center\">\n" +
-    "      <th><button type=\"button\" class=\"btn pull-left\" ng-click=\"move(-1)\"><i class=\"icon-chevron-left\"></i></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn pull-left\" ng-click=\"move(-1)\"><i class=\"fa fa-chevron-left\"></i></button></th>\n" +
     "      <th colspan=\"{{rows[0].length - 2 + showWeekNumbers}}\"><button type=\"button\" class=\"btn btn-block\" ng-click=\"toggleMode()\"><strong>{{title}}</strong></button></th>\n" +
-    "      <th><button type=\"button\" class=\"btn pull-right\" ng-click=\"move(1)\"><i class=\"icon-chevron-right\"></i></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn pull-right\" ng-click=\"move(1)\"><i class=\"fa fa-chevron-right\"></i></button></th>\n" +
     "    </tr>\n" +
     "    <tr class=\"text-center\" ng-show=\"labels.length > 0\">\n" +
     "      <th ng-show=\"showWeekNumbers\">#</th>\n" +
@@ -3292,28 +3292,29 @@ angular.module("template/datepicker/datepicker.html", []).run(["$templateCache",
 angular.module("template/datepicker/popup.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/datepicker/popup.html",
     "<ul class=\"dropdown-menu\" ng-style=\"{display: (isOpen && 'block') || 'none', top: position.top+'px', left: position.left+'px'}\" class=\"dropdown-menu\">\n" +
-    "	<li ng-transclude></li>\n" +
-    "	<li class=\"divider\" ng-hide=\"true\"></li>\n" +
-    "	<li style=\"padding: 9px;\">\n" +
-    "		<span class=\"btn-group\" ng-hide=\"true\">\n" +
-    "			<button class=\"btn btn-small btn-inverse\" ng-click=\"today()\">Today</button>\n" +
-    "			<button class=\"btn btn-small btn-info\" ng-click=\"showWeeks = ! showWeeks\" ng-class=\"{active: showWeeks}\">Weeks</button>\n" +
-    "			<button class=\"btn btn-small btn-danger\" ng-click=\"clear()\">Clear</button>\n" +
-    "		</span>\n" +
-    "		<button class=\"close pull-right\" ng-click=\"isOpen = false\">&times;</button>\n" +
-    "	</li>\n" +
+    " <li ng-transclude></li>\n" +
+    " <li class=\"divider\" ng-hide=\"true\"></li>\n" +
+    " <li style=\"padding: 9px;\">\n" +
+    "   <span class=\"btn-group\" ng-hide=\"true\">\n" +
+    "     <button class=\"btn btn-small btn-inverse\" ng-click=\"today()\">Today</button>\n" +
+    "     <button class=\"btn btn-small btn-info\" ng-click=\"showWeeks = ! showWeeks\" ng-class=\"{active: showWeeks}\">Weeks</button>\n" +
+    "     <button class=\"btn btn-small btn-danger\" ng-click=\"clear()\">Clear</button>\n" +
+    "   </span>\n" +
+    "   <button class=\"close pull-right\" ng-click=\"isOpen = false\">&times;</button>\n" +
+    " </li>\n" +
     "</ul>");
 }]);
 
 angular.module("template/dialog/message.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/dialog/message.html",
     "<div class=\"modal-header\">\n" +
-    "	<h3>{{ title }}</h3>\n" +
+    " <h3>{{ title }}</h3>\n" +
     "</div>\n" +
-    "<div class=\"modal-body\" ng-bind-html=\"message\">\n" + 
+    "<div class=\"modal-body\">\n" +
+    " <p>{{ message }}</p>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "	<button ng-repeat=\"btn in buttons\" ng-click=\"close(btn.result)\" class=\"btn\" ng-class=\"btn.cssClass\">{{ btn.label }}</button>\n" +
+    " <button ng-repeat=\"btn in buttons\" ng-click=\"close(btn.result)\" class=\"btn\" ng-class=\"btn.cssClass\">{{ btn.label }}</button>\n" +
     "</div>\n" +
     "");
 }]);
@@ -3391,7 +3392,7 @@ angular.module("template/progressbar/progress.html", []).run(["$templateCache", 
 angular.module("template/rating/rating.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rating/rating.html",
     "<span ng-mouseleave=\"reset()\">\n" +
-    "	<i ng-repeat=\"number in range\" ng-mouseenter=\"enter(number)\" ng-click=\"rate(number)\" ng-class=\"{'icon-star icon-large': number <= val, 'icon-star-empty icon-large': number > val}\" style=\"padding-right: 5px;\"></i>\n" +
+    " <i ng-repeat=\"number in range\" ng-mouseenter=\"enter(number)\" ng-click=\"rate(number)\" ng-class=\"{'icon-star icon-large': number <= val, 'icon-star-empty icon-large': number > val}\" style=\"padding-right: 5px;\"></i>\n" +
     "</span>");
 }]);
 
@@ -3449,24 +3450,24 @@ angular.module("template/tabs/tabset.html", []).run(["$templateCache", function(
 angular.module("template/timepicker/timepicker.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/timepicker/timepicker.html",
     "<table class=\"form-inline\">\n" +
-    "	<tr class=\"text-center\">\n" +
-    "		<td><a ng-click=\"incrementHours()\" class=\"btn btn-link\"><i class=\"icon-chevron-up\"></i></a></td>\n" +
-    "		<td>&nbsp;</td>\n" +
-    "		<td><a ng-click=\"incrementMinutes()\" class=\"btn btn-link\"><i class=\"icon-chevron-up\"></i></a></td>\n" +
-    "		<td ng-show=\"showMeridian\"></td>\n" +
-    "	</tr>\n" +
-    "	<tr>\n" +
-    "		<td class=\"control-group\" ng-class=\"{'error': !validHours}\"><input type=\"text\" ng-model=\"hours\" ng-change=\"updateHours()\" class=\"span1 text-center\" ng-mousewheel=\"incrementHours()\" ng-readonly=\"readonlyInput\" maxlength=\"2\" /></td>\n" +
-    "		<td>:</td>\n" +
-    "		<td class=\"control-group\" ng-class=\"{'error': !validMinutes}\"><input type=\"text\" ng-model=\"minutes\" ng-change=\"updateMinutes()\" class=\"span1 text-center\" ng-readonly=\"readonlyInput\" maxlength=\"2\"></td>\n" +
-    "		<td ng-show=\"showMeridian\"><button ng-click=\"toggleMeridian()\" class=\"btn text-center\">{{meridian}}</button></td>\n" +
-    "	</tr>\n" +
-    "	<tr class=\"text-center\">\n" +
-    "		<td><a ng-click=\"decrementHours()\" class=\"btn btn-link\"><i class=\"icon-chevron-down\"></i></a></td>\n" +
-    "		<td>&nbsp;</td>\n" +
-    "		<td><a ng-click=\"decrementMinutes()\" class=\"btn btn-link\"><i class=\"icon-chevron-down\"></i></a></td>\n" +
-    "		<td ng-show=\"showMeridian\"></td>\n" +
-    "	</tr>\n" +
+    " <tr class=\"text-center\">\n" +
+    "   <td><a ng-click=\"incrementHours()\" class=\"btn btn-link\"><i class=\"icon-chevron-up\"></i></a></td>\n" +
+    "   <td>&nbsp;</td>\n" +
+    "   <td><a ng-click=\"incrementMinutes()\" class=\"btn btn-link\"><i class=\"icon-chevron-up\"></i></a></td>\n" +
+    "   <td ng-show=\"showMeridian\"></td>\n" +
+    " </tr>\n" +
+    " <tr>\n" +
+    "   <td class=\"control-group\" ng-class=\"{'error': !validHours}\"><input type=\"text\" ng-model=\"hours\" ng-change=\"updateHours()\" class=\"span1 text-center\" ng-mousewheel=\"incrementHours()\" ng-readonly=\"readonlyInput\" maxlength=\"2\" /></td>\n" +
+    "   <td>:</td>\n" +
+    "   <td class=\"control-group\" ng-class=\"{'error': !validMinutes}\"><input type=\"text\" ng-model=\"minutes\" ng-change=\"updateMinutes()\" class=\"span1 text-center\" ng-readonly=\"readonlyInput\" maxlength=\"2\"></td>\n" +
+    "   <td ng-show=\"showMeridian\"><button ng-click=\"toggleMeridian()\" class=\"btn text-center\">{{meridian}}</button></td>\n" +
+    " </tr>\n" +
+    " <tr class=\"text-center\">\n" +
+    "   <td><a ng-click=\"decrementHours()\" class=\"btn btn-link\"><i class=\"icon-chevron-down\"></i></a></td>\n" +
+    "   <td>&nbsp;</td>\n" +
+    "   <td><a ng-click=\"decrementMinutes()\" class=\"btn btn-link\"><i class=\"icon-chevron-down\"></i></a></td>\n" +
+    "   <td ng-show=\"showMeridian\"></td>\n" +
+    " </tr>\n" +
     "</table>");
 }]);
 

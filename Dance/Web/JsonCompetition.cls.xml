@@ -64,46 +64,11 @@ Create or Update object</Description>
 		
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(),"I", "UTF8"),,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
       	
-      	set tournament = ##class(Dance.Data.Tournament).%OpenId(tournamentId)
-      		
-      	if (data.id = ""){
-      		set competition = ##class(Dance.Data.Competition).%New()
-      		set competition.Name = ##class(Dance.Data.Localization.LText).Create(data.name)
-      		set competition.Tournament = tournament
-      	}
-      	else{
-	      	set competition = tournament.Competitions.GetAt(data.id)
-      		set competition.Name.Value = data.name
-      	}
-      	
-      	set competition.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
-      	set competition.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
-      	set competition.Type = ##class(Dance.Data.CompetitionType).%OpenId(data.type.id)
-      	
-      	set competition.StartDate = $ZDATEH(data.startDate, 15)
-      	set competition.StartTime = ##class(%Library.Time).DisplayToLogical(data.startTime)
-      	
-      	set competition.Price = data.price
-      	set competition.Limit = data.limit
-      	set competition.IsInternational = (data.isInternational = $$$YES)
-      
-      	set competition.IdInternal = data.idInternal
-      	set competition.IdExternal = data.idExternal
-      	
-	    // DancerClasses array
-	    do competition.DancerClasses.Clear()
-      	for i=1:1:data.dancerClasses.Count(){
-	      	continue:(data.dancerClasses.GetAt(i).selected '= $$$YES)
-	      	
-	      	set dancerClasses = ##class(Dance.Data.DancerClass).%OpenId(data.dancerClasses.GetAt(i).id,,.st)
-	      	$$$THROWONERROR(st, st)
-	    	do competition.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
-	    }
-      	
-      	set st = competition.%Save()
-      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveCompetitionError"," | "_st))
+      	set data.tournamentId = tournamentId
+      	set st =  ..SaveObject(data)
+      	$$$THROWONERROR(st, ##class(Dance.Utils.Msg).GetErrorStatus("SaveCompetitionError"," | "_st))
       	
       	TCOMMIT
 	}
@@ -113,6 +78,100 @@ Create or Update object</Description>
 	}
 			
 	quit st
+]]></Implementation>
+</Method>
+
+<Method name="SaveAll">
+<Description>
+Create or Update object</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{	
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+      	
+      	set proxy = ##class(%ZEN.proxyObject).%New()
+      	set proxy.info = ##class(%ZEN.proxyObject).%New()
+      	set proxy.info.success = 0
+      	set proxy.info.errors = 0
+      	set proxy.info.errorMessages = ##class(%ListOfDataTypes).%New()
+      	
+      	for i=1:1:data.Count(){
+      		TSTART
+      		set item = data.GetAt(i)	
+      		set item.tournamentId = tournamentId
+      		set st = ..SaveObject(item)
+      		if $$$ISERR(st) {
+	      		TROLLBACK
+	      		set st = ##class(Dance.Utils.Msg).GetErrorStatus("SaveCompetitionError"," | "_st)
+	      		set proxy.info.errors = proxy.info.errors + 1
+ 				do proxy.info.errorMessages.Insert(st)
+      		}
+      		else{
+	      		TCOMMIT
+	      		set proxy.info.success = proxy.info.success + 1
+      		}
+      	}
+      	
+      	do proxy.%ToJSON()
+	}
+	catch ex {
+		if ($TLEVEL '= 0) TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="SaveObject">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>data:%RegisteredObject</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tournament = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
+      		
+    if (data.id = ""){
+    	set competition = ##class(Dance.Data.Competition).%New()
+      	set competition.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name,"I", "UTF8"))
+      	set competition.Tournament = tournament
+    }
+    else{
+	    set competition = tournament.Competitions.GetAt(data.id)
+      	set competition.Name.Value = $ZCVT(data.name,"I", "UTF8")
+    }
+      	
+    set competition.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
+    set competition.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
+    set competition.Type = ##class(Dance.Data.CompetitionType).%OpenId(data.type.id)
+      	
+    set competition.StartDate = $ZDATEH(data.startDate, 15)
+    set competition.StartTime = ##class(%Library.Time).DisplayToLogical(data.startTime)
+      	
+    set competition.Price = data.price
+    set competition.Limit = data.limit
+    set competition.IsInternational = (data.isInternational = $$$YES)
+      
+    set competition.IdInternal = data.idInternal
+    set competition.IdExternal = data.idExternal
+      	
+	// DancerClasses array
+	do competition.DancerClasses.Clear()
+    for i=1:1:data.dancerClasses.Count(){
+	    continue:(data.dancerClasses.GetAt(i).selected '= $$$YES)
+	      	
+	    set dancerClasses = ##class(Dance.Data.DancerClass).%OpenId(data.dancerClasses.GetAt(i).id,,.st)
+	    if $$$ISERR(st) return ##class(Dance.Utils.Msg).GetErrorStatus("DancerClassNotFound"," | "_st)
+	    
+	    do competition.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
+	}
+      	
+    quit competition.%Save()
 ]]></Implementation>
 </Method>
 

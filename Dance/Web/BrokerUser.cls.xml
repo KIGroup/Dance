@@ -9,9 +9,6 @@ Public REST URLs</Description>
 <XData name="UrlMap">
 <Data><![CDATA[
 <Routes>
-<!--========================================= IMPORT ================================================-->
-<!-- GET ALL [GRID], TournamentImport -->
-<Route Method="POST" Url="/import/tournament/grid" Call="Dance.Web.JsonTournamentImport:WriteAllForGridToDevice"/>
 
 
 
@@ -19,12 +16,20 @@ Public REST URLs</Description>
 <!-- GET BY ID, Tournament -->
 <Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:WriteObjectByIdToDevice"/>
 
+<!-- GET BY YEAR, Tournament [Short Info]-->
+<Route Method="GET" Url="/tournamentyears/:value"   Call="Dance.Web.JsonTournament:WriteAllByYearToDevice"/>
+
+
 <!-- GET BY ID, Participants count -->
 <Route Method="GET" Url="/tournament/:id/participants/count"   Call="Dance.Web.JsonTournament:WriteParticipantsCountInfoByIdToDevice"/>
 
 
 <!-- GET ALL [GRID], Tournament -->
 <Route Method="POST" Url="/tournament/grid" Call="Dance.Web.JsonTournament:WriteAllForGridToDevice"/>
+
+
+<!-- GET YEARS, Tournament -->
+<Route Method="GET" Url="/tournamentyears"   Call="Dance.Web.JsonTournament:WriteAllYearsToDevice"/>
 
 <!--========================================= TOURNAMENT CLASS ==========================================-->
 <!-- GET ALL, Tournament class -->

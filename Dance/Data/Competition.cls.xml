@@ -103,11 +103,6 @@ Competition in the tournament, has participants</Description>
 <Unique>1</Unique>
 </Index>
 
-<Index name="IdExternalIdx">
-<Properties>IdExternal</Properties>
-<Unique>1</Unique>
-</Index>
-
 <Method name="GetParticipantsCount">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>competitionId:%String</FormalSpec>

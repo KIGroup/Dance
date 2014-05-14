@@ -22,18 +22,26 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do ##class(Dance.Utils.Init.AgeCategory).Import()
 	
  	//do ..Settings()
+ 	w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\boys.csv", "M")
+ 	w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\girls.csv", "F")
+ 	w ##class(Dance.Utils.Init.Person).CreateCouples()
 ]]></Implementation>
 </Method>
 
 <Method name="KillThemAll">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
+	do $CLASSMETHOD("Dance.Data.Import.Tournament", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.Import.Competition", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.Import.Ticket", "%KillExtent")
+	
 	do $CLASSMETHOD("Dance.Data.AgeCategory", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Competition", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.CompetitionType", "%KillExtent")
 	
 	do $CLASSMETHOD("Dance.Data.Country", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Couple", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.Ticket", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.DancerClass", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Discipline", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Participant", "%KillExtent")

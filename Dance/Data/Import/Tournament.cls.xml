@@ -52,8 +52,12 @@
 <FormalSpec>newObj:Dance.Data.Import.Tournament</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	quit:(..IdInternalIdxExists(newObj.IdInternal) = 0) newObj.%Save()
-	 
+	set newObj.Name = $REPLACE($REPLACE(newObj.Name, $c(10), ""), "&quot;", """")
+	
+	if (..IdInternalIdxExists(newObj.IdInternal) = 0){
+		quit newObj.%Save()
+	}
+
 	set oldObj = ..IdInternalIdxOpen(newObj.IdInternal)
 	set oldObj.IdExternal = newObj.IdExternal
 	set oldObj.Name = newObj.Name

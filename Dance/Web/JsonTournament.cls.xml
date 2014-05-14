@@ -184,5 +184,70 @@ Write info: total participants count, unique and others</Description>
 	quit st
 ]]></Implementation>
 </Method>
+
+<Method name="WriteAllYearsToDevice">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfDataTypes).%New()
+	
+	&sql(DECLARE CursYear CURSOR FOR 
+		 	SELECT DISTINCT DATEPART('year', StartDate) As Year
+			FROM Dance_Data.Tournament
+			ORDER BY Year)	
+		
+	&sql(OPEN CursYear)
+	for  
+	{	
+		&sql(FETCH CursYear INTO :year) 
+		quit:(SQLCODE '= 0)
+		do proxy.children.Insert(year)	
+	}
+	
+	&sql(CLOSE CursYear)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllByYearToDevice">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>year:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE CursTY CURSOR FOR 
+		 SELECT ID, Name->Value, Country->Name->Value, City->Value
+		 FROM Dance_Data.Tournament
+		 WHERE DATEPART('year', StartDate) = :year
+		 ORDER BY StartDate DESC)	
+		
+	&sql(OPEN CursTY)
+	for  
+	{	
+		&sql(FETCH CursTY INTO :id, :name, :country, :city) 
+		quit:(SQLCODE '= 0)
+		
+		set obj = ##class(%ZEN.proxyObject).%New()
+		set obj.id = id
+		set obj.name = name
+		set obj.countryName = country
+		set obj.cityName = city 
+		do proxy.children.Insert(obj)	
+		
+	}
+	
+	&sql(CLOSE CursTY)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
 </Class>
 </Export>

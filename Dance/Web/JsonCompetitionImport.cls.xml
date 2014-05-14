@@ -4,13 +4,134 @@
 <Super>Dance.Web.JsonBase</Super>
 <TimeCreated>63312,80930.812249</TimeCreated>
 
-<Method name="Import">
+<Method name="ConvertToProxyObject">
 <Description>
-Import all competitions from XML to table</Description>
+Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>srcOrigin:%String</FormalSpec>
+<FormalSpec>object:Dance.Data.Import.Competition,isFullInfo:%Boolean=0</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.info = ##class(%ZEN.proxyObject).%New()
+	set proxy.info.errorMessages = ##class(%ListOfDataTypes).%New()
+	
+	try{
+		set proxy.id = object.%Id()
+		set proxy.tournamentIdExternal = object.TournamentIdExternal
+		set proxy.idInternal = object.IdInternal
+		set proxy.idExternal = object.IdExternal
+		set proxy.startDate = object.StartDate
+		set proxy.minAge = object.MinAge
+		set proxy.maxAge = object.MaxAge
+		set proxy.limit = object.Limit
+		set proxy.price = object.Price
+		set proxy.name = object.Name
+						
+		set realDicipline = ##class(Dance.Data.Discipline).CodeIdxOpen(object.DisciplineCode,,.sc)
+		if ($$$ISOK(sc)){
+			set proxy.discipline = ##class(JsonDiscipline).ConvertToProxyObject(realDicipline)
+		}
+		else{
+			do proxy.info.errorMessages.Insert("Discipline not found! Discipline code = "_comp.Discipline)	
+		}
+			
+		set realAge = ##class(Dance.Data.AgeCategory).CodeIdxOpen(object.AgeCategoryCode,,.sc)
+		if ($$$ISOK(sc)){
+			set proxy.ageCategory = ##class(JsonAgeCategory).ConvertToProxyObject(realAge)
+		}
+		else{
+			do proxy.info.errorMessages.Insert("Age category not found! Age category code = "_comp.AgeCategory)
+		}
+			
+		if (object.IsSoloType = $$$YES){
+			set typeCode = "Solo"
+		}
+		else{
+			set typeCode = "Couples"
+		}
+			
+		set type = ##class(Dance.Data.CompetitionType).CodeIdxOpen(typeCode,,.sc)
+		if ($$$ISOK(sc)){
+			set proxy.type = ##class(JsonCompetitionType).ConvertToProxyObject(type)
+		}
+		else{
+			do proxy.info.errorMessages.Insert("Type not found! Is solo = "_object.IsSoloType)
+		}
+		
+		set proxy.dancerClasses = ##class(JsonDancerClass).GetAll().children
+		set dancerClassesList = $LISTFROMSTRING(object.DancerClassCodes, ",")
+		for i=1:1:$LL(dancerClassesList){
+			set class = $LIST(dancerClassesList, i)
+			if (class = "") continue
+				
+			if (##class(Dance.Data.DancerClass).CodeIdxExists(class) = $$$YES){
+				for cc=1:1:proxy.dancerClasses.Count(){
+					if (class = proxy.dancerClasses.GetAt(cc).code){
+						set proxy.dancerClasses.GetAt(cc).selected = $$$YES
+						quit
+					}
+				}
+			}
+			elseif (class = "0"){
+				for cc=1:1:proxy.dancerClasses.Count(){
+					set proxy.dancerClasses.GetAt(cc).selected = $$$YES
+				}
+			}
+			else{
+				do proxy.info.errorMessages.Insert("Dancer class not found! Dancer class code = "_class)	
+			}		
+		}
+
+		set proxy.info.isExisted = ##class(Dance.Data.Competition).IdInternalIdxExists(object.IdInternal)
+		set proxy.info.isErrored = (proxy.info.errorMessages.Count() '= 0)
+	}
+	catch(ex){
+		set proxy = ##class(%ZEN.proxyObject).%New()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllForGridToDevice">
+<Description>
+Write objects to device, page by page for grid. </Description>
+<ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+	
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+    	
+    	set tournament = ##class(Dance.Data.Tournament).%OpenId(params.other.tournamentId)
+    	
+    	if (params.other.isFirstLoad = $$$YES){
+			set page = $G(^Settings("Dance", "Import", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
+			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Competition", page))
+    	}
+    	  	
+      	set whereCondition = "TournamentIdExternal = "_tournament.IdExternal
+      	
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data_Import.Competition", "Dance.Data.Import.Competition", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+/// Import all competitions from XML to table
+ClassMethod Import(srcOrigin As %String) As %Status
+{
 	set st = $$$OK
 	//set srcOrigin = "view-source:http://www.danceplat.ru/groupsfeed2.php?trn=10144&hash=e548c2f3e26bf3fe63143be536fd90db&all=1?trn=10144&hash=e548c2f3e26bf3fe63143be536fd90db&all=1"
 
@@ -58,15 +179,11 @@ Import all competitions from XML to table</Description>
 	}
 	
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="WriteAllToDevice">
-<Description>
-Write to device all imported competitions</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+/// Write to device all imported competitions
+ClassMethod WriteAllToDevice() As %Status
+{
 	set st = $$$OK
 	
 	try{
@@ -190,15 +307,11 @@ Write to device all imported competitions</Description>
 	}
 	
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="Update">
-<Description>
-Create or Update object</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+/// Create or Update object
+ClassMethod Update() As %Status
+{
 	set st = $$$OK
 	
 	try{
@@ -243,16 +356,11 @@ Create or Update object</Description>
 	}
 			
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="RemoveOrRestore">
-<Description>
-Change value of the property "IsRemoved"</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>id:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+/// Change value of the property "IsRemoved"
+ClassMethod RemoveOrRestore(id As %String) As %Status
+{
 	set st = $$$OK
 	
 	try{
@@ -265,15 +373,11 @@ Change value of the property "IsRemoved"</Description>
 	}
 			
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="CreateAll">
-<Description>
-Create all competitions in the tournament</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+/// Create all competitions in the tournament
+ClassMethod CreateAll() As %Status
+{
 	set st = $$$OK
 	
 	set responseData = ##class(%ZEN.proxyObject).%New()
@@ -345,7 +449,9 @@ Create all competitions in the tournament</Description>
 	}
 
 	quit st
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 </Class>
 </Export>

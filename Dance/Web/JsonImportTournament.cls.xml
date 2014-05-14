@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
-<Class name="Dance.Web.JsonImportTournament">
-<Super>Dance.Web.JsonBase</Super>
-<TimeCreated>63318,5054.903761</TimeCreated>
-</Class>
-</Export>

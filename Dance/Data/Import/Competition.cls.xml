@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.Import.Competition">
+<Super>%Persistent,%XML.Adaptor</Super>
+<TimeCreated>63319,82354.531382</TimeCreated>
+
+<Parameter name="JsonClass">
+<Default>Dance.Web.JsonCompetitionImport</Default>
+</Parameter>
+
+<Parameter name="CorrelateName">
+<Type>%String</Type>
+<Default>item</Default>
+</Parameter>
+
+<Property name="TournamentIdExternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="TournirId"/>
+</Property>
+
+<Property name="IdInternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="GroupId"/>
+</Property>
+
+<Property name="IdExternal">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="GroupIdExt"/>
+</Property>
+
+<Property name="Name">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="3000"/>
+<Parameter name="XMLNAME" value="name"/>
+</Property>
+
+<Property name="Rank">
+<Type>%String</Type>
+<InitialExpression>0</InitialExpression>
+<Parameter name="XMLNAME" value="rang"/>
+</Property>
+
+<Property name="DisciplineCode">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="prog"/>
+</Property>
+
+<Property name="AgeCategoryCode">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="cat"/>
+</Property>
+
+<Property name="DancerClassCodes">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="class"/>
+</Property>
+
+<Property name="StartDate">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="day"/>
+</Property>
+
+<Property name="Limit">
+<Type>%Integer</Type>
+<InitialExpression>0</InitialExpression>
+<Required>1</Required>
+<Parameter name="XMLNAME" value="limit"/>
+</Property>
+
+<Property name="IsSoloType">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+<Required>1</Required>
+<Parameter name="XMLNAME" value="solo"/>
+</Property>
+
+<Property name="MaxAge">
+<Type>%Integer</Type>
+<Parameter name="XMLNAME" value="ageto"/>
+</Property>
+
+<Property name="MinAge">
+<Type>%Integer</Type>
+<Parameter name="XMLNAME" value="agefrom"/>
+</Property>
+
+<Property name="Price">
+<Type>%Float</Type>
+<Parameter name="XMLNAME" value="price"/>
+</Property>
+
+<Index name="IdInternalIdx">
+<Properties>IdInternal</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="Save">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>newObj:Dance.Data.Import.Competition</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set newObj.Name = $REPLACE($REPLACE(newObj.Name, $c(10), ""), "&quot;", """")
+	
+	if (..IdInternalIdxExists(newObj.IdInternal) = 0){
+		quit newObj.%Save()
+	}
+
+	set oldObj = ..IdInternalIdxOpen(newObj.IdInternal)
+	set oldObj.IdExternal = newObj.IdExternal
+	set oldObj.Name = newObj.Name
+	set oldObj.AgeCategoryCode = newObj.AgeCategoryCode
+	set oldObj.DancerClassCodes = newObj.DancerClassCodes
+	set oldObj.StartDate = newObj.StartDate
+	set oldObj.DisciplineCode = newObj.DisciplineCode
+	set oldObj.IsSoloType = newObj.IsSoloType
+	set oldObj.Limit = newObj.Limit
+	set oldObj.MaxAge = newObj.MaxAge
+	set oldObj.MinAge = newObj.MinAge
+	set oldObj.Price = newObj.Price
+	set oldObj.Rank = newObj.Rank
+	set oldObj.TournamentIdExternal = newObj.TournamentIdExternal
+	
+	quit oldObj.%Save()
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.Import.CompetitionD</DataLocation>
+<DefaultData>CompetitionDefaultData</DefaultData>
+<IdLocation>^Dance.Data.Import.CompetitionD</IdLocation>
+<IndexLocation>^Dance.Data.Import.CompetitionI</IndexLocation>
+<StreamLocation>^Dance.Data.Import.CompetitionS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="CompetitionDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>TournamentIdExternal</Value>
+</Value>
+<Value name="3">
+<Value>IdInternal</Value>
+</Value>
+<Value name="4">
+<Value>IdExternal</Value>
+</Value>
+<Value name="5">
+<Value>Name</Value>
+</Value>
+<Value name="6">
+<Value>Rank</Value>
+</Value>
+<Value name="7">
+<Value>DisciplineCode</Value>
+</Value>
+<Value name="8">
+<Value>AgeCategoryCode</Value>
+</Value>
+<Value name="9">
+<Value>DancerClassCodes</Value>
+</Value>
+<Value name="10">
+<Value>Date</Value>
+</Value>
+<Value name="11">
+<Value>Limit</Value>
+</Value>
+<Value name="12">
+<Value>IsSoloType</Value>
+</Value>
+<Value name="13">
+<Value>MaxAge</Value>
+</Value>
+<Value name="14">
+<Value>MinAge</Value>
+</Value>
+<Value name="15">
+<Value>Price</Value>
+</Value>
+<Value name="16">
+<Value>StartDate</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

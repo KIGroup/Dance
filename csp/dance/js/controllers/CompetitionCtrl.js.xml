@@ -63,39 +63,6 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
             });
     };
 
-    /// Load Disciplines
-    $scope.page.loadDisciplines = function(){
-        DisciplineSrvc.getAll().then(
-            function(data){
-                $scope.page.disciplines = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
-
-    /// Load Age Categories
-    $scope.page.loadAgeCategories = function(){
-        AgeCategorySrvc.getAll().then(
-            function(data){
-                $scope.page.ageCategories = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
-   
-    /// Load types
-    $scope.page.loadTypes = function(){
-        CompetitionSrvc.getTypes().then(
-            function(data){
-                $scope.page.types = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
-
     /// Load Dancer classes
     $scope.page.loadDancerClasses = function(){
         DancerClassSrvc.getAll().then(
@@ -119,7 +86,7 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
             });
     };
 
-
+ 
     /// Save Competition or update data
     $scope.page.saveCompetition = function(){
 	    $scope.page.competition.startDate = UtilsSrvc.getValidDate($scope.page.competition.startDate);
@@ -153,9 +120,6 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
 
     
     $scope.page.init();
-    $scope.page.loadTypes();
-    $scope.page.loadDisciplines();
-    $scope.page.loadAgeCategories(); 
 });
 ]]></CSP>
 </Export>
