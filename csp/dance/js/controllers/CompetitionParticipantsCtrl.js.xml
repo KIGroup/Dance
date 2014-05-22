@@ -21,7 +21,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     	// Participant table
     	//  
         $scope.page.participantTable.columns = [
-                          {name: 'Man / Women', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true},
+                          {name: 'Man / woman', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true},
                           {name: 'Class'      , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Club / City', sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Trainers'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
@@ -31,14 +31,14 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
         $scope.page.participantTable.properties = [
         				          {name:'couple.fullName', calculate: function(item){ 
                                                       item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
-                                                      item.couple.fullName += '\n'+item.couple.women.lastName + ' ' + item.couple.women.firstName;
+                                                      item.couple.fullName += '\n'+item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
                                                     }},
                           {name:'couple.class', calculate: function(item){
                                                     if ($scope.page.competition.discipline.code == 'Ла'){
-                                                        item.couple.class = item.couple.man.laClass.name + '\n' + item.couple.women.laClass.name;
+                                                        item.couple.class = item.couple.man.laClass.name + '\n' + item.couple.woman.laClass.name;
                                                     }
                                                     else if($scope.page.competition.discipline.code == 'Ст'){
-                                                        item.couple.class = item.couple.man.stClass.name + '\n' + item.couple.women.stClass.name;
+                                                        item.couple.class = item.couple.man.stClass.name + '\n' + item.couple.woman.stClass.name;
                                                     }
                                                 }},
                           {name:'couple.otherInfo.clubAndCity', calculate: function(item){

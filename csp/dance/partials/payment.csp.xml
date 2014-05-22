@@ -12,7 +12,7 @@
 					<div class="row-fluid">
 						<div class="span6">
 							<p><span class="spnTitle" ng-bind="'Male partner'|localize"></span>: <span ng-bind="page.couple.man.lastName + ' ' + page.couple.man.firstName"></span></p>
-							<p><span class="spnTitle" ng-bind="'Female partner'|localize"></span>: <span ng-bind="page.couple.women.lastName + ' ' + page.couple.women.firstName"></span></p>
+							<p><span class="spnTitle" ng-bind="'Female partner'|localize"></span>: <span ng-bind="page.couple.woman.lastName + ' ' + page.couple.woman.firstName"></span></p>
 							<p><span class="spnTitle" ng-bind="'Country'|localize"></span>: <span ng-bind="page.couple.otherInfo.country.name"></span></p>
 							<p><span class="spnTitle" ng-bind="('City'|localize)"></span>: <span ng-bind="page.couple.otherInfo.city"></span></p>
 							<p><span class="spnTitle" ng-bind="('Club'|localize)"></span>: <span ng-bind="page.couple.otherInfo.club"></span></p>
@@ -60,10 +60,10 @@
 <div class="row-fluid">
 	<div class="span4">
 		<form method="POST" action="http://www.danceplat.ru/ftsrpay.php">
-			<input type="hidden" value="{{page.tournament.trnIdExt}}" name="trnID">
+			<input type="hidden" value="{{page.tournament.idInternal}}" name="trnID">
 			<input type="hidden" value="{{page.couple.man.numberUDSR}}" name="cplMalePartnerID">
-			<input type="hidden" value="{{page.couple.women.numberUDSR}}" name="cplFemalePartnerID">
-			<input type="hidden" ng-repeat="competition in page.competitionTable.selectedItems" value="{{competition.groupIdExt}}" name="nmnID[]">
+			<input type="hidden" value="{{page.couple.woman.numberUDSR}}" name="cplFemalePartnerID">
+			<input type="hidden" ng-repeat="competition in page.competitionTable.selectedItems" value="{{competition.competition.idExternal}}" name="nmnID[]">
 			<input class="btn btn-small btn-success" id="btnPay" type="submit" value="{{'Go to danceplat!'|localize}}" ng-disabled="page.competitionTable.selectedItems.length==0">
 		</form>
 	</div>

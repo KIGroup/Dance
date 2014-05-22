@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.ParticipantTemp">
+<Super>%Persistent</Super>
+<TimeCreated>63327,44384.257674</TimeCreated>
+
+<Property name="Created">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Competitions">
+<Type>Dance.Data.Competition</Type>
+<Collection>list</Collection>
+<Required>1</Required>
+</Property>
+
+<Property name="ManFirstName">
+<Description>
+Male First name</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="ManLastName">
+<Description>
+Last name</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="ManDOB">
+<Description>
+Date of birth</Description>
+<Type>%Date</Type>
+<Required>1</Required>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="WomanFirstName">
+<Description>
+First name</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="WomanLastName">
+<Description>
+Last name</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="WomanDOB">
+<Description>
+Date of birth</Description>
+<Type>%Date</Type>
+<Required>1</Required>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="Country">
+<Type>Dance.Data.Country</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="City">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="MainTrainer">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="OtherTrainers">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Index name="CoupleLastNameIdx">
+<Properties>ManLastName,WomanLastName</Properties>
+</Index>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%RegisteredObject,&status]]></FormalSpec>
+<ReturnType>Dance.Data.ParticipantTemp</ReturnType>
+<Implementation><![CDATA[
+	set obj = ..%New()
+	set obj.ManLastName = $ZCVT(data.man.lastName,"I","UTF8")
+	set obj.ManFirstName = $ZCVT(data.man.firstName,"I","UTF8")
+	set obj.ManDOB = $ZDH(data.man.dob, 3)
+	
+	set obj.WomanLastName = $ZCVT(data.woman.lastName,"I","UTF8")
+	set obj.WomanFirstName = $ZCVT(data.woman.firstName,"I","UTF8")
+	set obj.WomanDOB = $ZDH(data.woman.dob, 3)
+	
+	set obj.Country = ##class(Dance.Data.Country).%OpenId(data.otherInfo.country.id)
+	set obj.City = $ZCVT(data.otherInfo.cityName,"I","UTF8")
+	set obj.Club = $ZCVT(data.otherInfo.club,"I","UTF8")
+	
+	set obj.MainTrainer = $ZCVT(data.otherInfo.mainTrainer,"I","UTF8")
+	set obj.OtherTrainers = $ZCVT(data.otherInfo.otherTrainers,"I","UTF8")
+	
+	for i=1:1:data.competitions.Count(){
+		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+		do obj.Competitions.Insert(competition)
+	}
+	
+	set obj.Created = $ZDT($ZTS, 3)
+	set status = obj.%Save()
+
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.ParticipantTempD</DataLocation>
+<DefaultData>ParticipantTempDefaultData</DefaultData>
+<IdLocation>^Dance.Data.ParticipantTempD</IdLocation>
+<IndexLocation>^Dance.Data.ParticipantTempI</IndexLocation>
+<StreamLocation>^Dance.Data.ParticipantTempS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="ParticipantTempDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Created</Value>
+</Value>
+<Value name="3">
+<Value>ManFirstName</Value>
+</Value>
+<Value name="4">
+<Value>ManLastName</Value>
+</Value>
+<Value name="5">
+<Value>ManDOB</Value>
+</Value>
+<Value name="6">
+<Value>WomanFirstName</Value>
+</Value>
+<Value name="7">
+<Value>WomanLastName</Value>
+</Value>
+<Value name="8">
+<Value>WomanDOB</Value>
+</Value>
+<Value name="9">
+<Value>Country</Value>
+</Value>
+<Value name="10">
+<Value>City</Value>
+</Value>
+<Value name="11">
+<Value>Club</Value>
+</Value>
+<Value name="12">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="13">
+<Value>OtherTrainers</Value>
+</Value>
+<Value name="14">
+<Value>Competitions</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

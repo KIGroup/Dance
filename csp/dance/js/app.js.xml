@@ -60,6 +60,9 @@ mainModule.config(['$routeProvider', function($routeProvider) {
 	// Import: Competitions
 	$routeProvider.when('/import/competitions', {templateUrl: 'partials/importcompetitions.csp' , controller: 'ImportCompetitionsCtrl'});
 	
+	// Import: Persons
+	$routeProvider.when('/import/persons', {templateUrl: 'partials/importpersons.csp' , controller: 'ImportPersonsCtrl'});
+	
     $routeProvider.otherwise({redirectTo: '/tournaments'});
 }]);]]></CSP>
 </Export>

@@ -20,11 +20,12 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do ##class(Dance.Utils.Init.TournamentRank).Import()
 	do ##class(Dance.Utils.Init.Discipline).Import()
 	do ##class(Dance.Utils.Init.AgeCategory).Import()
+	//do ##class(Dance.Utils.Init.AgeCategoryWDSF).Import()
 	
  	//do ..Settings()
- 	w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\boys.csv", "M")
- 	w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\girls.csv", "F")
- 	w ##class(Dance.Utils.Init.Person).CreateCouples()
+ 	//w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\boys.csv", "M")
+ 	//w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\girls.csv", "F")
+ 	//w ##class(Dance.Utils.Init.Person).CreateCouples()
 ]]></Implementation>
 </Method>
 
@@ -36,6 +37,7 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do $CLASSMETHOD("Dance.Data.Import.Ticket", "%KillExtent")
 	
 	do $CLASSMETHOD("Dance.Data.AgeCategory", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.AgeCategoryWDSF", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Competition", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.CompetitionType", "%KillExtent")
 	

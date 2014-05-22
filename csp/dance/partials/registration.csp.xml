@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/partials/registration.csp" application="/csp/dance/" default="1"><![CDATA[
+<!--
+{{page.udsrCouple}}
+<br>
+<br>
+{{page.wdsfCouple}}
+<br>
+<br>
+{{page.newCouple}}
+-->
 <div class="row-fluid">
 	<div class="accordion">
 		<div class="accordion-group">
@@ -33,83 +42,168 @@
 <br>
 <div class="row-fluid">
 	 <tabset>
-		<!--=============================================== COUPLE ================================================================================ -->
-		<tab heading="{{'Registration of couple'|localize}}" disabled="page.oldCouple.tabDisabled">
-			<form name="form_oldCouple" style="margin: 0;" ng-hide="page.oldCouple.exists">
-				<div class="row-fluid" style="margin-bottom: 20px;">
-					<label ng-bind="'Man and women numbers'|localize" style="font-weight: bold;"></label>
+		<!--================================================================================================================================== -->
+		<!-- 													UDSR COUPLE 																   -->
+		<!--================================================================================================================================== -->
+		<tab heading="{{'Регистрация СТСР'|localize}}" active="page.udsrCouple.tabActive" disabled="page.udsrCouple.tabDisabled">
+			<!-- Search form -->
+			<form name="form_udsrCouple" style="margin: 0;" ng-hide="page.udsrCouple.exists">
+				<div class="row-fluid" style="margin-bottom: 15px;">
+					<label ng-bind="'Man and woman numbers'|localize" style="font-weight: bold;"></label>
 				</div>
 				<div class="row-fluid">
-					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Man number'|localize}}"   ng-model="page.oldCouple.male.min" required/>
-					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Women number'|localize}}" ng-model="page.oldCouple.female.min" required/>
-					<button class="btn btn-success btn-small" style="margin-bottom: 10px;" ng-disabled="!form_oldCouple.$valid" ng-click="page.oldCouple.search(page.oldCouple.male.min, page.oldCouple.female.min)"><i class="fa fa-search"></i>&nbsp;&nbsp;{{'Search'|localize}}</button>					
-					<button class="btn btn-small"             style="margin-bottom: 10px;" ng-disabled="!form_oldCouple.$dirty" ng-click="page.oldCouple.clear()"><i class="fa fa-eraser"></i>&nbsp;&nbsp;{{'Clear'|localize}}</button>					
-					
+					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Man number'|localize}}"   ng-model="page.udsrCouple.man.min"/>
+					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Woman number'|localize}}" ng-model="page.udsrCouple.woman.min"/>
+					<button class="btn btn-success btn-small" style="margin-bottom: 10px;" ng-disabled="!form_udsrCouple.$valid || page.wdsfCouple.processingImgVisible" ng-click="page.udsrCouple.search(page.udsrCouple.man.min, page.udsrCouple.woman.min)"><i class="fa fa-search"></i>&nbsp;&nbsp;{{'Search'|localize}}</button>					
+					<button class="btn btn-small"             style="margin-bottom: 10px;" ng-disabled="!form_udsrCouple.$dirty || page.wdsfCouple.processingImgVisible" ng-click="page.udsrCouple.clear()"><i class="fa fa-eraser"></i>&nbsp;&nbsp;{{'Clear'|localize}}</button>						
+					<img ng-show="page.udsrCouple.processingImgVisible" style="padding: 5px 5px 13px 5px;" src="img/loader2.gif"/>
+				</div>
+				<div class="row-fluid" style="padding-top: 12px; padding-bottom: 2px;">
+					<p><i ng-bind="'[ ! ] Регистрация осуществляется по номерам классификационных книжек и на основании информации Базы данных спортсменов СТСР на момент регистрации.'"></i></p>
+					<p><i ng-bind="'[ ! ] Для регистрации в \'соло\' заполните только одно поле.'"></i></p> 
 				</div>
 			</form>
-			<div class="row-fluid" ng-show="page.oldCouple.exists" >
+			<!-- Couple data -->
+			<div class="row-fluid" ng-show="page.udsrCouple.exists" >
+				<!-- Man -->
 				<div class="span4">
-					<div class="row-fluid" style="margin-bottom: 20px;">
-						<label ng-bind="'Male partner'|localize" style="font-weight: bold;"></label>
+					<div class="row-fluid" style="margin-bottom: 15px;">
+						<label ng-bind="'Партнер'|localize" style="font-weight: bold;" ng-hide="page.udsrCouple.man.id == page.udsrCouple.woman.id"></label>
+						<label ng-bind="'Participant'|localize" style="font-weight: bold;" ng-show="page.udsrCouple.man.id == page.udsrCouple.woman.id"></label>
 					</div>
-					<p ng-hide="page.oldCouple.male.numberUDSR==''">
-						<span class="spnTitle" ng-bind="'Number UDSR'|localize"  ></span>: <span ng-bind="page.oldCouple.male.numberUDSR"></span>
+					<p ng-hide="page.udsrCouple.man.numberUDSR==''">
+						<span class="spnTitle" ng-bind="'Number UDSR'|localize"></span>: <span ng-bind="page.udsrCouple.man.numberUDSR"></span>
 					</p>
-					<p ng-hide="page.oldCouple.male.numberWDSF==''">
-						<span class="spnTitle" ng-bind="'Number WDSF'|localize"  ></span>: <span ng-bind="page.oldCouple.male.numberWDSF"></span>
+					<p ng-hide="page.udsrCouple.man.numberWDSF==''">
+						<span class="spnTitle" ng-bind="'Number WDSF'|localize"></span>: <span ng-bind="page.udsrCouple.man.numberWDSF"></span>
 					</p>
-					<p><span class="spnTitle" ng-bind="'Full name'|localize"    ></span>: <span ng-bind="page.oldCouple.male.lastName + ' ' + page.oldCouple.male.firstName"></span></p>
-					<p><span class="spnTitle" ng-bind="'Date of birth'|localize"></span>: <span ng-bind="page.oldCouple.male.dob|convertCacheDate:('d MMMM y'|localize)"></span></p>
-					<p><span class="spnTitle" ng-bind="'Class'|localize"        ></span>: <span ng-show="page.oldCouple.male.stClass.name" ng-bind="'ST: ' + page.oldCouple.male.stClass.name"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span ng-show="page.oldCouple.male.laClass.name" ng-bind="'LA: ' + page.oldCouple.male.laClass.name"></span></p>
+					<p><span class="spnTitle" ng-bind="'Full name'|localize"></span>: <span ng-bind="page.udsrCouple.man.lastName + ' ' + page.udsrCouple.man.firstName"></span></p>
+					<p><span class="spnTitle" ng-bind="'Date of birth'|localize"></span>: <span ng-bind="page.udsrCouple.man.dob|convertCacheDate:('d MMMM y'|localize)"></span></p>
+					<p><span class="spnTitle" ng-bind="'Class'|localize"></span>: <span ng-show="page.udsrCouple.man.stClass.name" ng-bind="'ST: ' + page.udsrCouple.man.stClass.name"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span ng-show="page.udsrCouple.man.laClass.name" ng-bind="'LA: ' + page.udsrCouple.man.laClass.name"></span></p>
 				
-					<button type="button" ng-show="page.oldCouple.exists" style="margin-top: 25px;" class="btn btn-small btn-primary" ng-click="page.oldCouple.clear()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Back'|localize}}</button>
-				    <button type="button" ng-show="page.oldCouple.exists" style="margin-top: 25px;" class="btn btn-success btn-small" ng-click="page.oldCouple.register()" ng-disabled="page.competitionTable.selectedItems.length==0"><i class="fa fa-check"></i>&nbsp;&nbsp;{{'Registration'|localize}}</button>
+					<button type="button" ng-show="page.udsrCouple.exists" style="margin-top: 25px;" class="btn btn-small btn-primary" ng-click="page.udsrCouple.clear()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Back'|localize}}</button>
+				    <button type="button" ng-show="page.udsrCouple.exists" style="margin-top: 25px;" class="btn btn-success btn-small" ng-click="page.udsrCouple.register()" ng-disabled="page.competitionTable.selectedItems.length==0"><i class="fa fa-check"></i>&nbsp;&nbsp;{{'Registration'|localize}}</button>
 				</div>
-				<div class="span4">
-					<div class="row-fluid" style="margin-bottom: 20px;">
-						<label ng-bind="'Female partner'|localize" style="font-weight: bold;"></label>
+				<!-- Woman -->
+				<div class="span4" ng-hide="page.udsrCouple.man.id == page.udsrCouple.woman.id">
+					<div class="row-fluid" style="margin-bottom: 15px;">
+						<label ng-bind="'Партнерша'|localize" style="font-weight: bold;"></label>
 					</div>
-					<p ng-hide="page.oldCouple.female.numberUDSR==''">
-						<span class="spnTitle" ng-bind="'Number UDSR'|localize"  ></span>: <span ng-bind="page.oldCouple.female.numberUDSR"></span>
+					<p ng-hide="page.udsrCouple.woman.numberUDSR==''">
+						<span class="spnTitle" ng-bind="'Number UDSR'|localize"  ></span>: <span ng-bind="page.udsrCouple.woman.numberUDSR"></span>
 					</p>
-					<p ng-hide="page.oldCouple.female.numberWDSF==''">
-						<span class="spnTitle" ng-bind="'Number WDSF'|localize"  ></span>: <span ng-bind="page.oldCouple.female.numberWDSF"></span>
+					<p ng-hide="page.udsrCouple.woman.numberWDSF==''">
+						<span class="spnTitle" ng-bind="'Number WDSF'|localize"  ></span>: <span ng-bind="page.udsrCouple.woman.numberWDSF"></span>
 					</p>
-					<p><span class="spnTitle" ng-bind="'Full name'|localize"    ></span>: <span ng-bind="page.oldCouple.female.lastName + ' ' + page.oldCouple.female.firstName"></span></p>
-					<p><span class="spnTitle" ng-bind="'Date of birth'|localize"></span>: <span ng-bind="page.oldCouple.female.dob|convertCacheDate:('d MMMM y'|localize)"></span></p>
-					<p><span class="spnTitle" ng-bind="'Class'|localize"        ></span>: <span ng-show="page.oldCouple.female.stClass.name" ng-bind="'ST: ' + page.oldCouple.female.stClass.name"></span>&nbsp;&nbsp;&nbsp;<span ng-show="page.oldCouple.female.laClass.name" ng-bind="'LA: ' + page.oldCouple.female.laClass.name"></span></p>
+					<p><span class="spnTitle" ng-bind="'Full name'|localize"    ></span>: <span ng-bind="page.udsrCouple.woman.lastName + ' ' + page.udsrCouple.woman.firstName"></span></p>
+					<p><span class="spnTitle" ng-bind="'Date of birth'|localize"></span>: <span ng-bind="page.udsrCouple.woman.dob|convertCacheDate:('d MMMM y'|localize)"></span></p>
+					<p><span class="spnTitle" ng-bind="'Class'|localize"        ></span>: <span ng-show="page.udsrCouple.woman.stClass.name" ng-bind="'ST: ' + page.udsrCouple.woman.stClass.name"></span>&nbsp;&nbsp;&nbsp;<span ng-show="page.udsrCouple.woman.laClass.name" ng-bind="'LA: ' + page.udsrCouple.woman.laClass.name"></span></p>
 				</div>
+				<!-- Other info -->
 				<div class="span4">
-					<div class="row-fluid" style="margin-bottom: 20px;">
+					<div class="row-fluid" style="margin-bottom: 15px;">
 						<label ng-bind="'Other information'|localize" style="font-weight: bold;"></label>
 					</div>
-					<p><span class="spnTitle" ng-bind="'Country'|localize"></span>: <span ng-bind="page.oldCouple.otherInfo.country.name"></span></p>
-					<p><span class="spnTitle" ng-bind="'City'|localize"   ></span>: <span ng-bind="page.oldCouple.otherInfo.city"></span></p>
-					<p><span class="spnTitle" ng-bind="'Club'|localize"   ></span>: <span ng-bind="page.oldCouple.otherInfo.club"></span></p>
-					<p><span class="spnTitle" ng-bind="'Main trainer'|localize"  ></span>: <span ng-bind="page.oldCouple.otherInfo.mainTrainer"></span></p>
-					<p><span class="spnTitle" ng-bind="'Other trainers'|localize"></span>: <span ng-bind="page.oldCouple.otherInfo.otherTrainers"></span></p>
+					<p><span class="spnTitle" ng-bind="'Country'|localize"></span>: <span ng-bind="page.udsrCouple.otherInfo.country.name"></span></p>
+					<p><span class="spnTitle" ng-bind="'City'|localize"   ></span>: <span ng-bind="page.udsrCouple.otherInfo.city"></span></p>
+					<p><span class="spnTitle" ng-bind="'Club'|localize"   ></span>: <span ng-bind="page.udsrCouple.otherInfo.club"></span></p>
+					<p><span class="spnTitle" ng-bind="'Main trainer'|localize"  ></span>: <span ng-bind="page.udsrCouple.otherInfo.mainTrainer"></span></p>
+					<p><span class="spnTitle" ng-bind="'Other trainers'|localize"></span>: <span ng-bind="page.udsrCouple.otherInfo.otherTrainers"></span></p>
+				</div>
+				<div class="span4" ng-show="page.udsrCouple.man.id == page.udsrCouple.woman.id">
 				</div>
 			</div>
-			<stcalert data="page.oldCouple.alert" style="margin-top: 25px;"/>
+			<div class="row-fluid" ng-show="page.udsrCouple.exists" style="padding-top: 20px; padding-bottom: 0px;">
+				<p><i ng-bind="'[ ! ] Щелчком мыши выберите группы, в которые необходимо зарегистрировать пару.'"></i></p>
+				<p><i ng-bind="'[ ! ] В списке не отображены группы, в которых данная пара уже зарегистрирована.'"></i></p> 
+			</div>
+			<stcalert data="page.udsrCouple.alert" style="margin-top: 25px;"/>
 		</tab>
-		<!--=============================================== FOREIGN COUPLE ======================================================================= -->
-		<tab heading="{{'Registration of foreign couple'|localize}}" disabled="page.newCouple.tabDisabled">
-			<form name="form_newCouple" style="margin: 0;">
+		<!--================================================================================================================================== -->
+		<!-- 													WDSF COUPLE     															   -->
+		<!--================================================================================================================================== -->
+		<tab heading="{{'Регистрация WDSF'|localize}}" active="page.wdsfCouple.tabActive" disabled="page.wdsfCouple.tabDisabled">
+			<!-- Search form -->
+			<form name="form_wdsfCouple" style="margin: 0;" ng-hide="page.wdsfCouple.exists">
+				<div class="row-fluid" style="margin-bottom: 15px;">
+					<label ng-bind="'Man and woman numbers'|localize" style="font-weight: bold;"></label>
+				</div>
+				<div class="row-fluid">
+					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Man number'|localize}}"   ng-model="page.wdsfCouple.man.min"/>
+					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Woman number'|localize}}" ng-model="page.wdsfCouple.woman.min"/>
+					<button class="btn btn-success btn-small" style="margin-bottom: 10px;" ng-disabled="!form_wdsfCouple.$valid || page.wdsfCouple.processingImgVisible" ng-click="page.wdsfCouple.search(page.wdsfCouple.man.min, page.wdsfCouple.woman.min)"><i class="fa fa-search"></i>&nbsp;&nbsp;{{'Search'|localize}}</button>					
+					<button class="btn btn-small"             style="margin-bottom: 10px;" ng-disabled="!form_wdsfCouple.$dirty || page.wdsfCouple.processingImgVisible" ng-click="page.wdsfCouple.clear()"><i class="fa fa-eraser"></i>&nbsp;&nbsp;{{'Clear'|localize}}</button>
+					<img ng-show="page.wdsfCouple.processingImgVisible" style="padding: 5px 5px 13px 5px;" src="img/loader2.gif"/>
+				</div>
+				<div class="row-fluid" style="padding-top: 12px; padding-bottom: 2px;">
+					<p><i ng-bind="'[ ! ] Регистрация осуществляется по WDSF номерам. Поиск участников идет по базе данных World DanceSport Federation.'"></i></p>
+					<p><i ng-bind="'[ ! ] Для регистрации в \'соло\' заполните только одно поле.'"></i></p> 
+				</div>
+			</form>
+			<!-- Couple data -->
+			<div class="row-fluid" ng-show="page.wdsfCouple.exists" >
+				<!-- Man -->
 				<div class="span4">
-			    	<div class="row-fluid" style="margin-bottom: 10px;">
-			    		<span style="font-weight: bold;" ng-bind="'Male partner'|localize"></span>
+					<div class="row-fluid" style="margin-bottom: 15px;">
+						<label ng-bind="'Партнер'|localize" style="font-weight: bold;" ng-hide="page.wdsfCouple.man.id == page.wdsfCouple.woman.id"></label>
+						<label ng-bind="'Participant'|localize" style="font-weight: bold;" ng-show="page.wdsfCouple.man.id == page.wdsfCouple.woman.id"></label>
+					</div>
+					<p ng-hide="page.wdsfCouple.man.numberWDSF==''">
+						<span class="spnTitle" ng-bind="'Number WDSF'|localize"  ></span>: <span ng-bind="page.wdsfCouple.man.numberWDSF"></span>
+					</p>
+					<p><span class="spnTitle" ng-bind="'Full name'|localize"    ></span>: <span ng-bind="page.wdsfCouple.man.lastName + ' ' + page.wdsfCouple.man.firstName"></span></p>
+					
+					<button type="button" ng-show="page.wdsfCouple.exists" style="margin-top: 25px;" class="btn btn-small btn-primary" ng-click="page.wdsfCouple.clear()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Back'|localize}}</button>
+				    <button type="button" ng-show="page.wdsfCouple.exists" style="margin-top: 25px;" class="btn btn-success btn-small" ng-click="page.wdsfCouple.register()" ng-disabled="page.competitionTable.selectedItems.length==0"><i class="fa fa-check"></i>&nbsp;&nbsp;{{'Registration'|localize}}</button>
+				</div>
+				<!-- Woman -->
+				<div class="span4" ng-hide="page.wdsfCouple.man.id == page.wdsfCouple.woman.id">
+					<div class="row-fluid" style="margin-bottom: 15px;">
+						<label ng-bind="'Партнерша'|localize" style="font-weight: bold;"></label>
+					</div>
+					<p ng-hide="page.wdsfCouple.woman.numberWDSF==''">
+						<span class="spnTitle" ng-bind="'Number WDSF'|localize"  ></span>: <span ng-bind="page.wdsfCouple.woman.numberWDSF"></span>
+					</p>
+					<p><span class="spnTitle" ng-bind="'Full name'|localize"    ></span>: <span ng-bind="page.wdsfCouple.woman.lastName + ' ' + page.wdsfCouple.woman.firstName"></span></p>
+				</div>
+				<!-- Other info -->
+				<div class="span4">
+					<div class="row-fluid" style="margin-bottom: 15px;">
+						<label ng-bind="'Other information'|localize" style="font-weight: bold;"></label>
+					</div>
+					<p><span class="spnTitle" ng-bind="'Country'|localize"></span>: <span ng-bind="page.wdsfCouple.man.otherInfo.country.name"></span></p>
+					<p><span class="spnTitle" ng-bind="('Age category'|localize) + ' WDSF'"></span>: <span ng-bind="page.wdsfCouple.man.ageCategoryWDSFName + ' (' + page.wdsfCouple.man.minAge + ' - ' + page.wdsfCouple.man.maxAge + ')'"></span></p>
+				</div>
+				<div class="span4" ng-show="page.wdsfCouple.man.id == page.wdsfCouple.woman.id">
+				</div>
+			</div>
+			<div class="row-fluid" ng-show="page.wdsfCouple.exists" style="padding-top: 20px; padding-bottom: 0px;">
+				<p><i ng-bind="'[ ! ] Щелчком мыши выберите группы, в которые необходимо зарегистрировать пару.'"></i></p>
+				<p><i ng-bind="'[ ! ] В списке не отображены группы, в которых данная пара уже зарегистрирована.'"></i></p> 
+			</div>
+			<stcalert data="page.wdsfCouple.alert" style="margin-top: 25px;"/>
+		</tab>
+		<!--================================================================================================================================== -->
+		<!-- 													NEW COUPLE 																	   -->
+		<!--================================================================================================================================== -->
+		<tab heading="{{'Регистрация других участников'|localize}}" active="page.newCouple.tabActive" disabled="page.newCouple.tabDisabled">
+			<form name="form_newCouple" style="margin: 0;">
+				<!-- Man -->
+				<div class="span4">
+			    	<div class="row-fluid" style="margin-bottom: 15px;">
+			    		<span style="font-weight: bold;" ng-bind="'Партнер'|localize"></span>
 			    	</div>
 					<div class="row-fluid">
 						<div class="control-group">
 				            <label class="control-label" ng-bind="('Last name'|localize) + '*'"></label>
 				            <div class="controls">
-				            	<input class="span10" type="text" ng-model="page.newCouple.male.lastName" ng-disabled="page.newCouple.fieldsDisabled" required></input>
+				            	<input class="span10" type="text" ng-model="page.newCouple.man.lastName" ng-disabled="page.newCouple.fieldsDisabled" required></input>
 				            </div>
 				        </div>
 				        <div class="control-group">
 				            <label class="control-label" ng-bind="('First name'|localize) + '*'"></label>
 				            <div class="controls">
-				            	<input class="span10" type="text" ng-model="page.newCouple.male.firstName" ng-disabled="page.newCouple.fieldsDisabled" required></input>
+				            	<input class="span10" type="text" ng-model="page.newCouple.man.firstName" ng-disabled="page.newCouple.fieldsDisabled" required></input>
 				            </div>
 				        </div>
 				        <div class="row-fluid">
@@ -117,17 +211,11 @@
 								<div class="control-group">
 						        	<label class="control-label" ng-bind="('Date of birth'|localize) + '*'"></label>
 						        	<div class="controls">
-						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.newCouple.male.dob" show-weeks="false" ng-required="true" ng-disabled="page.newCouple.fieldsDisabled"/>
+						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.newCouple.man.dob" show-weeks="false" ng-required="true" ng-disabled="page.newCouple.fieldsDisabled"/>
 						        	</div>
 						    	</div>
 						    </div>
 						    <div class="span5">
-								<div class="control-group">
-						        	<label class="control-label" ng-bind="('MIN'|localize) + '*'"></label>
-						        	<div class="controls">
-						    			<input class="span12" type="text" ng-model="page.newCouple.male.min" required ng-disabled="page.newCouple.fieldsDisabled"></input>
-				                	</div>
-						    	</div>
 						    </div>
 						    <div class="span2">
 						    </div>
@@ -141,21 +229,22 @@
 				        </div>
 			    	</div>
 				</div>
+				<!-- Woman -->
 				<div class="span4">
-			    	<div class="row-fluid" style="margin-bottom: 10px;">
-			    		<span style="font-weight: bold;" ng-bind="'Female partner'|localize"></span>
+			    	<div class="row-fluid" style="margin-bottom: 15px;">
+			    		<span style="font-weight: bold;" ng-bind="'Партнерша'|localize"></span>
 			    	</div>
 					<div class="row-fluid">
 						<div class="control-group">
 				            <label class="control-label" ng-bind="('Last name'|localize) + '*'"></label>
 				            <div class="controls">
-				            	<input class="span10" type="text" ng-model="page.newCouple.female.lastName" required ng-disabled="page.newCouple.fieldsDisabled"></input>
+				            	<input class="span10" type="text" ng-model="page.newCouple.woman.lastName" required ng-disabled="page.newCouple.fieldsDisabled"></input>
 				            </div>
 				        </div>
 				        <div class="control-group">
 				            <label class="control-label" ng-bind="('First name'|localize) + '*'"></label>
 				            <div class="controls">
-				            	<input class="span10" type="text" ng-model="page.newCouple.female.firstName" required ng-disabled="page.newCouple.fieldsDisabled"></input>
+				            	<input class="span10" type="text" ng-model="page.newCouple.woman.firstName" required ng-disabled="page.newCouple.fieldsDisabled"></input>
 				            </div>
 				        </div>
 				        <div class="row-fluid">
@@ -163,17 +252,11 @@
 								<div class="control-group">
 						        	<label class="control-label" ng-bind="('Date of birth'|localize) + '*'"></label>
 						        	<div class="controls">
-						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.newCouple.female.dob" show-weeks="false" ng-required="true" ng-disabled="page.newCouple.fieldsDisabled"/>
+						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.newCouple.woman.dob" show-weeks="false" ng-required="true" ng-disabled="page.newCouple.fieldsDisabled"/>
 						        	</div>
 						    	</div>
 						    </div>
 						    <div class="span5">
-								<div class="control-group">
-						        	<label class="control-label" ng-bind="('MIN'|localize) + '*'"></label>
-						        	<div class="controls">
-						    			<input class="span12" type="text" ng-model="page.newCouple.female.min" required ng-disabled="page.newCouple.fieldsDisabled"></input>
-				                	</div>
-						    	</div>
 						    </div>
 						    <div class="span2">
 						    </div>
@@ -182,8 +265,9 @@
 				    	<label style="margin-top: 27px; color: red;" ng-show="page.competitionTable.avialableMode && page.competitionTable.selectedItems.length==0" ng-bind="'select competitions'|localize"></label>
 			    	</div>
 				</div>
+				<!-- Other info -->
 				<div class="span4">
-			    	<div class="row-fluid" style="margin-bottom: 10px;">
+			    	<div class="row-fluid" style="margin-bottom: 15px;">
 			    		<span style="font-weight: bold;" ng-bind="'Other information'|localize"></span>
 			    	</div>
 					<div class="row-fluid">
@@ -192,7 +276,7 @@
 								<div class="control-group">
 						            <label class="control-label" ng-bind="('Country (WDSF)'|localize) + '*'"></label>
 						            <div class="controls">
-										<select class="span12 pull-right" ng-model="page.newCouple.countryId" ng-options="country.id as country.name for country in page.countries" ng-disabled="page.newCouple.fieldsDisabled">
+										<select class="span12 pull-right" ng-model="page.newCouple.otherInfo.country.id" ng-options="country.id as country.name for country in page.countries" ng-disabled="page.newCouple.fieldsDisabled">
 			                			</select>           
 			             			</div>
 						        </div>
@@ -201,7 +285,7 @@
 						        <div class="control-group">
 						        	<label class="control-label" ng-bind="('City'|localize) + '*'"></label>
 						        	<div class="controls">
-						    			<input class="span12" type="text" ng-model="page.newCouple.city" required ng-disabled="page.newCouple.fieldsDisabled"></input>
+						    			<input class="span12" type="text" ng-model="page.newCouple.otherInfo.cityName" required ng-disabled="page.newCouple.fieldsDisabled"></input>
 				                	</div>
 						    	</div>
 						    </div>
@@ -209,29 +293,33 @@
 		        		<div class="control-group">
 				        	<label class="control-label" ng-bind="('Club'|localize) + '*'"></label>
 				        	<div class="controls">
-				    			<input class="span12" type="text" ng-model="page.newCouple.club" required ng-disabled="page.newCouple.fieldsDisabled"></input>
+				    			<input class="span12" type="text" ng-model="page.newCouple.otherInfo.club" required ng-disabled="page.newCouple.fieldsDisabled"></input>
 		                	</div>
 				    	</div>
 				    	<div class="control-group">
 				        	<label class="control-label" ng-bind="('Trainer #1, full name'|localize) + '*'"></label>
 				        	<div class="controls">
-				    			<input class="span12" type="text" ng-model="page.newCouple.trainerFirst" required ng-disabled="page.newCouple.fieldsDisabled"></input>
+				    			<input class="span12" type="text" ng-model="page.newCouple.otherInfo.mainTrainer" required ng-disabled="page.newCouple.fieldsDisabled"></input>
 		                	</div>
 				    	</div>
 				    	<div class="control-group">
 				        	<label class="control-label" ng-bind="('Trainer #2, full name'|localize) + ''"></label>
 				        	<div class="controls">
-				    			<input class="span12" type="text" ng-model="page.oldCouple.trainerSecond" ng-disabled="page.newCouple.fieldsDisabled"></input>
+				    			<input class="span12" type="text" ng-model="page.newCouple.otherInfo.otherTrainers" ng-disabled="page.newCouple.fieldsDisabled"></input>
 		                	</div>
 				    	</div>
 				    </div>
 				</div>
 			</form>
+			<div class="row-fluid" ng-show="page.newCouple.btnBackVisible" style="padding-top: 20px; padding-bottom: 0px;">
+				<p><i ng-bind="'[ ! ] Щелчком мыши выберите группы, в которые необходимо зарегистрировать пару.'"></i></p>
+				<p><i ng-bind="'[ ! ] В списке не отображены группы, в которых данная пара уже зарегистрирована.'"></i></p> 
+			</div>
 		</tab>
 	</tabset>
 </div>
-<br>
-<div class="row-fluid">
+<!-- Competitions -->
+<div class="row-fluid" style="padding-top: 10px;">
 	<stcgrid
 		grid="pageStore.registration.grid"
 	    table-class="table table-bordered table-hover"
@@ -263,6 +351,35 @@
 	/>
 </div>
 
-
+<div class="row-fluid">
+	<div class="span6">
+		<pre ng-hide="page.udsrCouple.exists">
+				СТСР
+				man		woman
+				2864	75367 <a href="" ng-click="page.udsrCouple.man.min='2864'; page.udsrCouple.woman.min='75367';">select</a>
+				2915	2890 <a href="" ng-click="page.udsrCouple.man.min='2915'; page.udsrCouple.woman.min='2890';">select</a>
+				2934	50810 <a href="" ng-click="page.udsrCouple.man.min='2934'; page.udsrCouple.woman.min='50810';">select</a>
+				2938	58251 <a href="" ng-click="page.udsrCouple.man.min='2938'; page.udsrCouple.woman.min='58251';">select</a>
+				2974	15153 <a href="" ng-click="page.udsrCouple.man.min='2974'; page.udsrCouple.woman.min='15153';">select</a>
+				2977	2962 <a href="" ng-click="page.udsrCouple.man.min='2977'; page.udsrCouple.woman.min='2962';">select</a>
+				2978	44604 <a href="" ng-click="page.udsrCouple.man.min='2978'; page.udsrCouple.woman.min='44604';">select</a>
+				3071	3092 <a href="" ng-click="page.udsrCouple.man.min='3071'; page.udsrCouple.woman.min='3092';">select</a>
+				3072	3104 <a href="" ng-click="page.udsrCouple.man.min='3072'; page.udsrCouple.woman.min='3104';">select</a>
+		</pre>
+	</div>
+	<div class="span6">
+		<pre ng-hide="page.wdsfCouple.exists">
+				WDSF
+				man		woman
+				10085531 10072137 <a href="" ng-click="page.wdsfCouple.man.min='10085531'; page.wdsfCouple.woman.min='10072137';">select</a>
+				10073546 10073691 <a href="" ng-click="page.wdsfCouple.man.min='10073546'; page.wdsfCouple.woman.min='10073691';">select</a>
+				10064937 10064930 <a href="" ng-click="page.wdsfCouple.man.min='10064937'; page.wdsfCouple.woman.min='10064930';">select</a>
+				10086246 10086247 <a href="" ng-click="page.wdsfCouple.man.min='10086246'; page.wdsfCouple.woman.min='10086247';">select</a>
+				10076712 10076219 <a href="" ng-click="page.wdsfCouple.man.min='10076712'; page.wdsfCouple.woman.min='10076219';">select</a>
+				10069138 10069139 <a href="" ng-click="page.wdsfCouple.man.min='10069138'; page.wdsfCouple.woman.min='10069139';">select</a>
+				10050619 10050620 <a href="" ng-click="page.wdsfCouple.man.min='10050619'; page.wdsfCouple.woman.min='10050620';">select</a>
+		</pre>
+	</div>
+</div>
 ]]></CSP>
 </Export>

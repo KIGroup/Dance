@@ -103,6 +103,54 @@ Competition in the tournament, has participants</Description>
 <Unique>1</Unique>
 </Index>
 
+<Method name="Save">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
+<ReturnType>Competition</ReturnType>
+<Implementation><![CDATA[
+ 		
+    if (data.id = ""){
+    	set tournament = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
+    	set competition = ##class(Dance.Data.Competition).%New()
+      	set competition.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name,"I", "UTF8"))
+      	set competition.Tournament = tournament
+    }
+    else{
+	    set competition = ##class(Dance.Data.Competition).%OpenId(data.id)
+      	set competition.Name.Value = $ZCVT(data.name,"I", "UTF8")
+    }
+      	
+    set competition.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
+    set competition.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
+    set competition.Type = ##class(Dance.Data.CompetitionType).%OpenId(data.type.id)
+      	
+    set competition.StartDate = $ZDATEH(data.startDate, 15)
+    set competition.StartTime = ##class(%Library.Time).DisplayToLogical(data.startTime)
+      	
+    set competition.Price = data.price
+    set competition.Limit = data.limit
+    set competition.IsInternational = (data.isInternational = $$$YES)
+      
+    set competition.IdInternal = data.idInternal
+    set competition.IdExternal = data.idExternal
+      	
+	// DancerClasses array
+	do competition.DancerClasses.Clear()
+    for i=1:1:data.dancerClasses.Count(){
+	    continue:(data.dancerClasses.GetAt(i).selected '= $$$YES)
+	      	
+	    set dancerClasses = ##class(Dance.Data.DancerClass).%OpenId(data.dancerClasses.GetAt(i).id,,.st)
+	    if $$$ISERR(st) return ##class(Dance.Utils.Msg).GetErrorStatus("DancerClassNotFound"," | "_st)
+	    
+	    do competition.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
+	}
+      	
+    set st = competition.%Save()
+    
+    quit st
+]]></Implementation>
+</Method>
+
 <Method name="GetParticipantsCount">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>competitionId:%String</FormalSpec>

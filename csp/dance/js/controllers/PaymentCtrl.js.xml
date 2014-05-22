@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddcdddd
+//ddcddddddd
 
 /*===========================================================================================
 Payment
@@ -22,27 +22,43 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-                          {name: 'Date'              , sqlName: 'StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date'},
-                          {name: 'Time'              , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Discipline'        , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Age category'      , sqlName: 'AgeCategory'             , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Class'             , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Price'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right'}}];
+                          {name: 'Date'              , sqlName: 'Competition->StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date'},
+                          {name: 'Time'              , sqlName: 'Competition->StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Discipline'        , sqlName: 'Competition->Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Age category'      , sqlName: 'Competition->AgeCategory'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Class'             , sqlName: ''                                     , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Type'              , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Price'             , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right'}},
+                          {name: 'Status'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false}];
         
         $scope.page.competitionTable.properties = [
-        				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
-                          {name:'startTime'},
-                          {name:'discipline.name'},
-                          {name:'ageCategory.name'},
-                          {name:'dancerClassesString', calculate: function(item){
-                                                            item.dancerClassesString = '';
-                                                            for(var i=0; i < item.dancerClasses.length; i++){
-                                                                item.dancerClassesString = item.dancerClassesString + ', ' + item.dancerClasses[i].name;
-                                                            }
+        				  {name:'competition.startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
+                          {name:'competition.startTime'},
+                          {name:'competition.discipline.name'},
+                          {name:'competition.ageCategory.name'},
+                          {name:'competition.dancerClassesString', calculate: function(item){
+                                                                        item.competition.dancerClassesString = '';
+                                                                        for(var i=0; i < item.competition.dancerClasses.length; i++){
+                                                                            item.competition.dancerClassesString = item.competition.dancerClassesString + ', ' + item.competition.dancerClasses[i].name;
+                                                                        }
 
-                                                            item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
-                                                        }},
-                          {name:'price', cellStyle: {textAlign: 'right'}}];  
+                                                                        item.competition.dancerClassesString = item.competition.dancerClassesString.substring(2, item.competition.dancerClassesString.length);
+                                                                    }},
+                          {name:'competition.type.name'},
+                          {name:'competition.price', cellStyle: {textAlign: 'right'}},
+                          {name:'paymentStatusString', calculate: function(item){
+                                                            switch(item.paymentStatus){
+                                                                case 'none':
+                                                                    item.paymentStatusString = $filter('localize')('Not paid');
+                                                                    break;
+                                                                case 'pay':
+                                                                    item.paymentStatusString = $filter('localize')('Paid');
+                                                                    break;
+                                                                case 'cancel':
+                                                                    item.paymentStatusString = $filter('localize')('Canceled');
+                                                                    break;
+                                                            }
+                                                      }}];  
 
         $scope.page.competitionTable.pageSize = 300;
         $scope.page.competitionTable.pageCurr = 1;

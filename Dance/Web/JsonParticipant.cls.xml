@@ -16,11 +16,8 @@ Convert "Participant" object to %ZEN.proxyObject (for JSON)</Description>
 	try{
 		set proxy.id = object.%Id()
 		set proxy.couple = ##class(JsonCouple).ConvertToProxyObject(object.Couple)
-		set proxy.isPaid = object.IsPaid
-		
-		if (isFullInfo = 1){ 
-			set proxy.competition = ##class(JsonCompetition).ConvertToProxyObject(object.Competition)
-		}
+		set proxy.paymentStatus = object.PaymentStatus
+		set proxy.competition = ##class(JsonCompetition).ConvertToProxyObject(object.Competition)
 	}
 	catch(ex){
 		set proxy = ##class(%ZEN.proxyObject).%New()
@@ -54,9 +51,9 @@ Convert "Participant" object to %ZEN.proxyObject (for JSON)</Description>
  			set prt.Man = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
  		}
  		
- 		set prt.Women = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
- 		if ($ISOBJECT(prt.Women) = 0){
- 			set prt.Women = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
+ 		set prt.Woman = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
+ 		if ($ISOBJECT(prt.Woman) = 0){
+ 			set prt.Woman = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
  		}
       	
       	

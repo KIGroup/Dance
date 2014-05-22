@@ -29,9 +29,10 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
                          import : {id: 'import', url: '#/import/tournaments', name: $filter('localize')('Import'),
                                       childrens: {tournaments : {id: 'import-tournaments' , url: '#/import/tournaments' , parentId: 'import', name: $filter('localize')('Tournaments')},
                                                   competitions: {id: 'import-competitions', url: '#/import/competitions', parentId: 'import', name: $filter('localize')('Competitions')},
-                                                  tickets     : {id: 'import-tickets'     , url: '#/import/tickets'     , parentId: 'import', name: $filter('localize')('Tickets')}}}
+                                                  tickets     : {id: 'import-tickets'     , url: '#/import/tickets'     , parentId: 'import', name: $filter('localize')('Tickets')},
+                                                  persons     : {id: 'import-persons'     , url: '#/import/persons'     , parentId: 'import', name: $filter('localize')('Persons')}}}
                         }; 
- 
+  
     $scope.menu.selectMenu = function(menuItem){
         $scope.menu.pages.selected = menuItem;
     };

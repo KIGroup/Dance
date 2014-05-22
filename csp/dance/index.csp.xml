@@ -97,7 +97,8 @@
                     <ul class="dropdown-menu">
                       <li ng-class="{aSelected: menu.pages.import.childrens.tournaments.id==menu.pages.selected.id}" ><a ng-href="{{menu.pages.import.childrens.tournaments.url}}"  ng-bind="menu.pages.import.childrens.tournaments.name"  ng-click="menu.selectMenu(menu.pages.import.childrens.tournaments)"></a></li>
                       <li ng-class="{aSelected: menu.pages.import.childrens.competitions.id==menu.pages.selected.id}"><a ng-href="{{menu.pages.import.childrens.competitions.url}}" ng-bind="menu.pages.import.childrens.competitions.name" ng-click="menu.selectMenu(menu.pages.import.childrens.competitions)"></a></li>
-                      <li ng-class="{aSelected: menu.pages.import.childrens.tickets.id==menu.pages.selected.id}"     ><a ng-href="{{menu.pages.import.childrens.tickets.url}}"      ng-bind="menu.pages.import.childrens.tickets.name"      ng-click="menu.selectMenu(menu.pages.import.childrens.tickets)"></a></li>
+                      <li ng-show="false" ng-class="{aSelected: menu.pages.import.childrens.tickets.id==menu.pages.selected.id}"     ><a ng-href="{{menu.pages.import.childrens.tickets.url}}"      ng-bind="menu.pages.import.childrens.tickets.name"      ng-click="menu.selectMenu(menu.pages.import.childrens.tickets)"></a></li>
+                      <li ng-class="{aSelected: menu.pages.import.childrens.persons.id==menu.pages.selected.id}"     ><a ng-href="{{menu.pages.import.childrens.persons.url}}"      ng-bind="menu.pages.import.childrens.persons.name"      ng-click="menu.selectMenu(menu.pages.import.childrens.persons)"></a></li>
                     </ul>
                   </li>
                 </ul>
@@ -144,7 +145,6 @@
     <script language="javascript" src="js/controllers/RegistrationCtrl.js"></script>
     <script language="javascript" src="js/controllers/PaymentCtrl.js"></script>
     
-    <script language="javascript" src="js/controllers/ImportCompetitionsCtrl.js"></script>
 
     <script language="javascript" src="js/controllers/CompetitionCtrl.js"></script>
     <script language="javascript" src="js/controllers/CompetitionParticipantsCtrl.js"></script>
@@ -152,6 +152,8 @@
     <script language="javascript" src="js/controllers/AgeCategoriesCtrl.js"></script>
     
     <script language="javascript" src="js/controllers/ImportTournamentsCtrl.js"></script>
+    <script language="javascript" src="js/controllers/ImportCompetitionsCtrl.js"></script>
+    <script language="javascript" src="js/controllers/ImportPersonsCtrl.js"></script>
    
 
     <script language="javascript" src="js/services/RESTSrvc.js"></script>

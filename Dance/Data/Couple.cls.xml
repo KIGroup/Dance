@@ -15,15 +15,31 @@ Couples</Description>
 <Required>1</Required>
 </Property>
 
-<Property name="Women">
+<Property name="Woman">
 <Type>Dance.Data.Person</Type>
 <Required>1</Required>
 </Property>
 
 <Index name="CommonIdx">
-<Properties>Man,Women</Properties>
+<Properties>Man,Woman</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[manId:%String,womanId:%String,&status]]></FormalSpec>
+<ReturnType>Couple</ReturnType>
+<Implementation><![CDATA[
+	if ..CommonIdxExists(manId, womanId) quit ..CommonIdxOpen(manId, womanId)
+	
+	set obj = ..%New()
+	set obj.Man = ##class(Dance.Data.Person).%OpenId(manId)
+	set obj.Woman = ##class(Dance.Data.Person).%OpenId(womanId)
+	set status = obj.%Save()
+	
+	quit obj
+]]></Implementation>
+</Method>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
@@ -41,7 +57,7 @@ Couples</Description>
 <Value>Man</Value>
 </Value>
 <Value name="3">
-<Value>Women</Value>
+<Value>Woman</Value>
 </Value>
 </Data>
 </Storage>

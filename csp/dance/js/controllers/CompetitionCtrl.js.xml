@@ -93,7 +93,7 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
 	    
    		if ($scope.page.competition.startDate == "")
    			return;
-   			
+   			 
    		CompetitionSrvc.save($scope.page.tournament.id, $scope.page.competition).then(
             function(data){
 	            if ($scope.page.competition.id){

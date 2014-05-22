@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Utils.TaskTickets">
+<Super>%SYS.Task.Definition</Super>
+<TimeCreated>63324,68778.945644</TimeCreated>
+
+<Method name="OnTask">
+<Description><![CDATA[
+This method is responsible for executing the task.<br>
+At the scheduled time, the Task Manager creates an instance of this object,
+sets any property values using the stored "settings" for the task, and then
+invokes this method to execute the task.<br>
+In order to execute a real task, override this method in a subclass.]]></Description>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Quit $$$ERROR($$$NotImplemented)
+]]></Implementation>
+</Method>
+
+<Method name="Import">
+<Description>
+do ##class(Dance.Utils.TaskTickets).Import()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	d ##class(Dance.Data.Import.Ticket).%KillExtent()
+	d ##class(Dance.Data.Ticket).%KillExtent()
+	
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		&sql(DECLARE TCur CURSOR FOR 
+		 	 SELECT IdInternal, Hash
+		 	 FROM Dance_Data.Tournament 
+		 	 WHERE IdExternal = 68)	
+		
+		&sql(OPEN TCur)
+		for  
+		{	
+			&sql(FETCH TCur INTO :idInternal, :hash) 
+			quit:(SQLCODE '= 0)
+			
+			set page = $G(^Settings("Dance", "Import", "TicketsPage"))_"?trn="_idInternal_"&hash="_hash_"&all=1"
+			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Ticket", page))    
+		}
+		
+		&sql(CLOSE TCur)
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="CreateTickets">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentIdExternal:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		&sql(DECLARE TicketCur CURSOR FOR 
+		 	 SELECT ID
+		 	 FROM Dance_Data_Import.Ticket
+		 	 WHERE TournamentIdExternal = :tournamentIdExternal)	
+		
+		&sql(OPEN TicketCur)
+		for  
+		{	
+			&sql(FETCH TicketCur INTO :id) 
+			quit:(SQLCODE '= 0)
+			
+			set data = ##class(Dance.Data.Import.Ticket).%OpenId(id)
+			
+			set competition = ##class(Dance.Data.Competition).IdInternalIdxOpen(data.GroupIdInternal)
+			if '$ISOBJECT(competition) continue
+			
+			set ticketData = ##class(%ZEN.proxyObject).%New()
+			set ticketData.idInternal = data.IdInternal
+			set ticketData.amount = data.Amount
+			set ticketData.paymentCreated = data.PaymentCreated
+			set ticketData.codeOne = data.CodeOne
+			set ticketData.codeTwo = data.CodeTwo
+			set ticketData.description = data.Description
+			set ticketData.tStatus = data.TStatus
+			
+			set man = ##class(Dance.Data.Person).GetByNumber(data.MaleNumber)
+			set woman = ##class(Dance.Data.Person).GetByNumber(data.FemaleNumber)
+			
+			if $ISOBJECT(man) && $ISOBJECT(woman){
+				set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id())
+				set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id())
+				
+				set ticketData.participantId = participant.%Id()
+				do ##class(Dance.Data.Ticket).Save(ticketData, .st)
+				if $$$ISERR(st) w !,st
+			}
+			else{
+				do ticketData.%ToJSON()
+				w !
+			}
+		}
+		
+		&sql(CLOSE TicketCur)	
+		
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

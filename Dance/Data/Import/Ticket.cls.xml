@@ -9,7 +9,7 @@
 <Default>item</Default>
 </Parameter>
 
-<Property name="IdExternal">
+<Property name="IdInternal">
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="biletId"/>
 </Property>
@@ -24,14 +24,81 @@
 <Parameter name="XMLNAME" value="GroupId"/>
 </Property>
 
-<Property name="ManNumber">
+<UDLText name="T">
+<Content><![CDATA[
+// Male
+
+]]></Content>
+</UDLText>
+
+<Property name="MaleLastName">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="SurnameM"/>
+</Property>
+
+<Property name="MaleFirstName">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="NameM"/>
+</Property>
+
+<Property name="MaleNumber">
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="cplMalePartnerID"/>
 </Property>
 
-<Property name="WomenNumber">
+<Property name="MaleDOBOrAge">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="AgeM"/>
+</Property>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Female
+
+]]></Content>
+</UDLText>
+
+<Property name="FemaleLastName">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="SurnameF"/>
+</Property>
+
+<Property name="FemaleFirstName">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="NameF"/>
+</Property>
+
+<Property name="FemaleNumber">
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="cplFemalePartnerID"/>
+</Property>
+
+<Property name="FemaleDOBOrAge">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="AgeF"/>
+</Property>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Other Info
+
+]]></Content>
+</UDLText>
+
+<Property name="Trainers">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="3000"/>
+<Parameter name="XMLNAME" value="Trener"/>
+</Property>
+
+<Property name="City">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="City"/>
+</Property>
+
+<Property name="Club">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="Club"/>
 </Property>
 
 <Property name="Amount">
@@ -39,12 +106,17 @@
 <Parameter name="XMLNAME" value="sum"/>
 </Property>
 
+<Property name="TDay">
+<Type>%String</Type>
+<Parameter name="XMLNAME" value="day"/>
+</Property>
+
 <Property name="TStatus">
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="status"/>
 </Property>
 
-<Property name="Created">
+<Property name="PaymentCreated">
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="datepay"/>
 </Property>
@@ -63,6 +135,54 @@
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="kodtwo"/>
 </Property>
+
+<Property name="Description">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="3000"/>
+<Parameter name="XMLNAME" value="description"/>
+</Property>
+
+<Index name="IdInternalIdx">
+<Properties>IdInternal</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="Save">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>newObj:Dance.Data.Import.Ticket</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set newObj.Description = $REPLACE($REPLACE(newObj.Description, $c(10), ""), "&quot;", """")
+	
+	if (..IdInternalIdxExists(newObj.IdInternal) = 0){
+		quit newObj.%Save()
+	}
+	
+	set oldObj = ..IdInternalIdxOpen(newObj.IdInternal)
+	set oldObj.Amount = newObj.Amount
+	set oldObj.City = newObj.City
+	set oldObj.Club = newObj.Club
+	set oldObj.CodeOne = newObj.CodeOne
+	set oldObj.CodeTwo = newObj.CodeTwo
+	set oldObj.Created = newObj.Created
+	set oldObj.Description = newObj.Description
+	set oldObj.FemaleDOBOrAge = newObj.FemaleDOBOrAge
+	set oldObj.FemaleFirstName = newObj.FemaleFirstName
+	set oldObj.FemaleLastName = newObj.FemaleLastName
+	set oldObj.FemaleNumber = newObj.FemaleNumber
+	set oldObj.GroupIdInternal = newObj.GroupIdInternal
+	set oldObj.MaleDOBOrAge = newObj.MaleDOBOrAge
+	set oldObj.MaleFirstName = newObj.MaleFirstName
+	set oldObj.MaleLastName = newObj.MaleLastName
+	set oldObj.MaleNumber = newObj.MaleNumber
+	set oldObj.OrderIdInternal = newObj.OrderIdInternal
+	set oldObj.TournamentIdExternal = newObj.TournamentIdExternal
+	set oldObj.Trainers = newObj.Trainers
+	set oldObj.TStatus = newObj.TStatus	
+			
+	quit oldObj.%Save()
+]]></Implementation>
+</Method>
 
 <UDLText name="T">
 <Content><![CDATA[
@@ -109,8 +229,6 @@ Example:
 <StreamLocation>^Dance.Data.Import.TicketS</StreamLocation>
 <ExtentSize>100000</ExtentSize>
 <Data name="TicketDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
@@ -146,6 +264,54 @@ Example:
 </Value>
 <Value name="12">
 <Value>CodeTwo</Value>
+</Value>
+<Value name="13">
+<Value>Description</Value>
+</Value>
+<Value name="14">
+<Value>MaleLastName</Value>
+</Value>
+<Value name="15">
+<Value>MaleFirstName</Value>
+</Value>
+<Value name="16">
+<Value>MaleNumber</Value>
+</Value>
+<Value name="17">
+<Value>MaleDOBOrAge</Value>
+</Value>
+<Value name="18">
+<Value>FemaleLastName</Value>
+</Value>
+<Value name="19">
+<Value>FemaleFirstName</Value>
+</Value>
+<Value name="20">
+<Value>FemaleNumber</Value>
+</Value>
+<Value name="21">
+<Value>FemaleDOBOrAge</Value>
+</Value>
+<Value name="22">
+<Value>Trainers</Value>
+</Value>
+<Value name="23">
+<Value>City</Value>
+</Value>
+<Value name="24">
+<Value>Club</Value>
+</Value>
+<Value name="25">
+<Value>DDay</Value>
+</Value>
+<Value name="26">
+<Value>TDay</Value>
+</Value>
+<Value name="27">
+<Value>IdInternal</Value>
+</Value>
+<Value name="28">
+<Value>PaymentCreated</Value>
 </Value>
 </Data>
 </Storage>

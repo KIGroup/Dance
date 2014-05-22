@@ -97,12 +97,17 @@ Public REST URLs</Description>
 
 
 <!--========================================= COUPLE ====================================================-->
-<Route Method="GET" Url="/couple/man/:manNumber/women/:womenNumber" Call="Dance.Web.JsonCouple:WriteObjectByNumbersToDevice"/>
+<Route Method="GET" Url="/couple/udsr/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteUDSRByNumbersToDevice"/>
+
+<Route Method="GET" Url="/couple/wdsf/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteWDSFByNumbersToDevice"/>
+
 
 <Route Method="GET" Url="/couple/:id" Call="Dance.Web.JsonCouple:WriteObjectByIdToDevice"/>
 
 
-<Route Method="POST" Url="/couple/exists" Call="Dance.Web.JsonCouple:RegistrationExists"/>
+<Route Method="POST" Url="/couple/registration/existing" Call="Dance.Web.JsonCouple:RegistrationExistingCouple"/>
+
+<Route Method="POST" Url="/couple/registration/new" Call="Dance.Web.JsonCouple:RegistrationNewCouple"/>
 
 <Route Method="POST" Url="/couple/grid" Call="Dance.Web.JsonCouple:WriteAllForGridToDevice"/>
 
@@ -112,6 +117,10 @@ Public REST URLs</Description>
 
 <!--========================================= PERSON ====================================================-->
 <!--========================================= OTHER =====================================================-->
+
+<Route Method="POST" Url="/foreign" Call="Dance.Web.JsonForeign:Create"/>
+
+
 <!-- GET ALL, Currency -->
 <Route Method="GET" Url="/currency" Call="Dance.Web.JsonCurrency:WriteAllToDevice"/>
 

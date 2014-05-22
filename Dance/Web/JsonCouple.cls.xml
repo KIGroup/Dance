@@ -16,17 +16,17 @@ Convert "Couple" object to %ZEN.proxyObject (for JSON)</Description>
 	try{
 		set proxy.id = object.%Id()
 		set proxy.man = ##class(JsonPerson).ConvertToProxyObject(object.Man)
-		set proxy.women = ##class(JsonPerson).ConvertToProxyObject(object.Women)
+		set proxy.woman = ##class(JsonPerson).ConvertToProxyObject(object.Woman)
 		
 		set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
 		set club = object.Man.Club
-		if (club = "") set club = object.Women.Club 
+		if (club = "") set club = object.Woman.Club 
 		
 		set mainTrainer = object.Man.MainTrainer
-		if (mainTrainer = "") set mainTrainer = object.Women.MainTrainer 
+		if (mainTrainer = "") set mainTrainer = object.Woman.MainTrainer 
 		
 		set otherTrainers = object.Man.OtherTrainers
-		if (otherTrainers = "") set otherTrainers = object.Women.OtherTrainers
+		if (otherTrainers = "") set otherTrainers = object.Woman.OtherTrainers
 		
 		set proxy.otherInfo.country = ##class(JsonCountry).ConvertToProxyObject(object.Man.Country)
 		set proxy.otherInfo.city = object.Man.City
@@ -77,32 +77,33 @@ Write objects to device, page by page for grid.</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="WriteObjectByNumbersToDevice">
+<Method name="WriteUDSRByNumbersToDevice">
+<Description>
+Couple data by UDSR numbers</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>manNumber:%String,womenNumber:%String</FormalSpec>
+<FormalSpec>manNumber:%String,womanNumber:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
 	
 	try{
-		set man = ##class(Dance.Data.Person).GetByNumber(manNumber)
-		if ($ISOBJECT(man) = 0){
-			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("ManNotFoundByNumber"))
-		}
-	
-		set women = ##class(Dance.Data.Person).GetByNumber(womenNumber)
-		if ($ISOBJECT(women) = 0){
-			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WomenNotFoundByNumber"))
-		}
-
-		if (##class(Dance.Data.Couple).CommonIdxExists(man.%Id(), women.%Id())){
-			set couple = ##class(Dance.Data.Couple).CommonIdxOpen(man.%Id(), women.%Id())
-			set proxy  = ..ConvertToProxyObject(couple)
-			do proxy.%ToJSON()
-		}
-		else{
+		set man = ##class(Dance.Data.Person).GetByNumberUSDR(manNumber)
+		set woman = ##class(Dance.Data.Person).GetByNumberUSDR(womanNumber)
+		
+		if '$ISOBJECT(man) && '$ISOBJECT(woman){
 			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("CoupleNotFound"))
 		}
+		
+		if $ISOBJECT(man) && (womanNumber = "0"){
+			set woman = man
+		}
+		elseif $ISOBJECT(woman) && (manNumber = "0"){
+			set man = woman
+		}
+		
+		set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id())
+		set proxy  = ..ConvertToProxyObject(couple)
+		do proxy.%ToJSON()	
 	}
 	catch(ex){
 		set st = ex.AsStatus()
@@ -112,52 +113,131 @@ Write objects to device, page by page for grid.</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="Create">
+<Method name="WriteWDSFByNumbersToDevice">
+<Description>
+Couple data by WDSF numbers</Description>
 <ClassMethod>1</ClassMethod>
+<FormalSpec>manNumber:%String,womanNumber:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
 	
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		// Create or update wdsf male dancer
+		set manDB = ##class(Dance.Data.Person).GetByNumberWDSF(manNumber)
+		set manWDSF = ##class(Dance.Wdsf.API).GetPerson(manNumber)
+				
+		if $ISOBJECT(manWDSF) && (manWDSF.id '= ""){	
+			set manCountry = ##class(Dance.Data.Country).WDSFNameIdxOpen(manWDSF.country)
+			set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).CodeIdxOpen(manWDSF.ageGroup)
+			
+			set proxy.man = ##class(%ZEN.proxyObject).%New()
+			set proxy.man.gender = $E(manWDSF.sex,1,1)
+			set proxy.man.numberWDSF = manWDSF.id
+			set proxy.man.lastName = manWDSF.surname
+			set proxy.man.firstName = manWDSF.name
+			set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
+			set proxy.man.minAge = manAgeGroup.MinAge
+			set proxy.man.maxAge = manAgeGroup.MaxAge
+			set proxy.man.minDOB = $ZD(manAgeGroup.MinDOB,3)
+			set proxy.man.maxDOB = $ZD(manAgeGroup.MaxDOB,3)
+			set proxy.man.otherInfo = ##class(%ZEN.proxyObject).%New()
+			set proxy.man.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(manCountry)
+			
+			// For update by id, if man already exists
+			if $ISOBJECT(manDB){
+				set proxy.man.id = manDB.%Id()
+			}
+			
+			set manDB = ##class(Dance.Data.Person).Save(proxy.man, .st)
+			if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WdsfManSaveError"))
+			
+			set proxy.man.id = manDB.%Id()
+		}
+		elseif $ISOBJECT(manDB){
+			set proxy.man = ##class(JsonPerson).ConvertToProxyObject(manDB)
+			&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinDOB = TO_DATE(:manDB.MinDOB,'YYYY-MM-DD') AND MaxDOB = TO_DATE(:manDB.MaxDOB,'YYYY-MM-DD'))
+			set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).%OpenId(ageGroupWDSFId)
+			set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
+			set proxy.man.minAge = manAgeGroup.MinAge
+			set proxy.man.maxAge = manAgeGroup.MaxAge
+		}
+
+		// Create or update wdsf female dancer
+		set womanDB = ##class(Dance.Data.Person).GetByNumberWDSF(womanNumber)
+		set womanWDSF = ##class(Dance.Wdsf.API).GetPerson(womanNumber)
+				
+		if $ISOBJECT(womanWDSF) && (womanWDSF.id '= ""){	
+			set womanCountry = ##class(Dance.Data.Country).WDSFNameIdxOpen(womanWDSF.country)
+			set womanAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).CodeIdxOpen(womanWDSF.ageGroup)
+			
+			set proxy.woman = ##class(%ZEN.proxyObject).%New()
+			set proxy.woman.gender = $E(womanWDSF.sex,1,1)
+			set proxy.woman.numberWDSF = womanWDSF.id
+			set proxy.woman.lastName = womanWDSF.surname
+			set proxy.woman.firstName = womanWDSF.name
+			set proxy.woman.ageCategoryWDSFName = womanAgeGroup.Name.Value
+			set proxy.woman.minAge = womanAgeGroup.MinAge
+			set proxy.woman.maxAge = womanAgeGroup.MaxAge
+			set proxy.woman.minDOB = $ZD(womanAgeGroup.MinDOB,3)
+			set proxy.woman.maxDOB = $ZD(womanAgeGroup.MaxDOB,3)
+			set proxy.woman.otherInfo = ##class(%ZEN.proxyObject).%New()
+			set proxy.woman.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(womanCountry)
+			
+			// For update by id, if man already exists
+			if $ISOBJECT(womanDB){
+				set proxy.woman.id = womanDB.%Id()
+			}
+			
+			set womanDB = ##class(Dance.Data.Person).Save(proxy.woman, .st)
+			if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WdsfWomanSaveError"))
+			
+			set proxy.woman.id = womanDB.%Id()
+		}
+		elseif $ISOBJECT(womanDB){
+			set proxy.woman = ##class(JsonPerson).ConvertToProxyObject(womanDB)
+		}
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(),"I", "UTF8"),,.data, 1))
-      	
-      	
- 		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitionId)
- 		set couple = ##class(Dance.Data.Couple).%New()
- 		
- 		set couple.Competition = competition
- 		
- 		set couple.Man = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
- 		if ($ISOBJECT(couple.Man) = 0){
- 			set couple.Man = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
- 		}
- 		
- 		set couple.Women = ##class(Dance.Data.Person).GetByNumberUSDR(data.number)
- 		if ($ISOBJECT(couple.Women) = 0){
- 			set couple.Women = ##class(Dance.Data.Person).GetByNumberWDSF(data.number)
- 		}
-      	
-      	
-      	
-      	set st = couple.%Save()
-      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("AddCoupleError"," | "_st))
-      	
-      	TCOMMIT
+		if $ISOBJECT(proxy.man) && (womanNumber = "0"){
+			set proxy.woman = proxy.man
+		}
+		elseif $ISOBJECT(proxy.woman) && (manNumber = "0"){
+			set proxy.man = proxy.woman
+		}
+		
+		// Swap data
+		if (proxy.man.gender = "F") && (proxy.woman.gender = "M"){
+			set temp = proxy.man
+			set proxy.man = proxy.woman
+			set proxy.woman = temp
+		}
+		
+		// Crate couple for dancers
+		if (##class(Dance.Data.Couple).CommonIdxExists(proxy.man.id, proxy.woman.id) '= $$$YES){
+			do ##class(Dance.Data.Couple).Create(proxy.man.id, proxy.woman.id, .st)
+		}
+		
+		do proxy.%ToJSON()
+
+		TCOMMIT
 	}
-	catch ex {
+	catch(ex){
 		TROLLBACK
+		
 		set st = ex.AsStatus()
 	}
-			
+	
 	quit st
 ]]></Implementation>
 </Method>
 
-<Method name="RegistrationExists">
+<Method name="RegistrationExistingCouple">
+<Description>
+Registration UDSR or WDSF couple in the tournament</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
@@ -168,9 +248,9 @@ Write objects to device, page by page for grid.</Description>
 		
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(),"I", "UTF8"),,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
       	
-      	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.women.id)
+      	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.woman.id)
       	
       	for i=1:1:data.competitions.Count(){
 	    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
@@ -178,7 +258,6 @@ Write objects to device, page by page for grid.</Description>
 	    	set participant = ##class(Dance.Data.Participant).%New()
 	    	set participant.Couple = couple
 	    	set participant.Competition = competition
-	    	set participant.IsPaid = 0
 	    	
 	    	set st = participant.%Save()
 	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
@@ -192,6 +271,49 @@ Write objects to device, page by page for grid.</Description>
 	}
 			
 	quit st
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationNewCouple">
+<Description>
+Registration new couple in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+      	
+      	do ##class(Dance.Data.ParticipantTemp).Create(data,.st)
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteCountOfCompetitionsForExistingCouple">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String,coupleId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set count = 0
+	&sql(SELECT COUNT(ID) INTO :count 
+		 FROM Dance_Data.Participant 
+		 WHERE Couple = :coupleId AND Competition->Tournament = :tournamentId)
+	
+	quit count
 ]]></Implementation>
 </Method>
 </Class>

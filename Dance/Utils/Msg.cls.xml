@@ -33,8 +33,8 @@ do ##class(Dance.Utils.Msg).Init()</Description>
 	set ^CacheMsg("Dance", "ru", "ManNotFoundByNumber") = "Партнер не найден!"
 	set ^CacheMsg("Dance", "en", "ManNotFoundByNumber") = "Man not found!"
 	
-	set ^CacheMsg("Dance", "ru", "WomenNotFoundByNumber") = "Партнерша не найдена!"
-	set ^CacheMsg("Dance", "en", "WomenNotFoundByNumber") = "Women not found!"
+	set ^CacheMsg("Dance", "ru", "WomanNotFoundByNumber") = "Партнерша не найдена!"
+	set ^CacheMsg("Dance", "en", "WomanNotFoundByNumber") = "Woman not found!"
 	
 	set ^CacheMsg("Dance", "ru", "CoupleNotFound") = "Пара не найдена!"
 	set ^CacheMsg("Dance", "en", "CoupleNotFound") = "Couple not found!"

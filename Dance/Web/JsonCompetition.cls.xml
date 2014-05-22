@@ -67,8 +67,8 @@ Create or Update object</Description>
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
       	
       	set data.tournamentId = tournamentId
-      	set st =  ..SaveObject(data)
-      	$$$THROWONERROR(st, ##class(Dance.Utils.Msg).GetErrorStatus("SaveCompetitionError"," | "_st))
+      	do ##class(Dance.Data.Competition).Save(data,.st)
+      	if $$$ERROR(st) do ##class(Dance.Utils.Msg).GetErrorStatus("SaveCompetitionError"," | "_st)
       	
       	TCOMMIT
 	}
@@ -105,7 +105,7 @@ Create or Update object</Description>
       		TSTART
       		set item = data.GetAt(i)	
       		set item.tournamentId = tournamentId
-      		set st = ..SaveObject(item)
+      		do ##class(Dance.Data.Competition).Save(item,.st)
       		if $$$ISERR(st) {
 	      		TROLLBACK
 	      		set st = ##class(Dance.Utils.Msg).GetErrorStatus("SaveCompetitionError"," | "_st)
@@ -126,52 +126,6 @@ Create or Update object</Description>
 	}
 			
 	quit st
-]]></Implementation>
-</Method>
-
-<Method name="SaveObject">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>data:%RegisteredObject</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set tournament = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
-      		
-    if (data.id = ""){
-    	set competition = ##class(Dance.Data.Competition).%New()
-      	set competition.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name,"I", "UTF8"))
-      	set competition.Tournament = tournament
-    }
-    else{
-	    set competition = tournament.Competitions.GetAt(data.id)
-      	set competition.Name.Value = $ZCVT(data.name,"I", "UTF8")
-    }
-      	
-    set competition.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
-    set competition.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
-    set competition.Type = ##class(Dance.Data.CompetitionType).%OpenId(data.type.id)
-      	
-    set competition.StartDate = $ZDATEH(data.startDate, 15)
-    set competition.StartTime = ##class(%Library.Time).DisplayToLogical(data.startTime)
-      	
-    set competition.Price = data.price
-    set competition.Limit = data.limit
-    set competition.IsInternational = (data.isInternational = $$$YES)
-      
-    set competition.IdInternal = data.idInternal
-    set competition.IdExternal = data.idExternal
-      	
-	// DancerClasses array
-	do competition.DancerClasses.Clear()
-    for i=1:1:data.dancerClasses.Count(){
-	    continue:(data.dancerClasses.GetAt(i).selected '= $$$YES)
-	      	
-	    set dancerClasses = ##class(Dance.Data.DancerClass).%OpenId(data.dancerClasses.GetAt(i).id,,.st)
-	    if $$$ISERR(st) return ##class(Dance.Utils.Msg).GetErrorStatus("DancerClassNotFound"," | "_st)
-	    
-	    do competition.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
-	}
-      	
-    quit competition.%Save()
 ]]></Implementation>
 </Method>
 
@@ -226,19 +180,33 @@ Write objects to device, page by page for grid.</Description>
       	
       	set whereCondition = "Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
       	
-      	set maleAge = 0
-      	if (params.other.isOldCouple = $$$YES){
-      		set maleAge = $NUMBER(($P($NOW(),",",1) - $ZDH(params.other.oldCoupleMale.dob, 3))/365, 0)
-      		
-      		set couple = ##class(Dance.Data.Couple).CommonIdxOpen(params.other.oldCoupleMale.id, params.other.oldCoupleFemale.id)
-      		
-      		set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple="_couple.%Id()_")"
+      	if (params.other.couple.type = "udsr"){
+	      	// current year - year of birth
+      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
+      		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
       	}
-      	else{
-	      	set maleAge = $NUMBER(($P($NOW(),",",1) - $ZDH(params.other.newCoupleMale.dob, 3))/365, 0)
+      	elseif (params.other.couple.type = "wdsf"){
+	      	set maxAge = params.other.couple.man.maxAge
+	      	set minAge = params.other.couple.man.minAge 
+	  		set whereCondition = whereCondition_" AND ((AgeCategory->MinAge <= "_minAge_" AND "_minAge_" <= AgeCategory->MaxAge) OR (AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge))"
+      	}
+      	elseif (params.other.couple.type = "new"){
+	   		// current year - year of birth
+      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
+      		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"   	
       	}
       	
-      	set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND AgeCategory->MaxAge <= "_maleAge 
+      	if (params.other.couple.type = "udsr") || (params.other.couple.type = "wdsf"){
+	    	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(params.other.couple.man.id, params.other.couple.woman.id)
+			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple="_couple.%Id()_")"
+      	}
+      	
+      	if (params.other.couple.man.id = params.other.couple.woman.id){
+      		set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
+      	}
+      	else{
+	      	set whereCondition = whereCondition_" AND Type->Code = 'Couples'"
+      	}
       	
       	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
 	}
@@ -258,11 +226,17 @@ Write objects to device, page by page for grid.</Description>
 	
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
-      	
+      	/*
       	set whereCondition = "Tournament = '"_..ParseParameter(params.other.tournamentId)_
       	"' AND ID IN (SELECT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple = "_params.other.coupleId_")"
       	  	
       	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
+		*/
+		
+		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND Couple = "_params.other.coupleId
+      	  	
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition))
+	
 	}
 	catch ex {
 		set st = ex.AsStatus()

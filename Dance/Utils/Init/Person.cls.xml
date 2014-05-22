@@ -196,31 +196,31 @@ w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\boys.csv", "M")</Descripti
 				continue
 			}
 		
-			set (man,women) = ""
+			set (man,woman) = ""
 			
 			if (person1.Gender = "M"){
 				set man = person1
-				set women = person2
+				set woman = person2
 			}
 			else{
 				set man = person2
-				set women = person1
+				set woman = person1
 			}
 			
 			set manId = man.%Id()
-			set womenId = women.%Id()
+			set womanId = woman.%Id()
 			set coupleExists = 0
-			if (##class(Dance.Data.Couple).CommonIdxExists(man.%Id(), women.%Id()) = 0){
+			if (##class(Dance.Data.Couple).CommonIdxExists(man.%Id(), woman.%Id()) = 0){
 				set couple = ##class(Dance.Data.Couple).%New()
 				set couple.Man = man
-				set couple.Women = women
+				set couple.woman = woman
 				set st = couple.%Save()
 				if (st '= $$$OK){
 					$$$THROWONERROR(st, st)
 				}
 			}
 			
-			kill man,women,couple,person1,person2
+			kill man,woman,couple,person1,person2
 		}
 		
 		TCOMMIT

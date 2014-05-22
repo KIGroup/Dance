@@ -8,6 +8,11 @@
 <Default>Dance.Web.JsonPerson</Default>
 </Parameter>
 
+<Property name="LastUpdated">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="NumberUDSR">
 <Description>
 Union DanceSport Russia number</Description>
@@ -48,41 +53,27 @@ Date of birth</Description>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
+<Property name="MaxDOB">
+<Description>
+For WDSF dancer</Description>
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="MinDOB">
+<Description>
+For WDSF dancer</Description>
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
 <Property name="STClass">
 <Type>DancerClass</Type>
 </Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Property STClassDate As %Date(FORMAT = 3);
-
-]]></Content>
-</UDLText>
-
 <Property name="LAClass">
 <Type>DancerClass</Type>
 </Property>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Property LAClassDate As %Date(FORMAT = 3);
-
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Property SportCategoty As %String(MAXLEN = 1000);
-
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Property SportCategotyDate As %Date(FORMAT = 3);
-
-]]></Content>
-</UDLText>
 
 <Property name="Country">
 <Type>Country</Type>
@@ -109,11 +100,6 @@ Date of birth</Description>
 <Parameter name="MAXLEN" value="2000"/>
 </Property>
 
-<Property name="InsuranceValidDate">
-<Type>%Date</Type>
-<Parameter name="FORMAT" value="3"/>
-</Property>
-
 <Index name="NumberUDSRIdx">
 <Properties>NumberUDSR</Properties>
 </Index>
@@ -122,11 +108,174 @@ Date of birth</Description>
 <Properties>NumberWDSF</Properties>
 </Index>
 
+<Method name="UpdateFromString">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>data:%String,gender:%Char</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ##class(%MessageDictionary).SetSessionLanguage("ru")
+	
+	try{
+		TSTART
+		
+		if ($FIND(data,";") = 0) return $$$OK
+			
+		set propList = $LISTFROMSTRING(data, ";")
+			
+		set person = ..GetByNumberUSDR($LIST(propList, 1))
+			
+		if ($ISOBJECT(person) = 0){
+			set person = ##class(Dance.Data.Person).%New()
+			set person.Gender = gender
+			
+			//1 Номер
+			set person.NumberUDSR = $LIST(propList, 1)
+				
+			//2 Фамилия Имя
+			set person.LastName =  ##class(Dance.Data.Localization.LText).Create($P($LIST(propList, 2)," ",1), "Dance.Data.Localization.Translation;PersonLTextValue")		
+			set person.FirstName =  ##class(Dance.Data.Localization.LText).Create($P($LIST(propList, 2)," ",2), "Dance.Data.Localization.Translation;PersonLTextValue")		
+			
+			//11 Фио на англ.
+			do ##class(%MessageDictionary).SetSessionLanguage("en")
+			set person.LastName.Value = $P($LIST(propList, 11)," ",1)
+			set person.FirstName.Value = $P($LIST(propList, 11)," ",2)
+			do ##class(%MessageDictionary).SetSessionLanguage("ru")
+		}
+			
+		//4 Дата рождения
+		set dob = $LIST(propList, 4)
+		if (dob '= "") && ($LENGTH(dob) = 10) set person.DOB = $ZDATEH($REPLACE(dob,".","/"), 4)
+			
+		//5 Класс ST
+		set person.STClass = ##class(Dance.Data.DancerClass).GetByName($REPLACE($ZCONVERT($LIST(propList, 5), "U"), "М", "M"), .status)
+		if (status '= $$$OK) {
+			//w !,"DancerClass=["_$LIST(propList, 5)_"] not found"
+		}
+			
+		//7 Класс LA
+		set person.LAClass = ##class(Dance.Data.DancerClass).GetByName( $REPLACE($ZCONVERT($LIST(propList, 7), "U"), "М", "M"), .status)
+		if (status '= $$$OK) {
+			//w !,"DancerClass=["_$LIST(propList, 7)_"] not found"
+		}
+			
+			
+		//12 Клуб
+		set person.Club = $LIST(propList, 12)
+	
+		//13 Город/регион
+		set person.City = $LIST(propList, 13)
+	
+		//14 Старший тренер
+		set person.MainTrainer = $LIST(propList, 14)
+
+		//15 Тренер 2
+		//16 Тренер 3
+		if ($LIST(propList, 16) '= ""){
+			set person.OtherTrainers = $LIST(propList, 15)_", "_$LIST(propList, 16)
+		}
+		else{
+			set person.OtherTrainers = $LIST(propList, 15)
+		}
+			
+		//19 Номер партнера
+		if ($LIST(propList, 19) '= "") set ^couples(person.NumberUDSR) = $LIST(propList, 19)
+			
+		//20 Страховка до
+		set insDate = $LIST(propList, 20)
+		if (insDate '= "") && ($LENGTH(insDate) = 10) set person.InsuranceValidDate = $ZDATEH($REPLACE(insDate,".","/"), 4)
+				
+		set person.Country = ##class(Dance.Data.Country).WDSFNameIdxOpen("Russian Federation")
+			
+		set person.LastUpdated = $ZDT($ZTS,3)
+ 
+		set status = person.%Save()
+
+		if (status '= $$$OK){
+			$$$THROWONERROR(status,status)
+		}
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set status = ex.AsStatus()
+	}
+	
+	quit status
+]]></Implementation>
+</Method>
+
+<Method name="CreateCouples">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set status = $$$OK
+	
+	try{
+		TSTART
+		
+		set (firstNumber,secondNumber) = ""	
+		
+		for {
+			set firstNumber = $O(^couples(firstNumber))
+			if (firstNumber = "") quit
+			
+			set secondNumber = ^couples(firstNumber)
+			
+			set person1 = ##class(Dance.Data.Person).GetByNumber(firstNumber)
+			set person2 = ##class(Dance.Data.Person).GetByNumber(secondNumber)
+			
+			if ($ISOBJECT(person1)=0) || ($ISOBJECT(person2)=0) {
+				//w !,"Not found couple => firstNumber="_firstNumber_"  secondNumber="_secondNumber
+				continue
+			}
+		
+			set (man,woman) = ""
+			
+			if (person1.Gender = "M"){
+				set man = person1
+				set woman = person2
+			}
+			else{
+				set man = person2
+				set woman = person1
+			}
+			
+			set manId = man.%Id()
+			set womanId = woman.%Id()
+			set coupleExists = 0
+			if (##class(Dance.Data.Couple).CommonIdxExists(man.%Id(), woman.%Id()) = 0){
+				set couple = ##class(Dance.Data.Couple).%New()
+				set couple.Man = man
+				set couple.Woman = woman
+				set st = couple.%Save()
+				if (st '= $$$OK){
+					$$$THROWONERROR(st, st)
+				}
+			}
+			
+			kill man,woman,couple,person1,person2
+		}
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set status = ex.AsStatus()
+		//w !,"FATAL ERROR for firstNumber="_firstNumber_"  secondNumber="_secondNumber,!
+	}
+	do $system.OBJ.DisplayError(status) 
+	q status
+]]></Implementation>
+</Method>
+
 <Method name="GetByNumberUSDR">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>number:%String</FormalSpec>
 <ReturnType>Person</ReturnType>
 <Implementation><![CDATA[
+	set number = +number
+	set id = ""
 	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberUDSR = :number)
 	quit ..%OpenId(id)
 ]]></Implementation>
@@ -147,9 +296,76 @@ Date of birth</Description>
 <FormalSpec>number:%String</FormalSpec>
 <ReturnType>Person</ReturnType>
 <Implementation><![CDATA[
+	set number = +number
 	set id = ""
 	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberWDSF = :number OR NumberUDSR = :number)
 	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="Save">
+<Description>
+Create or save modified person</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%RegisteredObject,&status]]></FormalSpec>
+<ReturnType>Dance.Data.Person</ReturnType>
+<Implementation><![CDATA[
+	do ##class(Dance.Utils.Journal).Create("Log","Data.Person.Save", 
+	"ID = "_data.id_"; "_
+	"LastName = "_data.lastName_"; "_
+	"FirstName = "_data.firstName_"; "_
+	"NumberUDSR = "_data.numberUDSR_"; "_
+	"NumberWDSF = "_data.numberWDSF_"; "_
+	"DOB = "_data.dob_"; "_
+	"MaxDOB = "_data.maxDOB_"; "_
+	"MinDOB = "_data.minDOB_"; "_
+	"CountryId = "_data.otherInfo.country.id)
+	
+	if (data.id '= ""){
+		set person = ..%OpenId(data.id, 3, .status)
+		set person.LastName.Value = $ZCONVERT(data.lastName, "I","UTF8")
+		set person.FirstName.Value = $ZCONVERT(data.firstName, "I","UTF8")
+	}
+	else{
+		set person = ..%New()
+		set person.LastName = ##class(Dance.Data.Localization.LText).Create($ZCONVERT(data.lastName, "I","UTF8"))
+		set person.FirstName = ##class(Dance.Data.Localization.LText).Create($ZCONVERT(data.firstName, "I","UTF8"))
+	}
+	
+	set person.Gender = data.gender
+	set person.NumberUDSR = data.numberUDSR
+	set person.NumberWDSF = data.numberWDSF
+	
+	set person.City = $ZCONVERT(data.otherInfo.cityName, "I","UTF8")
+	set person.Country = ##class(Dance.Data.Country).%OpenId(data.otherInfo.country.id)
+	set person.Club = $ZCONVERT(data.otherInfo.club, "I","UTF8")
+	set person.MainTrainer = $ZCONVERT(data.otherInfo.mainTrainer, "I","UTF8")
+	set person.OtherTrainers = $ZCONVERT(data.otherInfo.otherTrainers, "I","UTF8")
+	
+	if (data.dob '= ""){
+		set person.DOB = $ZDH(data.dob, 3)
+	}
+	
+	if (data.minDOB '= ""){
+		set person.MinDOB = $ZDH(data.minDOB, 3)
+	}
+	
+	if (data.maxDOB '= ""){
+		set person.MaxDOB = $ZDH(data.maxDOB, 3)
+	}
+	
+	if ($ISOBJECT(data.laClass) = $$$YES) && (##class(Dance.Data.DancerClass).%ExistsId(data.laClass.id)){ 
+		set person.LAClass = ##class(Dance.Data.DancerClass).%OpenId(data.laClass.id)
+	}
+	
+	if ($ISOBJECT(data.stClass) = $$$YES) && (##class(Dance.Data.DancerClass).%ExistsId(data.stClass.id)){ 
+		set person.STClass = ##class(Dance.Data.DancerClass).%OpenId(data.stClass.id)
+	}
+	
+	set person.LastUpdated = $ZDT($ZTS, 3)
+	set status = person.%Save()
+
+	quit person
 ]]></Implementation>
 </Method>
 
@@ -243,6 +459,15 @@ Delete person if it is available</Description>
 </Value>
 <Value name="20">
 <Value>InsuranceValidDate</Value>
+</Value>
+<Value name="21">
+<Value>LastUpdated</Value>
+</Value>
+<Value name="22">
+<Value>MaxDOB</Value>
+</Value>
+<Value name="23">
+<Value>MinDOB</Value>
 </Value>
 </Data>
 </Storage>

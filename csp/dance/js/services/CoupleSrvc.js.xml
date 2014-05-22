@@ -10,14 +10,24 @@ Couple service, access to REST API
 
 servicesModule.factory('CoupleSrvc', function(RESTSrvc) {    
     return {
-        getByNumbers: function(man, women){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/man/' + man + '/women/' + women});
+        getUDSRByNumbers: function(man, woman){
+	        if (!man || man == '') man = 0;
+	        if (!woman || woman == '') woman = 0;
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/udsr/man/' + man + '/woman/' + woman});
+        },
+        getWDSFByNumbers: function(man, woman){
+	        if (!man || man == '') man = 0;
+	        if (!woman || woman == '') woman = 0;
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/wdsf/man/' + man + '/woman/' + woman});
         },
         getById: function(id){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/' + id});
         },
-        registrationExists: function(data){
-            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/couple/exists', data: data});  
+        registrationExisting: function(data){
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/couple/registration/existing', data: data});  
+        },
+        registrationNew: function(data){
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/couple/registration/new', data: data});  
         },
         getAllForGrid: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
             var first = pageSize * (pageCurr - 1) + 1;
