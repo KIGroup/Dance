@@ -60,34 +60,36 @@ Create or Update object</Description>
 		
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
       	
-      	if (data.id = ""){
-      		set tournament = ##class(Dance.Data.Tournament).%New()
-      		set tournament.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name, "I", "UTF8"))
-      		set tournament.City = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.location.cityName, "I", "UTF8"))
-      		set tournament.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.organizer.info, "I", "UTF8"))
-      	}
-      	else{
-	      	set tournament = ##class(Dance.Data.Tournament).%OpenId(data.id)
-      		set tournament.Name.Value = $ZCVT(data.name, "I", "UTF8")
-      		set tournament.City.Value = $ZCVT(data.location.cityName, "I", "UTF8")
-      		set tournament.OrganizerInfo.Value = $ZCVT(data.organizer.info, "I", "UTF8")
-      	}
-      	
-      	set tournament.IdInternal = data.idInternal
-      	set tournament.IdExternal = data.idExternal
-      	set tournament.Hash = data.hash
-      	
-      	set tournament.OrganizerSite = data.organizer.site
-    
-    	set tournament.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
-      	set tournament.TStatus = ##class(Dance.Data.TournamentStatus).%OpenId(data.status.id)
-      	set tournament.TRank = ##class(Dance.Data.TournamentRank).%OpenId(data.rank.id)
-      	
-      	set tournament.StartDate = $ZDATEH(data.startDate, 15)
-      	set tournament.EndDate = $ZDATEH(data.endDate, 15)
-         		
-      	set st = tournament.%Save()
+      	do ##class(Dance.Data.Tournament).Save(data, .st)
       	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveTournamentError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="Deactivate">
+<Description>
+Change IsActive property to 0. (hide item from table)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+      	set st = ##class(Dance.Data.Tournament).Deactivate(id)
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("DeactivateTournamentError"," | "_st))
       	
       	TCOMMIT
 	}
@@ -123,17 +125,17 @@ Write objects to device, page by page for grid. </Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
       	
-      	set whereCondition = ""
+      	set whereCondition = "IsActive = 1"
       	
       	// filters
       	if (params.other.rankId '= "") && (params.other.statusId = ""){
-      		set whereCondition = "TRank="_..ParseParameter(params.other.rankId)
+      		set whereCondition = whereCondition_" AND TRank="_..ParseParameter(params.other.rankId)
       	}
       	elseif (params.other.rankId = "") && (params.other.statusId '= ""){
-      		set whereCondition = "TStatus="_..ParseParameter(params.other.statusId)
+      		set whereCondition = whereCondition_" AND TStatus="_..ParseParameter(params.other.statusId)
       	}
       	elseif (params.other.rankId '= "") && (params.other.statusId '= ""){
-      		set whereCondition = "TRank="_..ParseParameter(params.other.rankId)_" AND TStatus="_..ParseParameter(params.other.statusId)
+      		set whereCondition = whereCondition_" AND TRank="_..ParseParameter(params.other.rankId)_" AND TStatus="_..ParseParameter(params.other.statusId)
       	}
       	
       	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Tournament", "Dance.Data.Tournament", params, whereCondition))
@@ -142,45 +144,6 @@ Write objects to device, page by page for grid. </Description>
 		set st = ex.AsStatus()
 	}
 
-	quit st
-]]></Implementation>
-</Method>
-
-<Method name="WriteParticipantsCountInfoByIdToDevice">
-<Description>
-Write info: total participants count, unique and others</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>tournamentId:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set st = $$$OK
-	try{
-		set proxy = ##class(%ZEN.proxyObject).%New()
-		set proxy.participantsCount = 0
-		set proxy.participantsUniqueCount = 0
-		
-		&sql(SELECT COUNT(prtc.Couple) INTO :proxy.participantsCount
-			 FROM Dance_Data.Participant as prtc 
-			 INNER JOIN 
-			 Dance_Data.Competition as comp ON comp.ID = prtc.Competition
-			 INNER JOIN 
-			 Dance_Data.Tournament as trnm ON trnm.ID = comp.Tournament
-			 WHERE trnm.ID = :tournamentId)
-		
-		&sql(SELECT COUNT(DISTINCT prtc.Couple) INTO :proxy.participantsUniqueCount
-			 FROM Dance_Data.Participant as prtc 
-			 INNER JOIN 
-			 Dance_Data.Competition as comp ON comp.ID = prtc.Competition
-			 INNER JOIN 
-			 Dance_Data.Tournament as trnm ON trnm.ID = comp.Tournament
-			 WHERE trnm.ID = :tournamentId)
-		
-		
-		do proxy.%ToJSON()
-	}
-	catch(ex){
-		set st = ex.AsStatus()
-	}
 	quit st
 ]]></Implementation>
 </Method>
@@ -195,6 +158,7 @@ Write info: total participants count, unique and others</Description>
 	&sql(DECLARE CursYear CURSOR FOR 
 		 	SELECT DISTINCT DATEPART('year', StartDate) As Year
 			FROM Dance_Data.Tournament
+			WHERE IsActive = 1
 			ORDER BY Year)	
 		
 	&sql(OPEN CursYear)
@@ -224,7 +188,7 @@ Write info: total participants count, unique and others</Description>
 	&sql(DECLARE CursTY CURSOR FOR 
 		 SELECT ID, Name->Value, Country->Name->Value, City->Value
 		 FROM Dance_Data.Tournament
-		 WHERE DATEPART('year', StartDate) = :year
+		 WHERE IsActive = 1 AND DATEPART('year', StartDate) = :year 
 		 ORDER BY StartDate DESC)	
 		
 	&sql(OPEN CursTY)

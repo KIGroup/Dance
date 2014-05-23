@@ -28,7 +28,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
         $scope.page.participantTable.properties = [ 
         				          {name:'fullName', calculate: function(item){
                                                         if (item.man.id == item.woman.id){
-                                                            item.fullName = item.man.lastName + ' ' + item.man.firstName;
+                                                            item.fullName = item.man.lastName + ' ' + item.man.firstName + '\n';
                                                         } 
                                                         else{
                                                             item.fullName = item.man.lastName + ' ' + item.man.firstName;

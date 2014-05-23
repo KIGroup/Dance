@@ -16,6 +16,7 @@ Public REST URLs</Description>
 <!-- GET BY ID, Tournament -->
 <Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:WriteObjectByIdToDevice"/>
 
+
 <!-- GET BY YEAR, Tournament [Short Info]-->
 <Route Method="GET" Url="/tournamentyears/:value"   Call="Dance.Web.JsonTournament:WriteAllByYearToDevice"/>
 

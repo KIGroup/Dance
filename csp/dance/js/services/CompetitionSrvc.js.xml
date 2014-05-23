@@ -12,6 +12,9 @@ servicesModule.factory('CompetitionSrvc', function(RESTSrvc) {
         getById: function(competitionId){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/competition/' + competitionId});
         },
+        removeById: function(competitionId){
+            return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/competition/' + competitionId});
+        },
         getAllForGrid: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
             var first = pageSize * (pageCurr - 1) + 1;
             var obj = {sqlName: sqlName, 

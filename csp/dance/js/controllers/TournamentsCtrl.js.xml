@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+//-d
 
 /*===========================================================================================
 
@@ -156,7 +156,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
 				}
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
 
@@ -173,7 +173,19 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
     };
 
     $scope.page.tournamentTable.remove = function(item){
-         alert('remove tournament');
+        function remove(){
+            TournamentSrvc.removeById(item.id).then(
+                function(data){
+                    $scope.page.tournamentTable.selectedItems = [];
+                    $scope.page.tournamentTable.refresh();
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Tournament is removed.', 'success', true);
+                },
+                function(data, status, headers, config){
+                    $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                });  
+        };
+
+        UtilsSrvc.openMessageBox('Remove tournament?', item.name, remove);    
     };
     
     /// Load participants count for selected tournament
@@ -183,7 +195,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.tournamentTable.participantsInfo = {total: data.participantsCount, unique: data.participantsUniqueCount};
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
  
@@ -217,7 +229,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.tournamentTable.statuses = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
 
@@ -228,7 +240,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.tournamentTable.ranks = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
 
@@ -262,7 +274,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 }
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
 
@@ -298,7 +310,19 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
     };
 
     $scope.page.competitionTable.remove = function(item){
-         alert('remove competition');
+        function remove(){
+            CompetitionSrvc.removeById(item.id).then(
+                function(data){
+                    $scope.page.competitionTable.selectedItems = [];
+                    $scope.page.competitionTable.refresh();
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Competition is removed.', 'success', true);
+                },
+                function(data, status, headers, config){
+                    $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                });  
+        };
+
+        UtilsSrvc.openMessageBox('Remove competition?', item.name, remove);  
     };
     
     $scope.page.competitionTable.open = function(item){
@@ -313,7 +337,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.competitionTable.dates = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
 

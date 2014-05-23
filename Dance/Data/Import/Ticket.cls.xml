@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.Import.Ticket">
+<Description>
+Importer tickets from other system</Description>
 <Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportBase</Super>
 <TimeCreated>63318,1856.760262</TimeCreated>
 
@@ -24,14 +26,9 @@
 <Parameter name="XMLNAME" value="GroupId"/>
 </Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Male
-
-]]></Content>
-</UDLText>
-
 <Property name="MaleLastName">
+<Description>
+Male</Description>
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="SurnameM"/>
 </Property>
@@ -51,14 +48,9 @@
 <Parameter name="XMLNAME" value="AgeM"/>
 </Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Female
-
-]]></Content>
-</UDLText>
-
 <Property name="FemaleLastName">
+<Description>
+Female</Description>
 <Type>%String</Type>
 <Parameter name="XMLNAME" value="SurnameF"/>
 </Property>
@@ -78,14 +70,9 @@
 <Parameter name="XMLNAME" value="AgeF"/>
 </Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Other Info
-
-]]></Content>
-</UDLText>
-
 <Property name="Trainers">
+<Description>
+Other Info</Description>
 <Type>%Text</Type>
 <Parameter name="MAXLEN" value="3000"/>
 <Parameter name="XMLNAME" value="Trener"/>
@@ -148,6 +135,8 @@
 </Index>
 
 <Method name="Save">
+<Description>
+Create or update ticket</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>newObj:Dance.Data.Import.Ticket</FormalSpec>
 <ReturnType>%Status</ReturnType>

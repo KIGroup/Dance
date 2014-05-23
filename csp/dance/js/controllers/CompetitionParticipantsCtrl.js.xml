@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//csdd
+//csddddd
  
 /*===========================================================================================
 Competition Participants 
@@ -30,8 +30,13 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
         
         $scope.page.participantTable.properties = [
         				          {name:'couple.fullName', calculate: function(item){ 
-                                                      item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
-                                                      item.couple.fullName += '\n'+item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
+                                                        if (item.couple.man.id == item.couple.woman.id){
+                                                            item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName + '\n';
+                                                        } 
+                                                        else{
+                                                            item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
+                                                            item.couple.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
+                                                        }
                                                     }},
                           {name:'couple.class', calculate: function(item){
                                                     if ($scope.page.competition.discipline.code == 'Ла'){

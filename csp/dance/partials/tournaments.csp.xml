@@ -46,7 +46,7 @@
 		    first-row-action-method="page.tournamentTable.edit(item)"
 	    	
 	    	second-row-action-icon="'fa fa-times'"
-		    secpnd-row-action-title="'Remove'|localize"
+		    second-row-action-title="'Remove'|localize"
 		    second-row-action-method="page.tournamentTable.remove(item)"
 	    	
  			forcibly-update="page.tournamentTable.forciblyUpdate"
@@ -121,13 +121,12 @@
 				    first-row-action-method="page.competitionTable.edit(item)"
 			    	
 			    	second-row-action-icon="'fa fa-times'"
-				    secpnd-row-action-title="'Remove'|localize"
+				    second-row-action-title="'Remove'|localize"
 				    second-row-action-method="page.competitionTable.remove(item)"
 				    	
 					forcibly-update="page.competitionTable.forciblyUpdate"
 				/>
 			</div>			
-			<button type="button" class="btn btn-small" ng-click="page.competitionTable.import()"><i class="fa fa-download"></i>&nbsp;&nbsp;{{'Import'|localize}}</button>
 		</tab>	
 	</tabset>
 </div>

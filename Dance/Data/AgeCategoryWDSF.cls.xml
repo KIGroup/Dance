@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.AgeCategoryWDSF">
+<Description>
+WDSF age categories from WDSF data base</Description>
 <Super>%Persistent,%XML.Adaptor</Super>
 <TimeCreated>63326,197.468151</TimeCreated>
 
@@ -43,6 +45,8 @@
 </Index>
 
 <Method name="Import">
+<Description>
+Import age categories from wdsf db</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
@@ -81,7 +85,7 @@
 
 <UDLText name="T">
 <Content><![CDATA[
-// [{"name":"JUVENILE","fromAge":1,"toAge":11,"minBirthdate":"2003-01-01T00:00:00","maxBirthdate":"2013-12-31T00:00:00","AllowedToDanceIn":[]}
+// Examle: [{"name":"JUVENILE","fromAge":1,"toAge":11,"minBirthdate":"2003-01-01T00:00:00","maxBirthdate":"2013-12-31T00:00:00","AllowedToDanceIn":[]}
 
 ]]></Content>
 </UDLText>

@@ -26,7 +26,7 @@ do ##class(Dance.Wdsf.API).Call("GET", "/competition/46164?format=json", .resp)<
   		set req.ProxyServer = $g(^Settings("Dance","Wdsf", "ProxyServer"))
   		set req.ProxyPort = $g(^Settings("Dance","Wdsf", "ProxyPort"))
   		set req.ProxyTunnel = $g(^Settings("Dance","Wdsf", "ProxyTunnel"))
-  		set req.Timeout = 15
+  		set req.Timeout = 10
   		
   		set req.Authorization = "Basic "_$system.Encryption.Base64Encode($g(^Settings("Dance","Wdsf", "Login"))_":"_$g(^Settings("Dance","Wdsf", "Password")))
   		set pUrl = "/api/1"_pUrl

@@ -98,6 +98,12 @@ Tournaments</Description>
 <Relationship>1</Relationship>
 </Property>
 
+<Property name="IsActive">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+<Required>1</Required>
+</Property>
+
 <Index name="IdInternalIdx">
 <Properties>IdInternal</Properties>
 <Unique>1</Unique>
@@ -107,6 +113,78 @@ Tournaments</Description>
 <Properties>IdExternal</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Method name="Save">
+<Description>
+Create or Update object</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
+<ReturnType>Tournament</ReturnType>
+<Implementation><![CDATA[
+	do ##class(Dance.Utils.Journal).Create("Log", "Data.Tournament.Save",
+	"ID="_data.id_";"_
+	"IdInternal="_data.idInternal_";"_
+	"IdExternal="_data.idExternal_";"_
+	"Hash="_data.hash_";"_
+	"Name="_$ZCVT(data.name,"I", "UTF8")_";"_
+	"TStatusId="_data.status.id_";"_
+	"TRankId="_data.rank.id_";"_
+	"CountryId="_data.location.country.id_";"_
+	"City="_data.location.cityName_";"_
+	"StartDate="_data.startDate_";"_
+	"endDate="_data.startDate)
+	
+	set trn = ""
+	if (data.id = ""){
+		set trn = ##class(Dance.Data.Tournament).%New()
+      	set trn.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name, "I", "UTF8"))
+      	set trn.City = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.location.cityName, "I", "UTF8"))
+      	set trn.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.organizer.info, "I", "UTF8"))
+    }
+    else{
+	    set trn = ##class(Dance.Data.Tournament).%OpenId(data.id)
+      	set trn.Name.Value = $ZCVT(data.name, "I", "UTF8")
+      	set trn.City.Value = $ZCVT(data.location.cityName, "I", "UTF8")
+      	set trn.OrganizerInfo.Value = $ZCVT(data.organizer.info, "I", "UTF8")
+   	}
+      	
+    set trn.IdInternal = data.idInternal
+    set trn.IdExternal = data.idExternal
+    set trn.Hash = data.hash
+      	
+    set trn.OrganizerSite = $ZCVT(data.organizer.site, "I", "UTF8")
+    
+   	set trn.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
+    set trn.TStatus = ##class(Dance.Data.TournamentStatus).%OpenId(data.status.id)
+    set trn.TRank = ##class(Dance.Data.TournamentRank).%OpenId(data.rank.id)
+      	
+    set trn.StartDate = $ZDATEH(data.startDate, 15)
+    set trn.EndDate = $ZDATEH(data.endDate, 15)
+         		
+    set st = trn.%Save()
+    		
+	quit trn
+]]></Implementation>
+</Method>
+
+<Method name="Deactivate">
+<Description>
+Change IsActive property to 0</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ##class(Dance.Utils.Journal).Create("Log", "Data.Tournament.Deactivate", "ID="_id_";")
+	
+	set trn = ..%OpenId(id)
+	set trn.IsActive = 0
+	set trn.IdInternal = trn.IdInternal_";"_id
+	set trn.IdExternal = trn.IdExternal_";"_id
+	set trn.Hash = trn.Hash_";"_id
+	
+	quit trn.%Save()
+]]></Implementation>
+</Method>
 
 <Method name="CheckDeletePrivilege">
 <Description>
@@ -237,6 +315,12 @@ Check update privilege</Description>
 </Value>
 <Value name="17">
 <Value>IdExternal</Value>
+</Value>
+<Value name="18">
+<Value>IsRemoved</Value>
+</Value>
+<Value name="19">
+<Value>IsActive</Value>
 </Value>
 </Data>
 </Storage>

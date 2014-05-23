@@ -81,6 +81,34 @@ Create or Update object</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="Deactivate">
+<Description>
+Change IsActive property to 0. (hide item from table)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
+		
+      	set st = ##class(Dance.Data.Competition).Deactivate(id)
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("DeactivateCompetitionError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
 <Method name="SaveAll">
 <Description>
 Create or Update object</Description>
@@ -152,7 +180,7 @@ Write objects to device, page by page for grid.</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
       	
-      	set whereCondition = "Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
+      	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
       	
       	if (params.other.date '= ""){
       		set whereCondition = whereCondition_" AND StartDate = "_$ZDATEH(params.other.date,15)
@@ -170,6 +198,8 @@ Write objects to device, page by page for grid.</Description>
 </Method>
 
 <Method name="WriteAllAvailableForGridToDevice">
+<Description>
+Available competitions for couple</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
@@ -178,7 +208,7 @@ Write objects to device, page by page for grid.</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
       	
-      	set whereCondition = "Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
+      	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
       	
       	if (params.other.couple.type = "udsr"){
 	      	// current year - year of birth
@@ -196,11 +226,13 @@ Write objects to device, page by page for grid.</Description>
       		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"   	
       	}
       	
+      	// Only new competitions fo existing couples
       	if (params.other.couple.type = "udsr") || (params.other.couple.type = "wdsf"){
 	    	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(params.other.couple.man.id, params.other.couple.woman.id)
 			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple="_couple.%Id()_")"
       	}
       	
+      	// Solo or couple type
       	if (params.other.couple.man.id = params.other.couple.woman.id){
       		set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
       	}
@@ -226,14 +258,8 @@ Write objects to device, page by page for grid.</Description>
 	
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
-      	/*
-      	set whereCondition = "Tournament = '"_..ParseParameter(params.other.tournamentId)_
-      	"' AND ID IN (SELECT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple = "_params.other.coupleId_")"
-      	  	
-      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
-		*/
-		
-		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND Couple = "_params.other.coupleId
+      	
+      	set whereCondition = "Competition->IsActive = 1 AND Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND Couple = "_params.other.coupleId
       	  	
       	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition))
 	
@@ -257,7 +283,7 @@ Write objects to device, page by page for grid.</Description>
 	&sql(DECLARE CRS1 CURSOR FOR 
 		 	SELECT DISTINCT(StartDate)
 		 	FROM Dance_Data.Competition
-		 	WHERE Tournament = :tournamentId
+		 	WHERE IsActive = 1 AND Tournament = :tournamentId
 		 	ORDER BY StartDate)	
 		
 	&sql(OPEN CRS1)

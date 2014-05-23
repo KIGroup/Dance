@@ -23,7 +23,7 @@
 <Property name="Msg">
 <Type>%Text</Type>
 <Required>1</Required>
-<Parameter name="MAXLEN" value="5000"/>
+<Parameter name="MAXLEN" value="7000"/>
 </Property>
 
 <Method name="Create">

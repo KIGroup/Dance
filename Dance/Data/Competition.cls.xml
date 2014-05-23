@@ -94,6 +94,12 @@ Competition in the tournament, has participants</Description>
 <Relationship>1</Relationship>
 </Property>
 
+<Property name="IsActive">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+<Required>1</Required>
+</Property>
+
 <Index name="TournamentIdx">
 <Properties>Tournament</Properties>
 </Index>
@@ -104,54 +110,88 @@ Competition in the tournament, has participants</Description>
 </Index>
 
 <Method name="Save">
+<Description>
+Create or update competition</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
 <ReturnType>Competition</ReturnType>
 <Implementation><![CDATA[
- 		
+	do ##class(Dance.Utils.Journal).Create("Log", "Data.Competition.Save",
+	"ID="_data.id_";"_
+	"IdInternal="_data.idInternal_";"_
+	"IdExternal="_data.idExternal_";"_
+	"Name="_$ZCVT(data.name,"I", "UTF8")_";"_
+	"TournamentId="_data.tournamentId_";"_
+	"DisciplineId="_data.discipline.id_";"_
+	"AgeCategoryId="_data.ageCategory.id_";"_
+	"TypeId="_data.type.id_";"_
+	"StartDate="_data.startDate_";"_
+	"Price="_data.price)
+    
+    
     if (data.id = ""){
-    	set tournament = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
-    	set competition = ##class(Dance.Data.Competition).%New()
-      	set competition.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name,"I", "UTF8"))
-      	set competition.Tournament = tournament
+    	set trn = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
+    	set cmp = ##class(Dance.Data.Competition).%New()
+      	set cmp.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name,"I", "UTF8"))
+      	set cmp.Tournament = trn
     }
     else{
-	    set competition = ##class(Dance.Data.Competition).%OpenId(data.id)
-      	set competition.Name.Value = $ZCVT(data.name,"I", "UTF8")
+	    set cmp = ##class(Dance.Data.Competition).%OpenId(data.id)
+      	set cmp.Name.Value = $ZCVT(data.name,"I", "UTF8")
     }
       	
-    set competition.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
-    set competition.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
-    set competition.Type = ##class(Dance.Data.CompetitionType).%OpenId(data.type.id)
+    set cmp.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
+    set cmp.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
+    set cmp.Type = ##class(Dance.Data.CompetitionType).%OpenId(data.type.id)
       	
-    set competition.StartDate = $ZDATEH(data.startDate, 15)
-    set competition.StartTime = ##class(%Library.Time).DisplayToLogical(data.startTime)
+    set cmp.StartDate = $ZDATEH(data.startDate, 15)
+    set cmp.StartTime = ##class(%Library.Time).DisplayToLogical(data.startTime)
       	
-    set competition.Price = data.price
-    set competition.Limit = data.limit
-    set competition.IsInternational = (data.isInternational = $$$YES)
+    set cmp.Price = data.price
+    set cmp.Limit = data.limit
+    set cmp.IsInternational = (data.isInternational = $$$YES)
       
-    set competition.IdInternal = data.idInternal
-    set competition.IdExternal = data.idExternal
+    set cmp.IdInternal = data.idInternal
+    set cmp.IdExternal = data.idExternal
       	
 	// DancerClasses array
-	do competition.DancerClasses.Clear()
+	do cmp.DancerClasses.Clear()
     for i=1:1:data.dancerClasses.Count(){
 	    continue:(data.dancerClasses.GetAt(i).selected '= $$$YES)
 	      	
 	    set dancerClasses = ##class(Dance.Data.DancerClass).%OpenId(data.dancerClasses.GetAt(i).id,,.st)
 	    if $$$ISERR(st) return ##class(Dance.Utils.Msg).GetErrorStatus("DancerClassNotFound"," | "_st)
 	    
-	    do competition.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
+	    do cmp.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
 	}
       	
-    set st = competition.%Save()
+    set st = cmp.%Save()
     
     quit st
 ]]></Implementation>
 </Method>
 
+<Method name="Deactivate">
+<Description>
+Change IsActive property to 0</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ##class(Dance.Utils.Journal).Create("Log", "Data.Competition.Deactivate", "ID="_id_";")
+	
+	set cmp = ..%OpenId(id)
+	set cmp.IsActive = 0
+	set cmp.IdInternal = cmp.IdInternal_";"_id
+	set cmp.IdExternal = cmp.IdExternal_";"_id
+	
+	quit cmp.%Save()
+]]></Implementation>
+</Method>
+
 <Method name="GetParticipantsCount">
+<Description>
+Participants count in the competition</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>competitionId:%String</FormalSpec>
 <ReturnType>%Integer</ReturnType>
@@ -232,6 +272,9 @@ Competition in the tournament, has participants</Description>
 </Value>
 <Value name="18">
 <Value>IdExternal</Value>
+</Value>
+<Value name="19">
+<Value>IsActive</Value>
 </Value>
 </Data>
 <Data name="DancerClasses">

@@ -22,8 +22,8 @@ Protected REST URLs</Description>
 <!-- SAVE Tournament -->
 <Route Method="POST"   Url="/tournament"     Call="Dance.Web.JsonTournament:Save"/>
 
-<!-- DELETE Tournament -->
-<Route Method="DELETE" Url="/tournament/:id" Call="Dance.Web.JsonTournament:Delete"/>
+<!-- DELETE BY ID (Hide from table), Tournament -->
+<Route Method="DELETE" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:Deactivate"/>
 
 
 <!--========================================= COMPETITION ===============================================-->	
@@ -33,8 +33,8 @@ Protected REST URLs</Description>
 <!-- SAVE ALL Competitions -->
 <Route Method="POST"   Url="/tournament/:id/competition/all"  Call="Dance.Web.JsonCompetition:SaveAll"/>
 
-<!-- DELETE Competition -->
-<Route Method="DELETE" Url="/tournament/:id/competition/:id" Call="Dance.Web.JsonCompetition:Delete"/>
+<!-- DELETE BY ID (Hide from table), Competition -->
+<Route Method="DELETE" Url="/tournament/competition/:id" Call="Dance.Web.JsonCompetition:Deactivate"/>
 
 <Route Method="POST" Url="/competition/import"     Call="Dance.Web.JsonCompetitionImport:WriteAllToDevice"/>
 

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.Import.Tournament">
+<Description>
+Imported tournaments from other system</Description>
 <Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportBase</Super>
 <TimeCreated>63317,82871.710641</TimeCreated>
 
@@ -48,6 +50,8 @@
 </Index>
 
 <Method name="Save">
+<Description>
+Create or update tournament</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>newObj:Dance.Data.Import.Tournament</FormalSpec>
 <ReturnType>%Status</ReturnType>

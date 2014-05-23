@@ -160,7 +160,11 @@ Couple data by WDSF numbers</Description>
 		}
 		elseif $ISOBJECT(manDB){
 			set proxy.man = ##class(JsonPerson).ConvertToProxyObject(manDB)
-			&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinDOB = TO_DATE(:manDB.MinDOB,'YYYY-MM-DD') AND MaxDOB = TO_DATE(:manDB.MaxDOB,'YYYY-MM-DD'))
+			//&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinDOB = TO_DATE(:manDB.MinDOB,'YYYY-MM-DD') AND MaxDOB = TO_DATE(:manDB.MaxDOB,'YYYY-MM-DD'))
+			
+			set minAge = $P($ZD($NOW(), 3), "-", 1) - $P($ZD(manDB.MaxDOB, 3), "-", 1)
+			set maxAge = $P($ZD($NOW(), 3), "-", 1) - $P($ZD(manDB.MinDOB, 3), "-", 1)
+			&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinAge = :minAge AND MaxAge = :maxAge)
 			set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).%OpenId(ageGroupWDSFId)
 			set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
 			set proxy.man.minAge = manAgeGroup.MinAge

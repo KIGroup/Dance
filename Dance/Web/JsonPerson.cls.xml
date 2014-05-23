@@ -23,6 +23,8 @@ Convert "Person" object to %ZEN.proxyObject (for JSON)</Description>
 		set proxy.numberUDSR = object.NumberUDSR
 		set proxy.numberWDSF = object.NumberWDSF
 		
+		set proxy.country = ##class(JsonCountry).ConvertToProxyObject(object.Country)
+		
 		set proxy.laClass = ##class(JsonDancerClass).ConvertToProxyObject(object.LAClass)
 		set proxy.stClass = ##class(JsonDancerClass).ConvertToProxyObject(object.STClass)
 	}
