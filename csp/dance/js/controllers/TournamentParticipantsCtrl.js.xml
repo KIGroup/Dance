@@ -2,15 +2,19 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+//--
  
 /*===========================================================================================
 Tournament Participants 
 ===========================================================================================*/
 
-controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, CoupleSrvc){
+controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
 	
 	$scope.page = {};
+	
+	$scope.page.test = "Российские соревнования по танцевальному спорту \n ИРКУТСКИЙ БАЛ - 2014 \n ЧЕМПИОНАТ И ПЕРВЕНСТВО ГОРОДА ИРКУТСКА \n 17-18 мая 2014 г. \n г. Иркутск, Дворец спорта \"Труд\"";
+	
+	
   	$scope.page.participantTable = {};
  	$scope.pageStore.participants = {grid:{}};
     
@@ -20,34 +24,43 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     	//  
         $scope.page.participantTable.columns = [
                           {name: 'Man / Woman', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true},
+                          /*{name: 'Class'      , sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},*/
                           {name: 'Club / City', sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Trainers'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Country'    , sqlName: 'Couple->Man->Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Payment'    , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {name: 'Группы участников', sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
         
         $scope.page.participantTable.properties = [ 
-        				          {name:'fullName', calculate: function(item){
-                                                        if (item.man.id == item.woman.id){
-                                                            item.fullName = item.man.lastName + ' ' + item.man.firstName + '\n';
+        				  {name:'couple.fullName', calculate: function(item){
+                                                        if (item.couple.man.id == item.couple.woman.id){
+                                                            item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName + '\n';
                                                         } 
                                                         else{
-                                                            item.fullName = item.man.lastName + ' ' + item.man.firstName;
-                                                            item.fullName += '\n' + item.woman.lastName + ' ' + item.woman.firstName;
+                                                            item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
+                                                            item.couple.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
                                                     	}
                                                     }},
-                          {name:'otherInfo.clubAndCity', calculate: function(item){
-                                                                  		item.otherInfo.clubAndCity = item.otherInfo.club + '\n' + item.otherInfo.city;
+                          /*{name:'couple.class', calculate: function(item){
+                                                    if ($scope.page.competition.discipline.code == 'Ла'){
+                                                        item.couple.class = item.couple.man.laClass.name + '\n' + item.couple.woman.laClass.name;
+                                                    }
+                                                    else if($scope.page.competition.discipline.code == 'Ст'){
+                                                        item.couple.class = item.couple.man.stClass.name + '\n' + item.couple.woman.stClass.name;
+                                                    }
+                                                }},*/
+                          {name:'couple.otherInfo.clubAndCity', calculate: function(item){
+                                                                  		item.couple.otherInfo.clubAndCity = item.couple.otherInfo.club + '\n' + item.couple.otherInfo.city;
                                                             		}}, 
-                          {name:'otherInfo.trainers', calculate: function(item){
-                                                               		item.otherInfo.trainers = item.otherInfo.mainTrainer + (item.otherInfo.otherTrainers=='' ? '' : (', ' + item.otherInfo.otherTrainers));
+                          {name:'couple.otherInfo.trainers', calculate: function(item){
+                                                               		item.couple.otherInfo.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
                                                        			}},
-                          {name:'otherInfo.country.name'},
-                          {name:'paymentLink', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Pay'),
+                          {name:'couple.otherInfo.country.name'},
+                          {name:'coupleCompetitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch couple groups list'),
                                                 getCssClass: function(item){ 
                                                     return 'cellCoupleLink';
                                                 }, 
                                                 calculate: function(item){
-                                                    item.paymentLink = $filter('localize')('Pay »');
+                                                    item.coupleCompetitionsCountString = item.coupleCompetitionsCount + ' »';
                                                 },
                                                 onClickCell: function(coupleId){
                                                     $location.path("/tournament/" + $scope.page.tournament.id + "/couple/" + coupleId + "/competitions"); 
@@ -64,7 +77,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
 
     // 
     $scope.page.participantTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
-        CoupleSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {tournamentId: $scope.page.tournament.id}).then(
+        ParticipantSrvc.getAllForTournament(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {tournamentId: $scope.page.tournament.id}).then(
             function(data){
 	            data = data.children;
                 $scope.page.participantTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
@@ -84,7 +97,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     $scope.page.participantTable.onSelectCell = function(item, property){ 
         if (!item) return;
 
-        property.onClickCell(item.id);
+        property.onClickCell(item.couple.id);
     };
     
     

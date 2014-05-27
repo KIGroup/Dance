@@ -221,10 +221,8 @@ Couple data by WDSF numbers</Description>
 		}
 		
 		// Crate couple for dancers
-		if (##class(Dance.Data.Couple).CommonIdxExists(proxy.man.id, proxy.woman.id) '= $$$YES){
-			do ##class(Dance.Data.Couple).Create(proxy.man.id, proxy.woman.id, .st)
-		}
-		
+		set couple = ##class(Dance.Data.Couple).Create(proxy.man.id, proxy.woman.id, .st)
+		set proxy.id = couple.%Id()
 		do proxy.%ToJSON()
 
 		TCOMMIT
@@ -307,7 +305,7 @@ Registration new couple in the tournament</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="WriteCountOfCompetitionsForExistingCouple">
+<Method name="WriteCompetitionsCount">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>tournamentId:%String,coupleId:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -317,7 +315,9 @@ Registration new couple in the tournament</Description>
 		 FROM Dance_Data.Participant 
 		 WHERE Couple = :coupleId AND Competition->Tournament = :tournamentId)
 	
-	quit count
+	w "{""count"": "_count_"}"
+	
+	quit $$$OK
 ]]></Implementation>
 </Method>
 </Class>

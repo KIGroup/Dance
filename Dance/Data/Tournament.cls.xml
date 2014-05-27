@@ -30,6 +30,11 @@ Tournaments</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="FullName">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Country">
 <Type>Country</Type>
 <Required>1</Required>
@@ -138,12 +143,14 @@ Create or Update object</Description>
 	if (data.id = ""){
 		set trn = ##class(Dance.Data.Tournament).%New()
       	set trn.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name, "I", "UTF8"))
+      	set trn.FullName = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.fullName, "I", "UTF8"))
       	set trn.City = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.location.cityName, "I", "UTF8"))
       	set trn.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.organizer.info, "I", "UTF8"))
     }
     else{
 	    set trn = ##class(Dance.Data.Tournament).%OpenId(data.id)
       	set trn.Name.Value = $ZCVT(data.name, "I", "UTF8")
+      	set trn.FullName.Value = $ZCVT(data.fullName, "I", "UTF8")
       	set trn.City.Value = $ZCVT(data.location.cityName, "I", "UTF8")
       	set trn.OrganizerInfo.Value = $ZCVT(data.organizer.info, "I", "UTF8")
    	}
@@ -321,6 +328,9 @@ Check update privilege</Description>
 </Value>
 <Value name="19">
 <Value>IsActive</Value>
+</Value>
+<Value name="20">
+<Value>FullName</Value>
 </Value>
 </Data>
 </Storage>

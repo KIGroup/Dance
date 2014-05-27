@@ -114,14 +114,12 @@ For WDSF dancer</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	do ##class(%MessageDictionary).SetSessionLanguage("ru")
+	set st = $$$OK
 	
 	try{
 		TSTART
-		
-		if ($FIND(data,";") = 0) return $$$OK
 			
 		set propList = $LISTFROMSTRING(data, ";")
-			
 		set person = ..GetByNumberUSDR($LIST(propList, 1))
 			
 		if ($ISOBJECT(person) = 0){
@@ -147,17 +145,10 @@ For WDSF dancer</Description>
 		if (dob '= "") && ($LENGTH(dob) = 10) set person.DOB = $ZDATEH($REPLACE(dob,".","/"), 4)
 			
 		//5 Класс ST
-		set person.STClass = ##class(Dance.Data.DancerClass).GetByName($REPLACE($ZCONVERT($LIST(propList, 5), "U"), "М", "M"), .status)
-		if (status '= $$$OK) {
-			//w !,"DancerClass=["_$LIST(propList, 5)_"] not found"
-		}
+		set person.STClass = ##class(Dance.Data.DancerClass).GetByName($REPLACE($ZCONVERT($LIST(propList, 5), "U"), "М", "M"), .st)
 			
 		//7 Класс LA
-		set person.LAClass = ##class(Dance.Data.DancerClass).GetByName( $REPLACE($ZCONVERT($LIST(propList, 7), "U"), "М", "M"), .status)
-		if (status '= $$$OK) {
-			//w !,"DancerClass=["_$LIST(propList, 7)_"] not found"
-		}
-			
+		set person.LAClass = ##class(Dance.Data.DancerClass).GetByName( $REPLACE($ZCONVERT($LIST(propList, 7), "U"), "М", "M"), .st)		
 			
 		//12 Клуб
 		set person.Club = $LIST(propList, 12)
@@ -176,96 +167,21 @@ For WDSF dancer</Description>
 		else{
 			set person.OtherTrainers = $LIST(propList, 15)
 		}
-			
-		//19 Номер партнера
-		if ($LIST(propList, 19) '= "") set ^couples(person.NumberUDSR) = $LIST(propList, 19)
-			
-		//20 Страховка до
-		set insDate = $LIST(propList, 20)
-		if (insDate '= "") && ($LENGTH(insDate) = 10) set person.InsuranceValidDate = $ZDATEH($REPLACE(insDate,".","/"), 4)
-				
+							
 		set person.Country = ##class(Dance.Data.Country).WDSFNameIdxOpen("Russian Federation")
 			
 		set person.LastUpdated = $ZDT($ZTS,3)
  
-		set status = person.%Save()
-
-		if (status '= $$$OK){
-			$$$THROWONERROR(status,status)
-		}
+		$$$THROWONERROR(st, person.%Save())		
 		
 		TCOMMIT
 	}
 	catch(ex){
 		TROLLBACK
-		set status = ex.AsStatus()
+		set st = ex.AsStatus()
 	}
 	
-	quit status
-]]></Implementation>
-</Method>
-
-<Method name="CreateCouples">
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set status = $$$OK
-	
-	try{
-		TSTART
-		
-		set (firstNumber,secondNumber) = ""	
-		
-		for {
-			set firstNumber = $O(^couples(firstNumber))
-			if (firstNumber = "") quit
-			
-			set secondNumber = ^couples(firstNumber)
-			
-			set person1 = ##class(Dance.Data.Person).GetByNumber(firstNumber)
-			set person2 = ##class(Dance.Data.Person).GetByNumber(secondNumber)
-			
-			if ($ISOBJECT(person1)=0) || ($ISOBJECT(person2)=0) {
-				//w !,"Not found couple => firstNumber="_firstNumber_"  secondNumber="_secondNumber
-				continue
-			}
-		
-			set (man,woman) = ""
-			
-			if (person1.Gender = "M"){
-				set man = person1
-				set woman = person2
-			}
-			else{
-				set man = person2
-				set woman = person1
-			}
-			
-			set manId = man.%Id()
-			set womanId = woman.%Id()
-			set coupleExists = 0
-			if (##class(Dance.Data.Couple).CommonIdxExists(man.%Id(), woman.%Id()) = 0){
-				set couple = ##class(Dance.Data.Couple).%New()
-				set couple.Man = man
-				set couple.Woman = woman
-				set st = couple.%Save()
-				if (st '= $$$OK){
-					$$$THROWONERROR(st, st)
-				}
-			}
-			
-			kill man,woman,couple,person1,person2
-		}
-		
-		TCOMMIT
-	}
-	catch(ex){
-		TROLLBACK
-		set status = ex.AsStatus()
-		//w !,"FATAL ERROR for firstNumber="_firstNumber_"  secondNumber="_secondNumber,!
-	}
-	do $system.OBJ.DisplayError(status) 
-	q status
+	quit st
 ]]></Implementation>
 </Method>
 
@@ -307,7 +223,7 @@ For WDSF dancer</Description>
 <Description>
 Create or save modified person</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[data:%RegisteredObject,&status]]></FormalSpec>
+<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
 <ReturnType>Dance.Data.Person</ReturnType>
 <Implementation><![CDATA[
 	do ##class(Dance.Utils.Journal).Create("Log","Data.Person.Save", 
@@ -322,7 +238,7 @@ Create or save modified person</Description>
 	"CountryId = "_data.otherInfo.country.id)
 	
 	if (data.id '= ""){
-		set person = ..%OpenId(data.id, 3, .status)
+		set person = ..%OpenId(data.id, 3, .st)
 		set person.LastName.Value = $ZCONVERT(data.lastName, "I","UTF8")
 		set person.FirstName.Value = $ZCONVERT(data.firstName, "I","UTF8")
 	}
@@ -363,7 +279,7 @@ Create or save modified person</Description>
 	}
 	
 	set person.LastUpdated = $ZDT($ZTS, 3)
-	set status = person.%Save()
+	set st = person.%Save()
 
 	quit person
 ]]></Implementation>

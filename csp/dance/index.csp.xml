@@ -83,7 +83,7 @@
                 <ul class="nav">
                   <li ng-class="menu.pages.tournaments.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.tournaments.url}}" ng-bind="menu.pages.tournaments.name" ng-click="menu.selectMenu(menu.pages.tournaments)"></a></li>
                   
-                  <li class="dropdown" ng-class="'dropdown ' + (menu.pages.entities.id==menu.pages.selected.parentId ? 'active' : '')">
+                  <li ng-show="false" class="dropdown" ng-class="'dropdown ' + (menu.pages.entities.id==menu.pages.selected.parentId ? 'active' : '')">
                     <a ng-href="{{menu.pages.entities.url}}" ng-click="menu.selectMenu(menu.pages.entities.childrens.ageCategories)"><span ng-bind="menu.pages.entities.name + ' '"></span><b class="caret" style="border-top-color: grey;"></b></a>
                     <ul class="dropdown-menu">
                       <li ng-class="{aSelected: menu.pages.entities.childrens.ageCategories.id==menu.pages.selected.id}"><a ng-href="{{menu.pages.entities.childrens.ageCategories.url}}" ng-bind="menu.pages.entities.childrens.ageCategories.name" ng-click="menu.selectMenu(menu.pages.entities.childrens.ageCategories)"></a></li>

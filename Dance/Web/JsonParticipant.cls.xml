@@ -17,7 +17,11 @@ Convert "Participant" object to %ZEN.proxyObject (for JSON)</Description>
 		set proxy.id = object.%Id()
 		set proxy.couple = ##class(JsonCouple).ConvertToProxyObject(object.Couple)
 		set proxy.paymentStatus = object.PaymentStatus
-		set proxy.competition = ##class(JsonCompetition).ConvertToProxyObject(object.Competition)
+		set proxy.coupleCompetitionsCount = object.CoupleCompetitionsCount
+		
+		if (isFullInfo){
+			set proxy.competition = ##class(JsonCompetition).ConvertToProxyObject(object.Competition)
+		}
 	}
 	catch(ex){
 		set proxy = ##class(%ZEN.proxyObject).%New()
@@ -86,6 +90,74 @@ Write objects to device, page by page for grid.</Description>
  		set whereCondition = "Competition = '"_..ParseParameter(params.other.competitionId)_"'"     	
  		
       	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteAllForCoupleToDevice">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String,coupleId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	try{
+		&sql(DECLARE PrtCur CURSOR FOR
+			 SELECT ID 
+			 FROM Dance_Data.Participant
+			 WHERE Couple = :coupleId AND Competition->Tournament = :tournamentId)	
+		
+		&sql(OPEN PrtCur)
+		for  
+		{	
+			&sql(FETCH PrtCur INTO :id) 
+			quit:(SQLCODE '= 0)
+	
+			set prtProxy = ..ConvertToProxyObject(##class(Dance.Data.Participant).%OpenId(id), $$$YES)
+			do proxy.children.Insert(prtProxy)
+		}
+		
+		&sql(CLOSE PrtCur)
+		
+		do proxy.%ToJSON()
+	}
+	catch ex{
+		set st = ex.AsStatus()	
+	}
+	
+	q st
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Dance.Web.JsonParticipant:WriteAllForTournamentForGridToDevice
+
+]]></Content>
+</UDLText>
+
+<Method name="WriteAllForTournamentForGridToDevice">
+<Description>
+Write all objects for tournament to device, page by page for grid.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+ 		
+ 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"     	
+ 		set groupCondition = "GROUP BY Couple"
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition, groupCondition))
 	}
 	catch ex {
 		set st = ex.AsStatus()

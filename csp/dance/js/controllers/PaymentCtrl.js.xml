@@ -8,7 +8,7 @@
 Payment
 ===========================================================================================*/
 
-controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, CoupleSrvc, TournamentSrvc, CompetitionSrvc){
+controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc){
 	//$scope.menu.selectMenu('tournaments');;
 
 	$scope.page = {};
@@ -49,13 +49,13 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
                           {name:'paymentStatusString', calculate: function(item){
                                                             switch(item.paymentStatus){
                                                                 case 'none':
-                                                                    item.paymentStatusString = $filter('localize')('Not paid');
+                                                                    item.paymentStatusString = $filter('localize')('Не оплачено');
                                                                     break;
                                                                 case 'pay':
-                                                                    item.paymentStatusString = $filter('localize')('Paid');
+                                                                    item.paymentStatusString = $filter('localize')('Оплачено');
                                                                     break;
                                                                 case 'cancel':
-                                                                    item.paymentStatusString = $filter('localize')('Canceled');
+                                                                    item.paymentStatusString = $filter('localize')('Отменен');
                                                                     break;
                                                             }
                                                       }}];  
@@ -73,12 +73,10 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
 
     //  
     $scope.page.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
-        CompetitionSrvc.getAllForGridCouple(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {coupleId: $routeParams.coupleId, tournamentId: $routeParams.tournamentId}).then(
+        ParticipantSrvc.getAllForCouple($routeParams.tournamentId, $routeParams.coupleId).then(
             function(data){
-	            data = data.children;
-                $scope.page.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
-                $scope.page.competitionTable.itemsTotal = data.itemsTotal;
-                $scope.page.competitionTable.items = data.items;
+	            $scope.page.competitionTable.items = data.children;
+				$scope.page.competitionTable.itemsTotal = data.children.length;
 				
                 if ($scope.page.competitionTable.selectedItems && $scope.page.competitionTable.items && $scope.page.competitionTable.selectedItems.length == 0 && $scope.page.competitionTable.items.length != 0){
                     for(var i=0; i < data.items.length; i++){
@@ -86,7 +84,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
                     	$scope.page.competitionTable.selectedItems.push(data.items[i]);
                     }
                 }
-            },
+            }, 
             function(data){
                 $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });

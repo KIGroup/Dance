@@ -50,7 +50,7 @@ Transform sql to json</Description>
 <Description>
 Paged output of table, for any class with parameters, sorting and searching</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>sql:%String,className:%String,params:%RegisteredObject,whereRequired:%String=""</FormalSpec>
+<FormalSpec>sql:%String,className:%String,params:%RegisteredObject,whereRequired:%String="",groupCondition:%String=""</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set status = $$$OK
@@ -74,7 +74,7 @@ Paged output of table, for any class with parameters, sorting and searching</Des
 		set isDown = "ASC"
 		if (params.isDown '= 1) set isDown = "DESC"
 		
-		set sql = sql_" ORDER BY "_..ParseParameter(params.sqlName)_" "_isDown
+		set sql = sql_" "_groupCondition_" ORDER BY "_..ParseParameter(params.sqlName)_" "_isDown
 		
 			
 		set statement = ##class(%SQL.Statement).%New()	

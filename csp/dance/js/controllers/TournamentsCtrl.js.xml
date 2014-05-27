@@ -188,16 +188,6 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
         UtilsSrvc.openMessageBox('Remove tournament?', item.name, remove);    
     };
     
-    /// Load participants count for selected tournament
-    $scope.page.tournamentTable.loadParticipantsCount = function(id){
-        TournamentSrvc.getParticipantsCountById(id).then(
-            function(data){
-                $scope.page.tournamentTable.participantsInfo = {total: data.participantsCount, unique: data.participantsUniqueCount};
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
  
     $scope.page.tournamentTable.onSelect = function(item){
         if (!item){
@@ -207,7 +197,6 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
 
         $scope.page.competitionTable.refresh();
         $scope.page.competitionTable.loadDates(item.id);
-        $scope.page.tournamentTable.loadParticipantsCount(item.id);
 		//$scope.pageStore.tournaments.gridCompetitions = {filterDate: ''};
         $scope.pageStore.tournaments.gridTournaments.selectedId = item.id;        
     };

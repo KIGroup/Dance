@@ -2,14 +2,15 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddd
+//dddddddd
 
 /*===========================================================================================
 Registration
 ===========================================================================================*/
 
-controllersModule.controller('RegistrationCtrl', function($scope, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, CoupleSrvc){
+controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, CoupleSrvc){
 	$scope.page = {};
+    $scope.page.coupleOtherInfo = {};
     $scope.page.competitionTable = {};
     $scope.page.udsrCouple = {man: {},
                               woman: {}};
@@ -78,13 +79,13 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
                 $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
-
-    /// Load All Competitions in Tournament 
+ 
+    /// Load All Competitions in Tournament  
     $scope.page.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
         if ($scope.page.competitionTable.avialableMode){
             var coupleType = '';
             var couple = {};
-
+ 
             if ($scope.page.udsrCouple.tabActive){
                 couple = {type: 'udsr',
                           man: $scope.page.udsrCouple.man,
@@ -152,12 +153,32 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
             });
     };
 
+    /// Load count of tournament competitons for couple 
+    $scope.page.loadCoupleCompetitionsCount = function(tournamentId, coupleId){
+        $scope.page.coupleOtherInfo.competitionsCount = 0;
+        
+        if (!tournamentId || !coupleId)
+            return;
 
+        CoupleSrvc.getCompetitionsCount(tournamentId, coupleId).then(
+            function(data){
+                $scope.page.coupleOtherInfo.competitionsCount = data.count;
+            },
+            function(data, status, headers, config){
+                //$scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+            });
+    };
+   
+    $scope.page.showCoupleGroups = function(tournamentId, coupleId){
+        $location.path("/tournament/" + tournamentId + "/couple/" + coupleId + "/competitions"); 
+    };
     ///==========================================================================================================================================================================
     /// UDSR COUPLE                                                                                                                                                   UDSR COUPLE 
     ///==========================================================================================================================================================================
     // Search couple by min    
     $scope.page.udsrCouple.search = function(manNum, womanNum){
+        $scope.page.coupleOtherInfo.id = null;
+
         $scope.page.udsrCouple.processingImgVisible = true;
         $scope.page.udsrCouple.alert.visible = false;
 
@@ -167,6 +188,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
         CoupleSrvc.getUDSRByNumbers(manNum, womanNum).then(
             function(data){
                 $scope.page.udsrCouple.exists = true;
+                $scope.page.coupleOtherInfo.id = data.id;
                 $scope.page.udsrCouple.man = data.man;
                 $scope.page.udsrCouple.woman = data.woman;
                 $scope.page.udsrCouple.otherInfo = data.otherInfo
@@ -179,6 +201,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
                 $scope.page.competitionTable.refresh();
 
                 $scope.page.udsrCouple.processingImgVisible = false;
+
+                $scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);               
             },
             function(data, status, headers, config){
                 $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
@@ -188,6 +212,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
 
     // Clear search form
     $scope.page.udsrCouple.clear = function(){
+        $scope.page.coupleOtherInfo.id = null;
+        
         $scope.form_udsrCouple.$setPristine(); 
         $scope.page.udsrCouple.exists = false;
         $scope.page.udsrCouple.man = {}; 
@@ -209,7 +235,11 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
             function(data){
                 $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Done!', 'Регистрация успешно завершена!', 'info', true);
             	$scope.page.competitionTable.selectedItems = [];
-            	$scope.page.competitionTable.refresh();  
+            	$scope.page.competitionTable.refresh();
+                //$scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
+                $timeout(function(){
+                    $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
+                }, 1500);
             },
             function(data, status, headers, config){
                 $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
@@ -222,6 +252,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
     ///==========================================================================================================================================================================
     // Search WDSF couple by min
     $scope.page.wdsfCouple.search = function(manNum, womanNum){
+        $scope.page.coupleOtherInfo.id = null;
+        
         $scope.page.wdsfCouple.processingImgVisible = true;
         $scope.page.wdsfCouple.alert.visible = false;
         
@@ -231,6 +263,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
         CoupleSrvc.getWDSFByNumbers(manNum, womanNum).then(
             function(data){
                 $scope.page.wdsfCouple.exists = true;
+                $scope.page.coupleOtherInfo.id = data.id;
                 $scope.page.wdsfCouple.man = data.man;
                 $scope.page.wdsfCouple.woman = data.woman;
                 $scope.page.wdsfCouple.otherInfo = data.otherInfo
@@ -243,6 +276,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
                 $scope.page.competitionTable.refresh();
                 
                 $scope.page.wdsfCouple.processingImgVisible = false;  
+
+                $scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
             },
             function(data, status, headers, config){
                 $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
@@ -252,6 +287,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
 
     // Clear WDSF search form
     $scope.page.wdsfCouple.clear = function(){
+        $scope.page.coupleOtherInfo.id = null;
+
         $scope.form_wdsfCouple.$setPristine(); 
         $scope.page.wdsfCouple.exists = false;
         $scope.page.wdsfCouple.man = {}; 
@@ -273,7 +310,12 @@ controllersModule.controller('RegistrationCtrl', function($scope, $window, $rout
             function(data){
                 $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Done!', 'Registration was successful!', 'info', true);
                 $scope.page.competitionTable.selectedItems=[];
-                $scope.page.competitionTable.refresh();  
+                $scope.page.competitionTable.refresh();
+                //$scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id); 
+                
+                $timeout(function(){
+                    $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
+                }, 1500);
             },
             function(data, status, headers, config){
                 $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);

@@ -28,7 +28,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $rou
                           {name: 'Age category'      , sqlName: 'AgeCategory'             , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Class'             , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Price'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right'}},
-                          {name: 'Total participants', sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {name: 'Участники группы'  , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}}];
         
         $scope.page.competitionTable.properties = [
         				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
@@ -160,7 +160,6 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $rou
 
     $scope.page.init();
     $scope.page.loadTournament($routeParams.id);
-    $scope.page.loadParticipantsCount($routeParams.id);
     $scope.page.competitionTable.loadDates($routeParams.id);
 });
 

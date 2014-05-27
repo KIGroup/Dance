@@ -32,17 +32,18 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		
 		&sql(DECLARE TCur CURSOR FOR 
 		 	 SELECT IdInternal, Hash
-		 	 FROM Dance_Data.Tournament 
-		 	 WHERE IdExternal = 68)	
+		 	 FROM Dance_Data.Tournament
+		 	 WHERE IsActive = 1)	
 		
 		&sql(OPEN TCur)
 		for  
 		{	
 			&sql(FETCH TCur INTO :idInternal, :hash) 
 			quit:(SQLCODE '= 0)
-			
+			w !,idInternal_"   "_hash
+			//set page = $G(^Settings("Dance", "Import", "TicketsPage"))_"?trn=10145&hash=28a63824441a481a03b8bab0b00736e7&all=1"
 			set page = $G(^Settings("Dance", "Import", "TicketsPage"))_"?trn="_idInternal_"&hash="_hash_"&all=1"
-			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Ticket", page))    
+			do ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Ticket", page)    
 		}
 		
 		&sql(CLOSE TCur)
@@ -54,13 +55,13 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		set st = ex.AsStatus()
 	}
 	
+	do ..CreateTickets()
 	quit st
 ]]></Implementation>
 </Method>
 
 <Method name="CreateTickets">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>tournamentIdExternal:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
@@ -70,8 +71,7 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		
 		&sql(DECLARE TicketCur CURSOR FOR 
 		 	 SELECT ID
-		 	 FROM Dance_Data_Import.Ticket
-		 	 WHERE TournamentIdExternal = :tournamentIdExternal)	
+		 	 FROM Dance_Data_Import.Ticket)	
 		
 		&sql(OPEN TicketCur)
 		for  

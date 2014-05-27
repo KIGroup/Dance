@@ -20,6 +20,7 @@ Convert "Tournament" object to %ZEN.proxyObject (for JSON)</Description>
 		set proxy.hash = object.Hash
 		
 		set proxy.name = object.Name.Value
+		set proxy.fullName = object.FullName.Value
 		set proxy.startDate = $ZDATE(object.StartDate, 3)
 		set proxy.endDate = $ZDATE(object.EndDate, 3)
 		set proxy.status = ##class(Dance.Web.JsonTournamentStatus).ConvertToProxyObject(object.TStatus)

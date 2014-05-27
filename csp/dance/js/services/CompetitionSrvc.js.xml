@@ -42,18 +42,6 @@ servicesModule.factory('CompetitionSrvc', function(RESTSrvc) {
             
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/tournament/competition/grid/couple', data: obj});
         }, 
-        getAllForGridCouple: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
-            var first = pageSize * (pageCurr - 1) + 1;
-            var obj = {sqlName: sqlName, 
-                       isDown: isDown, 
-                       first: first, 
-                       last: first + pageSize - 1,
-                       searchSqlName: searchSqlName, 
-                       searchText: searchText,
-                       other: other};
-            
-            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/tournament/couple/competition', data: obj});
-        }, 
         getDates: function(tournamentId){
 	        return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/'+tournamentId+'/competition/date'});
 	    },

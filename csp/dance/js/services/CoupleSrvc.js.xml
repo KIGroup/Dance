@@ -40,6 +40,9 @@ servicesModule.factory('CoupleSrvc', function(RESTSrvc) {
                        other: other};
             
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/couple/grid', data: obj});
+        },
+        getCompetitionsCount: function(tournamentId, coupleId){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + tournamentId + '/couple/' + coupleId + '/competitionscount'});  
         }
     }
 });

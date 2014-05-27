@@ -37,6 +37,13 @@ Couple - participant of the competition</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
+<Property name="CoupleCompetitionsCount">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {CoupleCompetitionsCount} = ##class({%%CLASSNAME}).GetCoupleCompetitionsCount({Competition}, {Couple})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
 <Index name="CommonIdx">
 <Properties>Competition,Couple</Properties>
 <Unique>1</Unique>
@@ -44,6 +51,10 @@ Couple - participant of the competition</Description>
 
 <Index name="CompetitionIdx">
 <Properties>Competition</Properties>
+</Index>
+
+<Index name="CoupleIdx">
+<Properties>Couple</Properties>
 </Index>
 
 <Method name="Create">
@@ -72,6 +83,25 @@ Couple - participant of the competition</Description>
 	&sql(SELECT TStatus INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
 
 	quit status
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleCompetitionsCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>competitionId:%String,coupleId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set trnId = ""
+	&sql(SELECT Competition->Tournament INTO :trnId 
+		 FROM Dance_Data.Participant 
+		 WHERE Competition = :competitionId AND Couple = :coupleId)
+	
+	set count = 0
+	&sql(SELECT COUNT(ID) INTO :count 
+		 FROM Dance_Data.Participant 
+		 WHERE Couple = :coupleId AND Competition->Tournament = :trnId)
+	
+	quit count
 ]]></Implementation>
 </Method>
 
