@@ -255,6 +255,7 @@
 	set countriesEng($I(count)) =  "Yugoslavia"
 	set countriesEng($I(count)) =  "Zambia"
 	set countriesEng($I(count)) =  "Zimbabwe"
+	set countriesEng($I(count)) =  "--Unknown--"
 	
 	
 	
@@ -500,6 +501,7 @@
 	set countriesRus($I(count)) =  "Югославия"
 	set countriesRus($I(count)) =  "Замбия"
 	set countriesRus($I(count)) =  "Зимбабве"
+	set countriesRus($I(count)) =  "--Неизвестна--"
 	
 	for i=1:1:count{ 
 		set nameEng = countriesEng(i)

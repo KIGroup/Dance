@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/components/danceplatUDSRPay.csp" application="/csp/dance/" default="1"><![CDATA[
+<form method="POST" action="http://www.danceplat.ru/ftsrpay.php">
+	<input ng-hide="hideAll" value="{{trnId}}" name="trnID"/>
+	<input ng-hide="hideAll" value="{{manNumberUdsr}}" name="cplMalePartnerID"/>
+	<input ng-hide="hideAll" value="{{womanNumberUdsr}}" name="cplFemalePartnerID"/>
+
+	<input ng-hide="hideAll" ng-repeat="cmp in competitions" value="{{cmp.idExternal}}" name="nmnID[]"/>
+	<button class="btn btn-small" type="submit" ng-disabled="competitions.length==0"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;{{btnName}}</button>
+</form>
+]]></CSP>
+</Export>

@@ -7,10 +7,10 @@
     <thead>
         <tr>
             <th class="tableNumber">#</th>
-            <th ng-repeat="column in columns" ng-style="column.captionStyle" ng-click="sort(column, column.isDown)" ng-class="{selectableMode:column.isSortable}">
+            <th ng-repeat="column in columns" ng-hide="column.hidden" ng-style="column.captionStyle" ng-click="sort(column, column.isDown)" ng-class="{selectableMode:column.isSortable}">
                 <span ng-bind="column.name|localize"></span>
-                <i class="fa fa-sort-down fa-lg pull-right" ng-show="column.isDown && column.isSorted"  style="margin-top: -3px;"></i>
-                <i class="fa fa-sort-up fa-lg pull-right"   ng-show="!column.isDown && column.isSorted" style="margin-top: 3px;"></i>
+                <i class="fa fa-sort-down fa-lg pull-right" ng-show="column.isDown && column.isSorted"  style="margin-top: 0px;"></i>
+                <i class="fa fa-sort-up fa-lg pull-right"   ng-show="!column.isDown && column.isSorted" style="margin-top: 6px;"></i>
                 <i class="fa fa-search pull-right"          ng-show="column.isSearched"                 style="margin-top: 3px; padding-right: 4px;"></i>   
             </th>
             <th class="atableAction" ng-show="actionColumnVisible" ng-click="actionColumnMethod()" title="{{actionColumnTitle|localize}}"><i ng-class="actionColumnIcon"></i></th>
@@ -18,7 +18,7 @@
     </thead>
     <tfoot>
         <tr>
-            <td colspan="{{columns.length + 1}}">
+            <td colspan="{{getCountOfVisibleColumns(columns) + 1}}">
                 <div ng-show="navigatorVisible"><!-- Навигатор -->
                     <button class="btn btn-mini" ng-init="firstPageDisabled=true" ng-disabled="firstPageDisabled" title="{{'First page'|localize}}"     ng-click="setPage(-pageCurr + 1)">&nbsp;&nbsp;&nbsp;<i class="fa fa-step-backward fa-lg"></i>&nbsp;&nbsp;&nbsp;</button>
                     <button class="btn btn-mini" ng-init="prevPageDisabled=true"  ng-disabled="prevPageDisabled"  title="{{'Previous page'|localize}}" ng-click="setPage(-1)">&nbsp;&nbsp;&nbsp;<i class="fa fa-backward fa-lg"></i>&nbsp;&nbsp;&nbsp;</button>&nbsp;&nbsp;
@@ -57,7 +57,7 @@
     <tbody ng-class="{selectableMode: selectable==true}">
         <tr ng-repeat="item in items" ng-class="getRowClass(item.rowClass)">
             <td ng-bind="$index + pageSize*(pageCurr - 1) + 1" ng-click="select(item, {cellSelectable: false})"></td>
-            <td ng-repeat="property in properties" ng-click="select(item, property)" ng-style="property.cellStyle">
+            <td ng-repeat="property in properties" ng-hide="columns[$index].hidden" ng-click="select(item, property)" ng-style="property.cellStyle">
                 <pre ng-class="property.getCssClass(item)" title="{{property.cellTitle}}" ng-bind="getPropertyValue(item, property)" ng-click="selectCell(item, property)"></pre>
             </td>
             <td class="atableAction" ng-show="actionColumnVisible" ng-click="actionRow(item)">

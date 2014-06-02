@@ -209,7 +209,7 @@ Available competitions for couple</Description>
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
       	
       	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
-      	
+      	set newCoupleIsSolo = 0
       	if (params.other.couple.type = "udsr"){
 	      	// current year - year of birth
       		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
@@ -221,7 +221,7 @@ Available competitions for couple</Description>
 	  		set whereCondition = whereCondition_" AND ((AgeCategory->MinAge <= "_minAge_" AND "_minAge_" <= AgeCategory->MaxAge) OR (AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge))"
       	}
       	elseif (params.other.couple.type = "new"){
-	   		// current year - year of birth
+	    	// current year - year of birth
       		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
       		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"   	
       	}
@@ -233,7 +233,7 @@ Available competitions for couple</Description>
       	}
       	
       	// Solo or couple type
-      	if (params.other.couple.man.id = params.other.couple.woman.id){
+      	if ((params.other.couple.man.id = params.other.couple.woman.id) && (params.other.couple.man.id '= "")) || (params.other.couple.isSolo = $$$YES){
       		set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
       	}
       	else{

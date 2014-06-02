@@ -153,7 +153,7 @@ Create or update ticket</Description>
 	set oldObj.Club = newObj.Club
 	set oldObj.CodeOne = newObj.CodeOne
 	set oldObj.CodeTwo = newObj.CodeTwo
-	set oldObj.Created = newObj.Created
+	//set oldObj.Created = newObj.Created
 	set oldObj.Description = newObj.Description
 	set oldObj.FemaleDOBOrAge = newObj.FemaleDOBOrAge
 	set oldObj.FemaleFirstName = newObj.FemaleFirstName
@@ -170,6 +170,77 @@ Create or update ticket</Description>
 	set oldObj.TStatus = newObj.TStatus	
 			
 	quit oldObj.%Save()
+]]></Implementation>
+</Method>
+
+<Method name="CreatePersonFromTicket">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[ticket:Dance.Data.Import.Ticket,isMan:%Boolean,&st]]></FormalSpec>
+<ReturnType>Dance.Data.Person</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set person = ""
+	
+	try{
+		TSTART
+		
+		set person = ##class(Dance.Data.Person).%New()
+		
+		if (isMan){
+			set person.Gender = "M"
+			set person.LastName = ##class(Dance.Data.Localization.LText).Create($REPLACE(ticket.MaleLastName,$C(10),""))
+			set person.FirstName = ##class(Dance.Data.Localization.LText).Create($REPLACE(ticket.MaleFirstName,$C(10),""))
+			if ($LENGTH($REPLACE(ticket.MaleDOBOrAge,$C(10),"")) = 10) set person.DOB = $ZDH(ticket.MaleDOBOrAge, 3)
+		}
+		else{
+			set person.Gender = "F"
+			set person.LastName = ##class(Dance.Data.Localization.LText).Create($REPLACE(ticket.FemaleLastName,$C(10),""))
+			set person.FirstName = ##class(Dance.Data.Localization.LText).Create($REPLACE(ticket.FemaleFirstName,$C(10),""))
+			if ($LENGTH($REPLACE(ticket.FemaleDOBOrAge,$C(10),"")) = 10) set person.DOB = $ZDH(ticket.FemaleDOBOrAge, 3)
+		}
+		
+		set person.City = $REPLACE(ticket.City,$C(10),"")
+		set person.Club = $REPLACE(ticket.Club,$C(10),"")
+		set person.MainTrainer = $P($REPLACE(ticket.Trainers,$C(10),""), ", ", 1)
+		set person.OtherTrainers = $P($REPLACE(ticket.Trainers,$C(10),""), ", ", 2, *)
+		set person.LastUpdated = $ZDT($ZTS, 3)
+		
+		$$$THROWONERROR(st, person.%Save())
+		
+		
+		/*
+		set data = ##class(%ZEN.proxyObject).%New()
+		
+		if (isMan){
+			set data.gender = "M"
+			set data.lastName = prt.ManLastName
+			set data.firstName = prt.ManFirstName
+			set data.dob = $ZD(prt.ManDOB, 3)
+		}
+		else{
+			set data.gender = "F"
+			set data.lastName = prt.WomanLastName
+			set data.firstName = prt.WomanFirstName
+			set data.dob = $ZD(prt.WomanDOB, 3)
+		}
+		
+		set data.otherInfo = ##class(%ZEN.proxyObject).%New()
+		set data.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(prt.Country)
+		set data.otherInfo.cityName = prt.City
+		set data.otherInfo.mainTrainer = prt.MainTrainer
+		set data.otherInfo.otherTrainers = prt.OtherTrainers
+		
+		set person = ##class(Dance.Data.Person).Save(data, .st)
+		$$$THROWONERROR(st, st)
+		*/
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK 1
+		set st = ex.AsStatus()
+	}
+	
+	quit person
 ]]></Implementation>
 </Method>
 

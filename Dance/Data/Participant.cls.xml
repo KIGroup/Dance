@@ -10,6 +10,10 @@ Couple - participant of the competition</Description>
 <Default>Dance.Web.JsonParticipant</Default>
 </Parameter>
 
+<Property name="Created">
+<Type>%TimeStamp</Type>
+</Property>
+
 <Property name="Couple">
 <Type>Couple</Type>
 <Required>1</Required>
@@ -44,6 +48,12 @@ Couple - participant of the competition</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
+<Property name="IsActive">
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
+<Required>1</Required>
+</Property>
+
 <Index name="CommonIdx">
 <Properties>Competition,Couple</Properties>
 <Unique>1</Unique>
@@ -62,12 +72,17 @@ Couple - participant of the competition</Description>
 <FormalSpec><![CDATA[competitionId:%String,coupleId:%String,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
-	if ..CommonIdxExists(competitionId, coupleId) quit ..CommonIdxOpen(competitionId, coupleId)
+	if ..CommonIdxExists(competitionId, coupleId) {
+		set obj = ..CommonIdxOpen(competitionId, coupleId)
+		set obj.IsActive = 1
+		set st = obj.%Save()
+		quit obj
+	}
 	
 	set obj = ..%New()
 	set obj.Couple = ##class(Dance.Data.Couple).%OpenId(coupleId)
 	set obj.Competition = ##class(Dance.Data.Competition).%OpenId(competitionId) 
-	
+	set obj.Created = $ZDT($ZTS, 3)
 	set st = obj.%Save()
 	quit obj
 ]]></Implementation>
@@ -99,9 +114,25 @@ Couple - participant of the competition</Description>
 	set count = 0
 	&sql(SELECT COUNT(ID) INTO :count 
 		 FROM Dance_Data.Participant 
-		 WHERE Couple = :coupleId AND Competition->Tournament = :trnId)
+		 WHERE IsActive=1 AND Couple = :coupleId AND Competition->Tournament = :trnId)
 	
 	quit count
+]]></Implementation>
+</Method>
+
+<Method name="Deactivate">
+<Description>
+Change IsActive property to 0</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ##class(Dance.Utils.Journal).Create("Log", "Data.Participant.Deactivate", "ID="_id_";")
+	
+	set obj = ..%OpenId(id)
+	set obj.IsActive = 0
+	
+	quit obj.%Save()
 ]]></Implementation>
 </Method>
 
@@ -125,6 +156,12 @@ Couple - participant of the competition</Description>
 </Value>
 <Value name="4">
 <Value>Competition</Value>
+</Value>
+<Value name="5">
+<Value>Created</Value>
+</Value>
+<Value name="6">
+<Value>IsActive</Value>
 </Value>
 </Data>
 </Storage>

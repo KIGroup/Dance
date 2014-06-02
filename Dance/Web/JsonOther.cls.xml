@@ -54,5 +54,38 @@ Write to device "children" array of proxyObjects [All System languages]</Descrip
 	q $$$OK
 ]]></Implementation>
 </Method>
+
+<Method name="CheckAdmin">
+<Description>
+Check access, authorization call, if needed</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>isLogin:%Boolean</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	if (isLogin = 1){
+		if (##class(Dance.Data.Tournament).CheckDeletePrivilege() = $$$OK){
+			w "{""privileges"":""all""}"
+		}
+		else{
+			w "{""privileges"":""read""}"
+		}
+		q $$$OK
+	}
+
+    #; Don't want the session token
+    Set %response.OutputSessionToken=0
+            
+    #; Set the Http Status
+    Set %response.Status="401 Unauthorized"
+        
+    #; Write out the header
+    Do %response.WriteHTTPHeader()
+            
+    Set %session.EndSession=1
+
+	
+ 	quit $$$OK
+]]></Implementation>
+</Method>
 </Class>
 </Export>

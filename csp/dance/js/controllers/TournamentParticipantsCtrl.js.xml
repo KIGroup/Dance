@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//--
+//--d
  
 /*===========================================================================================
 Tournament Participants 
@@ -11,10 +11,6 @@ Tournament Participants
 controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
 	
 	$scope.page = {};
-	
-	$scope.page.test = "Российские соревнования по танцевальному спорту \n ИРКУТСКИЙ БАЛ - 2014 \n ЧЕМПИОНАТ И ПЕРВЕНСТВО ГОРОДА ИРКУТСКА \n 17-18 мая 2014 г. \n г. Иркутск, Дворец спорта \"Труд\"";
-	
-	
   	$scope.page.participantTable = {};
  	$scope.pageStore.participants = {grid:{}};
     
@@ -23,12 +19,12 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     	// Participant table
     	//  
         $scope.page.participantTable.columns = [
-                          {name: 'Man / Woman', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true},
+                          {name: 'Man / Woman', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true, captionStyle: {width: '250px'}},
                           /*{name: 'Class'      , sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},*/
                           {name: 'Club / City', sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Trainers'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
+                          {name: 'Тренер(ы)'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Country'    , sqlName: 'Couple->Man->Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Группы участников', sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {name: 'Группы'     , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '70px'}}];
         
         $scope.page.participantTable.properties = [ 
         				  {name:'couple.fullName', calculate: function(item){
@@ -55,7 +51,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                                		item.couple.otherInfo.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
                                                        			}},
                           {name:'couple.otherInfo.country.name'},
-                          {name:'coupleCompetitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch couple groups list'),
+                          {name:'coupleCompetitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп, в которых зарегистрирована пара'),
                                                 getCssClass: function(item){ 
                                                     return 'cellCoupleLink';
                                                 }, 
@@ -77,15 +73,20 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
 
     // 
     $scope.page.participantTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        $scope.page.participantTable.itemsStatus = $filter('localize')('Идет загрузка данных...');
+
         ParticipantSrvc.getAllForTournament(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {tournamentId: $scope.page.tournament.id}).then(
             function(data){
 	            data = data.children;
                 $scope.page.participantTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
                 $scope.page.participantTable.itemsTotal = data.itemsTotal;
                 $scope.page.participantTable.items = data.items;
+
+                $scope.page.participantTable.itemsStatus = data.itemsTotal == 0 ? $filter('localize')('Нет данных.') : '';
             },
             function(response){
                 $scope.page.alert = UtilsSrvc.getAlert('Внимание!', response.data, 'error', true);
+                $scope.page.participantTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке данных.');
             });
     };
 

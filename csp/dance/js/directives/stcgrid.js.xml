@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/directives/stcgrid.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//dd
+//ddd
    
 directivesModule.directive('stcgrid', function(){
     return {
@@ -164,7 +164,7 @@ directivesModule.directive('stcgrid', function(){
                 if (!$scope.selectable || property.cellSelectable)
                     return;
                  
-                item.rowClass = 'info';
+                item.rowClass = 'success';
                 var idx = UtilsSrvc.getIndexes($scope.selectedItems, 'id', item.id);
                 
                 if (idx.length != 0){
@@ -268,6 +268,15 @@ directivesModule.directive('stcgrid', function(){
                 if (!$scope.searchedColumn)
                     return;
                 $scope.updateSource();
+            };
+
+            $scope.getCountOfVisibleColumns = function(columns){
+                var visibleCount = 0;
+                for(var i=0; i < columns.length; i++)
+                    if (!columns[i].hidden)
+                        visibleCount++;
+				console.log('--- '+visibleCount+'------');
+                return visibleCount;
             };
             
             // Принудительное обновление при смене значения извне

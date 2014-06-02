@@ -263,6 +263,26 @@ Check update privilege</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetPersonByFullNameFromTournament">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,lastName:%String,firstName:%String</FormalSpec>
+<ReturnType>Dance.Data.Person</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+	
+	&sql(SELECT DISTINCT person.ID INTO :id
+		 FROM Dance_Data.Person as person INNER JOIN 
+		 Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName INNER JOIN 
+		 Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName INNER JOIN
+		(SELECT prt.Couple->Man As Man, prt.Couple->Woman As Woman
+ 		 FROM Dance_Data.Participant as prt
+ 		 WHERE prt.Competition->Tournament = :trnId) as prtTab ON prtTab.Man = person.ID OR prtTab.Woman = person.ID
+		 WHERE ltvalLN.Value = :lastName AND ltvalFN.Value = :firstName)
+	
+	quit ##class(Dance.Data.Person).%OpenId(id)
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.TournamentD</DataLocation>

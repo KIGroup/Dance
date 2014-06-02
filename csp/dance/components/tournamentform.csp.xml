@@ -38,7 +38,7 @@
 	</div>
 	<div class="row-fluid">
 		<div class="control-group">
-	       	<label class="control-label" ng-bind="('Full name'|localize) + '*'"></label>
+	       	<label class="control-label" ng-bind="('Заголовок'|localize) + '*'"></label>
 	        <div class="controls">
 				<textarea class="span12" rows="5" ng-model="tournament.fullName" style="text-align: center;"></textarea>
     		</div>

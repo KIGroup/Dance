@@ -46,6 +46,12 @@ Protected REST URLs</Description>
 
 <Route Method="POST" Url="/competition/createall"     Call="Dance.Web.JsonCompetitionImport:CreateAll"/>
 
+<!--========================================= PARTICIPANT ===============================================-->
+<!-- DELETE BY ID (Hide from table), Participant -->
+<Route Method="DELETE" Url="/participant/:id" Call="Dance.Web.JsonParticipant:Deactivate"/>
+
+<!-- Check access, authorization call, if needed -->
+<Route Method="GET" Url="/checkAdmin/:isLogin" Call="Dance.Web.JsonOther:CheckAdmin"/>
 </Routes>
 ]]></Data>
 </XData>

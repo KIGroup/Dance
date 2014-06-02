@@ -33,6 +33,8 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 <Method name="KillThemAll">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
+	do $CLASSMETHOD("Dance.Utils.Journal", "%KillExtent")
+	
 	do $CLASSMETHOD("Dance.Data.Import.Tournament", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Import.Competition", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Import.Ticket", "%KillExtent")
@@ -48,6 +50,7 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do $CLASSMETHOD("Dance.Data.DancerClass", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Discipline", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Participant", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.ParticipantTemp", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Person", "%KillExtent")
 	
 	do $CLASSMETHOD("Dance.Data.Tournament", "%KillExtent")

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/partials/importcompetitions.csp" application="/csp/dance/" default="1"><![CDATA[
+<p>{{'Выберите год и турнир. Ярким синим цветом выделены группы, которые уже есть базе данных. Сравнение идет по IdInternal. Красным выделены группы с ошибками, их можно исправить.'|localize}}</p>
+
 <div class="row-fluid">
     <div class="span1">
         <div class="control-group">
@@ -57,7 +59,7 @@
     <stcgrid 
         grid="pageStore.importcompetitions.grid"
         table-class="table table-bordered table-hover"
-        caption="''"
+        caption="'Группы, доступные для импорта'"
         columns="page.competitionTable.columns"
         items="page.competitionTable.items"
         properties="page.competitionTable.properties"

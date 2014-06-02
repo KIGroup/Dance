@@ -5,7 +5,7 @@ angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","
 angular.module("ui.bootstrap.tpls", ["template/accordion/accordion-group.html","template/accordion/accordion.html","template/alert/alert.html","template/carousel/carousel.html","template/carousel/slide.html","template/datepicker/datepicker.html","template/datepicker/popup.html","template/dialog/message.html","template/pagination/pager.html","template/pagination/pagination.html","template/tooltip/tooltip-html-unsafe-popup.html","template/tooltip/tooltip-popup.html","template/popover/popover.html","template/progressbar/bar.html","template/progressbar/progress.html","template/rating/rating.html","template/tabs/tab.html","template/tabs/tabset-titles.html","template/tabs/tabset.html","template/timepicker/timepicker.html","template/typeahead/typeahead-match.html","template/typeahead/typeahead-popup.html"]);
 angular.module('ui.bootstrap.transition', [])
 
-/*
+/*     d 
  * $trdnsidddtion service provides a consistent interface to trigger CSS 3 transitions and to be informed when they complete.
  * @param  {DOMElement} element  The DOMElement that will be animated.
  * @param  {string|object|function} trigger  The thing that will cause the transition to start:
@@ -838,13 +838,14 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
 
 .constant('datepickerConfig', {
   dayFormat: 'dd',
+  datepickerMode: 0,
   monthFormat: 'MMMM',
   yearFormat: 'yyyy',
   dayHeaderFormat: 'EEE',
   dayTitleFormat: 'MMMM yyyy',
   monthTitleFormat: 'yyyy',
   showWeeks: true,
-  startingDay: 0,
+  startingDay: 1,
   yearRange: 20,
   minDate: null,
   maxDate: null
@@ -853,6 +854,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
 .controller('DatepickerController', ['$scope', '$attrs', 'dateFilter', 'datepickerConfig', function($scope, $attrs, dateFilter, dtConfig) {
   var format = {
     day:        getValue($attrs.dayFormat,        dtConfig.dayFormat),
+    datepickerMode: getValue($attrs.datepickerMode,    dtConfig.datepickerMode),
     month:      getValue($attrs.monthFormat,      dtConfig.monthFormat),
     year:       getValue($attrs.yearFormat,       dtConfig.yearFormat),
     dayHeader:  getValue($attrs.dayHeaderFormat,  dtConfig.dayHeaderFormat),
@@ -965,6 +967,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
     replace: true,
     templateUrl: 'template/datepicker/datepicker.html',
     scope: {
+      datepickerMode: '@',
       dateDisabled: '&'
     },
     require: ['datepicker', '?^ngModel'],
@@ -978,7 +981,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
 
       // Configuration parameters
       var mode = 0, selected = new Date(), showWeeks = datepickerConfig.showWeeks;
-
+      //console.log(scope.datepickerMode);
       if (attrs.showWeeks) {
         scope.$parent.$watch($parse(attrs.showWeeks), function(value) {
           showWeeks = !! value;

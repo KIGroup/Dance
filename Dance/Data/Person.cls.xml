@@ -77,7 +77,6 @@ For WDSF dancer</Description>
 
 <Property name="Country">
 <Type>Country</Type>
-<Required>1</Required>
 </Property>
 
 <Property name="City">

@@ -43,7 +43,7 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 			w !,idInternal_"   "_hash
 			//set page = $G(^Settings("Dance", "Import", "TicketsPage"))_"?trn=10145&hash=28a63824441a481a03b8bab0b00736e7&all=1"
 			set page = $G(^Settings("Dance", "Import", "TicketsPage"))_"?trn="_idInternal_"&hash="_hash_"&all=1"
-			do ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Ticket", page)    
+			w ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Ticket", page)    
 		}
 		
 		&sql(CLOSE TCur)
@@ -55,12 +55,12 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		set st = ex.AsStatus()
 	}
 	
-	do ..CreateTickets()
+	w ..CreateTickets()
 	quit st
 ]]></Implementation>
 </Method>
 
-<Method name="CreateTickets">
+<Method name="CreateTickets2">
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
@@ -70,16 +70,18 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		TSTART
 		
 		&sql(DECLARE TicketCur CURSOR FOR 
-		 	 SELECT ID
+		 	 SELECT ID, TournamentIdExternal
 		 	 FROM Dance_Data_Import.Ticket)	
 		
 		&sql(OPEN TicketCur)
 		for  
 		{	
-			&sql(FETCH TicketCur INTO :id) 
+			&sql(FETCH TicketCur INTO :id, :trnIdExt) 
 			quit:(SQLCODE '= 0)
 			
 			set data = ##class(Dance.Data.Import.Ticket).%OpenId(id)
+			
+			set trn = ##class(Dance.Data.Tournament).IdExternalIdxOpen(trnIdExt)
 			
 			set competition = ##class(Dance.Data.Competition).IdInternalIdxOpen(data.GroupIdInternal)
 			if '$ISOBJECT(competition) continue
@@ -97,17 +99,31 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 			set woman = ##class(Dance.Data.Person).GetByNumber(data.FemaleNumber)
 			
 			if $ISOBJECT(man) && $ISOBJECT(woman){
-				set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id())
-				set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id())
-				
-				set ticketData.participantId = participant.%Id()
-				do ##class(Dance.Data.Ticket).Save(ticketData, .st)
-				if $$$ISERR(st) w !,st
+				set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id())		
+			}
+			elseif $ISOBJECT(man) {
+				set couple = ##class(Dance.Data.Couple).Create(man.%Id(), man.%Id())
+			}
+			elseif $ISOBJECT(woman) {
+				set couple = ##class(Dance.Data.Couple).Create(woman.%Id(), woman.%Id())
 			}
 			else{
-				do ticketData.%ToJSON()
-				w !
+				set couple = ##class(Dance.Data.ParticipantTemp).CreateCouple(trn.%Id(), data)
+				if '$ISOBJECT(couple) {
+					w !,"couple="_data.Description
+					continue
+				}
 			}
+			
+			set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id())
+			if '$ISOBJECT(participant){
+				 w !,"participant="_data.Description
+				 continue	
+			}
+			
+			set ticketData.participantId = participant.%Id()
+			do ##class(Dance.Data.Ticket).Save(ticketData, .st)
+			if $$$ISERR(st) w !,st
 		}
 		
 		&sql(CLOSE TicketCur)	
@@ -121,6 +137,257 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 	}
 	
 	quit st
+]]></Implementation>
+</Method>
+
+<Method name="CreateTickets">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		&sql(DECLARE TicketCurs CURSOR FOR 
+		 	 SELECT ID
+		 	 FROM Dance_Data_Import.Ticket
+		 	 ORDER BY ID)	
+		
+		&sql(OPEN TicketCurs)
+		for  
+		{	
+			&sql(FETCH TicketCurs INTO :id) 
+			quit:(SQLCODE '= 0)
+			w !,!,"CreateTickets(), Ticket ID="_id	
+			
+			set ticketImport = ##class(Dance.Data.Import.Ticket).%OpenId(id)
+			set competition = ##class(Dance.Data.Competition).IdInternalIdxOpen(ticketImport.GroupIdInternal)
+			if '$ISOBJECT(competition) continue
+			
+			// Find UDSR|WDSF persons
+			set man = ##class(Dance.Data.Person).GetByNumber(ticketImport.MaleNumber)
+			set woman = ##class(Dance.Data.Person).GetByNumber(ticketImport.FemaleNumber)
+			
+			set couple = ""
+			
+			if $ISOBJECT(man) && $ISOBJECT(woman){
+				w !,"-CreateTickets(), $ISOBJECT(man) && $ISOBJECT(woman)"
+				set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id(), .st)
+				$$$THROWONERROR(st, st)
+			}
+			elseif $ISOBJECT(man){
+				w !,"-CreateTickets(), $ISOBJECT(man)"
+				set couple = ##class(Dance.Data.Couple).Create(man.%Id(), man.%Id(), .st)
+				$$$THROWONERROR(st, st)
+			}
+			elseif $ISOBJECT(woman){
+				w !,"-CreateTickets(), $ISOBJECT(woman)"
+				set couple = ##class(Dance.Data.Couple).Create(woman.%Id(), woman.%Id(), .st)
+				$$$THROWONERROR(st, st)
+			}
+			else{
+				// Unknown couple|solo
+				w !,"-CreateTickets(), Unknown couple|solo"
+				set couple = ..CreateCoupleFromTicket(ticketImport, .st)
+				$$$THROWONERROR(st, st)
+			}
+			
+			set ticketData = ##class(%ZEN.proxyObject).%New()
+			set ticketData.idInternal = ticketImport.IdInternal
+			set ticketData.amount = ticketImport.Amount
+			set ticketData.paymentCreated = ticketImport.PaymentCreated
+			set ticketData.codeOne = ticketImport.CodeOne
+			set ticketData.codeTwo = ticketImport.CodeTwo
+			set ticketData.description = ticketImport.Description
+			set ticketData.tStatus = ticketImport.TStatus
+			
+			w !, "CreateTickets(), create participant"
+			set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id(), .st)
+			$$$THROWONERROR(st, st)
+			
+			w !, "CreateTickets(), save ticket"
+			set ticketData.participantId = participant.%Id()
+			do ##class(Dance.Data.Ticket).Save(ticketData, .st)
+			$$$THROWONERROR(st, st)
+		}
+		
+		&sql(CLOSE TicketCurs)	
+		
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set st = ex.AsStatus()
+		do $system.OBJ.DisplayError(st)
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="CreateCoupleFromTicket">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[ticket:Dance.Data.Import.Ticket,&st]]></FormalSpec>
+<ReturnType>Dance.Data.Couple</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set couple  = ""
+	
+	try{
+		TSTART
+		
+		w !,"=> CreateCoupleFromTicket(), Ticket ID = "_ticket.%Id()	
+		
+		if ($LENGTH(ticket.MaleLastName) < 2) set ticket.MaleLastName = ""
+		if ($LENGTH(ticket.FemaleLastName) < 2) set ticket.FemaleLastName = ""
+		
+		if (ticket.MaleLastName = "") && (ticket.FemaleLastName = "") return couple
+		
+		set trn = ##class(Dance.Data.Tournament).IdExternalIdxOpen(ticket.TournamentIdExternal)
+		#dim manPerson, womanPerson As Dance.Data.Person = ""
+		set isSolo = 0
+		
+		if (ticket.FemaleLastName = ""){
+			// Man solo, but its may be woman solo, because danceplat programmers is ####### 
+			// Find person in the "Person" table
+			w !,"=> - CreateCoupleFromTicket(), ticket.FemaleLastName is null"
+			set isSolo = $$$YES
+			set manPerson = ##class(Dance.Data.Tournament).GetPersonByFullNameFromTournament(trn.%Id(), ticket.MaleLastName, ticket.MaleFirstName)
+			
+			if '$ISOBJECT(manPerson){
+				w !,"=> -- CreateCoupleFromTicket(), manPerson is null"
+				// Find man in the ParticipantTemp table, man solo
+				set manPrt = ##class(Dance.Data.ParticipantTemp).GetManSolo(trn.%Id(), ticket.MaleLastName, ticket.MaleFirstName)
+				
+				if '$ISOBJECT(manPrt){
+					w !,"=> --- CreateCoupleFromTicket(), manPrt is null"
+					// May be woman solo? Let's find
+					set womanPrt = ##class(Dance.Data.ParticipantTemp).GetWomanSolo(trn.%Id(), ticket.FemaleLastName, ticket.FemaleFirstName)
+					
+					if '$ISOBJECT(womanPrt){
+						w !,"=> ---- CreateCoupleFromTicket(), womanPrt is null"
+						// Its data from danceplat DB, in our DB is not exists. We need to create this person.
+						set manPerson = ##class(Dance.Data.Import.Ticket).CreatePersonFromTicket(ticket, 1, .st)
+						$$$THROWONERROR(st, st)			
+					}
+					else{
+						w !,"=> ---- CreateCoupleFromTicket(), womanPrt is object"
+						// create new "Person" item from ParticipantItem
+						set womanPerson = ##class(Dance.Data.ParticipantTemp).CreatePersonFromParticipantTemp(womanPrt, 0, .st)
+						$$$THROWONERROR(st, st)
+					}
+				}
+				else{
+					w !,"=> --- CreateCoupleFromTicket(), manPrt is object"
+					// create new "Person" item from ParticipantItem
+					set manPerson = ##class(Dance.Data.ParticipantTemp).CreatePersonFromParticipantTemp(manPrt, 1, .st)
+					$$$THROWONERROR(st, st)	
+				}
+			}
+		}
+		elseif (ticket.MaleLastName = ""){
+			w !,"=> - CreateCoupleFromTicket(), ticket.MaleLastName is null"
+			// Woman solo
+			// Find person in the "Person" table
+			set isSolo = $$$YES
+			set womanPerson = ##class(Dance.Data.Tournament).GetPersonByFullNameFromTournament(trn.%Id(), ticket.FemaleLastName, ticket.FemaleFirstName)
+			
+			if '$ISOBJECT(womanPerson){
+				w !,"=> -- CreateCoupleFromTicket(), womanPerson is null"
+				// Find woman in the ParticipantTemp table, woman solo
+				set womanPrt = ##class(Dance.Data.ParticipantTemp).GetWomanSolo(trn.%Id(), ticket.FemaleLastName, ticket.FemaleFirstName)
+				
+				if '$ISOBJECT(womanPrt){
+					w !,"=> --- CreateCoupleFromTicket(), womanPrt is null"
+					// Its data from danceplat DB, in our DB is not exists. We need to create this person.
+					set womanPerson = ##class(Dance.Data.Import.Ticket).CreatePersonFromTicket(ticket, 0, .st)
+					$$$THROWONERROR(st, st)	
+				}
+				else{
+					w !,"=> --- CreateCoupleFromTicket(), womanPrt is object"
+					// create new "Person" item from ParticipantItem
+					set womanPerson = ##class(Dance.Data.ParticipantTemp).CreatePersonFromParticipantTemp(womanPrt, 0, .st)
+					$$$THROWONERROR(st, st)	
+				}
+			}	
+		}
+		else{
+			w !,"=> - CreateCoupleFromTicket(), Couple"
+			// Couple
+			// Find person in the "Person" table
+			set manPerson = ##class(Dance.Data.Tournament).GetPersonByFullNameFromTournament(trn.%Id(), ticket.MaleLastName, ticket.MaleFirstName)
+			set womanPerson = ##class(Dance.Data.Tournament).GetPersonByFullNameFromTournament(trn.%Id(), ticket.FemaleLastName, ticket.FemaleFirstName)
+			
+			if '$ISOBJECT(manPerson){
+				w !,"=> -- CreateCoupleFromTicket(), manPerson is null"
+				// Find woman in the ParticipantTemp table, woman solo
+				set manPrt = ##class(Dance.Data.ParticipantTemp).GetWomanSolo(trn.%Id(), ticket.MaleLastName, ticket.MaleFirstName)
+				
+				if '$ISOBJECT(manPrt){
+					w !,"=> --- CreateCoupleFromTicket(), manPrt is null"
+					// Its data from danceplat DB, in our DB is not exists. We need to create this person.
+					set manPerson = ##class(Dance.Data.Import.Ticket).CreatePersonFromTicket(ticket, 1, .st)
+					$$$THROWONERROR(st, st)	
+				}
+				else{
+					w !,"=> --- CreateCoupleFromTicket(), manPrt is object"
+					// create new "Person" item from ParticipantItem
+					set manPerson = ##class(Dance.Data.ParticipantTemp).CreatePersonFromParticipantTemp(manPrt, 1, .st)
+					$$$THROWONERROR(st, st)	
+				}
+			}
+			
+			if '$ISOBJECT(womanPerson){
+				w !,"=> -- CreateCoupleFromTicket(), womanPerson is null"
+				// Find woman in the ParticipantTemp table, woman solo
+				set womanPrt = ##class(Dance.Data.ParticipantTemp).GetWomanSolo(trn.%Id(), ticket.FemaleLastName, ticket.FemaleFirstName)
+				
+				if '$ISOBJECT(womanPrt){
+					w !,"=> --- CreateCoupleFromTicket(), womanPrt is null"
+					// Its data from danceplat DB, in our DB is not exists. We need to create this person.
+					set womanPerson = ##class(Dance.Data.Import.Ticket).CreatePersonFromTicket(ticket, 0, .st)
+					$$$THROWONERROR(st, st)	
+				}
+				else{
+					w !,"=> --- CreateCoupleFromTicket(), womanPrt is object"
+					// create new "Person" item from ParticipantItem
+					set womanPerson = ##class(Dance.Data.ParticipantTemp).CreatePersonFromParticipantTemp(womanPrt, 0, .st)
+					$$$THROWONERROR(st, st)	
+				}
+			}		
+		}
+		
+		if (isSolo) && $ISOBJECT(manPerson){
+			w !,"[1]"
+			set couple = ##class(Dance.Data.Couple).Create(manPerson.%Id(), manPerson.%Id(), .st)
+			$$$THROWONERROR(st, st)			
+		}
+		elseif (isSolo) && $ISOBJECT(womanPerson){
+			w !,"[2]"
+			set couple = ##class(Dance.Data.Couple).Create(womanPerson.%Id(), womanPerson.%Id(), .st)
+			$$$THROWONERROR(st, st)	
+		}
+		elseif $ISOBJECT(manPerson) &&  $ISOBJECT(womanPerson){
+			w !,"[3]"
+			set couple = ##class(Dance.Data.Couple).Create(manPerson.%Id(), womanPerson.%Id(), .st)
+			$$$THROWONERROR(st, st)	
+		}
+		else{
+			w !, "=== FUCK"
+		}
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK 1
+		
+		set st = ex.AsStatus()
+		do $system.OBJ.DisplayError(st)
+	}
+	
+	quit couple
 ]]></Implementation>
 </Method>
 </Class>

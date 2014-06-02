@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//dddddddd
+//d
 
 /*===========================================================================================
 Registration
@@ -10,6 +10,7 @@ Registration
 
 controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, CoupleSrvc){
 	$scope.page = {};
+    $scope.page.genders = [{name: $filter('localize')('Мужской'), code: 'M'}, {name: $filter('localize')('Женский'), code: 'F'}];
     $scope.page.coupleOtherInfo = {};
     $scope.page.competitionTable = {};
     $scope.page.udsrCouple = {man: {},
@@ -21,29 +22,46 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
     $scope.page.newCouple = {btnNextVisible: true,
                              man: {},
                              woman: {},
+                             type: 'Couple',
                              otherInfo:{country:{}}};  
 
+    /*/==========================================================
+    $scope.page.newCouple.man.lastName = 'Петров';
+    $scope.page.newCouple.man.firstName = 'Петр';
+    $scope.page.newCouple.man.dob = '1990-10-20';
+
+    $scope.page.newCouple.woman.lastName = 'Максимова';
+    $scope.page.newCouple.woman.firstName = 'Лариса';
+    $scope.page.newCouple.woman.dob = '1991-11-10';
+
+    $scope.page.newCouple.otherInfo.country.id = 1;
+    $scope.page.newCouple.otherInfo.city = 'Лондон';
+    $scope.page.newCouple.otherInfo.club = 'Крает';
+    $scope.page.newCouple.otherInfo.mainTrainer = 'Сикмонов Павел';    
+    //==========================================================*/
 	
  	if (!$scope.pageStore.registration) 
         $scope.pageStore.registration = {grid:{}};
 
-    
+
     $scope.page.init = function(){
-        //  
+        //    
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-                          {name: 'Date'        , sqlName: 'StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date'},
-                          {name: 'Time'        , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Discipline'  , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Date'        , sqlName: 'StartDate'               , isSorted: true , isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: 'Time'        , sqlName: 'StartTime'               , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
+                          {name: 'Name'        , sqlName: 'Name->Value'             , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Discipline'  , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Age category', sqlName: 'AgeCategory'             , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Class'       , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Type'        , sqlName: 'Type->Name->Value'       , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Price'       , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right'}}];
+                          {name: 'Type'        , sqlName: 'Type->Name->Value'       , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '50px'}},
+                          {name: 'Price'       , sqlName: 'Price'                   , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
         
         $scope.page.competitionTable.properties = [
                           {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'startTime'},
+                          {name:'name'},
                           {name:'discipline.name'},
                           {name:'ageCategory.fullName', calculate: function(item){
                                                        item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
@@ -66,6 +84,15 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
         $scope.page.competitionTable.selectedItems = [];
         $scope.page.competitionTable.multiSelectMode = true;
         $scope.page.competitionTable.forciblyUpdate = 0;
+
+        $scope.pageStore.registration.grid.tableShortView = $scope.pageStore.registration.grid.tableShortView == null ? true : $scope.pageStore.registration.grid.tableShortView;
+        
+        if ($scope.pageStore.registration.grid.tableShortView){
+            $scope.page.competitionTable.setHiddenCoulumns(true);
+        }
+        else{
+            $scope.page.competitionTable.setHiddenCoulumns(false);
+        }  
     };
 
     /// Load Tournament by ID
@@ -79,9 +106,16 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                 $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
+
+    /// Load types of competition
+    $scope.page.loadCompetitionTypes = function(){  
+        $scope.page.competitionTable.types = [{code: 'Couple', name: $filter('localize')('Пара')}, {code: 'Solo', name: $filter('localize')('Соло')}];
+    };
  
     /// Load All Competitions in Tournament  
     $scope.page.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        $scope.page.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
+
         if ($scope.page.competitionTable.avialableMode){
             var coupleType = '';
             var couple = {};
@@ -98,6 +132,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
             }
             else if ($scope.page.newCouple.tabActive){
                 couple = {type: 'new',
+                		  isSolo: $scope.page.newCouple.type == 'Solo',
                           man: $scope.page.newCouple.man,
                           woman: $scope.page.newCouple.woman};
             }
@@ -109,9 +144,12 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                     $scope.page.competitionTable.itemsTotal = data.itemsTotal;
                     $scope.page.competitionTable.items = data.items; 
                     $scope.page.competitionTable.onSelect(null);
+
+                    $scope.page.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
                 },
                 function(data, status, headers, config){
                     $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                    $scope.page.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
                 });
         }
         else{
@@ -122,10 +160,20 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                     $scope.page.competitionTable.itemsTotal = data.itemsTotal;
                     $scope.page.competitionTable.items = data.items; 
                     $scope.page.competitionTable.caption = $filter('localize')('All competitions');
+
+                    $scope.page.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
                 },
                 function(data, status, headers, config){
                     $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                    $scope.page.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
                 });
+        }
+    };
+
+    $scope.page.competitionTable.setHiddenCoulumns = function(value){
+        var indexes = [1,3,4,5,6];
+        for(var n=0; n < indexes.length; n++){
+            $scope.page.competitionTable.columns[indexes[n]].hidden = value;     
         }
     };
 
@@ -167,11 +215,53 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
             function(data, status, headers, config){
                 //$scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
-    };
+    }; 
    
     $scope.page.showCoupleGroups = function(tournamentId, coupleId){
         $location.path("/tournament/" + tournamentId + "/couple/" + coupleId + "/competitions"); 
     };
+
+
+    $scope.page.openConfirmDlg = function(type, man, woman, otherInfo, regMethod){
+        $scope.page.confirmData = {};  
+        $scope.page.confirmData.type = type; 
+    
+        if (type == 'udsr'){
+            $scope.page.confirmData.couple = {man: $scope.page.udsrCouple.man, 
+                                              woman: $scope.page.udsrCouple.woman, 
+                                              otherInfo: $scope.page.udsrCouple.otherInfo};        
+        }
+        else if (type == 'wdsf'){
+            $scope.page.confirmData.couple = {man: $scope.page.wdsfCouple.man, 
+                                              woman: $scope.page.wdsfCouple.woman, 
+                                              otherInfo: $scope.page.wdsfCouple.otherInfo};        
+        }
+        else if (type == 'new'){
+            $scope.page.confirmData.couple = {man: $scope.page.newCouple.man, 
+                                              woman: $scope.page.newCouple.woman, 
+                                              otherInfo: $scope.page.newCouple.otherInfo};        
+
+            for(var i=0; i < $scope.page.countries.length; i++){
+                if ($scope.page.countries[i].id == $scope.page.confirmData.couple.otherInfo.country.id){
+                    $scope.page.confirmData.couple.otherInfo.country = $scope.page.countries[i];
+                }
+            }
+        }
+
+        $scope.page.confirmData.couple = {man: man, woman: woman, otherInfo: otherInfo};
+        $scope.page.confirmData.register = regMethod;
+
+        $('#ConfirmModal').modal('show');
+        $scope.page.confirmModalVisible = true;
+    };
+
+
+    $scope.page.closeConfirmDlg = function(){
+        $('#ConfirmModal').modal('hide');
+        $scope.page.confirmModalVisible = false;  
+    };
+
+
     ///==========================================================================================================================================================================
     /// UDSR COUPLE                                                                                                                                                   UDSR COUPLE 
     ///==========================================================================================================================================================================
@@ -233,13 +323,14 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
     $scope.page.udsrCouple.register = function(){
         CoupleSrvc.registrationExisting({man: $scope.page.udsrCouple.man, woman: $scope.page.udsrCouple.woman, competitions: $scope.page.competitionTable.selectedItems}).then(
             function(data){
-                $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Done!', 'Регистрация успешно завершена!', 'info', true);
-            	$scope.page.competitionTable.selectedItems = [];
-            	$scope.page.competitionTable.refresh();
+                //$scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Done!', 'Регистрация успешно завершена!', 'info', true);
+            	//$scope.page.competitionTable.selectedItems = [];
+            	//$scope.page.competitionTable.refresh();
                 //$scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-                $timeout(function(){
-                    $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-                }, 1500);
+                //$timeout(function(){
+                $scope.pageStore.tournamentPayment = {gridCompetitions: {}, showAlert: true};
+                $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
+                //}, 1500);
             },
             function(data, status, headers, config){
                 $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
@@ -308,20 +399,21 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
     $scope.page.wdsfCouple.register = function(){
         CoupleSrvc.registrationExisting({man: $scope.page.wdsfCouple.man, woman: $scope.page.wdsfCouple.woman, competitions: $scope.page.competitionTable.selectedItems}).then(
             function(data){
-                $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Done!', 'Registration was successful!', 'info', true);
-                $scope.page.competitionTable.selectedItems=[];
-                $scope.page.competitionTable.refresh();
+                //$scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Done!', 'Registration was successful!', 'info', true);
+                //$scope.page.competitionTable.selectedItems=[];
+                //$scope.page.competitionTable.refresh();
                 //$scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id); 
                 
-                $timeout(function(){
-                    $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-                }, 1500);
+                //$timeout(function(){
+                $scope.pageStore.tournamentPayment = {gridCompetitions: {}, showAlert: true};    
+                $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
+                //}, 1500);
             },
             function(data, status, headers, config){
                 $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });  
     };
-
+ 
     ///==========================================================================================================================================================================
     /// NEW COUPLE                                                                                                                                                     NEW COUPLE 
     ///==========================================================================================================================================================================
@@ -329,7 +421,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
     $scope.page.newCouple.next = function(){
         $scope.page.newCouple.man.dob = UtilsSrvc.getValidDate($scope.page.newCouple.man.dob);
         $scope.page.newCouple.woman.dob = UtilsSrvc.getValidDate($scope.page.newCouple.woman.dob);
-        if ($scope.page.newCouple.man.dob == '' || $scope.page.newCouple.woman.dob == '')
+        if ($scope.page.newCouple.man.dob == '' || ($scope.page.newCouple.woman.dob == '' && $scope.page.newCouple.type != 'Solo'))
             return;
 
         $scope.page.udsrCouple.tabDisabled = true;
@@ -365,17 +457,20 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
     $scope.page.newCouple.register = function(){
         $scope.page.newCouple.man.dob = UtilsSrvc.getValidDate($scope.page.newCouple.man.dob);
         $scope.page.newCouple.woman.dob = UtilsSrvc.getValidDate($scope.page.newCouple.woman.dob);
-        if ($scope.page.newCouple.man.dob == '' || $scope.page.newCouple.woman.dob == '')
+        if ($scope.page.newCouple.man.dob == '' || ($scope.page.newCouple.woman.dob == '' && $scope.page.newCouple.type != 'Solo'))
             return; 
 
         $scope.page.newCouple.competitions = $scope.page.competitionTable.selectedItems;
 
-        CoupleSrvc.registrationNew({man: $scope.page.newCouple.man, 
+        CoupleSrvc.registrationNew({tournamentId: $scope.page.tournament.id, 
+                                    isSolo: $scope.page.newCouple.type == 'Solo',
+                                    soloGender: $scope.page.newCouple.soloGender,
+                                    man: $scope.page.newCouple.man, 
                                     woman: $scope.page.newCouple.woman,  
                                     otherInfo: $scope.page.newCouple.otherInfo,
                                     competitions: $scope.page.competitionTable.selectedItems}).then(
             function(data){
-                $window.location = "www.danceplat.ru";  
+                $window.document.forms["danceplatOtherPay"].submit();  
             },
             function(data, status, headers, config){
                 $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
@@ -386,6 +481,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
     $scope.page.init();
     $scope.page.loadCountries();
     $scope.page.loadTournament($routeParams.tournamentId);
+    $scope.page.loadCompetitionTypes();
 });
 
 ]]></CSP>

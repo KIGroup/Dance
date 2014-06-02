@@ -36,7 +36,10 @@ servicesModule.factory('ParticipantSrvc', function(RESTSrvc) {
         },
         getAllForCouple: function(tournamentId, coupleId){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + tournamentId + '/couple/' + coupleId + '/competition'});
-        }, 
+        },
+        removeById: function(id){
+            return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/participant/' + id});
+        }
     }
 });
 ]]></CSP>

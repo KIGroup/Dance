@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/directives/danceplatFromUDSRPay.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//d
+
+directivesModule.directive('danceplatOtherPay', function(){
+    return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: 'components/danceplatUDSRPay.csp',
+        
+        scope: {
+            trnId: '=',
+
+            maleAge: '=',
+            femaleAge: '=',
+
+            maleLastName: '=',
+            femaleLastName: '=',
+            
+            maleFirstName: '=',
+            femaleFirstName: '=',
+            
+            country: '=',
+            city: '=',
+            trainer: '=',
+            trainer: '=',
+
+            competitionIdList: '=',
+            hideAll: '=',
+            btnName: '='           
+        },
+        controller: function($scope){
+            
+	   	}
+    }
+});]]></CSP>
+</Export>

@@ -78,7 +78,7 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
                 $scope.menu.loginCaption = 'Выход';
                 $cookies['admin'] = 'true';
             },
-            function(response){
+            function(data){
                 $scope.menu.admin = false;
                 $cookies['admin'] = 'false';
                 $cookies['readOnlyMode'] = 'false';
@@ -88,8 +88,8 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
     }
 
     $scope.menu.loadLanguages();
-    $scope.menu.admin = true;
-    $scope.menu.readOnlyMode = true;
+    //$scope.menu.admin = true;
+    //$scope.menu.readOnlyMode = true;
 });
 
 ]]></CSP>

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddcddddddd
+//ddcddddd
 
 /*===========================================================================================
 Payment
@@ -13,27 +13,37 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
 
 	$scope.page = {};
     $scope.page.competitionTable = {};
+    $scope.page.competitionList = [];
 
- 	if (!$scope.pageStore.tournamentPayment) $scope.pageStore.tournamentPayment = {gridCompetitions:{}};
+ 	if (!$scope.pageStore.tournamentPayment) 
+        $scope.pageStore.tournamentPayment = {gridCompetitions:{}};
 
     
     $scope.page.init = function(){
+        if ($scope.pageStore.tournamentPayment.showAlert){
+            $scope.page.registrationAlert = UtilsSrvc.getAlert('Готово!', 'Регистрация прошла успешно, на данной странице отображены все группы пары/участника в турнире.', 'info', true);
+            $scope.pageStore.tournamentPayment.showAlert = false;
+        }
+
+
         // 
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-                          {name: 'Date'              , sqlName: 'Competition->StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date'},
-                          {name: 'Time'              , sqlName: 'Competition->StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Date'              , sqlName: 'Competition->StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: 'Time'              , sqlName: 'Competition->StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '60px'}},
+                          {name: 'Name'              , sqlName: 'Competition->Name'                    , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Discipline'        , sqlName: 'Competition->Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Age category'      , sqlName: 'Competition->AgeCategory'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Class'             , sqlName: ''                                     , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Type'              , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Price'             , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right'}},
-                          {name: 'Status'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false}];
+                          {name: 'Type'              , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
+                          {name: 'Price'             , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}},
+                          {name: 'Status'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}}];
         
         $scope.page.competitionTable.properties = [
         				  {name:'competition.startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'competition.startTime'},
+                          {name:'competition.name'},
                           {name:'competition.discipline.name'},
                           {name:'competition.ageCategory.name'},
                           {name:'competition.dancerClassesString', calculate: function(item){
@@ -46,7 +56,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
                                                                     }},
                           {name:'competition.type.name'},
                           {name:'competition.price', cellStyle: {textAlign: 'right'}},
-                          {name:'paymentStatusString', calculate: function(item){
+                          {name:'paymentStatusString', cellStyle: {textAlign: 'center'}, calculate: function(item){
                                                             switch(item.paymentStatus){
                                                                 case 'none':
                                                                     item.paymentStatusString = $filter('localize')('Не оплачено');
@@ -68,6 +78,15 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
         $scope.page.competitionTable.forciblyUpdate = 0;
       
         $scope.page.competitionTable.refresh();
+
+        $scope.pageStore.tournamentPayment.gridCompetitions.tableShortView = $scope.pageStore.tournamentPayment.gridCompetitions.tableShortView == null ? true : $scope.pageStore.tournamentPayment.gridCompetitions.tableShortView;
+        
+        if ($scope.pageStore.tournamentPayment.gridCompetitions.tableShortView){
+            $scope.page.competitionTable.setHiddenCoulumns(true);
+        }
+        else{
+            $scope.page.competitionTable.setHiddenCoulumns(false);
+        }    
     };
 
 
@@ -77,21 +96,32 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
             function(data){
 	            $scope.page.competitionTable.items = data.children;
 				$scope.page.competitionTable.itemsTotal = data.children.length;
-				
+				/*
                 if ($scope.page.competitionTable.selectedItems && $scope.page.competitionTable.items && $scope.page.competitionTable.selectedItems.length == 0 && $scope.page.competitionTable.items.length != 0){
                     for(var i=0; i < data.items.length; i++){
-                        data.items[i].rowClass = 'info';
+                        data.items[i].rowClass = 'success';
                     	$scope.page.competitionTable.selectedItems.push(data.items[i]);
                     }
-                }
+                }*/
             }, 
             function(data){
                 $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
+    $scope.page.competitionTable.setHiddenCoulumns = function(value){
+        var indexes = [1,3,4,5,6];
+        for(var n=0; n < indexes.length; n++){
+            $scope.page.competitionTable.columns[indexes[n]].hidden = value;     
+        }
+    };
+
     $scope.page.competitionTable.onSelect = function(item){
-        if (!item)  return;
+        $scope.page.competitionList = [];
+        
+        for(var i=0; i < $scope.page.competitionTable.selectedItems.length; i++){
+            $scope.page.competitionList.push($scope.page.competitionTable.selectedItems[i].competition);
+        }
     };
  
     $scope.page.competitionTable.refresh = function(){ 
@@ -108,8 +138,8 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
                 $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
             });
     };
-
-    /// Load Couple by ID
+ 
+    /// Load Couple by ID 
     $scope.page.loadCouple = function(id){
         CoupleSrvc.getById(id).then(
             function(data){

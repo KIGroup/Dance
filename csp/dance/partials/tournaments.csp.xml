@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/partials/tournaments.csp" application="/csp/dance/" default="1"><![CDATA[
+<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для регистрации в турнире нажмите на ссылку (») в колонке "Регистрация".'|localize}}</p>
+<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех групп турнира нажмите на ссылку (») в колонке "Группы" или выберите внизу вкладку "Группы(N)".'|localize}}</p>
+<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех участников турнира нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
+
 <div class="row-fluid">
 	<div class="row-fluid">
 		<div class="span8">
@@ -36,7 +40,7 @@
  			on-select="page.tournamentTable.onSelect(item)"
  			on-select-cell="page.tournamentTable.onSelectCell(item, property)"
 
- 			action-column-visible="menu.readOnlyMode"
+ 			action-column-visible="!menu.readOnlyMode && menu.admin"
 		    action-column-icon="'fa fa-plus-circle'"
 		    action-column-title="'Add'|localize"
 		    action-column-method="page.tournamentTable.add()"
@@ -64,6 +68,8 @@
 	</div>
 </div>	
 
+<br>
+
 <div class="row-fluid" ng-hide="page.tournamentTable.selectedItems.length==0">
 	 <tabset>
 		<tab heading="{{'Информация'|localize}}">
@@ -82,12 +88,20 @@
 			</div>
 		</tab>
 		<tab heading="{{('Группы'|localize) + ' (' + page.competitionTable.itemsTotal + ')'}}"  active="pageStore.tournaments.tabCompetitionsActive">
+			<p style="padding-bottom: 10px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка участников группы нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
+
 			<div class="row-fluid">
 				<button type="button" style="margin-bottom: 15px; font-size: 1em; margin-right: 10px;" class="btn btn-mini btnRadio" ng-model="pageStore.tournaments.gridCompetitions.filterDate" btn-radio="''" ng-bind="'All days'|localize" ng-click="page.competitionTable.changeDateFilter('')"></button>
 				<div class="btn-group" style="margin-bottom: 15px;">
 					<button type="button" class="btn btn-mini btnRadio" ng-repeat="cdate in page.competitionTable.dates" ng-model="pageStore.tournaments.gridCompetitions.filterDate" btn-radio="cdate" ng-bind="cdate|convertCacheDate:('d MMMM y'|localize)" ng-click="page.competitionTable.changeDateFilter(cdate)"></button>
 				</div>
+				<!--
 				<span class="pull-right" ng-bind="('Total prticipants count'|localize) + ' - ' + page.tournamentTable.participantsInfo.total + ', ' + ('unique'|localize) + ' - ' + page.tournamentTable.participantsInfo.unique"></span>
+				-->
+				<div class="btn-group pull-right" style="margin-bottom: 15px;">
+					<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.tournaments.gridCompetitions.tableShortView" btn-radio="true" ng-bind="'Коротко'" title="{{'Скрывать дополнительные столбцы'|localize}}" ng-click="page.competitionTable.setHiddenCoulumns(true)"></button>
+					<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.tournaments.gridCompetitions.tableShortView" btn-radio="false" ng-bind="'Детально'" title="{{'Отображать дополнительные столбцы'|localize}}" ng-click="page.competitionTable.setHiddenCoulumns(false)"></button>
+				</div>  
 			</div>
 			<div class="row-fluid">
 				<stcgrid

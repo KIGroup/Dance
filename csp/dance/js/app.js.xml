@@ -36,7 +36,7 @@ mainModule.config(['$routeProvider', function($routeProvider) {
 
 	// 
 	$routeProvider.when('/tournament/:tournamentId/couple/:coupleId/competitions', {templateUrl: 'partials/payment.csp' , controller: 'PaymentCtrl'});
-
+	
 	// Add competition	
 	$routeProvider.when('/tournament/:tournamentId/competition', {templateUrl: 'partials/competition.csp' , controller: 'CompetitionCtrl'});
 

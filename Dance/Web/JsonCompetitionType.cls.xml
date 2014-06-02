@@ -16,6 +16,7 @@ Convert "CompetitionType" object to %ZEN.proxyObject (for JSON)</Description>
 	try{
 		set proxy.id = object.%Id()
 		set proxy.name = object.Name.Value
+		set proxy.code = object.Code
 	}
 	catch(ex){
 		set proxy = ##class(%ZEN.proxyObject).%New()

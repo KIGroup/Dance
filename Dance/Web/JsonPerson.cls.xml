@@ -18,7 +18,8 @@ Convert "Person" object to %ZEN.proxyObject (for JSON)</Description>
 		set proxy.lastName = object.LastName.Value
 		set proxy.firstName = object.FirstName.Value
 		set proxy.gender = object.Gender
-		set proxy.dob = $ZDATE(object.DOB, 3)
+		
+		if (object.DOB '= "") set proxy.dob = $ZDATE(object.DOB, 3)
 		
 		set proxy.numberUDSR = object.NumberUDSR
 		set proxy.numberWDSF = object.NumberWDSF

@@ -266,12 +266,12 @@ user agent stylesheetpre, xmp, plaintext, listing {
 }
 
 .existsItem {
-	background-color: rgb(252, 237, 129);
+	background-color: rgb(195, 217, 245);
 }
 
 
 .table-hover tbody tr.existsItem:hover > td {
-  	background-color: rgb(252, 247, 129);
+  	background-color: rgb(215, 217, 245);
 }
 
 .successItem {
@@ -331,12 +331,57 @@ user agent stylesheetpre, xmp, plaintext, listing {
 }
 
 
+.table th, .table td {
+	padding: 4px;
+}
+
+.table th{
+	background-color: #FFCC33;
+}
+
+.nav-tabs {
+	border-bottom: 1px solid #969592;
+}
+
+.nav-tabs>.active>a, .nav-tabs>.active>a:hover, .nav-tabs>.active>a:focus {
+	border: 1px solid #969592;
+	border-bottom-color: transparent;
+}
+
+.nav-tabs>li>a:hover, .nav-tabs>li>a:focus {
+	border-color: #969592 #969592 #969592;
+}
 
 
 
 
+.btnRadio.active, .btnCheckBox.active {
+color: black;
+text-shadow: 0 -1px 0 rgba(0,0,0,0);
+background-color: #FFCC33;
+background-image: -moz-linear-gradient(top,#FFCC33,#FFD80B);
+background-image: -webkit-gradient(linear,0 0,0 100%,from(#FFCC33),to(#FFD80B));
+background-image: -webkit-linear-gradient(top,#FFCC33,#FFD80B);
+background-image: -o-linear-gradient(top,#FFCC33,#FFD80B);
+background-image: linear-gradient(to bottom,#FFCC33,#FFD80B);
+background-repeat: repeat-x;
+border-color: #FFD80B #FFD80B #002a80;
+border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0);
+filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
 
 
+.nav-tabs>li>a {
+	color: rgb(95, 90, 65);
+}
 
+.nav-tabs>.active>a, .nav-tabs>.active>a:hover, .nav-tabs>.active>a:focus {
+	color: #000;
+}
+
+.nav>.disabled>a {
+	color: #B9B9B9;
+}
 ]]></CSP>
 </Export>

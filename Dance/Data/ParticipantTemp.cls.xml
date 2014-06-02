@@ -9,6 +9,11 @@
 <Required>1</Required>
 </Property>
 
+<Property name="Tournament">
+<Type>Tournament</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Competitions">
 <Type>Dance.Data.Competition</Type>
 <Collection>list</Collection>
@@ -19,21 +24,18 @@
 <Description>
 Male First name</Description>
 <Type>%String</Type>
-<Required>1</Required>
 </Property>
 
 <Property name="ManLastName">
 <Description>
 Last name</Description>
 <Type>%String</Type>
-<Required>1</Required>
 </Property>
 
 <Property name="ManDOB">
 <Description>
 Date of birth</Description>
 <Type>%Date</Type>
-<Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
@@ -41,21 +43,18 @@ Date of birth</Description>
 <Description>
 First name</Description>
 <Type>%String</Type>
-<Required>1</Required>
 </Property>
 
 <Property name="WomanLastName">
 <Description>
 Last name</Description>
 <Type>%String</Type>
-<Required>1</Required>
 </Property>
 
 <Property name="WomanDOB">
 <Description>
 Date of birth</Description>
 <Type>%Date</Type>
-<Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
@@ -86,8 +85,8 @@ Date of birth</Description>
 <Parameter name="MAXLEN" value="2000"/>
 </Property>
 
-<Index name="CoupleLastNameIdx">
-<Properties>ManLastName,WomanLastName</Properties>
+<Index name="CommonIdx">
+<Properties>Tournament,ManLastName,ManFirstName,WomanLastName,WomanFirstName</Properties>
 </Index>
 
 <Method name="Create">
@@ -95,31 +94,282 @@ Date of birth</Description>
 <FormalSpec><![CDATA[data:%RegisteredObject,&status]]></FormalSpec>
 <ReturnType>Dance.Data.ParticipantTemp</ReturnType>
 <Implementation><![CDATA[
-	set obj = ..%New()
-	set obj.ManLastName = $ZCVT(data.man.lastName,"I","UTF8")
-	set obj.ManFirstName = $ZCVT(data.man.firstName,"I","UTF8")
-	set obj.ManDOB = $ZDH(data.man.dob, 3)
+	if (data.isSolo = $$$YES) && (data.soloGender = "F"){
+		set data.woman = data.man
+		set data.man = ##class(%ZEN.proxyObject).%New()
+	}
+		
+	set obj = ..GetParticipant(data.tournamentId, $ZCVT(data.man.lastName,"I","UTF8"), $ZCVT(data.man.firstName,"I","UTF8"), $ZCVT(data.woman.lastName,"I","UTF8"), $ZCVT(data.woman.firstName,"I","UTF8"))
 	
-	set obj.WomanLastName = $ZCVT(data.woman.lastName,"I","UTF8")
-	set obj.WomanFirstName = $ZCVT(data.woman.firstName,"I","UTF8")
-	set obj.WomanDOB = $ZDH(data.woman.dob, 3)
+	if '$ISOBJECT(obj){
+		set obj = ..%New()	
+		set obj.ManLastName = $ZCVT(data.man.lastName,"I","UTF8")
+		set obj.ManFirstName = $ZCVT(data.man.firstName,"I","UTF8")
+		if (data.man.dob '= "") set obj.ManDOB = $ZDH(data.man.dob, 3)
+		
+		set obj.WomanLastName = $ZCVT(data.woman.lastName,"I","UTF8")
+		set obj.WomanFirstName = $ZCVT(data.woman.firstName,"I","UTF8")
+		if (data.woman.dob '= "") set obj.WomanDOB = $ZDH(data.woman.dob, 3)
+		
+		set obj.Country = ##class(Dance.Data.Country).%OpenId(data.otherInfo.country.id)
+		set obj.City = $ZCVT(data.otherInfo.city,"I","UTF8")
+		set obj.Club = $ZCVT(data.otherInfo.club,"I","UTF8")
+		
+		set obj.MainTrainer = $ZCVT(data.otherInfo.mainTrainer,"I","UTF8")
+		set obj.OtherTrainers = $ZCVT(data.otherInfo.otherTrainers,"I","UTF8")
 	
-	set obj.Country = ##class(Dance.Data.Country).%OpenId(data.otherInfo.country.id)
-	set obj.City = $ZCVT(data.otherInfo.cityName,"I","UTF8")
-	set obj.Club = $ZCVT(data.otherInfo.club,"I","UTF8")
-	
-	set obj.MainTrainer = $ZCVT(data.otherInfo.mainTrainer,"I","UTF8")
-	set obj.OtherTrainers = $ZCVT(data.otherInfo.otherTrainers,"I","UTF8")
+	}
 	
 	for i=1:1:data.competitions.Count(){
 		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
 		do obj.Competitions.Insert(competition)
 	}
 	
+	set obj.Tournament = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
+	
 	set obj.Created = $ZDT($ZTS, 3)
 	set status = obj.%Save()
 
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="GetParticipant">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,manLastName:%String,manFirstName:%String,womanLastName:%String,womanFirstName:%String</FormalSpec>
+<ReturnType>ParticipantTemp</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+	if (manLastName = " "){
+		w !,manLastName_"wefwef"
+	}
+	
+	if ($LENGTH(manLastName) < 2) && ($LENGTH(manFirstName) < 2){ 
+		&sql(SELECT ID INTO :id
+			 FROM Dance_Data.ParticipantTemp
+		 	 WHERE Tournament = :trnId AND ManLastName IS NULL AND ManFirstName IS NULL
+		 						   AND WomanLastName = :womanLastName AND WomanFirstName = :womanFirstName)
+	}
+	elseif ($LENGTH(womanLastName) < 2) && ($LENGTH(womanFirstName) < 2){ 
+		&sql(SELECT ID INTO :id
+			 FROM Dance_Data.ParticipantTemp
+		 	 WHERE Tournament = :trnId AND ManLastName = :manLastName AND ManFirstName = :manFirstName
+		 						   AND WomanLastName IS NULL AND WomanFirstName IS NULL)
+	}
+	else{
+		&sql(SELECT ID INTO :id
+			 FROM Dance_Data.ParticipantTemp
+		 	 WHERE Tournament = :trnId AND ManLastName = :manLastName AND ManFirstName = :manFirstName
+		 						   AND WomanLastName = :womanLastName AND WomanFirstName = :womanFirstName)
+	}
+	
+	
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetCouple">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,manLastName:%String,manFirstName:%String,womanLastName:%String,womanFirstName:%String</FormalSpec>
+<ReturnType>ParticipantTemp</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+	
+	&sql(SELECT ID INTO :id
+		 FROM Dance_Data.ParticipantTemp
+		 WHERE Tournament = :trnId AND ManLastName = :manLastName AND ManFirstName = :manFirstName
+		 						   AND WomanLastName = :womanLastName AND WomanFirstName = :womanFirstName)
+	
+	
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetManSolo">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,manLastName:%String,manFirstName:%String</FormalSpec>
+<ReturnType>ParticipantTemp</ReturnType>
+<Implementation><![CDATA[
+	set id = "" 
+	&sql(SELECT ID INTO :id
+		 FROM Dance_Data.ParticipantTemp
+		 WHERE Tournament = :trnId AND ManLastName = :manLastName AND ManFirstName = :manFirstName
+		 						   AND WomanLastName IS NULL AND WomanFirstName IS NULL)
+	
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetWomanSolo">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,womanLastName:%String,womanFirstName:%String</FormalSpec>
+<ReturnType>ParticipantTemp</ReturnType>
+<Implementation><![CDATA[
+	set id = "" 
+	&sql(SELECT ID INTO :id
+		 FROM Dance_Data.ParticipantTemp
+		 WHERE Tournament = :trnId AND ManLastName IS NULL AND ManFirstName IS NULL
+		 						   AND WomanLastName = :womanLastName AND WomanFirstName = :womanFirstName)
+	
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="CreateCouple">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[trnId:%String,data:Dance.Data.Import.Ticket,&st]]></FormalSpec>
+<ReturnType>Couple</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set couple = $$$NULLOREF
+	
+	try{
+		
+		if (data.MaleLastName = "Новожилова"){
+			w !,"TT="_data.IdInternal_"=0"
+		}
+		
+		if (data.MaleLastName = "") && (data.FemaleLastName = "") return couple
+	
+		#dim temp As ParticipantTemp
+		set temp = ..GetParticipant(trnId, data.MaleLastName, data.MaleFirstName, data.FemaleLastName, data.FemaleFirstName)
+	
+		if '$ISOBJECT(temp){ 
+			set temp = ..GetParticipant(trnId, data.FemaleLastName, data.FemaleFirstName, data.MaleLastName, data.MaleFirstName)
+		}
+		
+		if '$ISOBJECT(temp) {
+			return couple
+		}
+		
+		set (newMan,newWoman)=""
+	
+		if (temp.ManLastName '= ""){
+			TSTART
+			set newMan = ##class(Dance.Data.Person).%New()
+			set newMan.Gender = "M"
+			set newMan.LastName =  ##class(Dance.Data.Localization.LText).Create(temp.ManLastName, "Dance.Data.Localization.Translation;PersonLTextValue")		
+			set newMan.FirstName =  ##class(Dance.Data.Localization.LText).Create(temp.ManFirstName, "Dance.Data.Localization.Translation;PersonLTextValue")
+			set newMan.DOB = temp.ManDOB
+			set newMan.Country = temp.Country
+			set newMan.City = temp.City
+			set newMan.MainTrainer = temp.MainTrainer
+			set newMan.OtherTrainers = temp.OtherTrainers
+			set newMan.LastUpdated = $ZDT($ZTS,3)
+			if $$$ISERR(newMan.%Save()){
+				TROLLBACK 1
+			}
+			else{
+				TCOMMIT 
+			}		
+		}	
+		
+	
+		if (temp.WomanLastName '= ""){
+			TSTART	
+			set newWoman = ##class(Dance.Data.Person).%New()
+			set newWoman.Gender = "F"
+			set newWoman.LastName =  ##class(Dance.Data.Localization.LText).Create(temp.WomanLastName, "Dance.Data.Localization.Translation;PersonLTextValue")		
+			set newWoman.FirstName =  ##class(Dance.Data.Localization.LText).Create(temp.WomanFirstName, "Dance.Data.Localization.Translation;PersonLTextValue")
+			set newWoman.DOB = temp.WomanDOB
+			set newWoman.Country = temp.Country
+			set newWoman.City = temp.City
+			set newWoman.MainTrainer = temp.MainTrainer
+			set newWoman.OtherTrainers = temp.OtherTrainers
+			set newWoman.LastUpdated = $ZDT($ZTS,3)		
+			if $$$ISERR(newWoman.%Save()){
+				TROLLBACK 1
+			}
+			else{
+				TCOMMIT 
+			}
+		}
+	
+		
+		if $ISOBJECT(newMan) && $ISOBJECT(newWoman) set couple = ##class(Dance.Data.Couple).Create(newMan.%Id(), newWoman.%Id(), .st)
+		if $ISOBJECT(newMan) && '$ISOBJECT(newWoman) set couple = ##class(Dance.Data.Couple).Create(newMan.%Id(), newMan.%Id(), .st)
+		if '$ISOBJECT(newMan) && $ISOBJECT(newWoman) set couple = ##class(Dance.Data.Couple).Create(newWoman.%Id(), newWoman.%Id(), .st)
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	if (data.MaleLastName = "Новожилова"){
+		w !,"st"_st
+	}
+	
+	quit couple
+]]></Implementation>
+</Method>
+
+<Method name="CreatePersonFromParticipantTemp">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[prt:ParticipantTemp,isMan:%Boolean,&st]]></FormalSpec>
+<ReturnType>Dance.Data.Person</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set person = ""
+	
+	try{
+		TSTART
+		
+		set person = ##class(Dance.Data.Person).%New()
+		
+		if (isMan){
+			set person.Gender = "M"
+			set person.LastName = ##class(Dance.Data.Localization.LText).Create(prt.ManLastName)
+			set person.FirstName = ##class(Dance.Data.Localization.LText).Create(prt.ManFirstName)
+			set person.DOB = prt.ManDOB
+		}
+		else{
+			set person.Gender = "F"
+			set person.LastName = ##class(Dance.Data.Localization.LText).Create(prt.WomanLastName)
+			set person.FirstName = ##class(Dance.Data.Localization.LText).Create(prt.WomanFirstName)
+			set person.DOB = prt.WomanDOB
+		}
+		
+		set person.Country = prt.Country
+		set person.City = prt.City
+		set person.MainTrainer = prt.MainTrainer
+		set person.OtherTrainers = prt.OtherTrainers
+		set person.LastUpdated = $ZDT($ZTS, 3)
+		
+		$$$THROWONERROR(st, person.%Save())
+		
+		
+		/*
+		set data = ##class(%ZEN.proxyObject).%New()
+		
+		if (isMan){
+			set data.gender = "M"
+			set data.lastName = prt.ManLastName
+			set data.firstName = prt.ManFirstName
+			set data.dob = $ZD(prt.ManDOB, 3)
+		}
+		else{
+			set data.gender = "F"
+			set data.lastName = prt.WomanLastName
+			set data.firstName = prt.WomanFirstName
+			set data.dob = $ZD(prt.WomanDOB, 3)
+		}
+		
+		set data.otherInfo = ##class(%ZEN.proxyObject).%New()
+		set data.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(prt.Country)
+		set data.otherInfo.cityName = prt.City
+		set data.otherInfo.mainTrainer = prt.MainTrainer
+		set data.otherInfo.otherTrainers = prt.OtherTrainers
+		
+		set person = ##class(Dance.Data.Person).Save(data, .st)
+		$$$THROWONERROR(st, st)
+		*/
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK 1
+		set st = ex.AsStatus()
+		do $system.OBJ.DisplayError(st)
+	}
+	
+	quit person
 ]]></Implementation>
 </Method>
 
@@ -173,6 +423,15 @@ Date of birth</Description>
 </Value>
 <Value name="14">
 <Value>Competitions</Value>
+</Value>
+<Value name="15">
+<Value>Tournament</Value>
+</Value>
+<Value name="16">
+<Value>IsSolo</Value>
+</Value>
+<Value name="17">
+<Value>SoloGender</Value>
 </Value>
 </Data>
 </Storage>

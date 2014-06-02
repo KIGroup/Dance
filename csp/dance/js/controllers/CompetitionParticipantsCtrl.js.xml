@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//csddddd
+//csddd
  
 /*===========================================================================================
 Competition Participants 
@@ -21,12 +21,12 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     	// Participant table
     	//  
         $scope.page.participantTable.columns = [
-                          {name: 'Партнер / партнерша', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true},
-                          {name: 'Class'      , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
+                          {name: 'Партнер / партнерша', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true, captionStyle: {width: '250px'}},
+                          {name: 'Class'      , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '50px'}},
                           {name: 'Club / City', sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Trainers'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Country'    , sqlName: 'Couple->Man->Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Группы участников'    , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {name: 'Группы'     , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: "70px"}}];
         
         $scope.page.participantTable.properties = [
         				  {name:'couple.fullName', calculate: function(item){ 
@@ -38,7 +38,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             item.couple.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
                                                         }
                                                     }},
-                          {name:'couple.class', calculate: function(item){
+                          {name:'couple.class', cellStyle: {textAlign: 'center'}, calculate: function(item){
                                                     if ($scope.page.competition.discipline.code == 'Ла'){
                                                         item.couple.class = item.couple.man.laClass.name + '\n' + item.couple.woman.laClass.name;
                                                     }
@@ -53,7 +53,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                                item.couple.otherInfo.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
                                                              }},
                           {name:'couple.otherInfo.country.name'},
-                          {name:'coupleCompetitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch couple groups list'),
+                          {name:'coupleCompetitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп, в которых зарегистрирована пара'),
                                                 getCssClass: function(item){ 
                                                     return 'cellCoupleLink';
                                                 }, 
@@ -75,15 +75,20 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
 
     // 
     $scope.page.participantTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        $scope.page.participantTable.itemsStatus = $filter('localize')('Идет загрузка данных...');
+
         ParticipantSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {competitionId: $scope.page.competition.id}).then(
             function(data){
 	            data = data.children;
                 $scope.page.participantTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
                 $scope.page.participantTable.itemsTotal = data.itemsTotal;
                 $scope.page.participantTable.items = data.items;
+
+                $scope.page.participantTable.itemsStatus = data.itemsTotal == 0 ? $filter('localize')('Нет данных.') : '';
             },
-            function(response){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', response.data, 'error', true);
+            function(data){
+                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.participantTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке данных.');
             });
     };
 
@@ -96,6 +101,22 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
         if (!item) return;
 
         property.onClickCell(item.couple.id);
+    };
+
+    $scope.page.participantTable.remove = function(item){
+        function remove(){
+            ParticipantSrvc.removeById(item.id).then(
+                function(data){
+                    $scope.page.participantTable.selectedItems = [];
+                    $scope.page.participantTable.refresh();
+                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Participant is removed.', 'success', true);
+                },
+                function(data, status, headers, config){
+                    $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                });  
+        };
+
+        UtilsSrvc.openMessageBox('Remove participant from competition?', item.couple.man.lastName + ' - ' + item.couple.woman.lastName, remove);    
     };
     
     /// Load Competition by ID

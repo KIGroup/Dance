@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/partials/importtournaments.csp" application="/csp/dance/" default="1"><![CDATA[
+<p>{{'Ярким цветом выделены турниры, которые уже есть базе данных. Сравнение идет по IdInternal. Для сохранения турнира заполните все дополнительные поля в диалоговом окне импорта.'|localize}}</p>
+
 <div class="row-fluid">
     <stcgrid 
     	grid="pageStore.importtournaments.grid"
 	    table-class="table table-bordered table-hover"
-	    caption="''"
+	    caption="'Доступные для импорта турниры'"
 	    columns="page.tournamentTable.columns"
 	    items="page.tournamentTable.items"
 	    properties="page.tournamentTable.properties"
