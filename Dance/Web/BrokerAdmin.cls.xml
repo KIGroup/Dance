@@ -10,6 +10,9 @@ Protected REST URLs</Description>
 <Data><![CDATA[
 <Routes>
 <!--========================================= IMPORT ================================================-->
+<!-- GET BY ID, Tournament -->
+<Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:WriteObjectByIdToDevice"/>
+
 <!-- GET ALL [GRID], Tournament Import -->
 <Route Method="POST" Url="/import/tournament/grid" Call="Dance.Web.JsonTournamentImport:WriteAllForGridToDevice"/>
 

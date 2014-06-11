@@ -105,8 +105,17 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 </Method>
 
 <Method name="Settings">
+<Description>
+do ##class(Dance.Utils.Init.BaseInit).Settings()</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set ^Settings("Dance","EmailFrom") = "dance.reg.system@mail.ru"
+	set ^Settings("Dance","EmailSMTPPASSWORD") = "dance2014-06"
+	set ^Settings("Dance","EmailSMTPPORT") = 25
+	set ^Settings("Dance","EmailSMTPSERVER") = "smtp.mail.ru"
+	set ^Settings("Dance","EmailSMTPUSER") = "dance.reg.system@mail.ru"
+]]></Implementation>
 </Method>
 </Class>
 </Export>

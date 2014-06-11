@@ -5,128 +5,10 @@
 
 localizationModule.constant('DanceDictionary', {
   toEnglish: {
-        'System language' : 'System language',
-        'd MMMM y'                        : 'MMMM d, y'
+        'Язык системы' : 'System language',
+        'd MMMM y'     : 'MMMM d, y'
   },
   toRussian: {
-        'All days'                        : 'Все дни',
-        'Add'                             : 'Добавить',
-        'Age category'                    : 'Возрастная группа',
-        'Cancel'                          : 'Отмена',
-        'Class'                           : 'Класс',
-        'Club'                            : 'Клуб', 
-        'Competition'                     : 'Группа',
-        'Country'                         : 'Страна',
-        'd MMMM y'                        : 'd MMMM y',
-        'Done!'                           : 'Готово!',
-        'Date'                            : 'Дата',
-        'Attention!'                      : 'Внимание!',
-        'Date and time'                   : 'Дата и время',
-        'Discipline'                      : 'Программа',
-        'End date'                        : 'Дата окончания',
-        'End time'                        : 'Время окончания',
-        'First page'                      : 'Первая страница',
-        'HH:MM'                           : 'ЧЧ:ММ',
-        'Information about tournament'    : 'Информация о турнире',
-        'Last page'                       : 'Последняя страница',
-        'Location'                        : 'Место',
-        'Man'                             : 'Партнер',
-        'Man class'                       : 'Класс партнера',
-        'Name'                            : 'Название',
-        'Organizer web-site'              : 'Веб-сайт организатора',
-        'Page'                            : 'Страница',
-        'Page size'                       : 'Размер страницы',
-        'Participants'                    : 'Участники',
-        'Payment'                         : 'Платеж',
-        'Previous page'                   : 'Предыдущая страница',
-        'Price'                           : 'Цена',
-        'Rank'                            : 'Ранг',
-        'Save'                            : 'Сохранить',
-        'Search in column'                : 'Поиск в столбце',
-        'Start date / end date'           : 'Дата начала / окончания',
-        'Start date'                      : 'Дата начала',
-        'Start time'                      : 'Время начала',
-        'Status'                          : 'Статус',
-        'System language'                 : 'Язык системы',
-        'Tournament'                      : 'Турнир',
-        'Trainers'                        : 'Тренеры',
-        'Woman'                           : 'Партнерша',
-        'Woman class'                     : 'Класс партнерши',
-        '* required fields'               : '* обязательные поля формы',
-        'Age categories'                  : 'Возрастные группы',
-        'All competitions'                : 'Все группы в турнире',
-        'Back'                            : 'Назад',
-        'City'                            : 'Город',
-        'Classes'                         : 'Классы',
-        'Clear'                           : 'Очистить',
-        'Country (WDSF)'                  : 'Страна (WDSF)',
-        'Dancer classes'                  : 'Классы участников',
-        'Date of birth'                   : 'Дата рождения',
-        'Edit'                            : 'Изменить',
-        'Entities'                        : 'Справочники',
-        'Female partner'                  : 'Партнерша',
-        'First name'                      : 'Имя',
-        'Full name'                       : 'Фамилия, Имя',
-        'Import'                          : 'Импорт',
-        'Last name'                       : 'Фамилия',
-        'Limit'                           : 'Макс.',
-        'Main trainer'                    : 'Главный тренер',
-        'Male partner'                    : 'Партнер',
-        'Man and woman numbers'           : 'Номера партнера и партнерши',
-        'Man number'                      : 'Номер партнера',
-        'MIN'                             : 'MIN',
-        'Next'                            : 'Далее',
-        'Next page'                       : 'Следующая',
-        'Number UDSR'                     : 'Номер СТСР',
-        'Number WDSF'                     : 'Номер WDSF',
-        'Other information'               : 'Дополнительная информация',
-        'Organizer'                       : 'Организатор',
-        'Other trainers'                  : 'Другие тренеры',
-        'Registration'                    : 'Регистрация',
-        'Registration of couple'          : 'Регистрация пары',
-        'Registration of foreign couple'  : 'Регистрация иностранной пары',
-        'Remove'                          : 'Удалить',
-        'Search'                          : 'Поиск',
-        'select competitions'             : 'выберите группы',
-        'Time'                            : 'Время', 
-        'Tournament rank'                 : 'Ранг турнира',
-        'Tournament status'               : 'Статус турнира',
-        'Tournaments'                     : 'Турниры',
-        'Trainer #1, full name'           : 'Тренер #1. Фамилия, Имя',
-        'Trainer #2, full name'           : 'Тренер #2. Фамилия, Имя',
-        'Type'                            : 'Тип',
-        'Woman number'                    : 'Номер партнерши',
-		'Total prticipants count'         : 'Всего участников в турнире',
-		'unique'                          : 'уникальных',
-		'add' : 'Добавить',
-		'Check in' : 'Оформить',
-		'Club / City' : 'Клуб / Город',
-		'Competitions of the tournament' : 'Группы турнира',
-		'Man / Woman' : 'Партнер / партнерша',
-		'Mode' : 'Режим',
-		'Participants of the competition' : 'Участники группы турнира',
-		'Pay' : 'Оплатить', 
-		'Register' : 'Зарегистрироваться',
-		'Total competitions' : 'Всего групп',
-		'Total participants / unique' : 'Всего участников / уникальных',
-		'Total participants' : 'Всего участников',
-		'Watch competitions list' : 'Открыть список групп турнира',
-		'Watch participants list' : 'Открыть список участников турнира',
-		'Watch list':'Посмотреть список',
-		'Check in »' : 'Оформить »',
-		'competitions of' : 'групп из',
-		'Competitions of the participants' : 'Группы турнира, в которых участвует пара',
-		'Create' : 'Создать',
-		'Creation of the competition' : 'Создание группы',
-		'Creation of the tournament' : 'Создание турнира',
-		'Editing competition' : 'Редактирование группы',
-		'Editing tournament' : 'Редактирование турнира',
-		'Go to danceplat!' : 'Оплатить выбранные группы на www.danceplat.ru',
-		'International' : 'Международный',
-		'Participants of the tournament' : 'Участники турнира',
-		'Pay »' : 'Оплатить »',
-		'Selected' : 'Выбраны',
-		'Registration for the tournament':'Регистрация в турнире',
         /*
 
         '' : '',
@@ -162,7 +44,7 @@ localizationModule.constant('DanceDictionary', {
   },
   getTranslate: function(word, toLanguage){
 	var def = function(key){
-		//console.log("'" + key + "' : '',");
+		console.log("'" + key + "' : '',");
 		
 		return key;	
 	};  
@@ -171,11 +53,10 @@ localizationModule.constant('DanceDictionary', {
     switch(toLanguage){
         case 'en':
             return this.toEnglish[word] ? this.toEnglish[word] : def(word);
-        case 'ru':
-            return this.toRussian[word] ? this.toRussian[word] : def(word);
     }
     
     return word;
   }
-});]]></CSP>
+});
+]]></CSP>
 </Export>

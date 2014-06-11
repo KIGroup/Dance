@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonFeedBack">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63349,1058.752127</TimeCreated>
+
+<Method name="Create">
+<Description>
+Create object</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+      	
+      	set fb = ##class(Dance.Data.FeedBack).%New()
+      	set fb.Author = $ZCVT(data.author, "I", "UTF8")
+      	set fb.Email = $ZCVT(data.email, "I", "UTF8")
+      	set fb.Subject = $ZCVT(data.subject, "I", "UTF8")
+      	set fb.Msg = $ZCVT(data.msg, "I", "UTF8")
+      	
+      	set st = fb.%Save()
+      	
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveFeedBackError"," | "_st))
+      	
+      	
+		do ##class(Dance.Utils.Email).Send($GET(^Settings("Dance","OperatorEmail")), 
+		"Танцы. Обратная связь "_$ZDT($ZTS,3), 
+		"Автор: "_fb.Author_"<br>"_
+		"Email: "_fb.Email_"<br>"_
+		"Тема: "_fb.Subject_"<br>"_
+		"Сообщение: <br>"_fb.Msg)      	
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

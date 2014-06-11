@@ -248,20 +248,18 @@ Registration UDSR or WDSF couple in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
-		
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
       	
       	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.woman.id)
       	
       	for i=1:1:data.competitions.Count(){
 	    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+	    	if (competition.Tournament.TStatus.Code '= "Registration") {
+		    	$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+	    	}
 	    	
-	    	set participant = ##class(Dance.Data.Participant).%New()
-	    	set participant.Couple = couple
-	    	set participant.Competition = competition
+	    	do ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id(), .st)
 	    	
-	    	set st = participant.%Save()
 	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
 	    }
       	
@@ -286,8 +284,6 @@ Registration new couple in the tournament</Description>
 	
 	try{
 		TSTART
-		
-		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 		
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
       	
@@ -318,6 +314,50 @@ Registration new couple in the tournament</Description>
 	w "{""count"": "_count_"}"
 	
 	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="WriteInfoAboutOtherRegistrationsToDevice">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,manId:%String,womanId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		set proxy = ##class(%ZEN.proxyObject).%New()
+		set manCompetitions = ##class(%ListOfObjects).%New()
+		set womanCompetitions = ##class(%ListOfObjects).%New()
+	
+		&sql(DECLARE Cur2 CURSOR FOR
+		 	SELECT DISTINCT Competition->StartDate
+		 	FROM Dance_Data.Participant
+		 	WHERE Couple->Man = :manId AND Couple->Woman = :womanId AND Competition->Tournament = :trnId)	
+		
+		&sql(OPEN Cur2)
+		for  
+		{	
+			&sql(FETCH Cur2 INTO :date) 
+			quit:(SQLCODE '= 0)
+			
+			do ##class(Dance.Data.Person).SetCompetitionsOtherTournamentsOnDay(.manCompetitions, trnId, manId, date)		
+		
+			if (manId '= womanId){
+				do ##class(Dance.Data.Person).SetCompetitionsOtherTournamentsOnDay(.womanCompetitions, trnId, womanId, date)
+			}
+		}
+	
+		&sql(CLOSE Cur2)
+	
+		set proxy.manCompetitions = manCompetitions
+		set proxy.womanCompetitions = womanCompetitions
+		do proxy.%ToJSON()
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	quit st
 ]]></Implementation>
 </Method>
 </Class>

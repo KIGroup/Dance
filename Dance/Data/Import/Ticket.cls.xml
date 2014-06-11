@@ -184,6 +184,8 @@ Create or update ticket</Description>
 	try{
 		TSTART
 		
+		do ##class(Dance.Utils.Journal).Create("Log", "Import.Ticket.CreatePersonFromTicket", "Start, isMan="_isMan_", prtMaleLastName="_ticket.MaleLastName_", prtFemaleLastName="_ticket.FemaleLastName)
+		
 		set person = ##class(Dance.Data.Person).%New()
 		
 		if (isMan){
@@ -207,37 +209,15 @@ Create or update ticket</Description>
 		
 		$$$THROWONERROR(st, person.%Save())
 		
+		do ##class(Dance.Utils.Journal).Create("Log", "Import.Ticket.CreatePersonFromTicket", "End")
 		
-		/*
-		set data = ##class(%ZEN.proxyObject).%New()
-		
-		if (isMan){
-			set data.gender = "M"
-			set data.lastName = prt.ManLastName
-			set data.firstName = prt.ManFirstName
-			set data.dob = $ZD(prt.ManDOB, 3)
-		}
-		else{
-			set data.gender = "F"
-			set data.lastName = prt.WomanLastName
-			set data.firstName = prt.WomanFirstName
-			set data.dob = $ZD(prt.WomanDOB, 3)
-		}
-		
-		set data.otherInfo = ##class(%ZEN.proxyObject).%New()
-		set data.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(prt.Country)
-		set data.otherInfo.cityName = prt.City
-		set data.otherInfo.mainTrainer = prt.MainTrainer
-		set data.otherInfo.otherTrainers = prt.OtherTrainers
-		
-		set person = ##class(Dance.Data.Person).Save(data, .st)
-		$$$THROWONERROR(st, st)
-		*/
 		TCOMMIT
 	}
 	catch(ex){
 		TROLLBACK 1
 		set st = ex.AsStatus()
+		do ##class(Dance.Utils.Journal).Create("ERROR", "Import.Ticket.CreatePersonFromTicket", st)
+		
 	}
 	
 	quit person

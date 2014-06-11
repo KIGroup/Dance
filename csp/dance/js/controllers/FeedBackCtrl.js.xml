@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/controllers/FeedBackCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//ss
+
+/*===========================================================================================
+===========================================================================================*/
+
+controllersModule.controller('FeedBackCtrl', function($scope, FeedBackSrvc, UtilsSrvc){
+    $scope.menu.selectMenu($scope.menu.pages.feedback);
+    
+    $scope.page = {};
+    $scope.page.fb = {};
+
+    $scope.page.createFeedBack = function(){
+        FeedBackSrvc.create($scope.page.fb).then(
+            function(data){
+                $scope.page.clearForm();                 
+                $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Ваше сообщение принято.', 'info', true);
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+
+    $scope.page.clearForm = function(){
+        $scope.page.fb = {};        
+        $scope.form_feedback.$setPristine();
+    };
+
+
+});
+
+]]></CSP>
+</Export>

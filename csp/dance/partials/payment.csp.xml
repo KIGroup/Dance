@@ -4,7 +4,7 @@
 <div class="row-fluid">
 	<pre ng-bind="page.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
-</div>
+</div> 
 <br>
 <div class="row-fluid" style="text-align: center;">
 	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация участников »'|localize"></a>
@@ -14,40 +14,7 @@
 	<a ng-href="#/tournament/{{page.tournament.id}}/participants" class="cellLink" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Список всех участников »'|localize"></a>
 </div>
 <br>
-<!--
-<div class="row-fluid">
-	<div class="accordion">
-		<div class="accordion-group" style="border-bottom: none;">
-			<div class="accordion-heading">
-				<a class="accordion-toggle" ng-bind="'Competitions of the participants'|localize"></a>
-			</div>
-			<div class="accordion-body">
-				<div class="accordion-inner">
-					<div class="row-fluid">
-						<div class="span6">
-							<p ng-show="page.couple.man.id==page.couple.woman.id"><span class="spnTitle" ng-bind="'Участник'|localize"></span>: <span ng-bind="page.couple.man.lastName + ' ' + page.couple.man.firstName"></span></p>
-							<p ng-hide="page.couple.man.id==page.couple.woman.id"><span class="spnTitle" ng-bind="'Male partner'|localize"></span>: <span ng-bind="page.couple.man.lastName + ' ' + page.couple.man.firstName"></span></p>
-							<p ng-hide="page.couple.man.id==page.couple.woman.id"><span class="spnTitle" ng-bind="'Female partner'|localize"></span>: <span ng-bind="page.couple.woman.lastName + ' ' + page.couple.woman.firstName"></span></p>
-							<p><span class="spnTitle" ng-bind="'Country'|localize"></span>: <span ng-bind="page.couple.otherInfo.country.name"></span></p>
-							<p ng-hide="page.couple.otherInfo.city==''"><span class="spnTitle" ng-bind="('City'|localize)"></span>: <span ng-bind="page.couple.otherInfo.city"></span></p>
-							<p ng-hide="page.couple.otherInfo.club==''"><span class="spnTitle" ng-bind="('Club'|localize)"></span>: <span ng-bind="page.couple.otherInfo.club"></span></p>
-						</div>
-						<div class="span6">
-							<p><span class="spnTitle" ng-bind="'Tournament'|localize"></span>: <span ng-bind="page.tournament.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Start date / end date'|localize"></span>: <span ng-bind="(page.tournament.startDate|convertCacheDate:('d MMMM y'|localize)) + ' / ' + (page.tournament.endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>
-							<p><span class="spnTitle" ng-bind="('City'|localize) + ', ' + ('Country'|localize)"></span>: <span ng-bind="page.tournament.location.cityName + ', ' + page.tournament.location.country.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Rank'|localize"></span>: <span ng-bind="page.tournament.rank.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Status'|localize"></span>: <span ng-bind="page.tournament.status.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Total competitions'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/competitions'}}" title="{{'Watch competitions list'|localize}}" ng-bind="page.tournament.competitionsCount + ' &raquo;'"></a></p>
-							<p><span class="spnTitle" ng-bind="'Total participants / unique'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/participants'}}" title="{{'Watch participants list'|localize}}" ng-bind="page.tournament.participantsCount+' / '+page.tournament.participantsUniqueCount + ' &raquo;'"></a></p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
--->
+
 
 <stcalert data="page.registrationAlert" style="margin: 10px 0 20px 0;"/>
 
@@ -140,7 +107,47 @@
 <br>
 <stcalert data="page.alert"/>
 
+<p ng-show="page.conflictTable.manCompetitions.length != 0 || page.conflictTable.womanCompetitions.length != 0" style="text-align: justify;">[ <font COLOR="RED"><b>!</b></font> ] {{'Конфликтные группы участника - это группы из других турниров, в которых зарегистрирован участник. Дата конфликтной группы совпадает с одной из дат групп выбранного турнира(заголовок сверху). Публикация списка конфликтных групп предназначена лишь для информирования участников.'|localize}}</p>
 
+<div class="row-fluid" ng-show="page.conflictTable.manCompetitions.length != 0">
+	<stcgrid
+    	grid="pageStore.tournamentDetails.gridManCompetitions"
+	    table-class="table table-bordered table-hover"
+	    caption="'Конфликтные группы для ' + '\'' + page.couple.man.lastName + ' ' + page.couple.man.firstName + '\''"
+	    columns="page.conflictTable.columns"
+	    items="page.conflictTable.manCompetitions"
+	    properties="page.conflictTable.properties"
+	    page-curr="1"
+	    page-total="1"
+	    page-size="100"
+	    search-hide="true"
+
+	   	selected-items="page.conflictTable.selectedItems"
+	    multi-select-mode="page.conflictTable.multiSelectMode"
+
+	    on-select-cell="page.conflictTable.onSelectCell(item, property)"
+	/>
+</div>		
+
+<div class="row-fluid"  ng-show="page.conflictTable.womanCompetitions.length != 0 && page.couple.man.id != page.couple.woman.id">
+	<stcgrid
+    	grid="pageStore.tournamentDetails.gridWomanCompetitions"
+	    table-class="table table-bordered table-hover"
+	    caption="'Конфликтные группы для ' + '\'' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName + '\''"
+	    columns="page.conflictTable.columns"
+	    items="page.conflictTable.womanCompetitions"
+	    properties="page.conflictTable.properties"
+	    page-curr="1"
+	    page-total="1"
+	    page-size="100"
+	    search-hide="true"
+
+	   	selected-items="page.conflictTable.selectedItems"
+	    multi-select-mode="page.conflictTable.multiSelectMode"
+
+	    on-select-cell="page.conflictTable.onSelectCell(item, property)"
+	/>
+</div>		
 
 
 

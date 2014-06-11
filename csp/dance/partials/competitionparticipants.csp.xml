@@ -14,42 +14,8 @@
 	<a ng-href="#/tournament/{{page.competition.tournament.id}}/participants" class="cellLink" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Список всех участников »'|localize"></a>
 </div>
 <br>
-<!--
-<div class="row-fluid">
-	<div class="accordion">
-		<div class="accordion-group" style="border-bottom: none;">
-			<div class="accordion-heading">
-				<a class="accordion-toggle" ng-bind="'Participants of the competition'|localize"></a>
-			</div>
-			<div class="accordion-body">
-				<div class="accordion-inner">
-					<div class="row-fluid">
-						<div class="span6">
-							<p><span class="spnTitle" ng-bind="'Competition'|localize"  ></span>: <span ng-bind="page.competition.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Date and time'|localize"></span>: <span ng-bind="(page.competition.startDate|convertCacheDate:('d MMMM y'|localize)) + ', ' + page.competition.startTime"></span></p>
-							<p><span class="spnTitle" ng-bind="'Discipline'|localize"   ></span>: <span ng-bind="page.competition.discipline.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Age category'|localize" ></span>: <span ng-bind="page.competition.ageCategory.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Type'|localize"         ></span>: <span ng-bind="page.competition.type.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Classes'|localize"      ></span>: <span ng-repeat="cl in page.competition.dancerClasses" ng-bind="cl.name + ', '"></span></p>
-							<p><span class="spnTitle" ng-bind="'Price'|localize"        ></span>: <span ng-bind="page.competition.price"></span></p>
-						</div>
-						<div class="span6">
-							<p><span class="spnTitle" ng-bind="'Tournament'|localize"></span>: <span ng-bind="page.competition.tournament.name"></span></p>
-							<p><span class="spnTitle" ng-bind="('City'|localize) + ', ' + ('Country'|localize)"></span>: <span ng-bind="page.competition.tournament.location.cityName + ', ' + page.competition.tournament.location.country.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Start date / end date'|localize"></span>: <span ng-bind="(page.competition.tournament.startDate|convertCacheDate:('d MMMM y'|localize)) + ' / ' + (page.competition.tournament.endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>
-							<p><span class="spnTitle" ng-bind="'Rank'|localize"></span>: <span ng-bind="page.competition.tournament.rank.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Status'|localize"></span>: <span ng-bind="page.competition.tournament.status.name"></span></p>
-							<p><span class="spnTitle" ng-bind="'Total competitions'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.competition.tournament.id + '/competitions'}}" title="{{'Watch competitions list'|localize}}" ng-bind="page.competition.tournament.competitionsCount + ' &raquo;'"></a></p>
-							<p><span class="spnTitle" ng-bind="'Total participants / unique'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.competition.tournament.id + '/participants'}}" title="{{'Watch participants list'|localize}}" ng-bind="page.competition.tournament.participantsCount+' / '+page.competition.tournament.participantsUniqueCount + ' &raquo;'"></a></p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
--->
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
+<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'}} <span class="noneCouplePayment">{{'Серый цвет'}}</span>{{' - участие в группе не оплачено.'}} <span class="cancelCouplePayment">{{'Серый цвет'}}</span>{{' - участие в группе отменено.'}}</p>
 
 <div class="row-fluid" style="margin-bottom: 5px;">
 	<span style="font-weight: bold;" ng-bind="'Участники группы ″' + page.competition.name + '″'"></span>

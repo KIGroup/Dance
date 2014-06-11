@@ -13,6 +13,9 @@ servicesModule.factory('TournamentSrvc', function(RESTSrvc) {
         getById: function(id){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id});
         },
+        getByIdAdmin: function(id){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/tournament/' + id});
+        },
         removeById: function(id){
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});
         },

@@ -122,6 +122,10 @@ Date of birth</Description>
 	
 	for i=1:1:data.competitions.Count(){
 		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+		if (competition.Tournament.TStatus.Code '= "Registration") {
+		    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+	    }
+	    
 		do obj.Competitions.Insert(competition)
 	}
 	
@@ -314,6 +318,8 @@ Date of birth</Description>
 		
 		set person = ##class(Dance.Data.Person).%New()
 		
+		do ##class(Dance.Utils.Journal).Create("Log", "ParticipantTemp.CreatePersonFromParticipantTemp", "Start, isMan="_isMan_", prtManLastName="_prt.ManLastName_", prtWomanLastName="_prt.WomanLastName)
+		
 		if (isMan){
 			set person.Gender = "M"
 			set person.LastName = ##class(Dance.Data.Localization.LText).Create(prt.ManLastName)
@@ -329,44 +335,22 @@ Date of birth</Description>
 		
 		set person.Country = prt.Country
 		set person.City = prt.City
+		set person.Club = prt.Club
 		set person.MainTrainer = prt.MainTrainer
 		set person.OtherTrainers = prt.OtherTrainers
 		set person.LastUpdated = $ZDT($ZTS, 3)
 		
 		$$$THROWONERROR(st, person.%Save())
 		
+		do ##class(Dance.Utils.Journal).Create("Log", "ParticipantTemp.CreatePersonFromParticipantTemp", "End")
 		
-		/*
-		set data = ##class(%ZEN.proxyObject).%New()
-		
-		if (isMan){
-			set data.gender = "M"
-			set data.lastName = prt.ManLastName
-			set data.firstName = prt.ManFirstName
-			set data.dob = $ZD(prt.ManDOB, 3)
-		}
-		else{
-			set data.gender = "F"
-			set data.lastName = prt.WomanLastName
-			set data.firstName = prt.WomanFirstName
-			set data.dob = $ZD(prt.WomanDOB, 3)
-		}
-		
-		set data.otherInfo = ##class(%ZEN.proxyObject).%New()
-		set data.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(prt.Country)
-		set data.otherInfo.cityName = prt.City
-		set data.otherInfo.mainTrainer = prt.MainTrainer
-		set data.otherInfo.otherTrainers = prt.OtherTrainers
-		
-		set person = ##class(Dance.Data.Person).Save(data, .st)
-		$$$THROWONERROR(st, st)
-		*/
 		TCOMMIT
 	}
 	catch(ex){
 		TROLLBACK 1
 		set st = ex.AsStatus()
-		do $system.OBJ.DisplayError(st)
+		do ##class(Dance.Utils.Journal).Create("ERROR", "ParticipantTemp.CreatePersonFromParticipantTemp()", st)
+		
 	}
 	
 	quit person

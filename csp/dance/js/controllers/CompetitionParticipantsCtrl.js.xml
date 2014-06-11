@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//csddd
+//csdddd
  
 /*===========================================================================================
 Competition Participants 
@@ -29,16 +29,24 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                           {name: 'Группы'     , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: "70px"}}];
         
         $scope.page.participantTable.properties = [
-        				  {name:'couple.fullName', calculate: function(item){ 
-                                                        if (item.couple.man.id == item.couple.woman.id){
-                                                            item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName + '\n';
-                                                        } 
-                                                        else{
-                                                            item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
-                                                            item.couple.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
-                                                        }
-                                                    }},
-                          {name:'couple.class', cellStyle: {textAlign: 'center'}, calculate: function(item){
+        				  {name:'couple.fullName', 
+                                                getCssClass: function(item){
+                                                    return $scope.page.participantTable.getCssClassForPaymentStatus(item.paymentStatus);
+                                                },
+                                                calculate: function(item){ 
+                                                    if (item.couple.man.id == item.couple.woman.id){
+                                                        item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName + '\n';
+                                                    } 
+                                                    else{
+                                                        item.couple.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
+                                                        item.couple.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
+                                                    }
+                                                }},
+                          {name:'couple.class', cellStyle: {textAlign: 'center'}, 
+                                                getCssClass: function(item){ 
+                                                    return $scope.page.participantTable.getCssClassForPaymentStatus(item.paymentStatus);
+                                                },
+                                                calculate: function(item){
                                                     if ($scope.page.competition.discipline.code == 'Ла'){
                                                         item.couple.class = item.couple.man.laClass.name + '\n' + item.couple.woman.laClass.name;
                                                     }
@@ -46,13 +54,24 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                         item.couple.class = item.couple.man.stClass.name + '\n' + item.couple.woman.stClass.name;
                                                     }
                                                 }},
-                          {name:'couple.otherInfo.clubAndCity', calculate: function(item){
-                                                                  item.couple.otherInfo.clubAndCity = item.couple.otherInfo.club + '\n' + item.couple.otherInfo.city;
-                                                                }}, 
-                          {name:'couple.otherInfo.trainers', calculate: function(item){
-                                                               item.couple.otherInfo.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
-                                                             }},
-                          {name:'couple.otherInfo.country.name'},
+                          {name:'couple.otherInfo.clubAndCity', 
+                                                getCssClass: function(item){ 
+                                                    return $scope.page.participantTable.getCssClassForPaymentStatus(item.paymentStatus);
+                                                },
+                                                calculate: function(item){
+                                                    item.couple.otherInfo.clubAndCity = item.couple.otherInfo.club + '\n' + item.couple.otherInfo.city;
+                                                }}, 
+                          {name:'couple.otherInfo.trainers', 
+                                                getCssClass: function(item){ 
+                                                    return $scope.page.participantTable.getCssClassForPaymentStatus(item.paymentStatus);
+                                                },
+                                                calculate: function(item){
+                                                    item.couple.otherInfo.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
+                                                }},
+                          {name:'couple.otherInfo.country.name',
+                                                getCssClass: function(item){ 
+                                                    return $scope.page.participantTable.getCssClassForPaymentStatus(item.paymentStatus);
+                                                }},
                           {name:'coupleCompetitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп, в которых зарегистрирована пара'),
                                                 getCssClass: function(item){ 
                                                     return 'cellCoupleLink';
@@ -64,13 +83,14 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                     $location.path("/tournament/" + $scope.page.competition.tournament.id + "/couple/" + coupleId + "/competitions"); 
                                                 }}];
 
-        $scope.page.participantTable.pageSize = 15;
+        $scope.page.participantTable.pageSize = 30;
         $scope.page.participantTable.pageCurr = 1;
         $scope.page.participantTable.itemsTotal = 0;
         $scope.page.participantTable.selectedItems = [];
         $scope.page.participantTable.multiSelectMode = false;
         $scope.page.participantTable.forciblyUpdate = 0;
     };
+
 
 
     // 
@@ -92,6 +112,18 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
             });
     };
 
+    $scope.page.participantTable.getCssClassForPaymentStatus = function(status){
+        switch(status){
+            case 'cancel':
+                return 'cancelCouplePayment';
+            case 'none':
+                return 'noneCouplePayment';
+            case 'pay': 
+                return '';
+        }
+
+        return '';
+    };
 
   	$scope.page.participantTable.refresh = function(){ 
     	$scope.page.participantTable.forciblyUpdate++; 
@@ -102,6 +134,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
 
         property.onClickCell(item.couple.id);
     };
+
 
     $scope.page.participantTable.remove = function(item){
         function remove(){

@@ -17,7 +17,10 @@ Convert "Tournament" object to %ZEN.proxyObject (for JSON)</Description>
 		set proxy.id = object.%Id()
 		set proxy.idInternal = object.IdInternal
 		set proxy.idExternal = object.IdExternal
-		set proxy.hash = object.Hash
+		
+		if (##class(Dance.Data.Tournament).CheckUpdatePrivilege() = $$$OK){
+			set proxy.hash = object.Hash
+		}
 		
 		set proxy.name = object.Name.Value
 		set proxy.fullName = object.FullName.Value

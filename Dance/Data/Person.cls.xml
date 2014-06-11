@@ -306,6 +306,36 @@ Delete person if it is available</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="SetCompetitionsOtherTournamentsOnDay">
+<Description>
+Get person competitions in other tournaments in that day(yyyy-mm-dd)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&list:%ListOfObjects,trnId:%String,personId:%String,date:%String]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql(DECLARE Cur1 CURSOR FOR
+		 SELECT Competition
+		 FROM Dance_Data.Participant
+		 WHERE (Couple->Man = :personId OR Couple->Woman = :personId) 
+		        AND Competition->StartDate = :date
+		        AND Competition->Tournament <> :trnId)	
+		
+	&sql(OPEN Cur1)
+	for  
+	{	
+		&sql(FETCH Cur1 INTO :competitionId) 
+		quit:(SQLCODE '= 0)
+		
+		set competition = ##class(Dance.Web.JsonCompetition).ConvertToProxyObject(##class(Dance.Data.Competition).%OpenId(competitionId))		
+		do list.Insert(competition)
+	}
+	
+	&sql(CLOSE Cur1)
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.PersonD</DataLocation>

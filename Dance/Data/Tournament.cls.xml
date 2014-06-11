@@ -189,6 +189,11 @@ Change IsActive property to 0</Description>
 	set trn.IdExternal = trn.IdExternal_";"_id
 	set trn.Hash = trn.Hash_";"_id
 	
+	for i=1:1:trn.Competitions.Count(){
+		set st = ##class(Dance.Data.Competition).Deactivate(trn.Competitions.GetAt(i).%Id())
+		if $$$ISERR(st) return st
+	}
+	
 	quit trn.%Save()
 ]]></Implementation>
 </Method>

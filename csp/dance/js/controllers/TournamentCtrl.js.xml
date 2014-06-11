@@ -35,7 +35,7 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
 
     /// Load Tournament by ID
     $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
+        TournamentSrvc.getByIdAdmin(id).then(
             function(data){
                 $scope.page.tournament = data;
             },

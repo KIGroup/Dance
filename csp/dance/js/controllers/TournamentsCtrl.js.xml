@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//-d
+//-dd
 
 /*===========================================================================================
 
@@ -52,8 +52,8 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                 getCssClass: function(item){ 
                                                     return 'cellLink';
                                                 },  
-                                                onClickCell: function(id){
-                                                    $location.path("/tournament/" + id +"/competitions"); 
+                                                onClickCell: function(item){
+                                                    $location.path("/tournament/" + item.id +"/competitions"); 
                                                 }},
                           {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch competitions list'),
                                                 calculate: function(item){
@@ -62,18 +62,22 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                 getCssClass: function(item){ 
                                                     return 'cellLink';
                                                 },
-                                                onClickCell: function(id){
-                                                    $location.path("/tournament/" + id +"/participants"); 
+                                                onClickCell: function(item){
+                                                    $location.path("/tournament/" + item.id +"/participants"); 
                                                 }},
                           {name:'registration', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Register'),
                                                 getCssClass: function(item){ 
-                                                    return 'cellLink';
+                                                    if (item.status.code=='Registration')
+                                                        return 'cellLink';
+
+                                                    return 'cellLinkDisabled';
                                                 }, 
                                                 calculate: function(item){
                                                     item.registration = $filter('localize')('Check in »');
                                                 },
-                                                onClickCell: function(id){
-                                                    $location.path("/tournament/" + id +"/registration"); 
+                                                onClickCell: function(item){
+                                                    if (item.status.code=='Registration')
+                                                        $location.path("/tournament/" + item.id +"/registration"); 
                                                 }}];
 
         $scope.page.tournamentTable.pageSize = UtilsSrvc.getPropertyValue($scope.pageStore, 'tournaments.gridTournaments.pageSize', 10);
@@ -223,7 +227,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
     $scope.page.tournamentTable.onSelectCell = function(item, property){
         if (!item) return;
 
-        property.onClickCell(item.id);
+        property.onClickCell(item);
     };
 
     $scope.page.tournamentTable.checkIn = function(item){

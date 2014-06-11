@@ -16,6 +16,12 @@ Rank of the tournament: international, local ...</Description>
 <Parameter name="XMLREFERENCE" value="ID"/>
 </Property>
 
+<Property name="ShortName">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+<Parameter name="XMLREFERENCE" value="ID"/>
+</Property>
+
 <Property name="Code">
 <Type>%String</Type>
 <Required>1</Required>
@@ -35,8 +41,6 @@ Rank of the tournament: international, local ...</Description>
 <StreamLocation>^Dance.Data.TournamentRankS</StreamLocation>
 <ExtentSize>100000</ExtentSize>
 <Data name="TournamentRankDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>

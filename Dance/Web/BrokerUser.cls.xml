@@ -102,6 +102,7 @@ Public REST URLs</Description>
 
 <Route Method="GET" Url="/couple/wdsf/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteWDSFByNumbersToDevice"/>
 
+<Route Method="GET" Url="/couple/conflictregistration/tournament/:trnId/man/:manId/woman/:womanId" Call="Dance.Web.JsonCouple:WriteInfoAboutOtherRegistrationsToDevice"/>
 
 
 <Route Method="GET" Url="/couple/:id" Call="Dance.Web.JsonCouple:WriteObjectByIdToDevice"/>
@@ -117,6 +118,9 @@ Public REST URLs</Description>
 <Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonParticipant:WriteAllForGridToDevice"/>
 <Route Method="POST" Url="/tournament/participant/grid" Call="Dance.Web.JsonParticipant:WriteAllForTournamentForGridToDevice"/>
 
+
+<!--========================================= FEEDBACK ===============================================-->
+<Route Method="POST" Url="/feedback" Call="Dance.Web.JsonFeedBack:Create"/>
 
 <!--========================================= PERSON ====================================================-->
 <!--========================================= OTHER =====================================================-->
