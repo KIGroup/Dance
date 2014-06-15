@@ -5,7 +5,7 @@
 	<div class="row-fluid">
 		<div class="span6">
 			<div class="control-group">
-		        <label class="control-label" ng-bind="('Name'|localize) + '*'"></label>
+		        <label class="control-label" ng-bind="('Название'|localize) + '*'"></label>
 		        <div class="controls">
 		            <input class="span12" type="text" ng-model="tournament.name" required></input>
 		        </div>
@@ -29,7 +29,7 @@
 		</div>
 		<div class="span2">
 			<div class="control-group">
-		        <label class="control-label" ng-bind="('Hash') + '*'"></label>
+		        <label class="control-label" ng-bind="('Хеш') + '*'"></label>
 		        <div class="controls">
 		            <input class="span12" type="text" ng-model="tournament.hash"></input>
 		        </div>
@@ -47,7 +47,7 @@
     <div class="row-fluid">
 		<div class="span7">
 			<div class="control-group">
-	            <label class="control-label" ng-bind="('Country'|localize) + '*'"></label>
+	            <label class="control-label" ng-bind="('Страна'|localize) + '*'"></label>
 	            <div class="controls">
 					<select class="span12" ng-model="tournament.location.country.id" ng-options="country.id as country.name for country in countries" required>
         			</select>           
@@ -56,7 +56,7 @@
 	    </div>    
 	    <div class="span5">    
 	        <div class="control-group">
-	        	<label class="control-label" ng-bind="('City'|localize) + '*'"></label>
+	        	<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
 	        	<div class="controls">
 	    			<input class="span12" type="text" ng-model="tournament.location.cityName" required></input>
             	</div>
@@ -64,7 +64,7 @@
 	    </div>
 	</div>
     <div class="control-group">
-        <label class="control-label" ng-bind="('Rank'|localize) + '*'"></label>
+        <label class="control-label" ng-bind="('Ранг'|localize) + '*'"></label>
         <div class="controls">
             <select class="span12" ng-model="tournament.rank.id" ng-options="rank.id as rank.name for rank in ranks" required>
             </select>
@@ -73,7 +73,7 @@
     <div class="row-fluid">
 		<div class="span4">
 			<div class="control-group">
-	        	<label class="control-label" ng-bind="('Start date'|localize) + '*'"></label>
+	        	<label class="control-label" ng-bind="('Дата начала'|localize) + '*'"></label>
 	        	<div class="controls">
 	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tournament.startDate" show-weeks="false" ng-required="true" />
 	        	</div>
@@ -81,14 +81,14 @@
 		</div>
 		<div class="span4">
 			<div class="control-group">
-	        	<label class="control-label" ng-bind="('End date'|localize) + '*'"></label>
+	        	<label class="control-label" ng-bind="('Дата окончания'|localize) + '*'"></label>
 	        	<div class="controls">
 	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tournament.endDate" show-weeks="false" ng-required="true" />
 	        	</div>
 	    	</div>
 		</div>
 		<div class="span4">
-    		<label class="control-label" ng-bind="('Status'|localize) + '*'"></label>
+    		<label class="control-label" ng-bind="('Статус'|localize) + '*'"></label>
             <div class="controls">
                 <select class="span12" ng-model="tournament.status.id" ng-options="status.id as status.name for status in statuses" required>
                 </select>
@@ -96,16 +96,27 @@
 		</div>
 	</div>
     <div class="control-group">
-        <label class="control-label" ng-bind="('Organizer'|localize) + ''"></label>
+        <label class="control-label" ng-bind="('Организатор'|localize) + ''"></label>
         <div class="controls">
             <input class="span12" type="text" ng-model="tournament.organizer.info"></input>
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label" ng-bind="('Organizer web-site'|localize) + ''"></label>
+        <label class="control-label" ng-bind="('Веб-сайт организатора'|localize) + ''"></label>
         <div class="controls">
             <input class="span12" type="text" ng-model="tournament.organizer.site"></input>
         </div>
     </div>
+    <div class="row-fluid" style="display: flex; padding-bottom: 10px;">
+	    <label class="checkbox" style="padding-right: 20px;">
+			<input type="checkbox" ng-model="tournament.tabUDSRAllowed" ng-true-value="1" ng-false-value="0">{{'Доступен СТСР'|localize}}
+		</label>
+		<label class="checkbox" style="padding-right: 20px;">
+			<input type="checkbox" ng-model="tournament.tabWDSFAllowed" ng-true-value="1" ng-false-value="0">{{'Доступен WDSF'|localize}}
+		</label>
+		<label class="checkbox">
+			<input type="checkbox" ng-model="tournament.tabOtherAllowed" ng-true-value="1" ng-false-value="0">{{'Доступен другим'|localize}}
+		</label>
+	</div>
 </div>]]></CSP>
 </Export>

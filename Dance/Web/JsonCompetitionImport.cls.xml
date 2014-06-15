@@ -8,7 +8,7 @@
 <Description>
 Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.Import.Competition,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.Import.Competition,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
@@ -32,7 +32,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 			set proxy.discipline = ##class(JsonDiscipline).ConvertToProxyObject(realDicipline)
 		}
 		else{
-			do proxy.info.errorMessages.Insert("Discipline not found! Discipline code = "_object.Discipline)	
+			do proxy.info.errorMessages.Insert("Дисциплина не найдена! Код = "_object.Discipline)	
 		}
 			
 		set realAge = ##class(Dance.Data.AgeCategory).CodeIdxOpen(object.AgeCategoryCode,,.sc)
@@ -40,7 +40,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 			set proxy.ageCategory = ##class(JsonAgeCategory).ConvertToProxyObject(realAge)
 		}
 		else{
-			do proxy.info.errorMessages.Insert("Age category not found! Age category code = "_object.AgeCategoryCode)
+			do proxy.info.errorMessages.Insert("Возрастная группа не найдена! Код = "_object.AgeCategoryCode)
 		}
 			
 		if (object.IsSoloType = $$$YES){
@@ -55,7 +55,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 			set proxy.type = ##class(JsonCompetitionType).ConvertToProxyObject(type)
 		}
 		else{
-			do proxy.info.errorMessages.Insert("Type not found! Is solo = "_object.IsSoloType)
+			do proxy.info.errorMessages.Insert("Тип не найден! Соло = "_object.IsSoloType)
 		}
 		
 		set proxy.dancerClasses = ##class(JsonDancerClass).GetAll().children
@@ -78,7 +78,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 				}
 			}
 			else{
-				do proxy.info.errorMessages.Insert("Dancer class not found! Dancer class code = "_class)	
+				do proxy.info.errorMessages.Insert("Класс не найден! Код = "_class)	
 			}		
 		}
 

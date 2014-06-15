@@ -8,7 +8,7 @@
 <Description>
 Convert "Competition" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.Competition,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.Competition,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
@@ -225,9 +225,13 @@ Available competitions for couple</Description>
       		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
       	}
       	elseif (params.other.couple.type = "wdsf"){
+	      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
+	      	set whereCondition = whereCondition_"AND IsInternational=1 AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
+	      	/*
 	      	set maxAge = params.other.couple.man.maxAge
 	      	set minAge = params.other.couple.man.minAge 
-	  		set whereCondition = whereCondition_" AND IsInternational = 1 AND ((AgeCategory->MinAge <= "_minAge_" AND "_minAge_" <= AgeCategory->MaxAge) OR (AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge))"
+	  		//set whereCondition = whereCondition_" AND IsInternational = 1 AND ((AgeCategory->MinAge <= "_minAge_" AND "_minAge_" <= AgeCategory->MaxAge) OR (AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge))"
+      		*/
       	}
       	elseif (params.other.couple.type = "new"){
 	    	// current year - year of birth
@@ -262,7 +266,10 @@ Available competitions for couple</Description>
 		while (rs.%Next() '= 0){
 			set cmp = ##class(Dance.Data.Competition).%OpenId(rs.%GetData(1),,.st)
 			
-			if (cmp.Discipline.Code = "Ст"){
+			if (maleSTClass = "") && (maleLAClass = ""){
+				do proxyItems.Insert(..ConvertToProxyObject(cmp))
+			}
+			elseif (cmp.Discipline.Code = "Ст"){
 				set key = ""
 				for i=1:1:cmp.DancerClasses.Count(){
 					set key = cmp.DancerClasses.Next(key)

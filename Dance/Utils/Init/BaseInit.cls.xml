@@ -46,6 +46,7 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	
 	do $CLASSMETHOD("Dance.Data.Country", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Couple", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.CoupleWDSFInfo", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Ticket", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.DancerClass", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Discipline", "%KillExtent")

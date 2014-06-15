@@ -71,29 +71,24 @@
   
     <script language="javascript">
 
-
-    
     document.write('<script language="javascript" src="js/localization/locale_' + AppSettings.lang + '.js"><\/script>'); 
 
     </script>
 
   </head>
 
-  <body>
-
+  <body id="bodyDiv">
     <div class="container-fluid">
-        <div class="navbar ">
-          <div class="navbar-inner">
-            <div class="container">
-             
+        
+        <div class="navbar" ng-init="menu.shortMenu=true">
+          <div class="navbar-inner" ng-hide="menu.shortMenu">
+            <div class="container">  
               <a class="brand" ng-href="{{menu.pages.tournaments.url}}" ng-bind="'Система регистрации'|localize"></a>
-              
-             
-              <div class="nav-responsive-collapse" >
-
+    
+              <div class="nav-responsive-collapse">
                 <ul class="nav">
                   <li ng-class="menu.pages.tournaments.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.tournaments.url}}" ng-bind="menu.pages.tournaments.name" ng-click="menu.selectMenu(menu.pages.tournaments)"></a></li>
-                  
+  
                   <li ng-show="false" class="dropdown" ng-class="'dropdown ' + (menu.pages.entities.id==menu.pages.selected.parentId ? 'active' : '')">
                     <a ng-href="{{menu.pages.entities.url}}" ng-click="menu.selectMenu(menu.pages.entities.childrens.ageCategories)"><span ng-bind="menu.pages.entities.name + ' '"></span><b class="caret" style="border-top-color: grey;"></b></a>
                     <ul class="dropdown-menu">
@@ -102,7 +97,6 @@
                     </ul>
                   </li>
   
-
                   <li ng-show="!menu.readOnlyMode && menu.admin" class="dropdown" ng-class="'dropdown ' + (menu.pages.import.id==menu.pages.selected.parentId ? 'active' : '')">
                     <a ng-href="{{menu.pages.import.url}}" ng-click="menu.selectMenu(menu.pages.import.childrens.tournaments)"><span ng-bind="menu.pages.import.name + ' '"></span><b class="caret" style="border-top-color: grey;"></b></a>
                     <ul class="dropdown-menu">
@@ -111,27 +105,49 @@
                       <li ng-show="false" ng-class="{aSelected: menu.pages.import.childrens.tickets.id==menu.pages.selected.id}"     ><a ng-href="{{menu.pages.import.childrens.tickets.url}}"      ng-bind="menu.pages.import.childrens.tickets.name"      ng-click="menu.selectMenu(menu.pages.import.childrens.tickets)"></a></li>
                       <li ng-class="{aSelected: menu.pages.import.childrens.persons.id==menu.pages.selected.id}"     ><a ng-href="{{menu.pages.import.childrens.persons.url}}"      ng-bind="menu.pages.import.childrens.persons.name"      ng-click="menu.selectMenu(menu.pages.import.childrens.persons)"></a></li>
                     </ul>
-                  </li>
-
-                  <li ng-class="menu.pages.feedback.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" ng-click="menu.selectMenu(menu.pages.feedback)"></a></li>
+                  </li>            
                 </ul>
+              
+                <ul class="nav pull-right">
+                  <li ng-class="menu.pages.feedback.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" ng-click="menu.selectMenu(menu.pages.feedback)"></a></li>
+                  <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span ng-bind="('Язык'|localize) + ': ' + menu.lang.name + ' '"></span><b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li ng-repeat="lang in menu.languages">
+                        <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href="" ng-bind="lang.name"></a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a ng-click="menu.login()" href="" ng-bind="menu.loginCaption|localize"></a></li>   
+                </ul> 
               </div>
-
-
-              <ul class="nav pull-right">
-                <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span ng-bind="('Язык'|localize) + ': ' + menu.lang.name + ' '"></span><b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li ng-repeat="lang in menu.languages">
-                      <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href="" ng-bind="lang.name"></a>
-                    </li>
-                  </ul>
-                </li>
-                <li><a ng-click="menu.login()" href="" ng-bind="menu.loginCaption|localize"></a></li>   
-              </ul> 
-
             </div>
           </div>
+
+
+          <div ng-show="menu.shortMenu">
+            <div class="container">
+              <div class="nav">
+              		<li><a class="homeIcon" title="{{'На главную'|localize}}" href="#/tournaments"><i class="fa fa-home fa-lg"></i></a></li>
+              </div>
+            	
+              <div class="nav-responsive-collapse">
+                <ul class="nav pull-right">
+                  <li><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
+                  <li><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" ng-bind="'Вернуться назад'|localize" onclick="window.history.back()"></a></li>
+                  <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span ng-bind="('Язык'|localize) + ': ' + menu.lang.name + ' '"></span><b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li ng-repeat="lang in menu.languages">
+                        <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href="" ng-bind="lang.name"></a>
+                      </li>
+                    </ul>
+                  </li>   
+                </ul> 
+              </div>
+            </div>
+          </div>
+
         </div>
         
       <div ng-view>
@@ -202,8 +218,6 @@
     <script language="javascript" src="lib/ui-bootstrap-tpls-0.5.0.js"></script>
   </body>
   
-  
-
 </html>
 ]]></CSP>
 </Export>

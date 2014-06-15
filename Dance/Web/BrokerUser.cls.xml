@@ -102,6 +102,8 @@ Public REST URLs</Description>
 
 <Route Method="GET" Url="/couple/wdsf/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteWDSFByNumbersToDevice"/>
 
+<Route Method="GET" Url="/couple/:id/wdsfinfo/tournament/:id" Call="Dance.Web.JsonCouple:WriteWDSFOtherInfoForTournamentToDevice"/>
+
 <Route Method="GET" Url="/couple/conflictregistration/tournament/:trnId/man/:manId/woman/:womanId" Call="Dance.Web.JsonCouple:WriteInfoAboutOtherRegistrationsToDevice"/>
 
 

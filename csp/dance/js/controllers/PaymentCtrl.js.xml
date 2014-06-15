@@ -2,13 +2,13 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddcd
+//ddcdddddd
 
 /*===========================================================================================
 Payment
 ===========================================================================================*/
 
-controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc){
+controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $window, $location, $filter, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc, OtherSrvc){ 
 	//$scope.menu.selectMenu('tournaments');;
 
 	$scope.page = {};
@@ -31,17 +31,17 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
 
         //   
     	// Competition table
-    	//
+    	// 
         $scope.page.competitionTable.columns = [
-                          {name: 'Date'              , sqlName: 'Competition->StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
-                          {name: 'Time'              , sqlName: 'Competition->StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '60px'}},
-                          {name: 'Name'              , sqlName: 'Competition->Name'                    , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Discipline'        , sqlName: 'Competition->Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Age category'      , sqlName: 'Competition->AgeCategory'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Class'             , sqlName: ''                                     , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Type'              , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
-                          {name: 'Price'             , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}},
-                          {name: 'Status'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}}];
+                          {name: 'Дата'              , sqlName: 'Competition->StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: 'Время'             , sqlName: 'Competition->StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '60px'}},
+                          {name: 'Название'          , sqlName: 'Competition->Name'                    , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Программа'         , sqlName: 'Competition->Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Возрастная группа' , sqlName: 'Competition->AgeCategory'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Класс'             , sqlName: ''                                     , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Тип'               , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
+                          {name: 'Цена'              , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}},
+                          {name: 'Статус'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}}];
         
         $scope.page.competitionTable.properties = [
         				  {name:'competition.startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
@@ -96,10 +96,10 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
         // Conflict table
         //
         $scope.page.conflictTable.columns = [
-                          {name: 'Date'              , sqlName: '', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
-                          {name: 'Time'              , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '60px'}},
-                          {name: 'Name'              , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Tournament'        , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false}/*,
+                          {name: 'Дата'      , sqlName: '', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: 'Время'     , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '60px'}},
+                          {name: 'Название'  , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Турнир'    , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false}/*,
                           {name: 'Просмотр'          , sqlName: '', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '100px', textAlign: 'center'}}*/];
         
         $scope.page.conflictTable.properties = [
@@ -195,7 +195,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
                 $scope.page.loadCouple($routeParams.coupleId);
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
  
@@ -205,13 +205,97 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $loca
             function(data){
                 $scope.page.couple = data;
                 $scope.page.loadConflictData($scope.page.tournament.id, data.man.id, data.woman.id);
+                
+                if (data.man.numberWDSF != "" && data.woman.numberWDSF != ""){
+                    $scope.page.loadWDSFCoupleInfo($scope.page.tournament.id, data.id);    
+                }
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
+
+    /// Load WDSF Couple other info  
+    $scope.page.loadWDSFCoupleInfo = function(trnId, coupleId){
+        CoupleSrvc.getWDSFOtherInfoForTournament(trnId, coupleId).then(
+            function(data){
+                if (!$scope.page.couple.man.dob)
+                    $scope.page.couple.man.dob = data.manDob
+
+                if (!$scope.page.couple.woman.dob)
+                    $scope.page.couple.woman.dob = data.womanDob
+
+                if (!$scope.page.couple.otherInfo.city)
+                    $scope.page.couple.otherInfo.city = data.city;
+
+                if (!$scope.page.couple.otherInfo.club)
+                    $scope.page.couple.otherInfo.club = data.club;
+
+                if (!$scope.page.couple.otherInfo.mainTrainer)
+                    $scope.page.couple.otherInfo.mainTrainer = data.mainTrainer;
+
+                if (!$scope.page.couple.otherInfo.otherTrainers)
+                    $scope.page.couple.otherInfo.otherTrainers = data.otherTrainers;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+    $scope.page.openConfirmDlg = function(){
+        $scope.page.confirmData = {couple: $scope.page.couple, type: '', formId: ''};
+
+        if ($scope.page.confirmData.couple.man.numberUDSR == "" && $scope.page.confirmData.couple.woman.numberUDSR == ""){
+            if ($scope.page.confirmData.couple.man.numberWDSF == "" && $scope.page.confirmData.couple.woman.numberWDSF == ""){
+                $scope.page.confirmData.type = "new";
+                $scope.page.confirmData.formId = "danceplatOtherPay";                
+            }
+            else{
+                $scope.page.confirmData.type = "wdsf";
+                $scope.page.confirmData.formId = "danceplatOtherPay";   
+            }
+        }
+        else{
+            $scope.page.confirmData.type = "udsr";
+            $scope.page.confirmData.formId = "danceplatOtherPay";
+            $scope.page.goToPaymentSystem( $scope.page.confirmData.formId);
+            return;
+        }
+
+        for(var i=0; i < $scope.page.countries.length; i++){
+            if ($scope.page.countries[i].id == $scope.page.confirmData.couple.otherInfo.country.id){
+                $scope.page.confirmData.couple.otherInfo.country = $scope.page.countries[i];
+            }
+        }
+           
+        $('#ConfirmModal').modal('show');
+        $scope.page.confirmModalVisible = true;
+    };
+
+
+    $scope.page.closeConfirmDlg = function(){
+        $('#ConfirmModal').modal('hide');
+        $scope.page.confirmModalVisible = false;  
+    };
+
+    $scope.page.goToPaymentSystem = function(formId){
+        $window.document.forms[formId].submit(); 
+    };
+
+    /// Load WDSF Countries
+    $scope.page.loadCountries = function(){
+        OtherSrvc.getCountries().then(
+            function(data){
+                $scope.page.countries = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+    
     $scope.page.init();
+    $scope.page.loadCountries();
     $scope.page.loadTournament($routeParams.tournamentId);
 });
 

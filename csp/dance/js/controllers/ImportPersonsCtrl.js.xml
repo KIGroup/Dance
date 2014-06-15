@@ -2,13 +2,14 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/ImportPersonsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddd
+//dddd
 
 /*===========================================================================================
  
 ===========================================================================================*/
 
 controllersModule.controller('ImportPersonsCtrl', function($scope, $location, $filter, UtilsSrvc, ImportSrvc){
+	$scope.menu.selectMenu($scope.menu.pages.import.childrens.persons);
 	$scope.page = {};
   
 });

@@ -2,14 +2,14 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//-dd
+//-dddd
 
 /*===========================================================================================
 
 ===========================================================================================*/
 
 controllersModule.controller('TournamentsCtrl', function($scope, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc){
-	//$scope.menu.selectMenu('tournaments');;
+	$scope.menu.selectMenu($scope.menu.pages.tournaments);
 
 	$scope.page = {};
     $scope.page.tournamentTable = {participantsInfo:{}};
@@ -22,14 +22,14 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
     	// Tournament table
     	//
         $scope.page.tournamentTable.columns = [
-                          {name: 'Name'              , sqlName: 'Name->Value'         , isSorted: false, isSortable: true,  isDown: true ,  isSearched: true,  isSearchable: true},
-                          {name: 'Start date'        , sqlName: 'StartDate'           , isSorted: true , isSortable: true,  isDown: false,  isSearched: false, isSearchable: false, filter: 'date'},
-                          {name: 'End date'          , sqlName: 'EndDate'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false, filter: 'date'},
-                          {name: 'Rank'              , sqlName: 'TRank->Name->Value'  , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Status'            , sqlName: 'TStatus->Name->Value', isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Группы'            , sqlName: 'CompetitionsCount'   , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
-                          {name: 'Участники'         , sqlName: 'ParticipantsCount'   , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
-                          {name: 'Registration'      , sqlName: ''                    , isSorted: false, isSortable: false, isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}}];
+                          {name: 'Название'         , sqlName: 'Name->Value'         , isSorted: false, isSortable: true,  isDown: true ,  isSearched: true,  isSearchable: true},
+                          {name: 'Дата начала'      , sqlName: 'StartDate'           , isSorted: true , isSortable: true,  isDown: false,  isSearched: false, isSearchable: false, filter: 'date'},
+                          {name: 'Дата окончания'   , sqlName: 'EndDate'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false, filter: 'date'},
+                          {name: 'Ранг'             , sqlName: 'TRank->Name->Value'  , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Статус'           , sqlName: 'TStatus->Name->Value', isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Группы'           , sqlName: 'CompetitionsCount'   , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
+                          {name: 'Участники'        , sqlName: 'ParticipantsCount'   , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
+                          {name: 'Регистрация'      , sqlName: ''                    , isSorted: false, isSortable: false, isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}}];
         
         $scope.page.tournamentTable.properties = [
         				  {name:'nameShorted', calculate: function(item){
@@ -45,7 +45,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                           {name:'endDate'  , filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'rank.name'},
                           {name:'status.name'},
-                          {name:'competitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch participants list'),
+                          {name:'competitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
                                                 calculate: function(item){
                                                     item.competitionsCountString = item.competitionsCount + ' »';
                                                 }, 
@@ -55,7 +55,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                 onClickCell: function(item){
                                                     $location.path("/tournament/" + item.id +"/competitions"); 
                                                 }},
-                          {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch competitions list'),
+                          {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список участников'),
                                                 calculate: function(item){
                                                     item.participantsCountString = item.participantsCount + ' »';
                                                 },
@@ -65,7 +65,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                 onClickCell: function(item){
                                                     $location.path("/tournament/" + item.id +"/participants"); 
                                                 }},
-                          {name:'registration', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Register'),
+                          {name:'registration', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Оформить регистрацию'),
                                                 getCssClass: function(item){ 
                                                     if (item.status.code=='Registration')
                                                         return 'cellLink';
@@ -73,7 +73,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                     return 'cellLinkDisabled';
                                                 }, 
                                                 calculate: function(item){
-                                                    item.registration = $filter('localize')('Check in »');
+                                                    item.registration = $filter('localize')('Оформить »');
                                                 },
                                                 onClickCell: function(item){
                                                     if (item.status.code=='Registration')
@@ -93,14 +93,14 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-                          {name: 'Date'              , sqlName: 'StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: { width: '130px'}},
-                          {name: 'Time'              , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Name'              , sqlName: 'Name->Value'             , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Discipline'        , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Age category'      , sqlName: 'AgeCategory'             , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Class'             , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Price'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}},
-                          {name: 'Участники'         , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
+                          {name: 'Дата'             , sqlName: 'StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: { width: '130px'}},
+                          {name: 'Время'            , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Название'         , sqlName: 'Name->Value'             , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Программа'        , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Возрастная группа', sqlName: 'AgeCategory'             , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Класс'            , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {name: 'Цена'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}},
+                          {name: 'Участники'        , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
         
         $scope.page.competitionTable.properties = [
         				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
@@ -117,7 +117,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                             item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
                                                         }},
                           {name:'price', cellStyle: {textAlign: 'right'}},
-                          {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Watch participants list'), 
+                          {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список участников'), 
                                                     calculate: function(item){
                                                         item.participantsCountString = item.participantsCount + ' »';
                                                     },
@@ -179,7 +179,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
 				}
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -201,14 +201,14 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 function(data){
                     $scope.page.tournamentTable.selectedItems = [];
                     $scope.page.tournamentTable.refresh();
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Tournament is removed.', 'success', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Турнамент удален.', 'success', true);
                 },
                 function(data, status, headers, config){
-                    $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
                 });  
         };
 
-        UtilsSrvc.openMessageBox('Remove tournament?', item.name, remove);    
+        UtilsSrvc.openMessageBox('Удалить турнир?', item.name, remove);    
     };
     
  
@@ -241,7 +241,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.tournamentTable.statuses = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -252,11 +252,9 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.tournamentTable.ranks = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
-
-	 
        
 
     // 
@@ -286,7 +284,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 }
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -336,14 +334,14 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 function(data){
                     $scope.page.competitionTable.selectedItems = [];
                     $scope.page.competitionTable.refresh();
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Competition is removed.', 'success', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Группа удалена.', 'success', true);
                 },
                 function(data, status, headers, config){
-                    $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
                 });  
         };
 
-        UtilsSrvc.openMessageBox('Remove competition?', item.name, remove);  
+        UtilsSrvc.openMessageBox('Удалить группу?', item.name, remove);  
     };
     
     $scope.page.competitionTable.open = function(item){
@@ -358,7 +356,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                 $scope.page.competitionTable.dates = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 

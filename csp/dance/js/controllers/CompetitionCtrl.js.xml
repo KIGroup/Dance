@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//dedddвв
+//dedddввd
 
 /*===========================================================================================
 Competition: create or update data 
@@ -21,13 +21,13 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
         $scope.page.loadTournament($routeParams.tournamentId);
         
         if ($routeParams.competitionId){
-            $scope.page.accordionCaption = "Editing competition";   
-            $scope.page.btnSubmitCaption = "Save";
+            $scope.page.accordionCaption = "Редактирование группы";   
+            $scope.page.btnSubmitCaption = "Сохранить";
             $scope.page.loadCompetition($routeParams.competitionId);
         }
         else{
-            $scope.page.accordionCaption = "Creation of the competition";
-            $scope.page.btnSubmitCaption = "Create";
+            $scope.page.accordionCaption = "Создание группы";
+            $scope.page.btnSubmitCaption = "Создать";
             $scope.page.loadDancerClasses();
         }
     };
@@ -46,7 +46,7 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
                 $scope.page.tournament = data;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -59,7 +59,7 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
                 $scope.page.loadDancerClasses();
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -82,7 +82,7 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
                 $scope.page.competition.dancerClasses = allClasses;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -97,18 +97,18 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
    		CompetitionSrvc.save($scope.page.tournament.id, $scope.page.competition).then(
             function(data){
 	            if ($scope.page.competition.id){
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Изменения сохранены.', 'success', true);
                 }
                 else{
 	                $scope.page.clear();
                     $scope.page.loadDancerClasses();
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Competition have been created.', 'success', true);   
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Группа создана.', 'success', true);   
                 }
 
                 $scope.form_competition.$setPristine();
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 

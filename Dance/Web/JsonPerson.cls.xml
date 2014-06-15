@@ -8,7 +8,7 @@
 <Description>
 Convert "Person" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.Person,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.Person,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()

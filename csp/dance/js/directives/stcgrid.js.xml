@@ -209,7 +209,7 @@ directivesModule.directive('stcgrid', function(){
 			
 			// Обновить данные - вызов внешнего метода
             $scope.updateSource = function(){
-	           console.log('$scope.updateSource'); 
+	           //console.log('$scope.updateSource'); 
                if (!$scope.sortedColumn){
                     var idx = UtilsSrvc.getIndexes($scope.columns, 'isSorted', true);
                     
@@ -275,7 +275,7 @@ directivesModule.directive('stcgrid', function(){
                 for(var i=0; i < columns.length; i++)
                     if (!columns[i].hidden)
                         visibleCount++;
-				console.log('--- '+visibleCount+'------');
+				
                 return visibleCount;
             };
             

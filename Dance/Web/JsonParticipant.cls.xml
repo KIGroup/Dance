@@ -8,18 +8,24 @@
 <Description>
 Convert "Participant" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.Participant,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.Participant,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	
 	try{
+		if '$ISOBJECT(convertParams) set convertParams = ##class(%ZEN.proxyObject).%New()
+		
 		set proxy.id = object.%Id()
-		set proxy.couple = ##class(JsonCouple).ConvertToProxyObject(object.Couple)
+		
+		set coupleConvertParams = ##class(%ZEN.proxyObject).%New()
+		set coupleConvertParams.tournamentId = convertParams.tournamentId
+		
+		set proxy.couple = ##class(JsonCouple).ConvertToProxyObject(object.Couple, coupleConvertParams)
 		set proxy.paymentStatus = object.PaymentStatus
 		set proxy.coupleCompetitionsCount = object.CoupleCompetitionsCount
 		
-		if (isFullInfo){
+		if (convertParams.isFullInfo){
 			set proxy.competition = ##class(JsonCompetition).ConvertToProxyObject(object.Competition)
 		}
 	}
@@ -117,7 +123,10 @@ Write objects to device, page by page for grid.</Description>
  		
  		set whereCondition = "IsActive = 1 AND Competition = '"_..ParseParameter(params.other.competitionId)_"'"     	
  		
-      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition))
+ 		set convertParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.tournamentId = ##class(Dance.Data.Competition).%OpenId(params.other.competitionId).Tournament.%Id()
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition,,convertParams))
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -137,6 +146,9 @@ Write objects to device, page by page for grid.</Description>
 	set proxy.children = ##class(%ListOfObjects).%New()
 	
 	try{
+		set convertParams = ##class(%ZEN.proxyObject).%New()
+		set convertParams.isFullInfo = $$$YES
+		
 		&sql(DECLARE PrtCur CURSOR FOR
 			 SELECT ID 
 			 FROM Dance_Data.Participant
@@ -148,7 +160,7 @@ Write objects to device, page by page for grid.</Description>
 			&sql(FETCH PrtCur INTO :id) 
 			quit:(SQLCODE '= 0)
 	
-			set prtProxy = ..ConvertToProxyObject(##class(Dance.Data.Participant).%OpenId(id), $$$YES)
+			set prtProxy = ..ConvertToProxyObject(##class(Dance.Data.Participant).%OpenId(id), convertParams)
 			do proxy.children.Insert(prtProxy)
 		}
 		
@@ -185,7 +197,10 @@ Write all objects for tournament to device, page by page for grid.</Description>
  		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"     	
  		set groupCondition = "GROUP BY Couple"
  		
-      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition, groupCondition))
+ 		set convertParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.tournamentId = params.other.tournamentId
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition, groupCondition, convertParams))
 	}
 	catch ex {
 		set st = ex.AsStatus()

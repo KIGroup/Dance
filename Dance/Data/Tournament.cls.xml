@@ -109,6 +109,21 @@ Tournaments</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="TabUDSRAllowed">
+<Type>%Boolean</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="TabWDSFAllowed">
+<Type>%Boolean</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="TabOtherAllowed">
+<Type>%Boolean</Type>
+<Required>1</Required>
+</Property>
+
 <Index name="IdInternalIdx">
 <Properties>IdInternal</Properties>
 <Unique>1</Unique>
@@ -167,6 +182,10 @@ Create or Update object</Description>
       	
     set trn.StartDate = $ZDATEH(data.startDate, 15)
     set trn.EndDate = $ZDATEH(data.endDate, 15)
+    
+    set trn.TabUDSRAllowed = data.tabUDSRAllowed = $$$YES
+    set trn.TabWDSFAllowed = data.tabWDSFAllowed = $$$YES
+    set trn.TabOtherAllowed = data.tabOtherAllowed = $$$YES
          		
     set st = trn.%Save()
     		
@@ -356,6 +375,15 @@ Check update privilege</Description>
 </Value>
 <Value name="20">
 <Value>FullName</Value>
+</Value>
+<Value name="21">
+<Value>TabUDSRAllowed</Value>
+</Value>
+<Value name="22">
+<Value>TabWDSFAllowed</Value>
+</Value>
+<Value name="23">
+<Value>TabOtherAllowed</Value>
 </Value>
 </Data>
 </Storage>

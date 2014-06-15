@@ -2,15 +2,17 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/ImportTournamentsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//dd
+//ddd
 
 /*===========================================================================================
  
 ===========================================================================================*/
 
 controllersModule.controller('ImportTournamentsCtrl', function($scope, $location, $filter, UtilsSrvc, ImportSrvc, TournamentSrvc){
+	$scope.menu.selectMenu($scope.menu.pages.import.childrens.tournaments);
+	
 	$scope.page = {};
-  $scope.page.tournamentTable = {};
+    $scope.page.tournamentTable = {};
 
  	if (!$scope.pageStore.tournaments) $scope.pageStore.importtournaments = {grid:{}};
 
@@ -21,9 +23,9 @@ controllersModule.controller('ImportTournamentsCtrl', function($scope, $location
         $scope.page.tournamentTable.columns = [
                           {name: 'Internal ID', sqlName: 'IdInternal', isSorted: false, isSortable: true,  isDown: true ,  isSearched: false,  isSearchable: true},
                           {name: 'External ID', sqlName: 'IdExternal', isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: true},
-                          {name: 'Hash'       , sqlName: 'Hash'      , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: true},
-                          {name: 'Date'       , sqlName: 'TDate'     , isSorted: true , isSortable: true,  isDown: false,  isSearched: false, isSearchable: true, filter: 'date'},
-                          {name: 'Name'       , sqlName: 'Name'      , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: true}];
+                          {name: 'Хеш'        , sqlName: 'Hash'      , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: true},
+                          {name: 'Дата'       , sqlName: 'TDate'     , isSorted: true , isSortable: true,  isDown: false,  isSearched: false, isSearchable: true, filter: 'date'},
+                          {name: 'Название'   , sqlName: 'Name'      , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false, isSearchable: true}];
         
         $scope.page.tournamentTable.properties = [
         				  {name:'idInternal'}, 
@@ -58,7 +60,7 @@ controllersModule.controller('ImportTournamentsCtrl', function($scope, $location
                 $scope.page.tournamentTable.items = data.items;
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -69,13 +71,17 @@ controllersModule.controller('ImportTournamentsCtrl', function($scope, $location
     /// Open dialog for editing competition 
     $scope.page.tournamentTable.edit = function(item){
         if (item.info.isExisted){
-            UtilsSrvc.openMessageBox("Tournament", "This is tournament already exists!", null);
+            UtilsSrvc.openMessageBox("Турнир", "Данный турнир уже существует!", null);
             return;
         }
 
         $('#InfoModal').modal('show');
         $scope.page.infoModalVisible = true;
         $scope.page.tournamentTable.selected = item;
+        $scope.page.tournamentTable.selected.tabUDSRAllowed = "1";
+        $scope.page.tournamentTable.selected.tabWDSFAllowed = "1";
+        $scope.page.tournamentTable.selected.tabOtherAllowed = "1";
+          
         $scope.form_tournament.$setPristine();
     };
 
@@ -91,11 +97,11 @@ controllersModule.controller('ImportTournamentsCtrl', function($scope, $location
         $scope.page.tournamentTable.selected.id = "";
         TournamentSrvc.save($scope.page.tournamentTable.selected).then(
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Изменения сохранены.', 'success', true);
                 doAfter();
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
                 doAfter();
             });
     };

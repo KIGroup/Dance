@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//dd 
+//dd d
 
 /*===========================================================================================
 Tournament: create or update data 
@@ -15,13 +15,13 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
 	    $scope.page.clear();
 
         if ($routeParams.id){
-            $scope.page.accordionCaption = "Editing tournament";   
-            $scope.page.btnSubmitCaption = "Save";
+            $scope.page.accordionCaption = "Редактирование турнира";   
+            $scope.page.btnSubmitCaption = "Сохранить";
             $scope.page.loadTournament($routeParams.id);
         }
         else{
-            $scope.page.accordionCaption = "Creation of the tournament";
-            $scope.page.btnSubmitCaption = "Create";
+            $scope.page.accordionCaption = "Создание турнира";
+            $scope.page.btnSubmitCaption = "Создать";
         }
     };
 
@@ -30,6 +30,9 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
         $scope.page.tournament = {rank: {}, 
                                   status: {}, 
                                   organizer:{},
+                                  tabUDSRAllowed: '1',
+        						  tabWDSFAllowed: '1',
+        						  tabOtherAllowed: '1',
                                   location: {country:{}}};
     };
 
@@ -38,45 +41,15 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
         TournamentSrvc.getByIdAdmin(id).then(
             function(data){
                 $scope.page.tournament = data;
+                $scope.page.tournament.tabUDSRAllowed = $scope.page.tournament.tabUDSRAllowed == 1 ? "1" : "0";
+                $scope.page.tournament.tabWDSFAllowed = $scope.page.tournament.tabWDSFAllowed == 1 ? "1" : "0";
+                $scope.page.tournament.tabOtherAllowed = $scope.page.tournament.tabOtherAllowed == 1 ? "1" : "0";
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
-    /*// Load all Tournament Statuses for combobox
-    $scope.page.loadTournamentStatuses = function(){
-        TournamentStatusSrvc.getAll().then(
-            function(data){
-                $scope.page.statuses = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
-
-    /// Load all Tournament Ranks for combobox
-    $scope.page.loadTournamentRanks = function(){
-        TournamentRankSrvc.getAll().then(
-            function(data){
-                $scope.page.ranks = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
-
-    /// Load WDSF Countries
-    $scope.page.loadCountries = function(){
-        OtherSrvc.getCountries().then(
-            function(data){
-                $scope.page.countries = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
-            });
-    };
-	*/
     /// Save Tournament or update data
     $scope.page.saveTournament = function(){
 	    $scope.page.tournament.startDate = UtilsSrvc.getValidDate($scope.page.tournament.startDate);
@@ -88,17 +61,17 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
         TournamentSrvc.save($scope.page.tournament).then(
             function(data){
 	            if ($scope.page.tournament.id){
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Изменения сохранены.', 'success', true);
                 }
                 else{
 	                $scope.page.clear();
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Tournament created.', 'success', true);   
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Турнир создан.', 'success', true);   
                 }
 
                 $scope.form_tournament.$setPristine();
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -109,9 +82,6 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
 
     
     $scope.page.init();
-    //$scope.page.loadTournamentStatuses();
-    //$scope.page.loadTournamentRanks();
-    //$scope.page.loadCountries();    
 });
 ]]></CSP>
 </Export>

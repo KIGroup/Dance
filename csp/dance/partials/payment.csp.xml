@@ -4,12 +4,12 @@
 <div class="row-fluid">
 	<pre ng-bind="page.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
-</div> 
+</div>  
 <br>
 <div class="row-fluid" style="text-align: center;">
 	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация участников »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Cписок всех групп  »'|localize"></a>
+	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Cписок всех групп »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="#/tournament/{{page.tournament.id}}/participants" class="cellLink" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Список всех участников »'|localize"></a>
 </div>
@@ -23,13 +23,13 @@
 <!-- Competitions -->
 <div class="row-fluid" style="padding-top: 10px;">
 	<div class="span8">
-		<span style="font-weight: bold;" ng-show="page.couple.man.id==page.couple.woman.id" ng-bind="'Группы участника ″' + page.couple.man.lastName + ' ' + page.couple.man.firstName +  '″; ' + 'Клуб' + ' ″' + page.couple.otherInfo.club + '″'"></span>
-		<span style="font-weight: bold;" ng-hide="page.couple.man.id==page.couple.woman.id" ng-bind="'Группы пары ″' + page.couple.man.lastName + ' ' + page.couple.man.firstName + ' - ' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName +  '″; ' + 'Клуб' + ' ″' + page.couple.otherInfo.club + '″'"></span>
+		<span style="font-weight: bold;" ng-show="page.couple.man.id==page.couple.woman.id" ng-bind="('Группы участника'|localize) + ' ″' + page.couple.man.lastName + ' ' + page.couple.man.firstName +  '″; ' + 'Клуб' + ' ″' + page.couple.otherInfo.club + '″'"></span>
+		<span style="font-weight: bold;" ng-hide="page.couple.man.id==page.couple.woman.id" ng-bind="('Группы пары'|localize) + ' ″' + page.couple.man.lastName + ' ' + page.couple.man.firstName + ' - ' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName +  '″; ' + 'Клуб' + ' ″' + page.couple.otherInfo.club + '″'"></span>
 	</div>
 	<div class="span4">
 		<div class="btn-group pull-right">
-			<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentPayment.gridCompetitions.tableShortView" btn-radio="true" ng-bind="'Коротко'" title="{{'Скрывать дополнительные столбцы'|localize}}" ng-click="page.competitionTable.setHiddenCoulumns(true)"></button>
-			<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentPayment.gridCompetitions.tableShortView" btn-radio="false" ng-bind="'Детально'" title="{{'Отображать дополнительные столбцы'|localize}}" ng-click="page.competitionTable.setHiddenCoulumns(false)"></button>
+			<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentPayment.gridCompetitions.tableShortView" btn-radio="true" ng-bind="'Коротко'|localize" title="{{'Скрывать дополнительные столбцы'|localize}}" ng-click="page.competitionTable.setHiddenCoulumns(true)"></button>
+			<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentPayment.gridCompetitions.tableShortView" btn-radio="false" ng-bind="'Детально'|localize" title="{{'Отображать дополнительные столбцы'|localize}}" ng-click="page.competitionTable.setHiddenCoulumns(false)"></button>
 		</div>
 	</div> 
 </div>
@@ -59,6 +59,9 @@
 	/>
 </div>			
 
+<button type="button" class="btn btn-small" ng-click="page.openConfirmDlg()" ng-disabled="page.competitionTable.selectedItems.length==0"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;{{'Оплатить на danceplat.ru'}}</button>
+
+
 <div class="row-fluid">
 	<div class="span4">
 		<div>
@@ -72,7 +75,7 @@
 				woman-number-udsr="page.couple.woman.numberUDSR"
 				competitions="page.competitionList"
 				hide-all="true"
-				btn-name="'Оплатить на danceplat.ru'|localize"/>
+				btn-name="''"/>
 		</div>
 		<div>
 			<danceplat-other-pay 
@@ -91,17 +94,17 @@
 				female-first-name="page.couple.woman.firstName"
 
 				country="page.couple.otherInfo.country.name"
-				city="page.couple.otherInfo.cityName"
+				city="page.couple.otherInfo.city"
 				club="page.couple.otherInfo.club"
 				trainer="page.couple.otherInfo.mainTrainer"
 
 				competitions="page.competitionList"
 				hide-all="true"
-				btn-name="'Оплатить на danceplat.ru'|localize"/>
+				btn-name="''"/>
 		</div>
 	</div>
 	<div class="span8">
-		<span class="pull-right" ng-bind="('Selected'|localize) + ' ' + page.competitionTable.selectedItems.length + ' ' + ('competitions of'|localize) + ' ' + page.competitionTable.itemsTotal"></span>
+		<span class="pull-right" ng-bind="('Выбрано'|localize) + ' ' + page.competitionTable.selectedItems.length + ' ' + ('групп из'|localize) + ' ' + page.competitionTable.itemsTotal"></span>
 	</div>
 </div>	
 <br>
@@ -113,7 +116,7 @@
 	<stcgrid
     	grid="pageStore.tournamentDetails.gridManCompetitions"
 	    table-class="table table-bordered table-hover"
-	    caption="'Конфликтные группы для ' + '\'' + page.couple.man.lastName + ' ' + page.couple.man.firstName + '\''"
+	    caption="('Конфликтные группы для '|localize) + '\'' + page.couple.man.lastName + ' ' + page.couple.man.firstName + '\''"
 	    columns="page.conflictTable.columns"
 	    items="page.conflictTable.manCompetitions"
 	    properties="page.conflictTable.properties"
@@ -133,7 +136,7 @@
 	<stcgrid
     	grid="pageStore.tournamentDetails.gridWomanCompetitions"
 	    table-class="table table-bordered table-hover"
-	    caption="'Конфликтные группы для ' + '\'' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName + '\''"
+	    caption="('Конфликтные группы для '|localize) + '\'' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName + '\''"
 	    columns="page.conflictTable.columns"
 	    items="page.conflictTable.womanCompetitions"
 	    properties="page.conflictTable.properties"
@@ -151,8 +154,98 @@
 
 
 
+<div class="modal" id="ConfirmModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="ConfirmLabel" aria-hidden="true" ng-show="page.confirmModalVisible">
+ 	<div class="modal-header">
+ 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true"  ng-click="page.confirmModalVisible=false">×</button>
+		<h4 id="ConfirmLabel" ng-bind="'Данные для передачи в платежную систему'|localize"></h4>
+	</div>
+	<div class="modal-body">
+		<!-- Man -->
+		<div class="row-fluid">
+			<div class="span8">
+		        <div class="control-group">
+		        	<label class="control-label" style="font-weight: bold;" ng-bind="('Партнер'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" value="{{page.confirmData.couple.man.lastName + ' ' + page.confirmData.couple.man.firstName}}" required ng-disabled="true"></input>
+                	</div>
+		    	</div>
+			</div>
+			<div class="span4">
+		        <div class="control-group">
+		        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.confirmData.couple.man.dob" show-weeks="false" ng-required="true"/>
+                	</div>
+		    	</div>
+			</div>
+		</div>
+		<!-- Woman -->
+		<div class="row-fluid">
+			<div class="span8">
+		        <div class="control-group">
+		        	<label class="control-label" style="font-weight: bold;" ng-bind="('Партнерша'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" value="{{page.confirmData.couple.woman.lastName + ' ' + page.confirmData.couple.woman.firstName}}" required ng-disabled="true"></input>
+                	</div>
+		    	</div>
+			</div>
+			<div class="span4">
+		        <div class="control-group">
+		        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.confirmData.couple.woman.dob" show-weeks="false" ng-required="true"/>
+                	</div>
+		    	</div>
+			</div>
+		</div>
+		<!-- Other Info -->
+		<p><span style="font-weight: bold;" ng-bind="('Дополнительная информация'|localize) + ':'"></span></p>
+		<div class="row-fluid">
+			<div class="span6">
+		        <div class="control-group">
+		        	<label class="control-label" ng-bind="('Страна'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<select class="span12" ng-model="page.confirmData.couple.otherInfo.country" ng-options="country as country.name for country in page.countries" ng-disabled="page.newCouple.fieldsDisabled">
+			            </select> 
+                	</div>
+		    	</div>
+			</div>
+			<div class="span6">
+		        <div class="control-group">
+		        	<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" ng-model="page.confirmData.couple.otherInfo.city" required></input>
+                	</div>
+		    	</div>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span6">
+		        <div class="control-group">
+		        	<label class="control-label" ng-bind="('Клуб'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" ng-model="page.confirmData.couple.otherInfo.club" required></input>
+                	</div>
+		    	</div>
+			</div>
+			<div class="span6">
+		        <div class="control-group">
+		        	<label class="control-label" ng-bind="('Главный тренер'|localize) + '*'"></label>
+		        	<div class="controls">
+		    			<input class="span12" type="text" ng-model="page.confirmData.couple.otherInfo.mainTrainer" required></input>
+                	</div>
+		    	</div>
+			</div>
+		</div>
 
-
-
+		<p style="margin: 0 0 2px;"><span style="font-weight: bold;" ng-bind="('Группы'|localize) + ':'"></span></p>
+		<p style="margin: 0 0 2px;" ng-repeat="cmp in page.competitionTable.selectedItems"><span ng-bind="($index+1) + '. ' + cmp.competition.name"></span></p>
+		<br>
+		<div class="control-group">
+   			<button type="button" class="btn btn-small" ng-click="page.goToPaymentSystem(page.confirmData.formId); page.closeConfirmDlg()"><i class="fa fa-download"></i>&nbsp;{{('Передать данные'|localize)}}</button>
+   			<button type="button" class="btn btn-small pull-right" ng-click="page.closeConfirmDlg()"><i class="fa fa-ban"></i>&nbsp;{{('Отмена'|localize)}}</button>
+    	</div>
+    </div>
+</div>
 ]]></CSP>
 </Export>

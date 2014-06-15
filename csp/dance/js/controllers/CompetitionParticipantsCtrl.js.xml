@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//csdddd
+//csddddddd
  
 /*===========================================================================================
 Competition Participants 
@@ -22,11 +22,11 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     	//  
         $scope.page.participantTable.columns = [
                           {name: 'Партнер / партнерша', sqlName: 'Couple->Man->LastName->Value'     , isSorted: true , isSortable: true , isDown: true, isSearched: true , isSearchable: true, captionStyle: {width: '250px'}},
-                          {name: 'Class'      , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '50px'}},
-                          {name: 'Club / City', sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Trainers'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
-                          {name: 'Country'    , sqlName: 'Couple->Man->Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Группы'     , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: "70px"}}];
+                          {name: 'Класс'       , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '50px'}},
+                          {name: 'Клуб / Город', sqlName: '-'                                , isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Тренер(ы)'   , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
+                          {name: 'Страна'      , sqlName: 'Couple->Man->Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Группы'      , sqlName: '-'                                , isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: "70px"}}];
         
         $scope.page.participantTable.properties = [
         				  {name:'couple.fullName', 
@@ -47,12 +47,21 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                     return $scope.page.participantTable.getCssClassForPaymentStatus(item.paymentStatus);
                                                 },
                                                 calculate: function(item){
-                                                    if ($scope.page.competition.discipline.code == 'Ла'){
-                                                        item.couple.class = item.couple.man.laClass.name + '\n' + item.couple.woman.laClass.name;
+                                                    var manClass,womanClass;
+
+                                                    if ($scope.page.competition.discipline.code == 'Ла'){                                                        
+                                                        manClass = item.couple.man.laClass.name;
+                                                        womanClass = item.couple.woman.laClass.name;
                                                     }
                                                     else if($scope.page.competition.discipline.code == 'Ст'){
-                                                        item.couple.class = item.couple.man.stClass.name + '\n' + item.couple.woman.stClass.name;
+                                                        manClass = item.couple.man.stClass.name;
+                                                        womanClass = item.couple.woman.stClass.name;
                                                     }
+
+                                                    if (!manClass) manClass = '-';
+                                                    if (!womanClass) womanClass = '-';
+
+                                                    item.couple.class = manClass + '\n' + womanClass;
                                                 }},
                           {name:'couple.otherInfo.clubAndCity', 
                                                 getCssClass: function(item){ 
@@ -107,7 +116,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                 $scope.page.participantTable.itemsStatus = data.itemsTotal == 0 ? $filter('localize')('Нет данных.') : '';
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
                 $scope.page.participantTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке данных.');
             });
     };
@@ -142,14 +151,14 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                 function(data){
                     $scope.page.participantTable.selectedItems = [];
                     $scope.page.participantTable.refresh();
-                    $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Participant is removed.', 'success', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Участник удален.', 'success', true);
                 },
                 function(data, status, headers, config){
-                    $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                    $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
                 });  
         };
 
-        UtilsSrvc.openMessageBox('Remove participant from competition?', item.couple.man.lastName + ' - ' + item.couple.woman.lastName, remove);    
+        UtilsSrvc.openMessageBox('Удалить пару / участника из группы?', item.couple.man.lastName + ' - ' + item.couple.woman.lastName, remove);    
     };
     
     /// Load Competition by ID

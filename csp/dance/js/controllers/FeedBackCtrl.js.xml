@@ -2,13 +2,13 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/FeedBackCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ss
+//ssd
 
 /*===========================================================================================
 ===========================================================================================*/
 
 controllersModule.controller('FeedBackCtrl', function($scope, FeedBackSrvc, UtilsSrvc){
-    $scope.menu.selectMenu($scope.menu.pages.feedback);
+    $scope.menu.pages.selected = $scope.menu.pages.feedback;
     
     $scope.page = {};
     $scope.page.fb = {};

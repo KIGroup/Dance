@@ -32,6 +32,7 @@ directivesModule.directive('danceplatOtherPay', function(){
             
             country: '=',
             city: '=',
+            club: '=',
             trainer: '=',
 
             competitions: '=',

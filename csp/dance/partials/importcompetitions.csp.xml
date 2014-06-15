@@ -6,7 +6,7 @@
 <div class="row-fluid">
     <div class="span1">
         <div class="control-group">
-            <label class="control-label" ng-bind="('Year'|localize) + '*'"></label>
+            <label class="control-label" ng-bind="('Год'|localize) + '*'"></label>
             <div class="controls">
                 <select class="span12" ng-model="page.filter.year" ng-options="year as year for year in page.years" ng-change="page.loadTournamentsByYear(page.filter.year)" required>
                 </select>           
@@ -15,7 +15,7 @@
     </div>
     <div class="span11">
         <div class="control-group">
-            <label class="control-label" ng-bind="('Tournament'|localize) + '*'"></label>
+            <label class="control-label" ng-bind="('Турнир'|localize) + '*'"></label>
             <div class="controls">
                 <select class="span12" ng-model="page.tournament.id" ng-options="trn.id as trn.name + '; ' + trn.cityName + ', ' + trn.countryName for trn in page.tournaments" ng-disabled="!page.filter.year" ng-change="page.loadTournament(page.tournament.id)" required>
                 </select>           
@@ -25,29 +25,29 @@
 </div>
 
 <div class="row-fluid" ng-hide="page.competitionTable.itemsTotal==0">
-    <button type="button" class="btn btn-success btn-small" ng-click="page.importAll()" ng-bind="('Import all'|localize) + ' (' + (page.competitionTable.itemsTotal - page.competitionTable.itemsErroredTotal - page.competitionTable.itemsExistedTotal) + ')'"></button>
+    <button type="button" class="btn btn-success btn-small" ng-click="page.importAll()" ng-bind="('Импортировать доступные'|localize) + ' (' + (page.competitionTable.itemsTotal - page.competitionTable.itemsErroredTotal - page.competitionTable.itemsExistedTotal) + ')'"></button>
 </div>
 
 <div class="accordion" style="padding-top: 10px;" ng-show="page.tournament.id">
     <div class="accordion-group" style="border-bottom: none;">
         <div class="accordion-heading">
-            <a class="accordion-toggle" ng-bind="'Import competitions into tournament'|localize"></a>
+            <a class="accordion-toggle" ng-bind="'Импорт групп в турнир'|localize"></a>
         </div>
         <div class="accordion-body">
             <div class="accordion-inner">
                 <div class="row-fluid">
                     <div class="span6">
-                        <p><span class="spnTitle" ng-bind="'Tournament'|localize"></span>: <span ng-bind="page.tournament.name"></span></p>
-                        <p><span class="spnTitle" ng-bind="('City'|localize) + ', ' + ('Country'|localize)"></span>: <span ng-bind="page.tournament.location.cityName + ', ' + page.tournament.location.country.name"></span></p>
-                        <p><span class="spnTitle" ng-hide="page.tournament.organizer.info==''" ng-bind="'Organizer'|localize"></span>: <span ng-bind="page.tournament.organizer.info"></span></p>
-                        <p><span class="spnTitle" ng-hide="page.tournament.organizer.site==''" ng-bind="'Organizer web-site'|localize" ></span>: <span ng-bind="page.tournament.organizer.site"></span></p>
+                        <p><span class="spnTitle" ng-bind="'Турнир'|localize"></span>: <span ng-bind="page.tournament.name"></span></p>
+                        <p><span class="spnTitle" ng-bind="('Город'|localize) + ', ' + ('Страна'|localize)"></span>: <span ng-bind="page.tournament.location.cityName + ', ' + page.tournament.location.country.name"></span></p>
+                        <p><span class="spnTitle" ng-hide="page.tournament.organizer.info==''" ng-bind="'Организатор'|localize"></span>: <span ng-bind="page.tournament.organizer.info"></span></p>
+                        <p><span class="spnTitle" ng-hide="page.tournament.organizer.site==''" ng-bind="'Веб-сайт организатора'|localize" ></span>: <span ng-bind="page.tournament.organizer.site"></span></p>
                     </div>
                     <div class="span6">
-                        <p><span class="spnTitle" ng-bind="'Start date / end date'|localize"></span>: <span ng-bind="(page.tournament.startDate|convertCacheDate:('d MMMM y'|localize)) + '  /  ' + (page.tournament.endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>
-                        <p><span class="spnTitle" ng-bind="'Rank'|localize"></span>: <span ng-bind="page.tournament.rank.name"></span></p>
-                        <p><span class="spnTitle" ng-bind="'Status'|localize"></span>: <span ng-bind="page.tournament.status.name"></span></p>
-                        <p><span class="spnTitle" ng-bind="'Total competitions'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/competitions'}}" title="{{'Watch competitions list'|localize}}" ng-bind="page.tournament.competitionsCount + ' &raquo;'"></a></p>
-                        <p><span class="spnTitle" ng-bind="'Total participants / unique'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/participants'}}" title="{{'Watch participants list'|localize}}" ng-bind="page.tournament.participantsCount+' / '+page.tournament.participantsUniqueCount + ' &raquo;'"></a></p>
+                        <p><span class="spnTitle" ng-bind="'Дата начала / окончания'|localize"></span>: <span ng-bind="(page.tournament.startDate|convertCacheDate:('d MMMM y'|localize)) + '  /  ' + (page.tournament.endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>
+                        <p><span class="spnTitle" ng-bind="'Ранг'|localize"></span>: <span ng-bind="page.tournament.rank.name"></span></p>
+                        <p><span class="spnTitle" ng-bind="'Статус'|localize"></span>: <span ng-bind="page.tournament.status.name"></span></p>
+                        <p><span class="spnTitle" ng-bind="'Всего групп'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/competitions'}}" title="{{'Watch competitions list'|localize}}" ng-bind="page.tournament.competitionsCount + ' &raquo;'"></a></p>
+                        <p><span class="spnTitle" ng-bind="'Всего участников / уникальных'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/participants'}}" title="{{'Watch participants list'|localize}}" ng-bind="page.tournament.participantsCount+' / '+page.tournament.participantsUniqueCount + ' &raquo;'"></a></p>
                     </div>
                 </div>
             </div>
@@ -77,8 +77,8 @@
         action-column-visible="true"
         action-column-icon="'fa fa-ellipsis-h'"
      
-        first-row-action-icon="'fa fa-pencil'"
-        first-row-action-title="'Edit'|localize"
+        first-row-action-icon="'fa fa-download'"
+        first-row-action-title="'Импортировать'|localize"
         first-row-action-method="page.competitionTable.edit(item)"
                     
         forcibly-update="page.competitionTable.forciblyUpdate"
@@ -88,7 +88,7 @@
 <div class="modal" id="InfoModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="InfoLabel" aria-hidden="true" ng-show="page.infoModalVisible">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"  ng-click="page.infoModalVisible=false">×</button>
-        <h3 id="InfoLabel" ng-bind="'Competition'|localize"></h3>
+        <h3 id="InfoLabel" ng-bind="'Группа'|localize"></h3>
     </div>
     <div class="modal-body">
         <div class="row-fluid">
@@ -96,9 +96,9 @@
                 <competitionform competition="page.competitionTable.selected"/>
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" class="btn btn-primary btn-small" ng-bind="'Import'|localize" ng-disabled="!form_competition.$valid"></button>
-                        <button type="button" class="btn btn-small" ng-click="page.cancel()" ng-bind="'Cancel'|localize"></button>
-                        <button type="button" class="btn btn-small btn-danger pull-right" ng-click="page.competitionTable.IsVisibleItemErrors=true;" ng-disabled="page.competitionTable.selected.info.errorMessages.length==0" ng-bind="('Show errors'|localize) + ' (' + page.competitionTable.selected.info.errorMessages.length + ')'"></button>
+                        <button type="submit" class="btn btn-primary btn-small" ng-bind="'Импорт'|localize" ng-disabled="!form_competition.$valid"></button>
+                        <button type="button" class="btn btn-small" ng-click="page.cancel()" ng-bind="'Отмена'|localize"></button>
+                        <button type="button" class="btn btn-small btn-danger pull-right" ng-click="page.competitionTable.IsVisibleItemErrors=true;" ng-disabled="page.competitionTable.selected.info.errorMessages.length==0" ng-bind="('Показать ошибки'|localize) + ' (' + page.competitionTable.selected.info.errorMessages.length + ')'"></button>
                     </div>
                 </div>                                          
             </form>
@@ -107,7 +107,7 @@
                     <span ng-bind="($index + 1) + '. ' + error + '\n'"></span><br>
                 </div>
                 <br>
-                <button type="button" class="btn btn-small btn-primary" ng-click="page.competitionTable.IsVisibleItemErrors=false;" ng-bind="('View form'|localize)"></button>
+                <button type="button" class="btn btn-small btn-primary" ng-click="page.competitionTable.IsVisibleItemErrors=false;" ng-bind="('Просмотр формы'|localize)"></button>
 	       </div>
         </div>
     </div>

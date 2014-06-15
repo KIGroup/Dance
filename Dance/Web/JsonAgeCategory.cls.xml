@@ -8,7 +8,7 @@
 <Description>
 Convert "AgeCategory" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.AgeCategory,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.AgeCategory,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()

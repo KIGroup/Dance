@@ -8,31 +8,45 @@
 <Description>
 Convert "Couple" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.Couple,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.Couple,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	
 	try{
+		if '$ISOBJECT(convertParams) set convertParams = ##class(%ZEN.proxyObject).%New()
+		
 		set proxy.id = object.%Id()
 		set proxy.man = ##class(JsonPerson).ConvertToProxyObject(object.Man)
 		set proxy.woman = ##class(JsonPerson).ConvertToProxyObject(object.Woman)
 		
 		set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
-		set club = object.Man.Club
-		if (club = "") set club = object.Woman.Club 
-		
-		set mainTrainer = object.Man.MainTrainer
-		if (mainTrainer = "") set mainTrainer = object.Woman.MainTrainer 
-		
-		set otherTrainers = object.Man.OtherTrainers
-		if (otherTrainers = "") set otherTrainers = object.Woman.OtherTrainers
-		
 		set proxy.otherInfo.country = ##class(JsonCountry).ConvertToProxyObject(object.Man.Country)
-		set proxy.otherInfo.city = object.Man.City
-		set proxy.otherInfo.club = club
-		set proxy.otherInfo.mainTrainer = mainTrainer
-		set proxy.otherInfo.otherTrainers = otherTrainers
+			
+		if (object.Man.NumberWDSF = "") && (object.Woman.NumberWDSF = ""){
+			set club = object.Man.Club
+			if (club = "") set club = object.Woman.Club 
+		
+			set mainTrainer = object.Man.MainTrainer
+			if (mainTrainer = "") set mainTrainer = object.Woman.MainTrainer 
+		
+			set otherTrainers = object.Man.OtherTrainers
+			if (otherTrainers = "") set otherTrainers = object.Woman.OtherTrainers
+		
+			set proxy.otherInfo.city = object.Man.City
+			set proxy.otherInfo.club = club
+			set proxy.otherInfo.mainTrainer = mainTrainer
+			set proxy.otherInfo.otherTrainers = otherTrainers
+		}
+		elseif (convertParams.tournamentId '= ""){
+			set coupleInfo = ..GetWDSFOtherInfoForTournament(convertParams.tournamentId, proxy.id)
+			set proxy.man.dob = coupleInfo.manDob
+			set proxy.woman.dob = coupleInfo.womanDob
+			set proxy.otherInfo.city = coupleInfo.city
+			set proxy.otherInfo.club = coupleInfo.club
+			set proxy.otherInfo.mainTrainer = coupleInfo.mainTrainer
+			set proxy.otherInfo.otherTrainers = coupleInfo.otherTrainers
+		}
 	}
 	catch(ex){
 		set proxy = ##class(%ZEN.proxyObject).%New()
@@ -223,6 +237,37 @@ Couple data by WDSF numbers</Description>
 		// Crate couple for dancers
 		set couple = ##class(Dance.Data.Couple).Create(proxy.man.id, proxy.woman.id, .st)
 		set proxy.id = couple.%Id()
+		
+		set coupleInfo =..GetFreshestWDSFOtherInfo(couple.%Id())
+		
+		if (proxy.otherInfo = ""){
+			set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
+		}
+		
+		if (proxy.man.dob = ""){
+			set proxy.man.dob = coupleInfo.manDob 
+		}
+		
+		if (proxy.woman.dob = ""){
+			set proxy.woman.dob = coupleInfo.womanDob 
+		}
+		
+		if (proxy.otherInfo.city = ""){
+			set proxy.otherInfo.city = coupleInfo.city
+		}
+		
+		if (proxy.otherInfo.club = ""){
+			set proxy.otherInfo.club = coupleInfo.club
+		}
+		
+		if (proxy.otherInfo.mainTrainer = ""){
+			set proxy.otherInfo.mainTrainer = coupleInfo.mainTrainer
+		}
+		
+		if (proxy.otherInfo.otherTrainers = ""){
+			set proxy.otherInfo.otherTrainers = coupleInfo.otherTrainers
+		}
+		
 		do proxy.%ToJSON()
 
 		TCOMMIT
@@ -252,6 +297,8 @@ Registration UDSR or WDSF couple in the tournament</Description>
       	
       	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.woman.id)
       	
+      	set competition = ""
+      	
       	for i=1:1:data.competitions.Count(){
 	    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
 	    	if (competition.Tournament.TStatus.Code '= "Registration") {
@@ -260,6 +307,28 @@ Registration UDSR or WDSF couple in the tournament</Description>
 	    	
 	    	do ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id(), .st)
 	    	
+	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+	    }
+	    
+	    if (data.type = "wdsf"){
+	    	if (##class(Dance.Data.CoupleWDSFInfo).CommonIdxExists(competition.Tournament.%Id(), couple.%Id())){
+	    		set coupleInfo = ##class(Dance.Data.CoupleWDSFInfo).CommonIdxOpen(competition.Tournament.%Id(), couple.%Id())
+	    	}
+	    	else{
+	    		set coupleInfo = ##class(Dance.Data.CoupleWDSFInfo).%New()
+	    	}
+	    	
+	    	set coupleInfo.Couple = couple
+	    	set coupleInfo.Tournament = competition.Tournament
+	    	
+	    	set coupleInfo.ManDOB = $ZDH(data.man.dob, 3)
+	    	set coupleInfo.WomanDOB = $ZDH(data.woman.dob, 3)
+	    	set coupleInfo.City = $ZCVT(data.otherInfo.city, "I", "UTF8")
+	    	set coupleInfo.Club = $ZCVT(data.otherInfo.club, "I", "UTF8")
+	    	set coupleInfo.MainTrainer = $ZCVT(data.otherInfo.mainTrainer, "I", "UTF8")
+	    	set coupleInfo.OtherTrainers = $ZCVT(data.otherInfo.otherTrainers, "I", "UTF8")
+	    	
+	    	set st = coupleInfo.%Save()
 	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
 	    }
       	
@@ -358,6 +427,78 @@ Registration new couple in the tournament</Description>
 	}
 	
 	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteWDSFOtherInfoForTournamentToDevice">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>coupleId:%String,trnId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ..GetWDSFOtherInfoForTournament(trnId, coupleId).%ToJSON()
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetWDSFOtherInfoForTournament">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,coupleId:%String</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+		
+	&sql(SELECT ID INTO :id 
+		 FROM Dance_Data.CoupleWDSFInfo 
+		 WHERE Tournament = :trnId AND Couple = :coupleId)
+	
+	quit ..ConvertWDSFOtherInfoToProxyObject(##class(Dance.Data.CoupleWDSFInfo).%OpenId(id))
+]]></Implementation>
+</Method>
+
+<Method name="GetFreshestWDSFOtherInfo">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>coupleId:%String</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+		
+	&sql(SELECT ID INTO :id 
+		 FROM Dance_Data.CoupleWDSFInfo 
+		 WHERE Couple = :coupleId
+		 ORDER BY Created DESC)
+	
+	quit ..ConvertWDSFOtherInfoToProxyObject(##class(Dance.Data.CoupleWDSFInfo).%OpenId(id))
+]]></Implementation>
+</Method>
+
+<Method name="ConvertWDSFOtherInfoToProxyObject">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>coupleInfo:Dance.Data.CoupleWDSFInfo</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	if '$ISOBJECT(coupleInfo) quit proxy
+	
+	set proxy.id = coupleInfo.%Id()
+	set proxy.coupleId = coupleInfo.Couple.%Id()
+	set proxy.tournamentId = coupleInfo.Tournament.%Id()
+	set proxy.manDob = $ZD(coupleInfo.ManDOB, 3)
+	set proxy.womanDob = $ZD(coupleInfo.WomanDOB, 3)
+	set proxy.city = coupleInfo.City
+	set proxy.club = coupleInfo.Club
+	set proxy.mainTrainer = coupleInfo.MainTrainer
+	set proxy.otherTrainers = coupleInfo.OtherTrainers
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>aaa:%String,obj:%ZEN.proxyObject=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	w !,"isObject(obj)="_$ISOBJECT(obj)
 ]]></Implementation>
 </Method>
 </Class>

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/MainCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+//d
 
 /*===========================================================================================
 Главный контроллер, работа с языком и меню
@@ -20,21 +20,23 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
                    loginCaption: ($cookies.admin === 'true' ? 'Выход' : 'Вход')};
     
     $scope.menu.pages = {selected: {},
-	    				 tournaments: {id: 'tournaments', url: '#/tournaments'           , name: $filter('localize')('Tournaments')},
+	    				 tournaments: {id: 'tournaments', url: '#/tournaments', name: $filter('localize')('Турниры')},
                          
-                         entities : {id: 'entities', url: '#/entities/agecategories', name: $filter('localize')('Entities'), 
-                                        childrens: {ageCategories : {id: 'ageCategories', url: '#/entities/agecategories', name: $filter('localize')('Age categories'), parentId: 'entities'},
-                                                    dancerClasses : {id: 'dancerClasses', url: '#/entities/dancerclasses', name: $filter('localize')('Dancer classes'), parentId: 'entities'}}},
+                         entities : {id: 'entities', url: '#/entities/agecategories', name: $filter('localize')('Справочники'), 
+                                        childrens: {ageCategories : {id: 'ageCategories', url: '#/entities/agecategories', name: $filter('localize')('Возрастные группы'), parentId: 'entities'},
+                                                    dancerClasses : {id: 'dancerClasses', url: '#/entities/dancerclasses', name: $filter('localize')('Классы'), parentId: 'entities'}}},
                          
-                         import : {id: 'import', url: '#/import/tournaments', name: $filter('localize')('Import'),
-                                      childrens: {tournaments : {id: 'import-tournaments' , url: '#/import/tournaments' , parentId: 'import', name: $filter('localize')('Tournaments')},
+                         import : {id: 'import', url: '#/import/tournaments', name: $filter('localize')('Импорт'),
+                                      childrens: {tournaments : {id: 'import-tournaments' , url: '#/import/tournaments' , parentId: 'import', name: $filter('localize')('Турниры')},
                                                   competitions: {id: 'import-competitions', url: '#/import/competitions', parentId: 'import', name: $filter('localize')('Группы')},
                                                   tickets     : {id: 'import-tickets'     , url: '#/import/tickets'     , parentId: 'import', name: $filter('localize')('Tickets')},
-                                                  persons     : {id: 'import-persons'     , url: '#/import/persons'     , parentId: 'import', name: $filter('localize')('Участники СТСР')}}}
+                                                  persons     : {id: 'import-persons'     , url: '#/import/persons'     , parentId: 'import', name: $filter('localize')('Участники СТСР')}}},
+                         feedback: {id: 'feedback', url: '#/feedback', name: $filter('localize')('Обратная связь')}
                         }; 
   
     $scope.menu.selectMenu = function(menuItem){
         $scope.menu.pages.selected = menuItem;
+        $scope.menu.shortMenu = false;
     };
 
     $scope.menu.loadLanguages = function(){

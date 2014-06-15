@@ -25,8 +25,8 @@
 		action-column-visible="true"
 	    action-column-icon="'fa fa-ellipsis-h'"
 	 
-	    first-row-action-icon="'fa fa-pencil'"
-	    first-row-action-title="'Edit'|localize"
+	    first-row-action-icon="'fa fa-download'"
+	    first-row-action-title="'Импортировать'|localize"
 	    first-row-action-method="page.tournamentTable.edit(item)"
     		    	
 		forcibly-update="page.tournamentTable.forciblyUpdate"
@@ -36,15 +36,15 @@
 <div class="modal" id="InfoModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="InfoLabel" aria-hidden="true" ng-show="page.infoModalVisible">
  	<div class="modal-header">
  		<button type="button" class="close" data-dismiss="modal" aria-hidden="true"  ng-click="page.infoModalVisible=false">×</button>
-		<h3 id="InfoLabel" ng-bind="'Tournament'|localize"></h3>
+		<h3 id="InfoLabel" ng-bind="'Турнир'|localize"></h3>
 	</div>
 	<div class="modal-body">
 		<form name="form_tournament" ng-submit="page.saveImportedTournament()" style="margin: 0;">					
 			<tournamentform tournament="page.tournamentTable.selected"/>
 			<div class="control-group">
 				<div class="controls">
-					<button type="submit" class="btn btn-primary btn-small" ng-bind="'Import'|localize" ng-disabled="form_tournament.$pristine"></button>
-					<button type="button" class="btn btn-small" ng-click="page.cancel()" ng-bind="'Cancel'|localize"></button>
+					<button type="submit" class="btn btn-primary btn-small" ng-bind="'Импорт'|localize" ng-disabled="form_tournament.$pristine"></button>
+					<button type="button" class="btn btn-small" ng-click="page.cancel()" ng-bind="'Отмена'|localize"></button>
 				</div>
 			</div>    		    		    				
 		</form>

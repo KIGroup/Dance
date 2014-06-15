@@ -8,7 +8,7 @@
 <Description>
 Convert "Tournament" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.Tournament,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.Tournament,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
@@ -40,6 +40,10 @@ Convert "Tournament" object to %ZEN.proxyObject (for JSON)</Description>
 		set proxy.organizer = ##class(%ZEN.proxyObject).%New()
 		set proxy.organizer.info = object.OrganizerInfo.Value
 		set proxy.organizer.site = object.OrganizerSite
+		
+		set proxy.tabUDSRAllowed = object.TabUDSRAllowed
+		set proxy.tabWDSFAllowed = object.TabWDSFAllowed
+		set proxy.tabOtherAllowed = object.TabOtherAllowed
 	}
 	catch(ex){
 		set proxy = ##class(%ZEN.proxyObject).%New()

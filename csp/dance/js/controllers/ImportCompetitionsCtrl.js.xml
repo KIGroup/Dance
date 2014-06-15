@@ -2,13 +2,14 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/ImportCompetitionsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//   
+//   d
  
 /*===========================================================================================
 Import competitions from XML to the tournament
 ===========================================================================================*/
 
 controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window, $routeParams, $filter, UtilsSrvc, TournamentSrvc, DisciplineSrvc, AgeCategorySrvc, ImportSrvc, CompetitionSrvc){
+	$scope.menu.selectMenu($scope.menu.pages.import.childrens.competitions);
 
     $scope.page = {filter:{}};
     $scope.page.tournament = {};
@@ -21,15 +22,15 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
         // Competition table
         // 
         $scope.page.competitionTable.columns = [
-                          {name: 'Id/IdExt'      , sqlName: 'IdInternal', isSorted: true, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Name'          , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Date'          , sqlName: ''         , isSorted: false, isSortable: false , isDown: true ,  isSearched: false, isSearchable: false, filter: 'date'},
-                          {name: 'Price'         , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'right'}},
-                          {name: 'Discipline'    , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Age category'  , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Classes'       , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Type'          , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Limit'         , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false}];
+                          {name: 'Id/IdExt'   , sqlName: 'IdInternal', isSorted: true, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Название'   , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Дата'       , sqlName: ''         , isSorted: false, isSortable: false , isDown: true ,  isSearched: false, isSearchable: false, filter: 'date'},
+                          {name: 'Цена'       , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'right'}},
+                          {name: 'Программа' , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Возр. гр.'  , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Класс'      , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Тип'        , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
+                          {name: 'Макс.'      , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false}];
         
         $scope.page.competitionTable.properties = [ 
                           {name:'idAndIdExt', calculate: function(item){
@@ -102,7 +103,7 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
                 $scope.page.competitionTable.isFirstLoad = false;
             },
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
     
@@ -113,7 +114,7 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
     /// Open dialog for editing competition 
     $scope.page.competitionTable.edit = function(item){
         if (item.info.isExisted){
-            UtilsSrvc.openMessageBox("Competition", "This is competition already exists!", null);
+            UtilsSrvc.openMessageBox("Группа", "Данная группа уже существует!", null);
             return;
         }
 
@@ -141,11 +142,11 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
         $scope.page.competitionTable.selected.id = "";
         CompetitionSrvc.save($scope.page.tournament.id, $scope.page.competitionTable.selected).then(
             function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Готово!', 'Изменения сохранены.', 'success', true);
                 doAfter();
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
                 doAfter();
             });
     };
@@ -183,7 +184,7 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
             	}	
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -197,7 +198,7 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
                 $scope.page.tournaments = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Attention!', data, 'error', true);
+                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
@@ -205,223 +206,6 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
     $scope.page.init();
     $scope.page.loadYears();
 
-/*
-
-	$scope.page = {sourceUrl : 'view-source:http://www.danceplat.ru/groupsfeed2.php?trn=10144&hash=e548c2f3e26bf3fe63143be536fd90db&all=1?trn=10144&hash=e548c2f3e26bf3fe63143be536fd90db&all=1'};
-    $scope.page.table = {};  
-    
-    $scope.page.init = function(){
-        $scope.page.table.columns = [
-                          {name: 'GrouplId/IdExt', sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Name'          , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Date'          , sqlName: '', isSorted: false, isSortable: false,  isDown: false,  isSearched: false, isSearchable: false, filter: 'date'},
-                          {name: 'Price'         , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'right'}},
-                          {name: 'Discipline'    , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Age category'  , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Classes'       , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Type'          , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
-                          {name: 'Limit'         , sqlName: '', isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false}];
-        
-        $scope.page.table.properties = [
-                          {name:'groupIdAndIdExt', calculate: function(item){
-                                                        item.groupIdAndIdExt = item.groupId + '/' + item.groupIdExt;
-                                                    }},
-                          {name:'name'}, 
-                          {name:'date', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
-                          {name:'price'}, 
-                          {name:'discipline.name'},
-                          {name:'ageCategory.name'},
-                          {name:'dancerClassesString', calculate: function(item){
-                                                            item.dancerClassesString = "";
-                                                            for(var i=0; i < item.dancerClasses.length; i++){
-                                                                if (!item.dancerClasses[i].selected)
-                                                                    continue;
-
-                                                                item.dancerClassesString += item.dancerClasses[i].name + ', ';
-                                                            }
-                                                       }},
-                          {name:'type.name'},
-                          {name:'limit'}];
-
-        $scope.page.table.pageSize = 500;
-        $scope.page.table.pageCurr = 1;
-        $scope.page.table.itemsTotal = 0;
-        $scope.page.table.items = [];
-        $scope.page.table.selectedItems = [];
-        $scope.page.table.multiSelectMode = false;
-    };
-
-    /// Load Tournament by ID
-    $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
-            function(data){
-                $scope.page.tournament = data;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });
-    };
-
-    /// Load Disciplines
-    $scope.page.loadDisciplines = function(){ 
-        DisciplineSrvc.getAll().then(
-            function(data){
-                $scope.page.disciplines = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });
-    };
-
-    /// Load Age Categories
-    $scope.page.loadAgeCategories = function(){
-        AgeCategorySrvc.getAll().then(
-            function(data){
-                $scope.page.ageCategories = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });
-    };
-   
-    /// Load types
-    $scope.page.loadTypes = function(){
-        CompetitionSrvc.getTypes().then(
-            function(data){
-                $scope.page.types = data.children;
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });
-    };
-
-    /// Load all imported items
-    $scope.page.table.getAll = function(isNewImport){
-	    if (isNewImport){
-	    	$scope.page.alert = UtilsSrvc.getAlert('Attention!', 'Please wait until the processing...', 'info', true);
-	    	$scope.page.table.items = [];
-	    }
-	    
-        CompetitionImportSrvc.getAll({sourceUrl: $scope.page.sourceUrl, isNewImport: isNewImport}).then(
-            function(data){  
-                $scope.page.table.removedCount = 0;
-                $scope.page.table.errorCount = 0;
-
-                for(var i=0; i < data.children.length; i++){
-                    if (data.children[i].isRemoved){
-                        data.children[i].rowClass = "removedItem";
-                        $scope.page.table.removedCount++;
-                    }
-                    else if (data.children[i].exists){
-                        data.children[i].rowClass = "existsItem";
-                        $scope.page.table.removedCount++;
-                    }
-                    else if (data.children[i].errorMessages && data.children[i].errorMessages.length != 0){
-                        data.children[i].rowClass = "errorItem";
-                        $scope.page.table.errorCount++;
-                    }
-                    else{
-	                    data.children[i].rowClass = "successItem";
-                    }
-                }
-                
-                $scope.page.table.items = data.children;
-                $scope.page.table.trnId = data.trnId;
-                
-                if ($scope.page.table.items.length == 0){
-	    			$scope.page.alert = UtilsSrvc.getAlert('Attention!', 'Downloaded zero objects. Please check the URL.', 'warning', true);
-	    		}
-	    		else{
-		    		$scope.page.alert.visible = false;
-	    		}
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });  
-    };
-
-    /// Open dialog for editing competition 
-    $scope.page.table.edit = function(item){
-        $('#InfoModal').modal('show');
-        $scope.page.infoModalVisible = true;
-        $scope.page.table.selected = item;
-        $scope.page.table.tabFormActive = true;
-        $scope.form_competition.$setPristine();
-    };
-
-    /// Update competition data
-    $scope.page.updateCompetition = function(){
-        var doAfter = function(){
-            $scope.page.infoModalVisible = false;
-            $scope.page.table.selected = {};
-            $('#InfoModal').modal('hide');
-            $scope.page.table.getAll(false);
-        };
- 
-        CompetitionImportSrvc.update($scope.page.table.selected).then(
-            function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
-                doAfter();
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', data, 'error', true);
-                doAfter();
-            });
-    }; 
-
-    /// Close dialog
-    $scope.page.cancel = function(){
-        $scope.page.table.getAll(false);       
-    };
-    
-    /// Update 'isRemoved' field of the item. 
-    $scope.page.removeOrRestore = function(){
-        var doAfter = function(){
-            $scope.page.infoModalVisible = false;
-            $scope.page.table.selected = {};
-            $('#InfoModal').modal('hide');
-            $scope.page.table.getAll(false);
-        };
- 
-        CompetitionImportSrvc.removeOrRestore($scope.page.table.selected.id).then( 
-            function(data){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', 'Changes have been saved.', 'success', true);
-                doAfter();
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Done!', data, 'error', true);
-                doAfter();
-            });
-    };
- 
-
-    
-    /// Save all competitions in tournament 
-    $scope.page.createAll = function(tournamentId){
-        CompetitionImportSrvc.createAll({tournamentId: tournamentId, items: $scope.page.table.items, trnId: $scope.page.table.trnId}).then(
-            function(data){  
-            	console.log('success='+data.successCount);
-				$scope.page.table.getAll(false);
-            },
-            function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });  
-    };
-    
-    $scope.page.clear = function(){
-        $scope.form_import.$setPristine();
-        $scope.page.table.items = [];
-        $scope.page.sourceUrl = '';
-    };
-
-
-
-    $scope.page.init();
-    $scope.page.loadAgeCategories();
-    $scope.page.loadTypes();
-    $scope.page.loadDisciplines();
-    $scope.page.loadTournament($routeParams.tournamentId);
-*/
 });
 
 ]]></CSP>

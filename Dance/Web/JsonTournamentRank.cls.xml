@@ -8,7 +8,7 @@
 <Description>
 Convert "TournamentRank" object to %ZEN.proxyObject (for JSON)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>object:Dance.Data.TournamentRank,isFullInfo:%Boolean=0</FormalSpec>
+<FormalSpec>object:Dance.Data.TournamentRank,convertParams:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()

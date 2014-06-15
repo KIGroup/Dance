@@ -20,6 +20,9 @@ servicesModule.factory('CoupleSrvc', function(RESTSrvc) {
 	        if (!woman || woman == '') woman = 0;
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/wdsf/man/' + man + '/woman/' + woman});
         },
+        getWDSFOtherInfoForTournament: function(trnId, coupleId){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/'+coupleId+'/wdsfinfo/tournament/' + trnId});
+        },
         getById: function(id){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/couple/' + id});
         },
