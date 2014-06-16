@@ -53,21 +53,24 @@ Date of birth</Description>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
-<Property name="MaxDOB">
-<Description>
-For WDSF dancer</Description>
-<Type>%Date</Type>
-<Parameter name="FORMAT" value="3"/>
-</Property>
+<UDLText name="T">
+<Content><![CDATA[
+// Property MaxDOB As %Date(FORMAT = 3);
 
-<Property name="MinDOB">
-<Description>
-For WDSF dancer</Description>
-<Type>%Date</Type>
-<Parameter name="FORMAT" value="3"/>
-</Property>
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Property MinDOB As %Date(FORMAT = 3);
+
+]]></Content>
+</UDLText>
 
 <Property name="STClass">
+<Description>
+For WDSF dancer
+For WDSF dancer</Description>
 <Type>DancerClass</Type>
 </Property>
 
@@ -260,7 +263,7 @@ Create or save modified person</Description>
 	if (data.dob '= ""){
 		set person.DOB = $ZDH(data.dob, 3)
 	}
-	
+	/*
 	if (data.minDOB '= ""){
 		set person.MinDOB = $ZDH(data.minDOB, 3)
 	}
@@ -268,7 +271,7 @@ Create or save modified person</Description>
 	if (data.maxDOB '= ""){
 		set person.MaxDOB = $ZDH(data.maxDOB, 3)
 	}
-	
+	*/
 	if ($ISOBJECT(data.laClass) = $$$YES) && (##class(Dance.Data.DancerClass).%ExistsId(data.laClass.id)){ 
 		set person.LAClass = ##class(Dance.Data.DancerClass).%OpenId(data.laClass.id)
 	}

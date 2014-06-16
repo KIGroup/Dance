@@ -418,5 +418,9 @@ filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 
 .homeIcon:hover{
 	color: grey!important;
+}
+
+.tableCaptionImportant{
+	color: rgb(8, 80, 90)!important;
 }]]></CSP>
 </Export>

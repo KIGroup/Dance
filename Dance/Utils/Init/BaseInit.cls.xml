@@ -20,7 +20,7 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do ##class(Dance.Utils.Init.TournamentRank).Import()
 	do ##class(Dance.Utils.Init.Discipline).Import()
 	do ##class(Dance.Utils.Init.AgeCategory).Import()
-	do ##class(Dance.Data.AgeCategoryWDSF).Import()
+	//do ##class(Dance.Data.AgeCategoryWDSF).Import()
 	//do ##class(Dance.Utils.Init.AgeCategoryWDSF).Import()
 	
  	//do ..Settings()

@@ -192,7 +192,9 @@ localizationModule.constant('DanceDictionary', {
 		'На главную' : 'To home page',
 		'Передать данные' : 'Transfer data',
 		
-		'Оставьте свои отзывы, предложения, замечания!':'Give us your feedback, suggestions, comments!'
+		'Оставьте свои отзывы, предложения, замечания!':'Give us your feedback, suggestions, comments!',
+		'Регистрация участников невозможна! Статус турнира - "': 'Registration of participants is not possible! Tournament status - ',
+		'Группы турнира': 'Competitions of the tournament'
   },
   toRussian: {
 

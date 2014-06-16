@@ -140,6 +140,7 @@ Public REST URLs</Description>
 <Route Method="GET" Url="/language" Call="Dance.Web.JsonOther:WriteLanguagesToDevice"/>
 
 
+<Route Method="GET" Url="/person/stats" Call="Dance.Web.JsonPerson:WriteStatisticsToDevice"/>
 
 
 <Route Method="POST" Url="/unknownkey" Call="Dance.Web.JsonOther:SetUnknownKey"/>

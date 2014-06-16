@@ -147,18 +147,18 @@ Couple data by WDSF numbers</Description>
 				
 		if $ISOBJECT(manWDSF) && (manWDSF.id '= ""){	
 			set manCountry = ##class(Dance.Data.Country).WDSFNameIdxOpen(manWDSF.country)
-			set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).CodeIdxOpen(manWDSF.ageGroup)
+			//set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).CodeIdxOpen(manWDSF.ageGroup)
 			
 			set proxy.man = ##class(%ZEN.proxyObject).%New()
 			set proxy.man.gender = $E(manWDSF.sex,1,1)
 			set proxy.man.numberWDSF = manWDSF.id
 			set proxy.man.lastName = manWDSF.surname
 			set proxy.man.firstName = manWDSF.name
-			set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
-			set proxy.man.minAge = manAgeGroup.MinAge
-			set proxy.man.maxAge = manAgeGroup.MaxAge
-			set proxy.man.minDOB = $ZD(manAgeGroup.MinDOB,3)
-			set proxy.man.maxDOB = $ZD(manAgeGroup.MaxDOB,3)
+			//set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
+			//set proxy.man.minAge = manAgeGroup.MinAge
+			//set proxy.man.maxAge = manAgeGroup.MaxAge
+			//set proxy.man.minDOB = $ZD(manAgeGroup.MinDOB,3)
+			//set proxy.man.maxDOB = $ZD(manAgeGroup.MaxDOB,3)
 			set proxy.man.otherInfo = ##class(%ZEN.proxyObject).%New()
 			set proxy.man.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(manCountry)
 			
@@ -173,16 +173,16 @@ Couple data by WDSF numbers</Description>
 			set proxy.man.id = manDB.%Id()
 		}
 		elseif $ISOBJECT(manDB){
-			set proxy.man = ##class(JsonPerson).ConvertToProxyObject(manDB)
+			//set proxy.man = ##class(JsonPerson).ConvertToProxyObject(manDB)
 			//&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinDOB = TO_DATE(:manDB.MinDOB,'YYYY-MM-DD') AND MaxDOB = TO_DATE(:manDB.MaxDOB,'YYYY-MM-DD'))
 			
-			set minAge = $P($ZD($NOW(), 3), "-", 1) - $P($ZD(manDB.MaxDOB, 3), "-", 1)
-			set maxAge = $P($ZD($NOW(), 3), "-", 1) - $P($ZD(manDB.MinDOB, 3), "-", 1)
-			&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinAge = :minAge AND MaxAge = :maxAge)
-			set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).%OpenId(ageGroupWDSFId)
-			set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
-			set proxy.man.minAge = manAgeGroup.MinAge
-			set proxy.man.maxAge = manAgeGroup.MaxAge
+			//set minAge = $P($ZD($NOW(), 3), "-", 1) - $P($ZD(manDB.MaxDOB, 3), "-", 1)
+			//set maxAge = $P($ZD($NOW(), 3), "-", 1) - $P($ZD(manDB.MinDOB, 3), "-", 1)
+			//&sql(SELECT ID INTO :ageGroupWDSFId FROM Dance_Data.AgeCategoryWDSF WHERE MinAge = :minAge AND MaxAge = :maxAge)
+			//set manAgeGroup = ##class(Dance.Data.AgeCategoryWDSF).%OpenId(ageGroupWDSFId)
+			//set proxy.man.ageCategoryWDSFName = manAgeGroup.Name.Value
+			//set proxy.man.minAge = manAgeGroup.MinAge
+			//set proxy.man.maxAge = manAgeGroup.MaxAge
 		}
 
 		// Create or update wdsf female dancer
@@ -198,11 +198,11 @@ Couple data by WDSF numbers</Description>
 			set proxy.woman.numberWDSF = womanWDSF.id
 			set proxy.woman.lastName = womanWDSF.surname
 			set proxy.woman.firstName = womanWDSF.name
-			set proxy.woman.ageCategoryWDSFName = womanAgeGroup.Name.Value
-			set proxy.woman.minAge = womanAgeGroup.MinAge
-			set proxy.woman.maxAge = womanAgeGroup.MaxAge
-			set proxy.woman.minDOB = $ZD(womanAgeGroup.MinDOB,3)
-			set proxy.woman.maxDOB = $ZD(womanAgeGroup.MaxDOB,3)
+			//set proxy.woman.ageCategoryWDSFName = womanAgeGroup.Name.Value
+			//set proxy.woman.minAge = womanAgeGroup.MinAge
+			//set proxy.woman.maxAge = womanAgeGroup.MaxAge
+			//set proxy.woman.minDOB = $ZD(womanAgeGroup.MinDOB,3)
+			//set proxy.woman.maxDOB = $ZD(womanAgeGroup.MaxDOB,3)
 			set proxy.woman.otherInfo = ##class(%ZEN.proxyObject).%New()
 			set proxy.woman.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(womanCountry)
 			

@@ -16,7 +16,7 @@
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка участников группы нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
 <div class="row-fluid">
 	<div class="row-fluid" style="margin-bottom: 12px;">
-		<span style="font-weight: bold;" ng-bind="'Группы турнира'"></span>
+		<span style="font-weight: bold;" ng-bind="'Группы турнира'|localize"></span>
 	</div>
 	<div class="row-fluid">
 		<button type="button" style="margin-bottom: 15px; font-size: 1em; margin-right: 10px;" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentDetails.gridCompetitions.filterDate" btn-radio="''" ng-bind="'Все дни'|localize" ng-click="page.competitionTable.changeDateFilter('')"></button>

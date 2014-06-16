@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddddddddddededs
+//
 
 /*===========================================================================================
 Registration
@@ -131,7 +131,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
 
                 $scope.page.competitionTable.refresh();
                 if ($scope.page.tournament.status.code != 'Registration')
-                    $scope.page.tournamentAlert = UtilsSrvc.getAlert('Внимание!', 'Регистрация участников невозможна! Статус турнира - "' + $scope.page.tournament.status.name + '".', 'error', true);
+                    $scope.page.tournamentAlert = UtilsSrvc.getAlert('Внимание!', $filter('localize')('Регистрация участников невозможна! Статус турнира - "') + $scope.page.tournament.status.name + '".', 'error', true);
             },
             function(data, status, headers, config){
                 $scope.page.tournamentAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);

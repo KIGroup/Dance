@@ -18,6 +18,9 @@ servicesModule.factory('PersonSrvc', function(RESTSrvc) {
         },
         deleteById: function(id){
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});
+        },
+        getStats: function(){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/person/stats'});
         }
     }
 });

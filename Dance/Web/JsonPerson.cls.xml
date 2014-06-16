@@ -36,5 +36,28 @@ Convert "Person" object to %ZEN.proxyObject (for JSON)</Description>
 	quit proxy
 ]]></Implementation>
 </Method>
+
+<Method name="WriteStatisticsToDevice">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.allCount = 0
+	set proxy.udsrCount = 0
+	set proxy.wdsfCount = 0
+	set proxy.otherCount = 0
+	
+	&sql(SELECT COUNT(ID) INTO :proxy.allCount FROM Dance_Data.Person)
+	&sql(SELECT COUNT(ID) INTO :proxy.udsrCount FROM Dance_Data.Person WHERE NumberUDSR IS NOT NULL)
+	&sql(SELECT COUNT(ID) INTO :proxy.wdsfCount FROM Dance_Data.Person WHERE NumberWDSF IS NOT NULL)
+	&sql(SELECT COUNT(ID) INTO :proxy.otherCount FROM Dance_Data.Person WHERE NumberUDSR IS NULL AND NumberWDSF IS NULL)
+	
+	set proxy.udsrLastUpdated = $G(^Settings("Dance","UDSRPersonsLastUpdated"))
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
 </Class>
 </Export>

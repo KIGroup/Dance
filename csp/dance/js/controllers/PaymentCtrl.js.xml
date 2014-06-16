@@ -9,7 +9,7 @@ Payment
 ===========================================================================================*/
 
 controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $window, $location, $filter, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc, OtherSrvc){ 
-	//$scope.menu.selectMenu('tournaments');;
+	$scope.menu.pages.selected = {};
 
 	$scope.page = {};
     $scope.page.competitionTable = {};

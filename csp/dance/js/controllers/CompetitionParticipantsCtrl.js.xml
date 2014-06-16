@@ -9,8 +9,9 @@ Competition Participants
 ===========================================================================================*/
 
 controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $location, $routeParams, $filter, UtilsSrvc, CompetitionSrvc, ParticipantSrvc){
-	//$scope.menu.selectMenu('tournaments');;
-	$scope.page = {};
+  $scope.menu.pages.selected = {};
+	
+  $scope.page = {};
   $scope.page.participantTable = {};
 
  	if (!$scope.pageStore.participants) $scope.pageStore.participants = {grid:{}};

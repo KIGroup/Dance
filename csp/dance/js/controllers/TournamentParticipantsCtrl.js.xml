@@ -9,6 +9,7 @@ Tournament Participants
 ===========================================================================================*/
 
 controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
+	$scope.menu.pages.selected = {};
 	
 	$scope.page = {};
   	$scope.page.participantTable = {};

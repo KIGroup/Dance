@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Utils.Init.Country">
-<Super>Stc.Utils.Init.BaseInit</Super>
+<Super>Dance.Utils.Init.BaseInit</Super>
 <TimeCreated>63296,4328.569075</TimeCreated>
 
 <Parameter name="PClassName">

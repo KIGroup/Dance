@@ -12,7 +12,7 @@ sets any property values using the stored "settings" for the task, and then
 invokes this method to execute the task.<br>
 In order to execute a real task, override this method in a subclass.]]></Description>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Quit $$$ERROR($$$NotImplemented)
+<Implementation><![CDATA[	Quit ##class(Dance.Utils.TaskTickets).Import()
 ]]></Implementation>
 </Method>
 
@@ -20,7 +20,7 @@ In order to execute a real task, override this method in a subclass.]]></Descrip
 <Description>
 do ##class(Dance.Utils.TaskTickets).Import()</Description>
 <ClassMethod>1</ClassMethod>
-<ReturnType>%String</ReturnType>
+<ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	d ##class(Dance.Data.Import.Ticket).%KillExtent()
 	d ##class(Dance.Data.Ticket).%KillExtent()
@@ -31,7 +31,7 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		&sql(DECLARE TCur CURSOR FOR 
 		 	 SELECT IdInternal, Hash
 		 	 FROM Dance_Data.Tournament
-		 	 WHERE IsActive = 1)	
+		 	 WHERE IsActive = 1 AND TStatus->Code='Registration')	
 		
 		&sql(OPEN TCur)
 		for  
@@ -64,7 +64,8 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 	try{
 		&sql(DECLARE TicketCurs CURSOR FOR 
 		 	 SELECT ID
-		 	 FROM Dance_Data_Import.Ticket)	
+		 	 FROM Dance_Data_Import.Ticket as tic
+		 	 WHERE (SELECT cmp.Tournament->TStatus->Code FROM Dance_Data.Competition as cmp WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration')	
 		
 		&sql(OPEN TicketCurs)
 		for  

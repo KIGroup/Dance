@@ -50,10 +50,10 @@
 			}
 		}
 		
-		w "<strong>Результат импорта данных</strong><br>"
-		w "<br>Всего записей в файле: "_(result.success + result.errorMessages.Count())
-		w "<br>Ипортировано: "_(result.success)
-		w "<br>Не импортировано: "_(result.errorMessages.Count())
+		w "<p style='margin: 0 0 10px 0;'><strong>Результат импорта данных</strong></p>"
+		w "<p style='margin: 0 0 10px 0;'>Всего записей в файле: "_(result.success + result.errorMessages.Count())_"</p>"
+		w "<p style='margin: 0 0 10px 0;'>Ипортировано: "_(result.success)_"</p>"
+		w "<p style='margin: 0 0 10px 0;'>Не импортировано: "_(result.errorMessages.Count())_"</p>"
 		
 		if (result.errorMessages.Count() '= 0){
 			w "<br><br>Список ошибочных записей: "
@@ -63,6 +63,8 @@
 				w "<br>"
 			}
 		}
+		
+		set ^Settings("Dance","UDSRPersonsLastUpdated") = $ZDT($ZTS, 3)
 	}catch(ex){
 		set st = ex.AsStatus()	
 	}

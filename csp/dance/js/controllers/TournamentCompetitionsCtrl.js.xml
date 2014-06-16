@@ -9,7 +9,7 @@ Tournament Competitions
 ===========================================================================================*/
 
 controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc){
-	//$scope.menu.selectMenu('tournaments');;
+	$scope.menu.pages.selected = {};
 
 	$scope.page = {};
     $scope.page.competitionTable = {filterDate: ''};
