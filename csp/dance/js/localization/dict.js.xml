@@ -127,7 +127,7 @@ localizationModule.constant('DanceDictionary', {
 		'Сообщение' : 'Message',
 		'Список всех групп турнира' : 'List of all competitions of the tournament',
 		'Список всех уникальных участников турнира' : 'List of all unique participants of the tournament',
-		'Список всех участников »' : 'List of all participants',
+		'Список всех участников »' : 'List of all participants »',
 		'Справочники' : 'Directories',
 		'Ст: ' : 'St:',
 		'Статус' : 'Status',
