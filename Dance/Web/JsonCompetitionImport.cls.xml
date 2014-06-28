@@ -32,7 +32,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 			set proxy.discipline = ##class(JsonDiscipline).ConvertToProxyObject(realDicipline)
 		}
 		else{
-			do proxy.info.errorMessages.Insert("Дисциплина не найдена! Код = "_object.Discipline)	
+			do proxy.info.errorMessages.Insert("Дисциплина не найдена! Код = "_object.DisciplineCode)	
 		}
 			
 		set realAge = ##class(Dance.Data.AgeCategory).CodeIdxOpen(object.AgeCategoryCode,,.sc)
@@ -87,7 +87,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 	}
 	catch(ex){
 		//set proxy = ##class(%ZEN.proxyObject).%New()
-		w ex.AsStatus()
+		//w ex.AsStatus()
 	}
 	
 	quit proxy
@@ -124,6 +124,25 @@ Write objects to device, page by page for grid. </Description>
 	}
 
 	quit st
+]]></Implementation>
+</Method>
+
+<Method name="WriteLinkToDevice">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tournament = ##class(Dance.Data.Tournament).%OpenId(trnId)
+    
+    set proxy = ##class(%ZEN.proxyObject).%New()
+    
+    if $$$ISOK(##class(Dance.Data.Tournament).CheckUpdatePrivilege()){	
+    	set proxy.link = $G(^Settings("Dance", "Import", "Server"))_"/"_$G(^Settings("Dance", "Import", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
+    }
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
 ]]></Implementation>
 </Method>
 

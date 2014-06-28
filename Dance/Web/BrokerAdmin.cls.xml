@@ -41,6 +41,8 @@ Protected REST URLs</Description>
 
 <Route Method="POST" Url="/competition/import"     Call="Dance.Web.JsonCompetitionImport:WriteAllToDevice"/>
 
+<Route Method="GET" Url="/tournament/:id/competition/importlink" Call="Dance.Web.JsonCompetitionImport:WriteLinkToDevice"/>
+
 
 <Route Method="POST" Url="/competition/imported"   Call="Dance.Web.JsonCompetitionImport:Update"/>
 

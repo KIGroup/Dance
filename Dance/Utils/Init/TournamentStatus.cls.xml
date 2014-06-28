@@ -49,18 +49,23 @@
 <LTextValueXData>
 <LTextValue><LText>FB9892FB-8E28-45D2-AAF0-2ADF2410FA10</LText><Value>Инициализация</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>FB9892FB-8E28-45D2-AAF0-2ADF2410FA10</LText><Value>Initialization</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>FB9892FB-8E28-45D2-AAF0-2ADF2410FA10</LText><Value>Initialisierung</Value><Lang>de</Lang></LTextValue>
 
 <LTextValue><LText>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</LText><Value>Регистрация</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</LText><Value>Registration</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>CB4CD67E-510E-48FA-8AF7-99DA04C4EA9F</LText><Value>Registrierung</Value><Lang>de</Lang></LTextValue>
 
 <LTextValue><LText>7C33DA68-04AF-4A94-8855-65028F74D091</LText><Value>Регистрация завершена</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>7C33DA68-04AF-4A94-8855-65028F74D091</LText><Value>Registration closed</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>7C33DA68-04AF-4A94-8855-65028F74D091</LText><Value>Registrierung abgeschlossen</Value><Lang>de</Lang></LTextValue>
 
 <LTextValue><LText>40D186C2-1CEE-45CB-9007-117F3466344C</LText><Value>Завершен</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>40D186C2-1CEE-45CB-9007-117F3466344C</LText><Value>Сompleted</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>40D186C2-1CEE-45CB-9007-117F3466344C</LText><Value>Abgeschlossene</Value><Lang>de</Lang></LTextValue>
 
 <LTextValue><LText>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</LText><Value>Отменен</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</LText><Value>Canceled</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>07F18C3F-1EB7-4280-9AAB-F6D9C232FB29</LText><Value>Storniert</Value><Lang>de</Lang></LTextValue>
 </LTextValueXData>
 ]]></Data>
 </XData>

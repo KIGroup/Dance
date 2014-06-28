@@ -209,7 +209,10 @@ localizationModule.constant('DanceDictionary', {
 		'Спортсменов СТСР в БД' : 'Total count UDSR athletes in database',
 		'Спортсменов WDSF в БД' : 'Total count WDSF athletes in database',
 		'Других спортсменов в БД' : 'Total count other athletes in database',
-		'Последнее обновление спортсменов СТСР было' : 'UDSR athletes last updated'
+		'Последнее обновление спортсменов СТСР было' : 'UDSR athletes last updated',
+		'Доступен СТСР':'Available for UDSR',
+		'Доступен WDSF':'Available for WDSF',
+		'Доступен другим':'Available for others'
   },
   toRussian: {
   },
@@ -309,7 +312,7 @@ localizationModule.constant('DanceDictionary', {
 		'Номера классификационных книжек WDSF' : 'Nicht einstufung der bücher WDSF',
 		'Номера классификационных книжек СТСР' : 'Nicht Einstufung Bücher UDSR',
 		'Обзор' : 'Überblick',
-		'Обратная связь' : 'Rückkopplung',
+		'Обратная связь' : 'Feedback',
 		'Оплатить на danceplat.ru' : 'Zahlen Sie danceplat.ru',
 		'Оплачено': 'Bezahlt',
 		'Организатор' : 'Veranstalter',
@@ -411,7 +414,11 @@ localizationModule.constant('DanceDictionary', {
 		'Щелчком мыши выберите необходимые группы для передачи данных в платежную систему.' : 'Klicken sie auf die gewünschte gruppe für die datenübertragung an das zahlungssystem auszuwählen.',
 		'Язык' : 'Sprache',
 		'Язык системы' : 'System sprache',
-		'Ярким цветом выделены турниры, которые уже есть базе данных. Сравнение идет по IdInternal. Для сохранения турнира заполните все дополнительные поля в диалоговом окне импорта.' : 'Helle farbe zuordnet turnieren, die bereits eine datenbank ist. Der vergleich ist auf IdInternal. Um das turnier zu füllen sie alle zusätzlichen felder in der importdialog zu speichern.'
+		'Ярким цветом выделены турниры, которые уже есть базе данных. Сравнение идет по IdInternal. Для сохранения турнира заполните все дополнительные поля в диалоговом окне импорта.' : 'Helle farbe zuordnet turnieren, die bereits eine datenbank ist. Der vergleich ist auf IdInternal. Um das turnier zu füllen sie alle zusätzlichen felder in der importdialog zu speichern.',
+		
+		'Доступен СТСР':'Verfügbare UDSR',
+		'Доступен WDSF':'Verfügbare WDSF',
+		'Доступен другим':'Anderen zur verfügung'
 
   },
   getTranslate: function(word, toLanguage){

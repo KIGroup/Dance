@@ -32,6 +32,9 @@ servicesModule.factory('ImportSrvc', function(RESTSrvc) {
                        other: other};
             
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.admin + '/import/competition/grid', data: obj});
+        },
+        getCompetitionsLink: function(trnId){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/tournament/' + trnId + '/competition/importlink'});
         }
     }
 });

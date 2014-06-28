@@ -191,7 +191,6 @@
     <script language="javascript" src="js/services/TournamentRankSrvc.js"></script>
     <script language="javascript" src="js/services/TournamentStatusSrvc.js"></script>   
     <script language="javascript" src="js/services/CompetitionSrvc.js"></script>
-    <script language="javascript" src="js/services/CompetitionImportSrvc.js"></script>
     <script language="javascript" src="js/services/CoupleSrvc.js"></script>
     <script language="javascript" src="js/services/PersonSrvc.js"></script>
     <script language="javascript" src="js/services/DisciplineSrvc.js"></script>
