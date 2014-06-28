@@ -125,7 +125,7 @@
 					on-select="page.competitionTable.onSelect(item)"
 					on-select-cell="page.competitionTable.onSelectCell(item, property)"
 
-		 			action-column-visible="menu.readOnlyMode"
+		 			action-column-visible="!menu.readOnlyMode && menu.admin"
 				    action-column-icon="'fa fa-plus-circle'"
 				    action-column-title="'Добавить'|localize"
 				    action-column-method="page.competitionTable.add()"

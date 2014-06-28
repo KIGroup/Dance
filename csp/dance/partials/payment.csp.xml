@@ -27,8 +27,8 @@
 		<span style="font-weight: bold;" ng-show="page.couple.man.id==page.couple.woman.id" ng-bind="('Группы участника'|localize) + ' ″' + page.couple.man.lastName + ' ' + page.couple.man.firstName +  '″; ' + 'Клуб' + ' ″' + page.couple.otherInfo.club + '″'"></span>
 		<span style="font-weight: bold;" ng-hide="page.couple.man.id==page.couple.woman.id" ng-bind="('Группы пары'|localize) + ' ″' + page.couple.man.lastName + ' ' + page.couple.man.firstName + ' - ' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName +  '″; ' + 'Клуб' + ' ″' + page.couple.otherInfo.club + '″'"></span>
 		-->
-		<span style="font-weight: bold;" ng-show="page.couple.man.id==page.couple.woman.id">{{('Группы участника'|localize) + ' ″'}}<span class="tableCaptionImportant">{{page.couple.man.lastName + ' ' + page.couple.man.firstName}}</span>{{'″; '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' ″'}}<span class="tableCaptionImportant">{{page.couple.otherInfo.club}}</span>{{'″'}}</span>
-		<span style="font-weight: bold;" ng-hide="page.couple.man.id==page.couple.woman.id">{{('Группы пары'|localize) + ' ″'}}<span class="tableCaptionImportant">{{page.couple.man.lastName + ' ' + page.couple.man.firstName + ' - ' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName}}</span>{{'″; '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' ″'}}<span class="tableCaptionImportant">{{page.couple.otherInfo.club}}</span>{{'″'}}</span>
+		<span style="font-weight: bold;" ng-show="page.couple.man.id==page.couple.woman.id">{{('Группы участника'|localize) + ' '}}<span class="tableCaptionImportant">{{page.couple.man.lastName + ' ' + page.couple.man.firstName}}</span>{{' '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' '}}<span class="tableCaptionImportant">{{page.couple.otherInfo.club}}</span>{{''}}</span>
+		<span style="font-weight: bold;" ng-hide="page.couple.man.id==page.couple.woman.id">{{('Группы пары'|localize) + ' '}}<span class="tableCaptionImportant">{{page.couple.man.lastName + ' ' + page.couple.man.firstName + ' - ' + page.couple.woman.lastName + ' ' + page.couple.woman.firstName}}</span>{{' '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' '}}<span class="tableCaptionImportant">{{page.couple.otherInfo.club}}</span>{{''}}</span>
 	</div>
 	<div class="span4">
 		<div class="btn-group pull-right">
@@ -63,7 +63,7 @@
 	/>
 </div>			
 
-<button type="button" class="btn btn-small" ng-click="page.openConfirmDlg()" ng-disabled="page.competitionTable.selectedItems.length==0"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;{{'Оплатить на danceplat.ru'}}</button>
+<button type="button" class="btn btn-small" ng-click="page.openConfirmDlg()" ng-disabled="page.competitionTable.selectedItems.length==0"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;{{'Оплатить на danceplat.ru'|localize}}</button>
 
 
 <div class="row-fluid">

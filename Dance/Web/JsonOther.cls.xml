@@ -17,7 +17,8 @@ Write to device "children" array of proxyObjects [All System languages]</Descrip
 		
 		&sql(DECLARE LangCurs CURSOR FOR
 			 SELECT Code, Name 
-			 FROM Dance_Data_Localization.LTextLanguage)
+			 FROM Dance_Data_Localization.LTextLanguage
+			 ORDER BY Code)
 		
 		&sql(OPEN LangCurs)
 		for{

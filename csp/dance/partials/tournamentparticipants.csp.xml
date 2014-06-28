@@ -9,7 +9,7 @@
 <div class="row-fluid" style="text-align: center;">
 	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация участников »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Cписок всех групп  »'|localize"></a>
+	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Cписок всех групп »'|localize"></a>
 </div>
 <br>
 <!--
@@ -42,7 +42,7 @@
 -->
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
 
-<span style="font-weight: bold;" ng-bind="'Уникальные участники турнира, всего ' + page.participantTable.itemsTotal"></span>
+<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира, всего '|localize) + page.participantTable.itemsTotal"></span>
 <div class="row-fluid">
 	<stcgrid
     	grid="pageStore.participants.grid"

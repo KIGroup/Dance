@@ -9,6 +9,8 @@ Competition: create or update data
 ===========================================================================================*/
 
 controllersModule.controller('CompetitionCtrl', function($scope, $window, $routeParams, UtilsSrvc, TournamentSrvc, CompetitionSrvc, AgeCategorySrvc, DancerClassSrvc, DisciplineSrvc, OtherSrvc){
+    $scope.menu.shortMenu = false;
+    
     $scope.page = {};
     $scope.page.tournament = {rank: {}, 
                               status: {}, 

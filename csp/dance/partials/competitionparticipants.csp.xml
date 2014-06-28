@@ -15,10 +15,10 @@
 </div>
 <br>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
-<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'}} <span class="noneCouplePayment">{{'Серый цвет'}}</span>{{' - участие в группе не оплачено.'|localize}} <span class="cancelCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие в группе отменено.'|localize}}</p>
+<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'|localize}} <span class="noneCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие в группе не оплачено.'|localize}} <span class="cancelCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие в группе отменено.'|localize}}</p>
 
 <div class="row-fluid" style="margin-bottom: 5px;">
-	<span style="font-weight: bold;">{{('Участники группы'|localize) + ' ″'}}<span class="tableCaptionImportant">{{page.competition.name}}</span>{{'″'}}</span>
+	<span style="font-weight: bold;">{{('Участники группы'|localize) + ' '}}<span class="tableCaptionImportant">{{page.competition.name}}</span>{{''}}</span>
 </div>
 <div class="row-fluid">
 	<stcgrid

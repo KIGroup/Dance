@@ -10,6 +10,7 @@ Tournament: create or update data
 
 controllersModule.controller('TournamentCtrl', function($scope, $window, $routeParams, UtilsSrvc, OtherSrvc, TournamentSrvc, TournamentStatusSrvc, TournamentRankSrvc){
     $scope.page = {};
+    $scope.menu.shortMenu = false;
 
     $scope.page.init = function(){
 	    $scope.page.clear();
