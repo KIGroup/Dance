@@ -3,12 +3,6 @@
 <CSP name="dance/js/localization/locale_ru.js" application="/csp/dance/" default="1"><![CDATA[
 //dddd
 
-localizationModule.constant('StcDictionary', {
-  strings: null,
-  getTranslate: function(word){
-      return word;
-  }
-});
 
 
 angular.module("ngLocale", [], ["$provide", function($provide) {

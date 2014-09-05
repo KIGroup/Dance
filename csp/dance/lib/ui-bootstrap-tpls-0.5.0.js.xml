@@ -968,7 +968,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
     templateUrl: 'template/datepicker/datepicker.html',
     scope: {
       datepickerMode: '@',
-      dateDisabled: '&'
+      dateDisabled: '&',
     },
     require: ['datepicker', '?^ngModel'],
     controller: 'DatepickerController',
@@ -979,8 +979,12 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
         return; // do nothing if no ng-model
       }
 
+
       // Configuration parameters
-      var mode = 0, selected = new Date(), showWeeks = datepickerConfig.showWeeks;
+      var mode = 0;
+      var selected = new Date();
+      var showWeeks = datepickerConfig.showWeeks;
+
       //console.log(scope.datepickerMode);
       if (attrs.showWeeks) {
         scope.$parent.$watch($parse(attrs.showWeeks), function(value) {
@@ -994,6 +998,9 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
       if (attrs.min) {
         scope.$parent.$watch($parse(attrs.min), function(value) {
           datepickerCtrl.minDate = value ? new Date(value) : null;
+          if (datepickerCtrl.minDate && datepickerCtrl.minDate.getFullYear() == 1900){
+              mode = 2;
+          }
           refill();
         });
       }
@@ -1074,9 +1081,15 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
       scope.toggleMode = function() {
         setMode( (mode + 1) % datepickerCtrl.modes.length );
       };
+
       scope.getWeekNumber = function(row) {
         return ( mode === 0 && scope.showWeekNumbers && row.length === 7 ) ? getISO8601WeekNumber(row[0].date) : null;
       };
+
+      scope.showYears = function() {
+        setMode(2);
+      };
+
 
       function getISO8601WeekNumber(date) {
         var checkDate = new Date(date);
@@ -1244,10 +1257,12 @@ function ($compile, $parse, $document, $position, dateFilter, datepickerPopupCon
       scope.today = function() {
         $setModelValue(originalScope, new Date());
       };
+
       scope.clear = function() {
         $setModelValue(originalScope, null);
       };
 
+      
       element.after($compile(popupEl)(scope));
     }
   };
@@ -3265,7 +3280,7 @@ angular.module("template/carousel/slide.html", []).run(["$templateCache", functi
     "  }\" class=\"item\" ng-transclude></div>\n" +
     "");
 }]);
-
+              
 angular.module("template/datepicker/datepicker.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/datepicker/datepicker.html",
     "<table>\n" +
@@ -3291,7 +3306,7 @@ angular.module("template/datepicker/datepicker.html", []).run(["$templateCache",
     "</table>\n" +
     "");
 }]);
-
+  
 angular.module("template/datepicker/popup.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/datepicker/popup.html",
     "<ul class=\"dropdown-menu\" ng-style=\"{display: (isOpen && 'block') || 'none', top: position.top+'px', left: position.left+'px'}\" class=\"dropdown-menu\">\n" +

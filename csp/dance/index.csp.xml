@@ -10,50 +10,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
+	<script language="javascript"  src="js/common.js"></script>
  	<script language="javascript">
-        function getLocale() {
-            if (navigator) {
-                if (navigator.language) {
-                    return navigator.language;
-                }
-                else if (navigator.browserLanguage) {
-                    return navigator.browserLanguage;
-                }
-                else if (navigator.systemLanguage) {
-                    return navigator.systemLanguage;
-                }
-                else if (navigator.userLanguage) {
-                      return navigator.userLanguage;
-                }
-            }
-        }
-
-        function getCookie(name) {
-            var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"))
-            return matches ? decodeURIComponent(matches[1]) : undefined
-        }
-      
-        function getLang(){
-            var lang = getCookie('lang');
-            
-            if (lang) 
-              return lang;
-
-            return getLocale().substring(0,2);
-        }
+        var urlDataCookie = AppSettings.getCookie('urlDataCookie');
+    	if (urlDataCookie){
+	    	AppSettings.setCookie('urlDataCookie', '', {expires: 1});
+	    	window.location = urlDataCookie;
+	    }
         
 		// Настройки приложения. Имена веб-приложений для REST, google календарь, язык
-    	var AppSettings = {defaultName: '#($GET(^Settings("Dance", "WebApp")))#',
-        	               admin: '#($GET(^Settings("Dance", "WebAppAdmin")))#',
-            	           user:  '#($GET(^Settings("Dance", "WebAppUser")))#',
-                	       lang: getLang()};
-        
-         
-        
-        var urlData = getCookie('urlData');
-       	if (urlData){
-       		window.location = urlData;
-       	}
+    	AppSettings.defaultName = '#($GET(^Settings("Dance", "WebApp")))#';
+        AppSettings.admin = '#($GET(^Settings("Dance", "WebAppAdmin")))#';
+        AppSettings.user = '#($GET(^Settings("Dance", "WebAppUser")))#';
+        AppSettings.lang = AppSettings.getLang();
   	</script>
   
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -66,20 +35,19 @@
     <script language="javascript"  src="lib/angular/angular-route.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-cookies.min.js"></script>
 
-    <script language="javascript"  src="js/app.js"></script>      
-
-  
+	<script language="javascript" src="lib/ui-bootstrap-tpls-0.5.0.js"></script>
+      
     <script language="javascript">
-
     document.write('<script language="javascript" src="js/localization/locale_' + AppSettings.lang + '.js"><\/script>'); 
-
-    </script>
-
+   </script>
+   <script language="javascript"  src="js/app.js"></script>    
   </head>
 
   <body id="bodyDiv">
-    <div class="container-fluid">
-        
+    <div id="divLoader">
+  		<i class="fa fa-spinner fa-spin fa-2x" style="position: absolute; top: 70px; left: 48%; color: rgb(204, 204, 204);"></i>
+    </div>
+    <div id="divContainer" style="display: none;" class="container-fluid">
         <div class="navbar" ng-init="menu.shortMenu=true">
           <div class="navbar-inner" ng-hide="menu.shortMenu">
             <div class="container">  
@@ -111,10 +79,10 @@
                 <ul class="nav pull-right">
                   <li ng-class="menu.pages.feedback.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" ng-click="menu.selectMenu(menu.pages.feedback)"></a></li>
                   <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span>{{('Язык'|localize) + ': '}}<img style="margin-bottom: 2px" ng-src="{{'img/flags/' + menu.lang.code + '.png'}}"/> {{menu.lang.name + ' '}}</span><b class="caret"></b></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span><img style="margin-bottom: 2px" ng-src="{{menu.lang.flagUrl}}"/> {{menu.lang.name + ' '}}</span><b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li ng-repeat="lang in menu.languages">
-                        <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href=""><img style="margin-bottom: 2px" src="{{'img/flags/' + lang.code + '.png'}}"/> {{lang.name}}</a>	
+                        <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href=""><img style="margin-bottom: 2px" ng-src="{{lang.flagUrl}}"/> {{lang.name}}</a>	
                       </li>
                     </ul>
                   </li>
@@ -136,10 +104,10 @@
                   <li><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
                   <li><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" ng-bind="'Вернуться назад'|localize" onclick="window.history.back()"></a></li>
                   <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span>{{('Язык'|localize) + ': '}}<img style="margin-bottom: 2px" ng-src="{{'img/flags/' + menu.lang.code + '.png'}}"/> {{menu.lang.name + ' '}}</span><b class="caret"></b></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span><img style="margin-bottom: 2px" ng-src="{{menu.lang.flagUrl}}"/> {{menu.lang.name + ' '}}</span><b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li ng-repeat="lang in menu.languages">
-                        <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href=""><img style="margin-bottom: 2px" ng-src="{{'img/flags/' + menu.lang.code + '.png'}}"/> {{lang.name}}</a>	
+                        <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href=""><img style="margin-bottom: 2px" ng-src="{{lang.flagUrl}}"/> {{lang.name}}</a>	
                       </li>
                     </ul>
                   </li>   
@@ -155,12 +123,19 @@
     </div>
     
     <script language="javascript">
- 	jQuery('ul.nav li.dropdown').hover(function() {
-	          jQuery(this).find('.dropdown-menu').stop(true, true).delay(250).show(200);
+        $('ul.nav li.dropdown').hover(function() {
+	          $(this).find('.dropdown-menu').stop(true, true).delay(250).show(200);
             }, function() {
-              jQuery(this).find('.dropdown-menu').stop(true, true).delay(100).hide(50);
-            });
- 
+              $(this).find('.dropdown-menu').stop(true, true).delay(50).hide(50);
+         });
+            
+        $('#divContainer')
+  		    .delay(500)
+  		    .queue( function(next){ 
+    		   	$('#divLoader').hide();
+    		    $(this).css('display','block'); 
+   			    next(); 
+  		  });  
    </script>
    
     <script language="javascript" src="js/controllers/MainCtrl.js"></script>
@@ -213,7 +188,7 @@
     
     <script language="javascript" src="js/filters/cacheDate.js"></script>
 
-    <script language="javascript" src="lib/ui-bootstrap-tpls-0.5.0.js"></script>
+
   </body>
   
 </html>

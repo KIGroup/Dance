@@ -141,6 +141,133 @@ Couple data by WDSF numbers</Description>
 	try{
 		TSTART
 		
+		set coupleWDSFData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByNumbers(manNumber, womanNumber, .st)
+		if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WdsfCoupleNotFound", "| "_coupleWDSFData.message))
+		
+		set manWDSF = coupleWDSFData.man
+		set womanWDSF = coupleWDSFData.woman
+		
+		// Create or update wdsf male dancer
+		set manDB = ##class(Dance.Data.Person).GetByNumberWDSF(manNumber)
+				
+		if $ISOBJECT(manWDSF) && (manWDSF.id '= ""){	
+			set manCountry = ##class(Dance.Data.Country).WDSFNameIdxOpen(manWDSF.country)
+			
+			set proxy.man = ##class(%ZEN.proxyObject).%New()
+			set proxy.man.gender = $E(manWDSF.sex,1,1)
+			set proxy.man.numberWDSF = manWDSF.id
+			set proxy.man.lastName = manWDSF.surname
+			set proxy.man.firstName = manWDSF.name
+			set proxy.man.otherInfo = ##class(%ZEN.proxyObject).%New()
+			set proxy.man.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(manCountry)
+			
+			// For update by id, if man already exists
+			if $ISOBJECT(manDB){
+				set proxy.man.id = manDB.%Id()
+			}
+			
+			set manDB = ##class(Dance.Data.Person).Save(proxy.man, .st)
+			if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WdsfManSaveError"))
+			
+			set proxy.man.id = manDB.%Id()
+		}
+
+		// Create or update wdsf female dancer
+		set womanDB = ##class(Dance.Data.Person).GetByNumberWDSF(womanNumber)
+				
+		if $ISOBJECT(womanWDSF) && (womanWDSF.id '= ""){	
+			set womanCountry = ##class(Dance.Data.Country).WDSFNameIdxOpen(womanWDSF.country)
+			
+			set proxy.woman = ##class(%ZEN.proxyObject).%New()
+			set proxy.woman.gender = $E(womanWDSF.sex,1,1)
+			set proxy.woman.numberWDSF = womanWDSF.id
+			set proxy.woman.lastName = womanWDSF.surname
+			set proxy.woman.firstName = womanWDSF.name
+			set proxy.woman.otherInfo = ##class(%ZEN.proxyObject).%New()
+			set proxy.woman.otherInfo.country = ##class(Dance.Web.JsonCountry).ConvertToProxyObject(womanCountry)
+			
+			// For update by id, if man already exists
+			if $ISOBJECT(womanDB){
+				set proxy.woman.id = womanDB.%Id()
+			}
+			
+			set womanDB = ##class(Dance.Data.Person).Save(proxy.woman, .st)
+			if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("WdsfWomanSaveError"))
+			
+			set proxy.woman.id = womanDB.%Id()
+		}
+		elseif $ISOBJECT(womanDB){
+			set proxy.woman = ##class(JsonPerson).ConvertToProxyObject(womanDB)
+		}
+		
+		if $ISOBJECT(proxy.man) && (womanNumber = "0"){
+			set proxy.woman = proxy.man
+		}
+		elseif $ISOBJECT(proxy.woman) && (manNumber = "0"){
+			set proxy.man = proxy.woman
+		}
+				
+		// Create couple for dancers
+		set couple = ##class(Dance.Data.Couple).Create(proxy.man.id, proxy.woman.id, .st)
+		set proxy.id = couple.%Id()
+		
+		set coupleInfo =..GetFreshestWDSFOtherInfo(couple.%Id())
+		
+		if (proxy.otherInfo = ""){
+			set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
+		}
+		
+		if (proxy.man.dob = ""){
+			set proxy.man.dob = coupleInfo.manDob 
+		}
+		
+		if (proxy.woman.dob = ""){
+			set proxy.woman.dob = coupleInfo.womanDob 
+		}
+		
+		if (proxy.otherInfo.city = ""){
+			set proxy.otherInfo.city = coupleInfo.city
+		}
+		
+		if (proxy.otherInfo.club = ""){
+			set proxy.otherInfo.club = coupleInfo.club
+		}
+		
+		if (proxy.otherInfo.mainTrainer = ""){
+			set proxy.otherInfo.mainTrainer = coupleInfo.mainTrainer
+		}
+		
+		if (proxy.otherInfo.otherTrainers = ""){
+			set proxy.otherInfo.otherTrainers = coupleInfo.otherTrainers
+		}
+		
+		do proxy.%ToJSON()
+
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+/// Couple data by WDSF numbers
+ClassMethod WriteWDSFByNumbersToDevice(manNumber As %String, womanNumber As %String) As %Status
+{
+	set st = $$$OK
+	
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	try{
+		TSTART
+		
 		// Create or update wdsf male dancer
 		set manDB = ##class(Dance.Data.Person).GetByNumberWDSF(manNumber)
 		set manWDSF = ##class(Dance.Wdsf.API).GetPerson(manNumber)
@@ -279,8 +406,11 @@ Couple data by WDSF numbers</Description>
 	}
 	
 	quit st
-]]></Implementation>
-</Method>
+}
+
+*/
+]]></Content>
+</UDLText>
 
 <Method name="RegistrationExistingCouple">
 <Description>

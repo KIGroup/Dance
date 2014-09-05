@@ -4,12 +4,12 @@
 'use strict';
 //ddddddddddd
 
-var servicesModule     = angular.module('servicesModule', ['ngRoute','ngCookies','ui.bootstrap']);
+var servicesModule     = angular.module('servicesModule', ['ngRoute','ngCookies', 'ui.bootstrap']);
 var controllersModule  = angular.module('controllersModule', ['servicesModule']);
 var directivesModule   = angular.module('directivesModule', []);
 var localizationModule = angular.module('localizationModule', []);
 var filterModule       = angular.module('filterModule', []);
-var mainModule         = angular.module('mainModule', ['localizationModule', 'filterModule', 'servicesModule', 'controllersModule', 'directivesModule']);
+var mainModule         = angular.module('mainModule', ['localizationModule',  'filterModule', 'servicesModule', 'controllersModule', 'directivesModule']);
 
 mainModule.config(['$routeProvider', function($routeProvider) {
 	// All tournaments
@@ -62,6 +62,8 @@ mainModule.config(['$routeProvider', function($routeProvider) {
 	
 	// Import: Persons
 	$routeProvider.when('/import/persons', {templateUrl: 'partials/importpersons.csp' , controller: 'ImportPersonsCtrl'});
+
+	$routeProvider.when('/feedback', {templateUrl: 'partials/feedback.csp' , controller: 'FeedBackCtrl'});
 	
     $routeProvider.otherwise({redirectTo: '/tournaments'});
 }]);]]></CSP>

@@ -137,7 +137,7 @@
 						<div class="control-group" style="">
 							<label class="control-label spnTitle" style="border: none!important;" ng-bind="('Дата рождения'|localize) + '*'"></label>
 							<div class="controls">
-							    <input style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.wdsfCouple.man.dob" show-weeks="false" ng-required="true" ng-disabled="page.wdsfCouple.fieldsDisabled"/>
+							    <input style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.wdsfCouple.man.dob" min="'1900-01-01'" show-weeks="false" ng-required="true" ng-disabled="page.wdsfCouple.fieldsDisabled"/>
 							</div>
 						</div>
 
@@ -165,7 +165,7 @@
 						<div class="control-group">
 							<label class="control-label spnTitle" style="border: none!important;" ng-bind="('Дата рождения'|localize) + '*'"></label>
 							<div class="controls">
-							    <input style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.wdsfCouple.woman.dob" show-weeks="false" ng-required="page.wdsfCouple.man.id != page.wdsfCouple.woman.id" ng-disabled="page.wdsfCouple.fieldsDisabled"/>
+							    <input style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.wdsfCouple.woman.dob" min="'1900-01-01'" show-weeks="false" ng-required="page.wdsfCouple.man.id != page.wdsfCouple.woman.id" ng-disabled="page.wdsfCouple.fieldsDisabled"/>
 							</div>
 						</div>
 					</div>
@@ -247,7 +247,7 @@
 								<div class="control-group">
 						        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
 						        	<div class="controls">
-						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.newCouple.man.dob" show-weeks="false" ng-required="true" ng-disabled="page.newCouple.fieldsDisabled"/>
+						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="page.newCouple.man.dob" show-weeks="false" min="'1900-01-01'" ng-required="true" ng-disabled="page.newCouple.fieldsDisabled"/>
 						        	</div>
 						    	</div>
 						    </div>
@@ -300,7 +300,7 @@
 								<div class="control-group">
 						        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
 						        	<div class="controls">
-						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" starting-day="4" datepicker-mode="'wef'" ng-model="page.newCouple.woman.dob" show-weeks="false" ng-required="page.newCouple.type!='Solo'" ng-disabled="page.newCouple.fieldsDisabled"/>
+						            	<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" min="'1900-01-01'" ng-model="page.newCouple.woman.dob" show-weeks="false" ng-required="page.newCouple.type!='Solo'" ng-disabled="page.newCouple.fieldsDisabled"/>
 						        	</div>
 						    	</div>
 						    </div>

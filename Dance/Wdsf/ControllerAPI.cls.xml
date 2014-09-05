@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Wdsf.ControllerAPI">
+<Abstract>1</Abstract>
+<TimeCreated>63425,77020.931316</TimeCreated>
+
+<Method name="Call">
+<Description>
+do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[pMethod:%String,pUrl:%String,&st:%Status=$$$OK]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set pResponse = ##class(%ZEN.proxyObject).%New()
+	
+ 	try 
+ 	{
+  		set req = ##class(%Net.HttpRequest).%New()
+  		set req.Server = $G(^Settings("Dance","WdsfController", "Server"))
+  		set req.Port = $G(^Settings("Dance","WdsfController", "Port"), 80)
+  		set req.Authorization = "Basic "_$system.Encryption.Base64Encode($g(^Settings("Dance","WdsfController", "Login"))_":"_$g(^Settings("Dance","WdsfController", "Password")))
+  		
+  		set pUrl = $G(^Settings("Dance","WdsfController", "API"))_pUrl
+  		
+  		$$$TOE(st, req.Send($zconvert(pMethod, "U"), pUrl))
+ 		
+ 		set json = req.HttpResponse.Data.Read()
+ 	
+ 		$$$TOE(st,##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(json,,.pResponse))
+ 		
+ 		if (req.HttpResponse.StatusCode > 300){
+ 			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("Bad response status.", " Code="_req.HttpResponse.StatusCode))
+ 		}
+ 	}
+ 	catch (ex) {
+  		set st = ex.AsStatus()
+ 	}
+
+ 	quit pResponse
+]]></Implementation>
+</Method>
+
+<Method name="GetCouples">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[min:%String="",&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set filter = ""
+	if (min){
+		set filter = "?min="_min
+	}
+	
+	quit ..Call("GET", "/couple"_filter, .st)
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleByNumbers">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[manNumber:%String,womanNumber:%String,&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[	quit ..Call("GET", "/couple?manNumber="_manNumber_"&womanNumber="_womanNumber, .st)
+]]></Implementation>
+</Method>
+
+<Method name="GetPerson">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[id:%String,&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[	quit ..Call("GET", "/person/"_id, .st)
+]]></Implementation>
+</Method>
+</Class>
+</Export>

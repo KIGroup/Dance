@@ -22,6 +22,10 @@ Competition in the tournament, has participants</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="IdWDSF">
+<Type>%String</Type>
+</Property>
+
 <Property name="IdExternal">
 <Type>%String</Type>
 <Required>1</Required>
@@ -120,6 +124,7 @@ Create or update competition</Description>
 	"ID="_data.id_";"_
 	"IdInternal="_data.idInternal_";"_
 	"IdExternal="_data.idExternal_";"_
+	"IdWDSF="_data.idWDSF_";"_
 	"Name="_$ZCVT(data.name,"I", "UTF8")_";"_
 	"TournamentId="_data.tournamentId_";"_
 	"DisciplineId="_data.discipline.id_";"_
@@ -153,6 +158,7 @@ Create or update competition</Description>
       
     set cmp.IdInternal = data.idInternal
     set cmp.IdExternal = data.idExternal
+    set cmp.IdWDSF = data.idWDSF
       	
 	// DancerClasses array
 	do cmp.DancerClasses.Clear()
@@ -275,6 +281,9 @@ Participants count in the competition</Description>
 </Value>
 <Value name="19">
 <Value>IsActive</Value>
+</Value>
+<Value name="20">
+<Value>IdWDSF</Value>
 </Value>
 </Data>
 <Data name="DancerClasses">

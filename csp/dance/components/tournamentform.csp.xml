@@ -75,7 +75,7 @@
 			<div class="control-group">
 	        	<label class="control-label" ng-bind="('Дата начала'|localize) + '*'"></label>
 	        	<div class="controls">
-	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tournament.startDate" show-weeks="false" ng-required="true" />
+	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tournament.startDate" show-weeks="false" start-mode="2" ng-required="true" />
 	        	</div>
 	    	</div>
 		</div>

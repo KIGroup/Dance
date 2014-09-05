@@ -28,6 +28,7 @@ Write to device "children" array of proxyObjects [All System languages]</Descrip
 			set proxy = ##class(%ZEN.proxyObject).%New()
 			set proxy.code = code
 			set proxy.name = name
+			set proxy.flagUrl = "img/flags/"_code_".png"
 			
 			do list.Insert(proxy)	
 		}

@@ -14,7 +14,7 @@ servicesModule.factory('UtilsSrvc', function($dialog, $filter) {
 		openMessageBox: function(title, msg, func){
     		var btns = [{result: true, label: 'Ок', cssClass: 'btn-primary btn-small'}, 
                         {result: false, label: $filter('localize')('Отмена'), cssClass: 'btn-small'}];
-
+			
     		$dialog.messageBox($filter('localize')(title), $filter('localize')(msg), btns).open().then(function(result){
     		 	if (result && func)
     		 		func(); 
