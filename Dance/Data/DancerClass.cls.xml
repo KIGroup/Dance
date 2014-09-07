@@ -35,7 +35,6 @@ Convert "DancerClass" object to %ZEN.proxyObject (for JSON)</Description>
 	set proxy.id = ..%Id()
 	set proxy.name = ..Name
 	set proxy.code = ..Code
-	set proxy = ##class(%ZEN.proxyObject).%New()
 	
 	quit proxy
 ]]></Implementation>

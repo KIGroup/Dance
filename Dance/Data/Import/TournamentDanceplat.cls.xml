@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Data.Import.Tournament">
+<Class name="Dance.Data.Import.TournamentDanceplat">
 <Description>
 Imported tournaments from other system</Description>
-<Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportBase</Super>
-<TimeCreated>63317,82871.710641</TimeCreated>
-
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonTournamentImport</Default>
-</Parameter>
+<Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportDanceplat</Super>
+<TimeCreated>63438,6988.71093</TimeCreated>
 
 <Parameter name="CorrelateName">
 <Type>%String</Type>
@@ -113,38 +109,5 @@ Example:
 */
 ]]></Content>
 </UDLText>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^Dance.Data.Import.TournamentD</DataLocation>
-<DefaultData>TournamentDefaultData</DefaultData>
-<IdLocation>^Dance.Data.Import.TournamentD</IdLocation>
-<IndexLocation>^Dance.Data.Import.TournamentI</IndexLocation>
-<StreamLocation>^Dance.Data.Import.TournamentS</StreamLocation>
-<ExtentSize>100000</ExtentSize>
-<Data name="TournamentDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>IdExternal</Value>
-</Value>
-<Value name="3">
-<Value>IdInternal</Value>
-</Value>
-<Value name="4">
-<Value>TDate</Value>
-</Value>
-<Value name="5">
-<Value>Hash</Value>
-</Value>
-<Value name="6">
-<Value>Name</Value>
-</Value>
-<Value name="7">
-<Value>IsRemoved</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

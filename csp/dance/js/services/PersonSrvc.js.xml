@@ -10,14 +10,11 @@ Person service, access to REST API
 
 servicesModule.factory('PersonSrvc', function(RESTSrvc) {    
     return {
-        getById: function(id){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id});
+        getByUDSRNumber: function(number){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/person/udsr/' + number});
         },
-        save: function(data){
-            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.admin + '/tournament', data: data});
-        },
-        deleteById: function(id){
-            return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});
+        getByWDSFNumber: function(number){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/person/wdsf/' + number});
         },
         getStats: function(){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/person/stats'});

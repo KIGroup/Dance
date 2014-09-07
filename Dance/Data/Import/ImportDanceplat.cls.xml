@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Data.Import.ImportBase">
+<Class name="Dance.Data.Import.ImportDanceplat">
 <Abstract>1</Abstract>
-<TimeCreated>63317,82595.285731</TimeCreated>
+<TimeCreated>63438,7022.551555</TimeCreated>
 
 <Method name="InitSettings">
 <Description>
-do ##class(Dance.Data.Import.ImportBase).InitSettings()</Description>
+do ##class(Dance.Data.Import.ImportDanceplat).InitSettings()</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	set ^Settings("Dance", "Import", "Server") = "www.danceplat.ru"
-	set ^Settings("Dance", "Import", "TournamentsPage") = "toursfeed1.php?trn=10122&hash=b3c230573098e6ac0510654af758c227&all=1"
-	set ^Settings("Dance", "Import", "CompetitionsPage") = "groupsfeed2.php"
-	set ^Settings("Dance", "Import", "TicketsPage") = "stsrfeed5.php"
+	set ^Settings("Dance", "ImportDanceplat", "Server") = "www.danceplat.ru"
+	set ^Settings("Dance", "ImportDanceplat", "TournamentsPage") = "toursfeed1.php?trn=10122&hash=b3c230573098e6ac0510654af758c227&all=1"
+	set ^Settings("Dance", "ImportDanceplat", "CompetitionsPage") = "groupsfeed2.php"
+	set ^Settings("Dance", "ImportDanceplat", "TicketsPage") = "stsrfeed5.php"
 	
 	quit $$$OK
 ]]></Implementation>
@@ -32,7 +32,7 @@ Import all objects from XML to table</Description>
 		TSTART
 				
 		set httprequest = ##class(%Net.HttpRequest).%New()
-		set httprequest.Server = $G(^Settings("Dance", "Import", "Server"))
+		set httprequest.Server = $G(^Settings("Dance", "ImportDanceplat", "Server"))
 		set httprequest.ContentEncoding = "UTF-8"
 		do httprequest.Get(pageWithParameters)
 		

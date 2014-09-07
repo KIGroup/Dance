@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Data.Import.Ticket">
+<Class name="Dance.Data.Import.TicketDanceplat">
 <Description>
 Importer tickets from other system</Description>
-<Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportBase</Super>
-<TimeCreated>63318,1856.760262</TimeCreated>
+<Super>%Persistent,%XML.Adaptor,Dance.Data.Import.ImportDanceplat</Super>
+<TimeCreated>63438,7002.692458</TimeCreated>
 
 <Parameter name="CorrelateName">
 <Type>%String</Type>
@@ -259,101 +259,5 @@ Example:
 */
 ]]></Content>
 </UDLText>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^Dance.Data.Import.TicketD</DataLocation>
-<DefaultData>TicketDefaultData</DefaultData>
-<IdLocation>^Dance.Data.Import.TicketD</IdLocation>
-<IndexLocation>^Dance.Data.Import.TicketI</IndexLocation>
-<StreamLocation>^Dance.Data.Import.TicketS</StreamLocation>
-<ExtentSize>100000</ExtentSize>
-<Data name="TicketDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>IdExternal</Value>
-</Value>
-<Value name="3">
-<Value>TournamentIdExternal</Value>
-</Value>
-<Value name="4">
-<Value>GroupIdInternal</Value>
-</Value>
-<Value name="5">
-<Value>ManNumber</Value>
-</Value>
-<Value name="6">
-<Value>WomenNumber</Value>
-</Value>
-<Value name="7">
-<Value>Amount</Value>
-</Value>
-<Value name="8">
-<Value>TStatus</Value>
-</Value>
-<Value name="9">
-<Value>Created</Value>
-</Value>
-<Value name="10">
-<Value>OrderIdInternal</Value>
-</Value>
-<Value name="11">
-<Value>CodeOne</Value>
-</Value>
-<Value name="12">
-<Value>CodeTwo</Value>
-</Value>
-<Value name="13">
-<Value>Description</Value>
-</Value>
-<Value name="14">
-<Value>MaleLastName</Value>
-</Value>
-<Value name="15">
-<Value>MaleFirstName</Value>
-</Value>
-<Value name="16">
-<Value>MaleNumber</Value>
-</Value>
-<Value name="17">
-<Value>MaleDOBOrAge</Value>
-</Value>
-<Value name="18">
-<Value>FemaleLastName</Value>
-</Value>
-<Value name="19">
-<Value>FemaleFirstName</Value>
-</Value>
-<Value name="20">
-<Value>FemaleNumber</Value>
-</Value>
-<Value name="21">
-<Value>FemaleDOBOrAge</Value>
-</Value>
-<Value name="22">
-<Value>Trainers</Value>
-</Value>
-<Value name="23">
-<Value>City</Value>
-</Value>
-<Value name="24">
-<Value>Club</Value>
-</Value>
-<Value name="25">
-<Value>DDay</Value>
-</Value>
-<Value name="26">
-<Value>TDay</Value>
-</Value>
-<Value name="27">
-<Value>IdInternal</Value>
-</Value>
-<Value name="28">
-<Value>PaymentCreated</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

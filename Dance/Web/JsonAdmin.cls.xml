@@ -227,12 +227,12 @@ Import                                                                          
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
     	
     	if (params.other.isFirstLoad = $$$YES){
-			$$$THROWONERROR(st, ##class(Dance.Data.Import.Tournament).Import("Dance.Data.Import.Tournament", $G(^Settings("Dance", "Import", "TournamentsPage"))))
+			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportDanceplat).Import("Dance.Data.Import.TournamentDanceplat", $G(^Settings("Dance", "ImportDanceplat", "TournamentsPage"))))
     	}
     	  	
       	set whereCondition = ""
       	
-      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data_Import.Tournament", "Dance.Data.Import.Tournament", params, whereCondition))
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data_Import.TournamentDanceplat", "Dance.Data.Import.TournamentDanceplat", params, whereCondition))
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -259,13 +259,13 @@ Write objects to device, page by page for grid. </Description>
     	set tournament = ##class(Dance.Data.Tournament).%OpenId(params.other.tournamentId)
     	
     	if (params.other.isFirstLoad = $$$YES){
-			set page = $G(^Settings("Dance", "Import", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
-			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Competition", page))
+			set page = $G(^Settings("Dance", "ImportDanceplat", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
+			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportDanceplat).Import("Dance.Data.Import.CompetitionDanceplat", page))
     	}
     	  	
       	set whereCondition = "TournamentIdExternal = "_tournament.IdExternal
       	
-      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data_Import.Competition", "Dance.Data.Import.Competition", params, whereCondition))
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data_Import.CompetitionDanceplat", "Dance.Data.Import.CompetitionDanceplat", params, whereCondition))
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -285,7 +285,7 @@ Write objects to device, page by page for grid. </Description>
     set proxy = ##class(%ZEN.proxyObject).%New()
     
     if $$$ISOK(##class(Dance.Data.Tournament).CheckUpdatePrivilege()){	
-    	set proxy.link = $G(^Settings("Dance", "Import", "Server"))_"/"_$G(^Settings("Dance", "Import", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
+    	set proxy.link = $G(^Settings("Dance", "ImportDanceplat", "Server"))_"/"_$G(^Settings("Dance", "ImportDanceplat", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
     }
 	
 	do proxy.%ToJSON()

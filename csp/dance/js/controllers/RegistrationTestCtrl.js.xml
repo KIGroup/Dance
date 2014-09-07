@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="dance/js/controllers/RegistrationTestCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+'use strict';
+//
+
+/*===========================================================================================
+Registration         
+===========================================================================================*/
+
+controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, CoupleSrvc){
+	$scope.menu.pages.selected = {};
+    $scope.menu.shortMenu = true;
+
+    $scope.pageStore.registration = $scope.pageStore.registration || {grid:{}};  
+    $scope.tabUDSR = {
+        searchForm: {}
+    };
+
+    $scope.tabWDSF = {
+        searchForm: {}
+    };
+    
+    $scope.tabOTHER = {
+    };
+
+    $scope.competitionTable = {};
+
+    $scope.init = function(){
+        //    
+        // Competition table
+        //
+        $scope.competitionTable.columns = [
+                          {name: 'Дата', sqlName: 'StartDate', isSorted: true , isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},
+                          {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
+                          {name: 'Цена', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
+        
+        $scope.competitionTable.properties = [
+                          {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
+                          {name:'startTime'},
+                          {name:'name'},
+                          {name:'discipline.name'},
+                          {name:'ageCategory.fullName', calculate: function(item){
+                                                       item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
+                                                    }},
+                          {name:'dancerClassesString', calculate: function(item){
+                                                            item.dancerClassesString = '';
+                                                            for(var i=0; i < item.dancerClasses.length; i++){
+                                                                item.dancerClassesString = item.dancerClassesString + ', ' + item.dancerClasses[i].name;
+                                                            }
+
+                                                            item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
+                                                        }},
+                          {name:'type.name'},
+                          {name:'price', cellStyle: {textAlign: 'right'}}];
+
+        $scope.competitionTable.pageSize = 1000; 
+        $scope.competitionTable.pageCurr = 1;
+        $scope.competitionTable.itemsTotal = 0;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.selectedItems = [];
+        $scope.competitionTable.multiSelectMode = true;
+        $scope.competitionTable.forciblyUpdate = 0;
+
+        $scope.pageStore.registration.grid.tableShortView = $scope.pageStore.registration.grid.tableShortView == null ? true : $scope.pageStore.registration.grid.tableShortView;
+        
+        if ($scope.pageStore.registration.grid.tableShortView){
+            $scope.competitionTable.setHiddenCoulumns(true);
+        }
+        else{
+            $scope.competitionTable.setHiddenCoulumns(false);
+        }  
+
+        // Load tournament
+        $scope.loadTournament($routeParams.tournamentId);
+    };
+
+      /// Load All Competitions in Tournament  
+    $scope.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        $scope.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
+
+        var dataSending= {
+            type: $scope.selectedTab, /* UDSR, WDSF, OTHER*/
+            tournamentId: $scope.tournament.id
+        };
+
+        if ($scope.competitionTable.avialableMode){
+            dataSending.couple = $scope['tab' + $scope.selectedTab].couple || null;
+            dataSending.athlete = $scope['tab' + $scope.selectedTab].athlete || null;
+        
+            CompetitionSrvc.getAllAvialableForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, dataSending).then(
+                function(data){
+                    data = data.children;
+                    $scope.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
+                    $scope.competitionTable.itemsTotal = data.itemsTotal;
+                    $scope.competitionTable.items = data.items; 
+                    $scope.competitionTable.onSelect(null);
+
+                    $scope.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
+                },
+                function(data, status, headers, config){
+                    $scope.cmpAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                    $scope.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
+                });
+        }
+        else{
+            CompetitionSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, dataSending).then(
+                function(data){
+                    data = data.children;
+                    $scope.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
+                    $scope.competitionTable.itemsTotal = data.itemsTotal;
+                    $scope.competitionTable.items = data.items; 
+                    $scope.competitionTable.caption = $filter('localize')('Все группы');
+
+                    $scope.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
+                },
+                function(data, status, headers, config){
+                    $scope.cmpAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                    $scope.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
+                });
+        }
+    };
+
+    $scope.competitionTable.setHiddenCoulumns = function(value){
+        var indexes = [1,3,4,5,6];
+        for(var n=0; n < indexes.length; n++){
+            $scope.competitionTable.columns[indexes[n]].hidden = value;     
+        }
+    };
+
+    // Select competition
+    $scope.competitionTable.onSelect = function(item){
+        $scope.competitionTable.caption = $filter('localize')('Доступные группы для регистрации.') + ' ' + $filter('localize')('Выбрано %1 из %2.')
+                                               .replace(/%1/g, $scope.competitionTable.selectedItems.length)
+                                               .replace(/%2/g, $scope.competitionTable.items.length);                                    
+    };
+
+    /// Refresh competition table  
+    $scope.competitionTable.refresh = function(){ 
+        $scope.competitionTable.forciblyUpdate++; 
+    };
+
+    /// Load Tournament by ID   
+    $scope.loadTournament = function(id){
+        TournamentSrvc.getById(id).then(
+            function(data){
+                $scope.tournament = data;
+                $scope.tabUDSR.visible = data.tabUDSRAllowed == 1;
+                $scope.tabWDSF.visible = data.tabWDSFAllowed == 1;
+                $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
+                $scope.competitionTable.refresh();
+            },
+            function(data, status, headers, config){
+                $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+
+    // ===========================================================================================================================================
+    // Tab UDSR                                                                                                                           Tab UDSR
+    // ===========================================================================================================================================
+    $scope.tabUDSR.select = function(){
+        $scope.selectedTab = 'UDSR';
+    };
+
+    $scope.tabUDSR.searchForm.search = function(manNumber, womanNumber){
+        if (manNumber == '' && womanNumber == '')
+            return;
+
+        $scope.tabUDSR.searchForm.processing = true;
+
+        var afterSuccess = function(){
+            $scope.tabWDSF.disabled = true;
+            $scope.tabOTHER.disabled = true;
+            $scope.tabUDSR.searchForm.processing = false;
+            $scope.competitionTable.avialableMode = true;
+            $scope.competitionTable.selectable = true;  
+        };
+
+        if (manNumber != '' && womanNumber != ''){
+            CoupleSrvc.getUDSRByNumbers(manNumber, womanNumber).then(
+                function(data){
+                    afterSuccess();
+                    $scope.tabUDSR.couple = data;
+                },
+                function(data, status, headers, config){
+                    $scope.tabUDSR.searchForm.processing = false;
+                    $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+        else{
+            PersonSrvc.getByUDSRNumber(manNumber ? manNumber : womanNumber).then(
+                function(data){
+                    afterSuccess();
+                    $scope.tabUDSR.athlete = data;
+                },
+                function(data, status, headers, config){
+                    $scope.tabUDSR.searchForm.processing = false;
+                    $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+    };
+
+    $scope.tabUDSR.searchForm.clear = function(){
+        $scope.form_udsrCouple.$setPristine();
+        $scope.tabUDSR.searchForm.manNumber = '';
+        $scope.tabUDSR.searchForm.womanNumber = '';
+        $scope.tabUDSR.couple = null;
+        $scope.tabUDSR.athlete = null; 
+    };
+
+    $scope.tabUDSR.back = function(){
+        $scope.tabUDSR.searchForm.clear();
+        $scope.tabWDSF.disabled = false;
+        $scope.tabOTHER.disabled = false;
+        $scope.tabUDSR.searchForm.processing = false;
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;  
+    };
+
+
+    $scope.init();
+});  
+]]></CSP>
+</Export>

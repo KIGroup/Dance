@@ -24,25 +24,26 @@
 
 <Method name="GetByNumbers">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[manId:%String,womanId:%String,&st]]></FormalSpec>
+<FormalSpec><![CDATA[manNumber:%String,womanNumber:%String,&st]]></FormalSpec>
 <ReturnType>Couple</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
 	#dim obj As CoupleWDSF = ""
 	
-	if (..CommonIdxExists(manId, womanId)){
-		set obj = ..CommonIdxOpen(manId, womanId)
-		return obj
+	set (coupleId, SQLCODE) = ""
+	&sql(SELECT ID INTO :coupleId FROM Dance_Data.CoupleUDSR WHERE Man->Number = :manNumber AND Woman->Number = :womanNumber)
+	if (SQLCODE = 0){
+		return ..%OpenId(coupleId,,.st)
 	}
 	
 	set obj = ..%New()
-	set obj.Man = ##class(PersonUDSR).NumberUDSROpen(manId,,.st)	
+	set obj.Man = ##class(PersonUDSR).NumberUDSRIdxOpen(manNumber,,.st)	
 	if $$$ISERR(st) || (obj.Man.Gender '= "Male"){
 		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_Person_UDSR_NotFound", " | "_st)
 		quit $$$NULLOREF
 	}
 	
-	set obj.Woman = ##class(PersonUDSR).NumberUDSROpen(womanId,,.st)	
+	set obj.Woman = ##class(PersonUDSR).NumberUDSRIdxOpen(womanNumber,,.st)	
 	if $$$ISERR(st) || (obj.Woman.Gender '= "Female"){
 		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_Person_UDSR_NotFound", " | "_st)
 		quit $$$NULLOREF

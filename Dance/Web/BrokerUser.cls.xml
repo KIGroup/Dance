@@ -89,12 +89,11 @@ Public REST URLs</Description>
 
 <Route Method="POST" Url="/couple/registration/new" Call="Dance.Web.JsonCouple:RegistrationNewCouple"/>
 
-
 <!-- ========================================================================================================= -->
 <!-- Person                                                                                             Person -->
 <!-- ========================================================================================================= -->
 
-
+<Route Method="GET" Url="/person/udsr/:number" Call="Dance.Web.JsonUser:GetPersonByUDSRNumber"/>
 
 
 <!-- ========================================================================================================= -->
@@ -119,9 +118,7 @@ Public REST URLs</Description>
 <Route Method="POST" Url="/feedback" Call="Dance.Web.JsonUser:CreateFeedBack"/>
 
 
-<!--========================================= COMPETITION ===============================================-->
-
-
+<Route Method="GET" Url="/person/stats" Call="Dance.Web.JsonUser:GetPersonStatistics"/>
 	
 </Routes>
 ]]></Data>

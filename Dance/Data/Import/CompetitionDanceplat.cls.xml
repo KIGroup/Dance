@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Data.Import.Competition">
+<Class name="Dance.Data.Import.CompetitionDanceplat">
 <Description>
 Imported competitions from other system</Description>
 <Super>%Persistent,%XML.Adaptor</Super>
-<TimeCreated>63319,82354.531382</TimeCreated>
+<TimeCreated>63438,6973.710952</TimeCreated>
 
 <Parameter name="CorrelateName">
 <Type>%String</Type>
@@ -209,65 +209,5 @@ Create or update item</Description>
 	quit oldObj.%Save()
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^Dance.Data.Import.CompetitionD</DataLocation>
-<DefaultData>CompetitionDefaultData</DefaultData>
-<IdLocation>^Dance.Data.Import.CompetitionD</IdLocation>
-<IndexLocation>^Dance.Data.Import.CompetitionI</IndexLocation>
-<StreamLocation>^Dance.Data.Import.CompetitionS</StreamLocation>
-<ExtentSize>100000</ExtentSize>
-<Data name="CompetitionDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>TournamentIdExternal</Value>
-</Value>
-<Value name="3">
-<Value>IdInternal</Value>
-</Value>
-<Value name="4">
-<Value>IdExternal</Value>
-</Value>
-<Value name="5">
-<Value>Name</Value>
-</Value>
-<Value name="6">
-<Value>Rank</Value>
-</Value>
-<Value name="7">
-<Value>DisciplineCode</Value>
-</Value>
-<Value name="8">
-<Value>AgeCategoryCode</Value>
-</Value>
-<Value name="9">
-<Value>DancerClassCodes</Value>
-</Value>
-<Value name="10">
-<Value>Date</Value>
-</Value>
-<Value name="11">
-<Value>Limit</Value>
-</Value>
-<Value name="12">
-<Value>IsSoloType</Value>
-</Value>
-<Value name="13">
-<Value>MaxAge</Value>
-</Value>
-<Value name="14">
-<Value>MinAge</Value>
-</Value>
-<Value name="15">
-<Value>Price</Value>
-</Value>
-<Value name="16">
-<Value>StartDate</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

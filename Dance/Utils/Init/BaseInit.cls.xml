@@ -40,7 +40,6 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do $CLASSMETHOD("Dance.Data.Import.Ticket", "%KillExtent")
 	
 	do $CLASSMETHOD("Dance.Data.AgeCategory", "%KillExtent")
-	do $CLASSMETHOD("Dance.Data.AgeCategoryWDSF", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Competition", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.CompetitionType", "%KillExtent")
 	

@@ -63,21 +63,26 @@
 
 <Method name="GetByNumbers">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[manId:%String,womanId:%String,&st]]></FormalSpec>
+<FormalSpec><![CDATA[manNumber:%String,womanNumber:%String,&st]]></FormalSpec>
 <ReturnType>Couple</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
 	#dim obj As CoupleWDSF = ""
 	
-	if (..CommonIdxExists(manId, womanId)){
-		set obj = ..CommonIdxOpen(manId, womanId)
+	set (coupleId, SQLCODE) = ""
+	&sql(SELECT ID INTO :coupleId FROM Dance_Data.CoupleWDSF WHERE Man->Number = :manNumber AND Woman->Number = :womanNumber)
+	if (SQLCODE = 0){
+		set obj = ..%OpenId(coupleId,,.st)
 		set diffDays = $SYSTEM.SQL.DATEDIFF("dd", $P(obj.Updated, " ", 1), $P($ZDT($ZTS, 3), " ", 1))
 		if (diffDays <= 7){
 			return obj
 		}	
 	}
 	
-	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByNumbers(manId, womanId, .st)
+	if (..CommonIdxExists(manId, womanId)){
+	}
+	
+	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByNumbers(manNumber, womanNumber, .st)
 	quit:$$$ISERR(st) obj
 	
 	set obj = ..%New()

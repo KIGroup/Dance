@@ -13,15 +13,15 @@
 	set result = ##class(%ZEN.proxyObject).%New()
 	set result.success = 0
 	set result.errorMessages = ##class(%ListOfObjects).%New()
-	
+	set line = ""
 	try{
 		set fileName = %request.MimeData("FileStream", 1).FileName
 		set stream = %request.MimeData("FileStream", 1)
 	
-		set gender = "M"
+		set gender = "Male"
 		
 		if ($FIND(fileName, "female") '= 0) || ($FIND(fileName, "girl") '= 0) || ($FIND(fileName, "woman") '= 0){
-			set gender = "F"
+			set gender = "Female"
 		}
 		
 		set newStream = ##class(%CSP.CharacterStream).%New()
@@ -38,7 +38,7 @@
 			
 			if ($FIND(line,";") = 0) continue
 			
-			set st = ##class(Dance.Data.Person).UpdateFromString(line, gender)
+			set st = ##class(Dance.Data.PersonUDSR).UpdateFromString(line, gender)
 			if $$$ISOK(st){
 				set result.success = result.success + 1
 			}
@@ -67,6 +67,11 @@
 		set ^Settings("Dance","UDSRPersonsLastUpdated") = $ZDT($ZTS, 3)
 	}catch(ex){
 		set st = ex.AsStatus()	
+	}
+	
+	if $$$ISERR(st){
+		w line_"<br>"
+		w $SYSTEM.Status.GetErrorText(st)
 	}
 	
 	&html<</body></html>>
