@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.ParticipantSingle">
+<Super>Participant</Super>
+<TimeCreated>63436,60993.515442</TimeCreated>
+
+<Property name="Athlete">
+<Type>Person</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="CompetitionAthleteIdx">
+<Properties>Competition,Athlete</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##super()
+	set proxy.athlete = ..Athlete.ConvertToProxyObject()
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[competitionId:%String,athleteId:%String,&st]]></FormalSpec>
+<ReturnType>Participant</ReturnType>
+<Implementation><![CDATA[
+	if ..CompetitionAthleteIdxExists(competitionId, athleteId) {
+		set obj = ..CompetitionAthleteIdxOpen(competitionId, athleteId)
+		set obj.IsActive = 1
+		set st = obj.%Save()
+		quit obj
+	}
+	
+	set obj = ..%New()
+	set obj.Athlete = ##class(Person).%OpenId(athleteId)
+	set obj.Competition = ##class(Dance.Data.Competition).%OpenId(competitionId) 
+	set obj.Created = $ZDT($ZTS, 3)
+	set st = obj.%Save()
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>ParticipantSingleDefaultData</DefaultData>
+<Data name="ParticipantSingleDefaultData">
+<Subscript>"ParticipantSingle"</Subscript>
+<Value name="1">
+<Value>Athlete</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

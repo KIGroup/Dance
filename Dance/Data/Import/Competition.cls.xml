@@ -6,10 +6,6 @@ Imported competitions from other system</Description>
 <Super>%Persistent,%XML.Adaptor</Super>
 <TimeCreated>63319,82354.531382</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonCompetitionImport</Default>
-</Parameter>
-
 <Parameter name="CorrelateName">
 <Type>%String</Type>
 <Default>item</Default>
@@ -95,6 +91,92 @@ Imported competitions from other system</Description>
 <Properties>IdInternal</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.info = ##class(%ZEN.proxyObject).%New()
+	set proxy.info.errorMessages = ##class(%ListOfDataTypes).%New()
+	
+	try{
+		set proxy.id = ..%Id()
+		set proxy.tournamentIdExternal = ..TournamentIdExternal
+		set proxy.idInternal = ..IdInternal
+		set proxy.idExternal = ..IdExternal
+		set proxy.startDate = ..StartDate
+		set proxy.minAge = ..MinAge
+		set proxy.maxAge = ..MaxAge
+		set proxy.limit = ..Limit
+		set proxy.price = ..Price
+		set proxy.name = ..Name
+						
+		set realDicipline = ##class(Dance.Data.Discipline).CodeIdxOpen(..DisciplineCode,,.sc)
+		if ($$$ISOK(sc)){
+			set proxy.discipline = realDicipline.ConvertToProxyObject()
+		}
+		else{
+			do proxy.info.errorMessages.Insert("Дисциплина не найдена! Код = "_..DisciplineCode)	
+		}
+			
+		set realAge = ##class(Dance.Data.AgeCategory).CodeIdxOpen(..AgeCategoryCode,,.sc)
+		if ($$$ISOK(sc)){
+			set proxy.ageCategory = realAge.ConvertToProxyObject()
+		}
+		else{
+			do proxy.info.errorMessages.Insert("Возрастная группа не найдена! Код = "_..AgeCategoryCode)
+		}
+			
+		if (object.IsSoloType = $$$YES){
+			set typeCode = "Solo"
+		}
+		else{
+			set typeCode = "Couples"
+		}
+			
+		set type = ##class(Dance.Data.CompetitionType).CodeIdxOpen(typeCode,,.sc)
+		if ($$$ISOK(sc)){
+			set proxy.type = type.ConvertToProxyObject()
+		}
+		else{
+			do proxy.info.errorMessages.Insert("Тип не найден! Соло = "_..IsSoloType)
+		}
+		
+		set proxy.dancerClasses = ##class(Dance.Data.DancerClass).GetAll().children
+		set dancerClassesList = $LISTFROMSTRING(object.DancerClassCodes, ",")
+		for i=1:1:$LL(dancerClassesList){
+			set class = $LIST(dancerClassesList, i)
+			if (class = "") continue
+				
+			if (##class(Dance.Data.DancerClass).CodeIdxExists(class) = $$$YES){
+				for cc=1:1:proxy.dancerClasses.Count(){
+					if (class = proxy.dancerClasses.GetAt(cc).code){
+						set proxy.dancerClasses.GetAt(cc).selected = $$$YES
+						quit
+					}
+				}
+			}
+			elseif (class = "0"){
+				for cc=1:1:proxy.dancerClasses.Count(){
+					set proxy.dancerClasses.GetAt(cc).selected = $$$YES
+				}
+			}
+			else{
+				do proxy.info.errorMessages.Insert("Класс не найден! Код = "_class)	
+			}		
+		}
+
+		set proxy.info.isExisted = ##class(Dance.Data.Competition).IdInternalIdxExists(..IdInternal)
+		set proxy.info.isErrored = (proxy.info.errorMessages.Count() '= 0)
+	}
+	catch(ex){
+		//set proxy = ##class(%ZEN.proxyObject).%New()
+		//w ex.AsStatus()
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
 
 <Method name="Save">
 <Description>

@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Web.JsonUser">
+<Super>Dance.Web.JsonBase</Super>
+<TimeCreated>63436,73778.660914</TimeCreated>
+
+<Method name="GetTournamentById">
+<Description><![CDATA[
+<!--========================================= TOURNAMENT ================================================-->
+<!-- GET BY ID, Tournament -->
+<Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:WriteObjectByIdToDevice"/>
+Open object by id, convert to proxy and write to device]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	quit ##class(Dance.Data.Tournament).%OpenId(id).ConvertToProxyObject().%ToJSON()
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentsForGrid">
+<Description>
+Write objects to device, page by page for grid. </Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+      	
+      	set whereCondition = "IsActive = 1"
+      	
+      	// filters
+      	if (params.other.rankId '= "") && (params.other.statusId = ""){
+      		set whereCondition = whereCondition_" AND TRank="_..ParseParameter(params.other.rankId)
+      	}
+      	elseif (params.other.rankId = "") && (params.other.statusId '= ""){
+      		set whereCondition = whereCondition_" AND TStatus="_..ParseParameter(params.other.statusId)
+      	}
+      	elseif (params.other.rankId '= "") && (params.other.statusId '= ""){
+      		set whereCondition = whereCondition_" AND TRank="_..ParseParameter(params.other.rankId)_" AND TStatus="_..ParseParameter(params.other.statusId)
+      	}
+      	
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Tournament", "Dance.Data.Tournament", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentYears">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfDataTypes).%New()
+	
+	&sql(DECLARE CursYear CURSOR FOR 
+		 	SELECT DISTINCT DATEPART('year', StartDate) As Year
+			FROM Dance_Data.Tournament
+			WHERE IsActive = 1
+			ORDER BY Year)	
+		
+	&sql(OPEN CursYear)
+	for  
+	{	
+		&sql(FETCH CursYear INTO :year) 
+		quit:(SQLCODE '= 0)
+		do proxy.children.Insert(year)	
+	}
+	
+	&sql(CLOSE CursYear)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentsByYear">
+<Description><![CDATA[
+<!-- GET BY YEAR, Tournament [Short Info]-->
+<Route Method="GET" Url="/tournamentyears/:value"   Call="Dance.Web.JsonTournament:WriteAllByYearToDevice"/>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>year:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE CursTrnYear CURSOR FOR 
+		 SELECT ID, Name->Value, Country->Name->Value, City->Value
+		 FROM Dance_Data.Tournament
+		 WHERE IsActive = 1 AND DATEPART('year', StartDate) = :year 
+		 ORDER BY StartDate DESC)	
+		
+	&sql(OPEN CursTrnYear)
+	for  
+	{	
+		&sql(FETCH CursTrnYear INTO :id, :name, :country, :city) 
+		quit:(SQLCODE '= 0)
+		
+		set obj = ##class(%ZEN.proxyObject).%New()
+		set obj.id = id
+		set obj.name = name
+		set obj.countryName = country
+		set obj.cityName = city 
+		do proxy.children.Insert(obj)			
+	}
+	
+	&sql(CLOSE CursTrnYear)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentRanks">
+<Description>
+Write to device "children" array of proxyObjects</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE TRCurFirst CURSOR FOR 
+		 	SELECT ID, Name->Value
+		 	FROM Dance_Data.TournamentRank
+		 	ORDER BY Name->Value)	
+		
+	&sql(OPEN TRCurFirst)
+	for  
+	{	
+		&sql(FETCH TRCurFirst INTO :id, :name) 
+		quit:(SQLCODE '= 0)
+		set rankProxy = ##class(%ZEN.proxyObject).%New()
+		set rankProxy.id = id
+		set rankProxy.name = name
+		do proxy.children.Insert(rankProxy)
+	}
+	&sql(CLOSE TRCurFirst)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentStatuses">
+<Description>
+Write to device "children" array of proxyObjects</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE CR1 CURSOR FOR 
+		 	SELECT ID, Name->Value, Code
+		 	FROM Dance_Data.TournamentStatus
+		 	ORDER BY Sequence)	
+		
+	&sql(OPEN CR1)
+	for  
+	{	
+		&sql(FETCH CR1 INTO :id, :name, :code) 
+		quit:(SQLCODE '= 0)
+		
+		set tstatus = ##class(%ZEN.proxyObject).%New()	
+		set tstatus.id = id
+		set tstatus.name = name
+		set tstatus.code = code
+		
+		do proxy.children.Insert(tstatus)	
+	}
+	
+	&sql(CLOSE CR1)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentDates">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfDataTypes).%New()
+	
+	&sql(DECLARE CRS1 CURSOR FOR 
+		 	SELECT DISTINCT(StartDate)
+		 	FROM Dance_Data.Competition
+		 	WHERE IsActive = 1 AND Tournament = :tournamentId
+		 	ORDER BY StartDate)	
+		
+	&sql(OPEN CRS1)
+	for  
+	{	
+		&sql(FETCH CRS1 INTO :startDate) 
+		quit:(SQLCODE '= 0)
+		
+		do proxy.children.Insert($ZDATE(startDate, 3))	
+	}
+	
+	&sql(CLOSE CRS1)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentCompetitionsForGrid">
+<Description>
+Write objects to device, page by page for grid.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+      	
+      	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
+      	
+      	if (params.other.date '= ""){
+      		set whereCondition = whereCondition_" AND StartDate = "_$ZDATEH(params.other.date,15)
+      	}
+      	
+      	if (params.other.coupleType = "wdsf"){
+      		set whereCondition = whereCondition_" AND IsInternational = 1"
+      	}
+      	
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetCompetitionTypes">
+<Description>
+Write to device "children" array of proxyObjects</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE CurCmpTypes CURSOR FOR 
+		 	SELECT ID, Name->Value
+		 	FROM Dance_Data.CompetitionType)	
+		
+	&sql(OPEN CurCmpTypes)
+	for  
+	{	
+		&sql(FETCH CurCmpTypes INTO :id, :name) 
+		quit:(SQLCODE '= 0)
+		
+		set type = ##class(%ZEN.proxyObject).%New()	
+		set type.id = id
+		set type.name = name
+		
+		do proxy.children.Insert(type)	
+	}
+	
+	&sql(CLOSE CurCmpTypes)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="CreateFeedBack">
+<Description>
+Create object</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+      	
+      	set fb = ##class(Dance.Data.FeedBack).%New()
+      	set fb.Author = $ZCVT(data.author, "I", "UTF8")
+      	set fb.Email = $ZCVT(data.email, "I", "UTF8")
+      	set fb.Subject = $ZCVT(data.subject, "I", "UTF8")
+      	set fb.Msg = $ZCVT(data.msg, "I", "UTF8")
+      	
+      	set st = fb.%Save()
+      	
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveFeedBackError"," | "_st))
+      	
+      	
+		do ##class(Dance.Utils.Email).Send($GET(^Settings("Dance","OperatorEmail")), 
+		"Танцы. Обратная связь "_$ZDT($ZTS,3), 
+		"Автор: "_fb.Author_"<br>"_
+		"Email: "_fb.Email_"<br>"_
+		"Тема: "_fb.Subject_"<br>"_
+		"Сообщение: <br>"_fb.Msg)      	
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetCountries">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE Curr1 CURSOR FOR 
+		 	SELECT ID, Name->Value
+		 	FROM Dance_Data.Country
+		 	ORDER BY Name->Value)	
+		
+	&sql(OPEN Curr1)
+	for  
+	{	
+		&sql(FETCH Curr1 INTO :id, :name) 
+		quit:(SQLCODE '= 0)
+		
+		set country = ##class(%ZEN.proxyObject).%New()	
+		set country.id = id
+		set country.name = name
+		
+		do proxy.children.Insert(country)	
+	}
+	
+	&sql(CLOSE Curr1)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetLanguages">
+<Description>
+Write to device "children" array of proxyObjects [All System languages]</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set status = $$$OK
+	
+	try{		
+		set list = ##class(%ListOfObjects).%New()
+		
+		&sql(DECLARE LangCurs CURSOR FOR
+			 SELECT Code, Name 
+			 FROM Dance_Data_Localization.LTextLanguage
+			 ORDER BY Code)
+		
+		&sql(OPEN LangCurs)
+		for{
+			&sql(FETCH LangCurs INTO :code, :name) 
+			quit:(SQLCODE '= 0)
+			
+			set proxy = ##class(%ZEN.proxyObject).%New()
+			set proxy.code = code
+			set proxy.name = name
+			set proxy.flagUrl = "img/flags/"_code_".png"
+			
+			do list.Insert(proxy)	
+		}
+		
+		&sql(CLOSE LangCurs)
+		
+		set proxy = ##class(%ZEN.proxyObject).%New()
+		set proxy.children = list
+		do proxy.%ToJSON()
+	}
+	catch(ex){
+		set status = ex.AsStatus()
+	}
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetDisciplines">
+<Description>
+Write to device "children" array of proxyObjects</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	quit ..WriteJsonFromSql("SELECT ID as id, Name->Value as name FROM Dance_Data.Discipline")
+]]></Implementation>
+</Method>
+
+<Method name="GetDancerClasses">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ##class(Dance.Data.DancerClass).GetAll().%ToJSON()	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetAgeCategories">
+<Description>
+Write to device "children" array of proxyObjects </Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE CurAgeCategories CURSOR FOR 
+		 	SELECT ID
+		 	FROM Dance_Data.AgeCategory
+		 	ORDER BY Name->Value)	
+		
+	&sql(OPEN CurAgeCategories)
+	for  
+	{	
+		&sql(FETCH CurAgeCategories INTO :id) 
+		quit:(SQLCODE '= 0)
+		
+		do proxy.children.Insert(##class(Dance.Data.AgeCategory).%OpenId(id).ConvertToProxyObject())	
+	}
+	
+	&sql(CLOSE CurAgeCategories)
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetCompetitionById">
+<Description>
+Open object by id, convert to proxy and write to device</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>competitionId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ..GetProxyObject("Dance.Data.Competition", competitionId).%ToJSON()
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetAvailableCompetitionsForGrid">
+<Description>
+Available competitions for couple</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+      	
+      	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
+      	set newCoupleIsSolo = 0
+      	set maleSTClass = ""
+      	set maleLAClass = ""
+      	
+      	if (params.other.couple.type = "udsr"){
+	      	set maleSTClass = params.other.couple.man.stClass.code
+      		set maleLAClass = params.other.couple.man.laClass.code
+      	 
+	      	// current year - year of birth
+      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
+      		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
+      	}
+      	elseif (params.other.couple.type = "wdsf"){
+	      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
+	      	set whereCondition = whereCondition_"AND IsInternational=1 AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
+	      	/*
+	      	set maxAge = params.other.couple.man.maxAge
+	      	set minAge = params.other.couple.man.minAge 
+	  		//set whereCondition = whereCondition_" AND IsInternational = 1 AND ((AgeCategory->MinAge <= "_minAge_" AND "_minAge_" <= AgeCategory->MaxAge) OR (AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge))"
+      		*/
+      	}
+      	elseif (params.other.couple.type = "new"){
+	    	// current year - year of birth
+      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
+      		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"   	
+      	}
+      	
+      	// Only new competitions fo existing couples
+      	if (params.other.couple.type = "udsr") || (params.other.couple.type = "wdsf"){
+	    	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(params.other.couple.man.id, params.other.couple.woman.id)
+			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple="_couple.%Id()_")"
+      	}
+      	
+      	// Solo or couple type
+      	if ((params.other.couple.man.id = params.other.couple.woman.id) && (params.other.couple.man.id '= "")) || (params.other.couple.isSolo = $$$YES){
+      		set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
+      	}
+      	else{
+	      	set whereCondition = whereCondition_" AND Type->Code = 'Couples'"
+      	}
+      	
+      	//$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
+	
+		set sql = "SELECT ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
+		
+		set statement = ##class(%SQL.Statement).%New()	
+		$$$THROWONERROR(status, statement.%Prepare(sql))		
+		set rs = statement.%Execute()
+		set ^tt = sql
+		set proxyItems = ##class(%ListOfObjects).%New()			
+		
+		while (rs.%Next() '= 0){
+			set cmp = ##class(Dance.Data.Competition).%OpenId(rs.%GetData(1),,.st)
+			
+			if (maleSTClass = "") && (maleLAClass = ""){
+				do proxyItems.Insert(cmp.ConvertToProxyObject())
+			}
+			elseif (cmp.Discipline.Code = "Ст"){
+				set key = ""
+				for i=1:1:cmp.DancerClasses.Count(){
+					set key = cmp.DancerClasses.Next(key)
+					if (cmp.DancerClasses.GetAt(key).Code = maleSTClass){
+						do proxyItems.Insert(cmp.ConvertToProxyObject())
+						quit
+					}
+				}
+			}
+			elseif (cmp.Discipline.Code = "Ла"){
+				set key = ""
+				for i=1:1:cmp.DancerClasses.Count(){
+					set key = cmp.DancerClasses.Next(key)
+					if (cmp.DancerClasses.GetAt(key).Code = maleLAClass){
+						do proxyItems.Insert(cmp.ConvertToProxyObject())
+						quit
+					}
+				}
+			}
+			else{
+				set key = ""
+				for i=1:1:cmp.DancerClasses.Count(){
+					set key = cmp.DancerClasses.Next(key)
+					if (cmp.DancerClasses.GetAt(key).Code = maleLAClass) || (cmp.DancerClasses.GetAt(key).Code = maleSTClass){
+						do proxyItems.Insert(cmp.ConvertToProxyObject())
+						quit
+					}
+				}
+			}	
+		}
+		
+		// Общее число элементов с заданными параметрами в WHERE
+		set itemsTotal = rs.%ROWCOUNT
+		
+		do rs.%Close()						
+		do statement.%Close()
+		
+		set proxyResult = ##class(%ZEN.proxyObject).%New()
+		set proxyResult.children = ##class(%ZEN.proxyObject).%New()
+		set proxyResult.children.items = proxyItems
+	    set proxyResult.children.itemsTotal = itemsTotal
+	    do proxyResult.%ToJSON()
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetParticipantsForGrid">
+<Description>
+Write objects to device, page by page for grid.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+ 		
+ 		set whereCondition = "IsActive = 1 AND Competition = '"_..ParseParameter(params.other.competitionId)_"'"     	
+ 		
+ 		set convertParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.tournamentId = ##class(Dance.Data.Competition).%OpenId(params.other.competitionId).Tournament.%Id()
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition,,convertParams))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentParticipants">
+<Description>
+Write all objects for tournament to device, page by page for grid.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+ 		
+ 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"     	
+ 		set groupCondition = "GROUP BY Couple"
+ 		
+ 		set convertParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.tournamentId = params.other.tournamentId
+ 		
+      	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, whereCondition, groupCondition, convertParams))
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleParticipants">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String,coupleId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	try{
+		set convertParams = ##class(%ZEN.proxyObject).%New()
+		set convertParams.isFullInfo = $$$YES
+		
+		&sql(DECLARE PrtCur CURSOR FOR
+			 SELECT ID 
+			 FROM Dance_Data.ParticipantCouple
+			 WHERE Couple = :coupleId AND Competition->Tournament = :tournamentId)	
+		
+		&sql(OPEN PrtCur)
+		for  
+		{	
+			&sql(FETCH PrtCur INTO :id) 
+			quit:(SQLCODE '= 0)
+	
+			set prtProxy = ##class(Dance.Data.ParticipantCouple).%OpenId(id).ConvertToProxyObject()
+			do proxy.children.Insert(prtProxy)
+		}
+		
+		&sql(CLOSE PrtCur)
+		
+		do proxy.%ToJSON()
+	}
+	catch ex{
+		set st = ex.AsStatus()	
+	}
+	
+	q st
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleById">
+<Description>
+====================================================================================================================
+Couple                                                                                                        Couple
+====================================================================================================================
+
+Open object by id, convert to proxy and write to device</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do ..GetProxyObject("Dance.Data.Couple", id)
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleUDSRByNumbers">
+<Description>
+Couple data by UDSR numbers</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>manNumber:%String,womanNumber:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		set couple = ##class(Dance.Data.CoupleUDSR).GetByNumbers(manNumber, womanNumber, .st)
+		$$$THROWONERROR(st, st)
+		
+		do couple.ConvertToProxyObject().%ToJSON()
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleWDSFByNumbers">
+<Description>
+Couple data by WDSF numbers</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>manNumber:%String,womanNumber:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		set couple = ##class(Dance.Data.CoupleWDSF).GetByNumbers(manNumber, womanNumber, .st)
+		$$$THROWONERROR(st, st)
+		
+		do couple.ConvertToProxyObject().%ToJSON()
+	
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationExistingCouple">
+<Description>
+Registration UDSR or WDSF couple in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+      	
+      	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.woman.id)
+      	
+      	#dim competition As Dance.Data.Competition = ""
+      	
+      	for i=1:1:data.competitions.Count(){
+	    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+	    	if (competition.Tournament.TStatus.Code '= "Registration") {
+		    	$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+	    	}
+	    	
+	    	do ##class(Dance.Data.ParticipantCouple).Create(competition.%Id(), couple.%Id(), .st)
+	    	
+	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+	    }
+	    
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationNewCouple">
+<Description>
+Registration new couple in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+      	
+      	do ##class(Dance.Data.ParticipantTemp).Create(data,.st)
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+      	
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/// <!-- GET ALL [GRID], Tournament -->
+/// <Route Method="POST" Url="/tournament/grid" Call="Dance.Web.JsonTournament:WriteAllForGridToDevice"/>
+/// <!-- GET YEARS, Tournament -->
+/// <Route Method="GET" Url="/tournamentyears"   Call="Dance.Web.JsonTournament:WriteAllYearsToDevice"/>
+/// <!--========================================= TOURNAMENT CLASS ==========================================-->
+/// <!-- GET ALL, Tournament class -->
+/// <Route Method="GET" Url="/tournamentClass/:parentId" Call="Dance.Web.JsonTournamentClass:WriteAllToDevice"/>
+/// <!--========================================= TOURNAMENT RANK ===========================================-->
+/// <!-- GET ALL, Tournament rank -->
+/// <Route Method="GET" Url="/tournamentRank" Call="Dance.Web.JsonTournamentRank:WriteAllToDevice"/>
+/// <!--========================================= TOURNAMENT STATUS =========================================-->
+/// <!-- GET ALL, Tournament status -->
+/// <Route Method="GET" Url="/tournamentStatus" Call="Dance.Web.JsonTournamentStatus:WriteAllToDevice"/>
+/// <!--========================================= COMPETITION ===============================================-->
+/// <!-- GET BY ID, Competition -->
+/// <Route Method="GET"   Url="/tournament/competition/:id"      Call="Dance.Web.JsonCompetition:WriteObjectByIdToDevice"/>
+/// <!-- GET ALL,[GRID] Competitions in Tournament -->
+/// <Route Method="POST"  Url="/tournament/competition/grid" Call="Dance.Web.JsonCompetition:WriteAllForGridToDevice"/>
+/// <!-- GET ALL,[GRID AVIALABLE FOR COUPLE] Available Competitions in Tournament -->
+/// <Route Method="POST"  Url="/tournament/competition/grid/couple" Call="Dance.Web.JsonCompetition:WriteAllAvailableForGridToDevice"/>
+/// <!-- GET Dates, All possible dates in Tournament -->
+/// <Route Method="GET"  Url="/tournament/:id/competition/date" Call="Dance.Web.JsonCompetition:WriteAllDatesToDevice"/>
+/// <!-- GET Types, All competition types -->
+/// <Route Method="GET"  Url="/competition/type" Call="Dance.Web.JsonCompetitionType:WriteAllToDevice"/>
+/// <!--========================================= DISCIPLINE ================================================-->
+/// <!-- GET ALL, Discipline -->
+/// <Route Method="GET" Url="/discipline" Call="Dance.Web.JsonDiscipline:WriteAllToDevice"/>
+/// <!--========================================= DANCER CLASS ==============================================-->
+/// <!-- GET ALL, Dancer class -->
+/// <Route Method="GET" Url="/dancerClass" Call="Dance.Web.JsonDancerClass:WriteAllToDevice"/>
+/// <!--========================================= AGE CATEGORY ==============================================-->
+/// <!-- GET BY ID, Age category -->
+/// <Route Method="GET" Url="/ageCategory/:id" Call="Dance.Web.JsonAgeCategory:WriteObjectByIdToDevice"/>
+/// <!-- SAVE, Age category -->
+/// <Route Method="POST" Url="/ageCategory" Call="Dance.Web.JsonAgeCategory:Save"/>
+/// <!-- HIDE/SHOW, Age category -->
+/// <Route Method="POST" Url="/ageCategory/:objId/isActive/:value" Call="Dance.Web.JsonAgeCategory:ChangeIsActiveStaus"/>
+/// <!-- GET ALL, Age category -->
+/// <Route Method="GET" Url="/ageCategory" Call="Dance.Web.JsonAgeCategory:WriteAllToDevice"/>
+/// <!-- GET ALL,[GRID] Age categories -->
+/// <Route Method="POST"  Url="/ageCategory/grid" Call="Dance.Web.JsonAgeCategory:WriteAllForGridToDevice"/>
+/// <!--========================================= COUPLE ====================================================-->
+/// <Route Method="GET" Url="/couple/udsr/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteUDSRByNumbersToDevice"/>
+/// <Route Method="GET" Url="/couple/wdsf/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteWDSFByNumbersToDevice"/>
+/// <Route Method="GET" Url="/couple/:id/wdsfinfo/tournament/:id" Call="Dance.Web.JsonCouple:WriteWDSFOtherInfoForTournamentToDevice"/>
+/// <Route Method="GET" Url="/couple/conflictregistration/tournament/:trnId/man/:manId/woman/:womanId" Call="Dance.Web.JsonCouple:WriteInfoAboutOtherRegistrationsToDevice"/>
+/// <Route Method="GET" Url="/couple/:id" Call="Dance.Web.JsonCouple:WriteObjectByIdToDevice"/>
+/// <Route Method="GET" Url="/tournament/:id/couple/:id/competitionscount" Call="Dance.Web.JsonCouple:WriteCompetitionsCount"/>
+/// <Route Method="POST" Url="/couple/registration/existing" Call="Dance.Web.JsonCouple:RegistrationExistingCouple"/>
+/// <Route Method="POST" Url="/couple/registration/new" Call="Dance.Web.JsonCouple:RegistrationNewCouple"/>
+/// <!--========================================= PARTICIPANT ===============================================-->
+/// <Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonParticipant:WriteAllForGridToDevice"/>
+/// <Route Method="POST" Url="/tournament/participant/grid" Call="Dance.Web.JsonParticipant:WriteAllForTournamentForGridToDevice"/>
+/// <!--========================================= FEEDBACK ===============================================-->
+/// <Route Method="POST" Url="/feedback" Call="Dance.Web.JsonFeedBack:Create"/>
+/// <!--========================================= PERSON ====================================================-->
+/// <!--========================================= OTHER =====================================================-->
+/// <Route Method="POST" Url="/foreign" Call="Dance.Web.JsonForeign:Create"/>
+/// <!-- GET ALL, Currency -->
+/// <Route Method="GET" Url="/currency" Call="Dance.Web.JsonCurrency:WriteAllToDevice"/>
+/// <!-- GET ALL, Country -->
+/// <Route Method="GET" Url="/country"  Call="Dance.Web.JsonCountry:WriteAllToDevice"/>
+/// <!-- GET ALL, Language -->
+/// <Route Method="GET" Url="/language" Call="Dance.Web.JsonOther:WriteLanguagesToDevice"/>
+/// <Route Method="GET" Url="/person/stats" Call="Dance.Web.JsonPerson:WriteStatisticsToDevice"/>
+/// <Route Method="POST" Url="/unknownkey" Call="Dance.Web.JsonOther:SetUnknownKey"/>
+
+]]></Content>
+</UDLText>
+</Class>
+</Export>

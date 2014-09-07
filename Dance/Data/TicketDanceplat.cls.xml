@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.TicketDanceplat">
+<Super>Dance.Data.Ticket</Super>
+<TimeCreated>63436,51933.345197</TimeCreated>
+
+<Property name="CodeOne">
+<Type>%String</Type>
+</Property>
+
+<Property name="CodeTwo">
+<Type>%String</Type>
+</Property>
+
+<Index name="NumberIdx">
+<Properties>Number</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="ConvertToProxyObject">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.id = ..%Id()
+	set proxy.number = ..Number
+	set proxy.amount = ..Amount
+	set proxy.title = ..Title
+	set proxy.status = ..TStatus.ConvertToProxyObject()
+	set proxy.created = ..Created
+	set proxy.updated = ..Updated
+	set proxy.participant = ..Participant.ConvertToProxyObject()
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Save">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
+<ReturnType>Ticket</ReturnType>
+<Implementation><![CDATA[
+	#dim obj As TicketDanceplat
+	
+	if (..NumberIdxExists(data.number)){
+		set obj = ..NumberIdxOpen(data.number,,.st)	
+	}
+	else{
+		set obj = ..%New()
+		set obj.number = data.number	
+		set obj.Participant = ##class(Dance.Data.Participant).%OpenId(data.participant.id)
+	}
+	
+	set obj.Amount = data.amount
+	set obj.TStatus = ##class(TicketStatus).%OpenId(data.status.id)
+	set obj.Title = data.title
+	set obj.Created = data.paymentCreated
+	set obj.Updated = $ZDT($ZTS, 3)
+	
+	set obj.CodeOne = data.codeOne
+	set obj.CodeTwo = data.codeTwo
+	
+	set st = obj.%Save()
+	
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>TicketDanceplatDefaultData</DefaultData>
+<Data name="TicketDanceplatDefaultData">
+<Subscript>"TicketDanceplat"</Subscript>
+<Value name="1">
+<Value>CodeOne</Value>
+</Value>
+<Value name="2">
+<Value>CodeTwo</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

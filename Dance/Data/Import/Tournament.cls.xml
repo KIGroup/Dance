@@ -49,6 +49,28 @@ Imported tournaments from other system</Description>
 <Unique>1</Unique>
 </Index>
 
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	set proxy.id = ..%Id()
+	set proxy.idInternal = ..IdInternal
+	set proxy.idExternal = ..IdExternal
+	set proxy.hash = ..Hash
+	set proxy.startDate = ..TDate
+	set proxy.name = ..Name
+	
+	set proxy.info = ##class(%ZEN.proxyObject).%New()
+	set proxy.info.isExisted = ##class(Dance.Data.Tournament).IdInternalIdxExists(..IdInternal)
+	set proxy.info.isRemoved = ..IsRemoved 
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
 <Method name="Save">
 <Description>
 Create or update tournament</Description>

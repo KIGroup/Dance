@@ -25,6 +25,22 @@ Dancer classes: A,B,C ....</Description>
 <Unique>1</Unique>
 </Index>
 
+<Method name="ConvertToProxyObject">
+<Description>
+Convert "DancerClass" object to %ZEN.proxyObject (for JSON)</Description>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	set proxy.id = ..%Id()
+	set proxy.name = ..Name
+	set proxy.code = ..Code
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
 <Method name="GetByName">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[name:%String,&st:%Status=$$$OK]]></FormalSpec>
@@ -33,6 +49,37 @@ Dancer classes: A,B,C ....</Description>
 	set id = ""
 	&sql(SELECT ID INTO :id FROM Dance_Data.DancerClass WHERE Name = :name)
 	quit ..%OpenId(id,,.st)
+]]></Implementation>
+</Method>
+
+<Method name="GetAll">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.children = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE Curr1 CURSOR FOR 
+		 	SELECT ID, Name, Code
+		 	FROM Dance_Data.DancerClass)	
+		
+	&sql(OPEN Curr1)
+	for  
+	{	
+		&sql(FETCH Curr1 INTO :id, :name, :code) 
+		quit:(SQLCODE '= 0)
+		
+		set dc = ##class(%ZEN.proxyObject).%New()	
+		set dc.id = id
+		set dc.name = name
+		set dc.code = code
+		
+		do proxy.children.Insert(dc)	
+	}
+	
+	&sql(CLOSE Curr1)
+	
+	q proxy
 ]]></Implementation>
 </Method>
 
@@ -45,8 +92,6 @@ Dancer classes: A,B,C ....</Description>
 <StreamLocation>^Dance.Data.DancerClassS</StreamLocation>
 <ExtentSize>100000</ExtentSize>
 <Data name="DancerClassDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>

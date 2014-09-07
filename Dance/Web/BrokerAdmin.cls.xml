@@ -10,53 +10,55 @@ Protected REST URLs</Description>
 <Data><![CDATA[
 <Routes>
 <!--========================================= IMPORT ================================================-->
+<!--[+]-->
 <!-- GET BY ID, Tournament -->
-<Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:WriteObjectByIdToDevice"/>
+<Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonUser:GetTournamentById"/>
 
+<!--[+]-->
 <!-- GET ALL [GRID], Tournament Import -->
-<Route Method="POST" Url="/import/tournament/grid" Call="Dance.Web.JsonTournamentImport:WriteAllForGridToDevice"/>
+<Route Method="POST" Url="/import/tournament/grid" Call="Dance.Web.JsonAdmin:GetImportedTournaments"/>
 
+<!--[+]-->
 <!-- GET ALL [GRID], Competition Import -->
-<Route Method="POST" Url="/import/competition/grid" Call="Dance.Web.JsonCompetitionImport:WriteAllForGridToDevice"/>
+<Route Method="POST" Url="/import/competition/grid" Call="Dance.Web.JsonAdmin:GetImportedCompetitions"/>
 
 
 
 <!--========================================= TOURNAMENT ================================================-->	
+<!--[+]-->
 <!-- SAVE Tournament -->
-<Route Method="POST"   Url="/tournament"     Call="Dance.Web.JsonTournament:Save"/>
+<Route Method="POST"   Url="/tournament"     Call="Dance.Web.JsonAdmin:SaveTournament"/>
 
+<!--[+]-->
 <!-- DELETE BY ID (Hide from table), Tournament -->
-<Route Method="DELETE" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:Deactivate"/>
+<Route Method="DELETE" Url="/tournament/:id"   Call="Dance.Web.JsonUser:DeactivateTournament"/>
 
 
 <!--========================================= COMPETITION ===============================================-->	
+<!--[+]-->
 <!-- SAVE Competition -->
-<Route Method="POST"   Url="/tournament/:id/competition"     Call="Dance.Web.JsonCompetition:Save"/>
+<Route Method="POST"   Url="/tournament/:id/competition"     Call="Dance.Web.JsonUser:SaveCompetition"/>
 
+<!--[+]-->
 <!-- SAVE ALL Competitions -->
-<Route Method="POST"   Url="/tournament/:id/competition/all"  Call="Dance.Web.JsonCompetition:SaveAll"/>
+<Route Method="POST"   Url="/tournament/:id/competition/all"  Call="Dance.Web.JsonUser:SaveAllCompetitions"/>
 
+<!--[+]-->
 <!-- DELETE BY ID (Hide from table), Competition -->
-<Route Method="DELETE" Url="/tournament/competition/:id" Call="Dance.Web.JsonCompetition:Deactivate"/>
+<Route Method="DELETE" Url="/tournament/competition/:id" Call="Dance.Web.JsonUser:DeactivateCompetition"/>
 
-<Route Method="POST" Url="/competition/import"     Call="Dance.Web.JsonCompetitionImport:WriteAllToDevice"/>
-
+<!--[+]-->
 <Route Method="GET" Url="/tournament/:id/competition/importlink" Call="Dance.Web.JsonCompetitionImport:WriteLinkToDevice"/>
 
 
-<Route Method="POST" Url="/competition/imported"   Call="Dance.Web.JsonCompetitionImport:Update"/>
-
-
-<Route Method="DELETE" Url="/competition/imported/:id/removeorrestore"   Call="Dance.Web.JsonCompetitionImport:RemoveOrRestore"/>
-
-<Route Method="POST" Url="/competition/createall"     Call="Dance.Web.JsonCompetitionImport:CreateAll"/>
-
 <!--========================================= PARTICIPANT ===============================================-->
+<!--[+]-->
 <!-- DELETE BY ID (Hide from table), Participant -->
 <Route Method="DELETE" Url="/participant/:id" Call="Dance.Web.JsonParticipant:Deactivate"/>
 
+<!--[+]-->
 <!-- Check access, authorization call, if needed -->
-<Route Method="GET" Url="/checkAdmin/:isLogin" Call="Dance.Web.JsonOther:CheckAdmin"/>
+<Route Method="GET" Url="/checkAdmin/:isLogin" Call="Dance.Web.JsonUser:CheckAdmin"/>
 </Routes>
 ]]></Data>
 </XData>

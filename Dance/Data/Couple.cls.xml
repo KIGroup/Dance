@@ -6,10 +6,6 @@ Couples</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63274,63488.46443</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonCouple</Default>
-</Parameter>
-
 <Property name="Man">
 <Type>Dance.Data.Person</Type>
 <Required>1</Required>
@@ -24,6 +20,19 @@ Couples</Description>
 <Properties>Man,Woman</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	set proxy.id = ..%Id()
+	set proxy.man = ..Man.ConvertToProxyObject()
+	set proxy.woman = ..Woman.ConvertToProxyObject()
+
+	quit proxy
+]]></Implementation>
+</Method>
 
 <Method name="Create">
 <ClassMethod>1</ClassMethod>

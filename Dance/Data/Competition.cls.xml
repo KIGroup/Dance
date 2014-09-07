@@ -6,10 +6,6 @@ Competition in the tournament, has participants</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63289,41033.08287</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonCompetition</Default>
-</Parameter>
-
 <Property name="Tournament">
 <Type>Dance.Data.Tournament</Type>
 <Cardinality>one</Cardinality>
@@ -112,6 +108,42 @@ Competition in the tournament, has participants</Description>
 <Properties>IdInternal</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.id = ..%Id()
+	set proxy.name = ..Name.Value
+	set proxy.tournament = ..Tournament.ConvertToProxyObject()
+	set proxy.discipline = ..Discipline.ConvertToProxyObject()
+	set proxy.ageCategory = ..AgeCategory.ConvertToProxyObject()
+	set proxy.type = ..Type.ConvertToProxyObject()
+	
+	set proxy.startDate = $ZDATE(..StartDate, 3)
+	set proxy.startTime = $e(##class(%Library.Time).LogicalToDisplay(..StartTime), 1, 5)
+	
+	set proxy.price = ..Price
+	set proxy.limit = ..Limit
+	set proxy.isInternational = ..IsInternational
+	
+	set proxy.idInternal = ..IdInternal
+	set proxy.idExternal = ..IdExternal 
+	
+	// DancerClasses array
+	set proxy.dancerClasses = ##class(%ListOfObjects).%New()
+	set dcKey = ""
+	for i=1:1:..DancerClasses.Count(){
+		set dcKey = ..DancerClasses.Next(dcKey)
+		set dc = ..DancerClasses.GetAt(dcKey)
+		do proxy.dancerClasses.Insert(dc.ConvertToProxyObject())
+	}
+	
+	set proxy.participantsCount = ..Participants.Count()
+	
+	quit proxy
+]]></Implementation>
+</Method>
 
 <Method name="Save">
 <Description>

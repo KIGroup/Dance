@@ -6,10 +6,6 @@ WDSF Countries</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63296,4409.292627</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonCountry</Default>
-</Parameter>
-
 <Property name="Name">
 <Type>Dance.Data.Localization.LText</Type>
 <Required>1</Required>
@@ -24,6 +20,16 @@ WDSF Countries</Description>
 <Properties>WDSFName</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.id = ..%Id()
+	set proxy.name = ..Name.Value	
+	quit proxy
+]]></Implementation>
+</Method>
 
 <Method name="GetByName">
 <ClassMethod>1</ClassMethod>

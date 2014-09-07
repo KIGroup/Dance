@@ -10,140 +10,118 @@ Public REST URLs</Description>
 <Data><![CDATA[
 <Routes>
 
+<!-- ========================================================================================================= -->
+<!-- Registration                                                                                 Registration -->
+<!-- ========================================================================================================= -->
 
 
-<!--========================================= TOURNAMENT ================================================-->
+
+<!-- ========================================================================================================= -->
+<!-- Tournament                                                                                     Tournament -->
+<!-- ========================================================================================================= -->
+
 <!-- GET BY ID, Tournament -->
-<Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonTournament:WriteObjectByIdToDevice"/>
-
-
-<!-- GET BY YEAR, Tournament [Short Info]-->
-<Route Method="GET" Url="/tournamentyears/:value"   Call="Dance.Web.JsonTournament:WriteAllByYearToDevice"/>
-
-
-<!-- GET BY ID, Participants count -->
-<Route Method="GET" Url="/tournament/:id/participants/count"   Call="Dance.Web.JsonTournament:WriteParticipantsCountInfoByIdToDevice"/>
-
-<!--  -->
-<Route Method="GET" Url="/tournament/:id/couple/:id/competition" Call="Dance.Web.JsonParticipant:WriteAllForCoupleToDevice"/>
-
-<!-- GET ALL [GRID], Tournament -->
-<Route Method="POST" Url="/tournament/grid" Call="Dance.Web.JsonTournament:WriteAllForGridToDevice"/>
-
+<Route Method="GET" Url="/tournament/:id"   Call="Dance.Web.JsonUser:GetTournamentById"/>
 
 <!-- GET YEARS, Tournament -->
-<Route Method="GET" Url="/tournamentyears"   Call="Dance.Web.JsonTournament:WriteAllYearsToDevice"/>
+<Route Method="GET" Url="/tournamentyears"   Call="Dance.Web.JsonUser:GetTournamentYears"/>
 
-<!--========================================= TOURNAMENT CLASS ==========================================-->
-<!-- GET ALL, Tournament class -->
-<Route Method="GET" Url="/tournamentClass/:parentId" Call="Dance.Web.JsonTournamentClass:WriteAllToDevice"/>
+<!-- GET ALL [GRID], Tournament -->
+<Route Method="POST" Url="/tournament/grid" Call="Dance.Web.JsonUser:GetTournamentsForGrid"/>
 
+<!-- GET BY YEAR, Tournament [Short Info]-->
+<Route Method="GET" Url="/tournamentyears/:value"   Call="Dance.Web.JsonUser:GetTournamentByYear"/>
 
-<!--========================================= TOURNAMENT RANK ===========================================-->
-<!-- GET ALL, Tournament rank -->
-<Route Method="GET" Url="/tournamentRank" Call="Dance.Web.JsonTournamentRank:WriteAllToDevice"/>
-
-
-<!--========================================= TOURNAMENT STATUS =========================================-->
 <!-- GET ALL, Tournament status -->
-<Route Method="GET" Url="/tournamentStatus" Call="Dance.Web.JsonTournamentStatus:WriteAllToDevice"/>
+<Route Method="GET" Url="/tournamentStatus" Call="Dance.Web.JsonUser:GetTournamentStatuses"/>
+
+<!-- GET ALL, Tournament rank -->
+<Route Method="GET" Url="/tournamentRank" Call="Dance.Web.JsonUser:GetTournamentRanks"/>
 
 
 
-<!--========================================= COMPETITION ===============================================-->
+<!-- ========================================================================================================= -->
+<!-- Competition                                                                                   Competition -->
+<!-- ========================================================================================================= -->
+
+
 <!-- GET BY ID, Competition -->
-<Route Method="GET"   Url="/tournament/competition/:id"      Call="Dance.Web.JsonCompetition:WriteObjectByIdToDevice"/>
-
-<!-- GET ALL,[GRID] Competitions in Tournament -->
-<Route Method="POST"  Url="/tournament/competition/grid" Call="Dance.Web.JsonCompetition:WriteAllForGridToDevice"/>
+<Route Method="GET"   Url="/tournament/competition/:id"      Call="Dance.Web.JsonUser:GetCompetitionById"/>
 
 <!-- GET ALL,[GRID AVIALABLE FOR COUPLE] Available Competitions in Tournament -->
-<Route Method="POST"  Url="/tournament/competition/grid/couple" Call="Dance.Web.JsonCompetition:WriteAllAvailableForGridToDevice"/>
-
-
+<Route Method="POST"  Url="/tournament/competition/grid/couple" Call="Dance.Web.JsonUser:GetAvailableCompetitionsForGrid"/>
 
 <!-- GET Dates, All possible dates in Tournament -->
-<Route Method="GET"  Url="/tournament/:id/competition/date" Call="Dance.Web.JsonCompetition:WriteAllDatesToDevice"/>
+<Route Method="GET"  Url="/tournament/:id/competition/date" Call="Dance.Web.JsonUser:GetTournamentDates"/>
+
+<!-- GET ALL,[GRID] Competitions in Tournament -->
+<Route Method="POST"  Url="/tournament/competition/grid" Call="Dance.Web.JsonUser:GetTournamentCompetitionsForGrid"/>
 
 <!-- GET Types, All competition types -->
-<Route Method="GET"  Url="/competition/type" Call="Dance.Web.JsonCompetitionType:WriteAllToDevice"/>
+<Route Method="GET"  Url="/competition/type" Call="Dance.Web.JsonUser:GetCompetitionTypes"/>
 
 
-<!--========================================= DISCIPLINE ================================================-->
-<!-- GET ALL, Discipline -->
-<Route Method="GET" Url="/discipline" Call="Dance.Web.JsonDiscipline:WriteAllToDevice"/>
+<!-- ========================================================================================================= -->
+<!-- Participant                                                                                   Participant -->
+<!-- ========================================================================================================= -->
+
+<Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonUser:GetParticipantsForGrid"/>
+
+<Route Method="POST" Url="/tournament/participant/grid" Call="Dance.Web.JsonUser:GetTournamentParticipantsForGrid"/>
+
+<!--  -->
+<Route Method="GET" Url="/tournament/:id/couple/:id/competition" Call="Dance.Web.JsonUser:GetCoupleParticipants"/>
 
 
-<!--========================================= DANCER CLASS ==============================================-->
-<!-- GET ALL, Dancer class -->
-<Route Method="GET" Url="/dancerClass" Call="Dance.Web.JsonDancerClass:WriteAllToDevice"/>
+
+<!-- ========================================================================================================= -->
+<!-- Couple                                                                                             Couple -->
+<!-- ========================================================================================================= -->
 
 
-<!--========================================= AGE CATEGORY ==============================================-->
+<Route Method="GET" Url="/couple/:id" Call="Dance.Web.JsonUser:GetCoupleById"/>
 
-<!-- GET BY ID, Age category -->
-<Route Method="GET" Url="/ageCategory/:id" Call="Dance.Web.JsonAgeCategory:WriteObjectByIdToDevice"/>
+<Route Method="GET" Url="/couple/udsr/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonUser:GetCoupleUDSRByNumbers"/>
 
-<!-- SAVE, Age category -->
-<Route Method="POST" Url="/ageCategory" Call="Dance.Web.JsonAgeCategory:Save"/>
-
-<!-- HIDE/SHOW, Age category -->
-<Route Method="POST" Url="/ageCategory/:objId/isActive/:value" Call="Dance.Web.JsonAgeCategory:ChangeIsActiveStaus"/>
-
-<!-- GET ALL, Age category -->
-<Route Method="GET" Url="/ageCategory" Call="Dance.Web.JsonAgeCategory:WriteAllToDevice"/>
-
-<!-- GET ALL,[GRID] Age categories -->
-<Route Method="POST"  Url="/ageCategory/grid" Call="Dance.Web.JsonAgeCategory:WriteAllForGridToDevice"/>
-
-
-<!--========================================= COUPLE ====================================================-->
-<Route Method="GET" Url="/couple/udsr/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteUDSRByNumbersToDevice"/>
-
-<Route Method="GET" Url="/couple/wdsf/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonCouple:WriteWDSFByNumbersToDevice"/>
-
-<Route Method="GET" Url="/couple/:id/wdsfinfo/tournament/:id" Call="Dance.Web.JsonCouple:WriteWDSFOtherInfoForTournamentToDevice"/>
-
-<Route Method="GET" Url="/couple/conflictregistration/tournament/:trnId/man/:manId/woman/:womanId" Call="Dance.Web.JsonCouple:WriteInfoAboutOtherRegistrationsToDevice"/>
-
-
-<Route Method="GET" Url="/couple/:id" Call="Dance.Web.JsonCouple:WriteObjectByIdToDevice"/>
-
-<Route Method="GET" Url="/tournament/:id/couple/:id/competitionscount" Call="Dance.Web.JsonCouple:WriteCompetitionsCount"/>
+<Route Method="GET" Url="/couple/wdsf/man/:manNumber/woman/:womanNumber" Call="Dance.Web.JsonUser:GetCoupleWDSFByNumbers"/>
 
 <Route Method="POST" Url="/couple/registration/existing" Call="Dance.Web.JsonCouple:RegistrationExistingCouple"/>
 
 <Route Method="POST" Url="/couple/registration/new" Call="Dance.Web.JsonCouple:RegistrationNewCouple"/>
 
 
-<!--========================================= PARTICIPANT ===============================================-->
-<Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonParticipant:WriteAllForGridToDevice"/>
-<Route Method="POST" Url="/tournament/participant/grid" Call="Dance.Web.JsonParticipant:WriteAllForTournamentForGridToDevice"/>
+<!-- ========================================================================================================= -->
+<!-- Person                                                                                             Person -->
+<!-- ========================================================================================================= -->
 
 
-<!--========================================= FEEDBACK ===============================================-->
-<Route Method="POST" Url="/feedback" Call="Dance.Web.JsonFeedBack:Create"/>
-
-<!--========================================= PERSON ====================================================-->
-<!--========================================= OTHER =====================================================-->
-
-<Route Method="POST" Url="/foreign" Call="Dance.Web.JsonForeign:Create"/>
 
 
-<!-- GET ALL, Currency -->
-<Route Method="GET" Url="/currency" Call="Dance.Web.JsonCurrency:WriteAllToDevice"/>
-
-<!-- GET ALL, Country -->
-<Route Method="GET" Url="/country"  Call="Dance.Web.JsonCountry:WriteAllToDevice"/>
+<!-- ========================================================================================================= -->
+<!-- Other                                                                                               Other -->
+<!-- ========================================================================================================= -->
 
 <!-- GET ALL, Language -->
-<Route Method="GET" Url="/language" Call="Dance.Web.JsonOther:WriteLanguagesToDevice"/>
+<Route Method="GET" Url="/language" Call="Dance.Web.JsonUser:GetLanguages"/>
+
+<!-- GET ALL, Country -->
+<Route Method="GET" Url="/country"  Call="Dance.Web.JsonUser:GetCountries"/>
+
+<!-- GET ALL, Discipline -->
+<Route Method="GET" Url="/discipline" Call="Dance.Web.JsonUser:GetDisciplines"/>
+
+<!-- GET ALL, Dancer class -->
+<Route Method="GET" Url="/dancerClass" Call="Dance.Web.JsonUser:GetDancerClasses"/>
+	
+<!-- GET ALL, Age category -->
+<Route Method="GET" Url="/ageCategory" Call="Dance.Web.JsonUser:GetAgeCategories"/>
+
+<Route Method="POST" Url="/feedback" Call="Dance.Web.JsonUser:CreateFeedBack"/>
 
 
-<Route Method="GET" Url="/person/stats" Call="Dance.Web.JsonPerson:WriteStatisticsToDevice"/>
+<!--========================================= COMPETITION ===============================================-->
 
 
-<Route Method="POST" Url="/unknownkey" Call="Dance.Web.JsonOther:SetUnknownKey"/>
 	
 </Routes>
 ]]></Data>

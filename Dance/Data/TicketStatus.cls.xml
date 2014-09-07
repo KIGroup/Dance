@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.TicketStatus">
+<Super>%Persistent,%XML.Adaptor</Super>
+<TimeCreated>63436,52011.350517</TimeCreated>
+
+<Property name="Name">
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+<Parameter name="XMLREFERENCE" value="ID"/>
+</Property>
+
+<Property name="Code">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="CodeIdx">
+<Properties>Code</Properties>
+<Unique>1</Unique>
+</Index>
+</Class>
+</Export>

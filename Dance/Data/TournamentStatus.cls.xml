@@ -6,10 +6,6 @@ Status of the tournament: registration, canceled ...</Description>
 <Super>%Persistent,%XML.Adaptor</Super>
 <TimeCreated>63293,8556.829586</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonTournamentStatus</Default>
-</Parameter>
-
 <Property name="Name">
 <Type>Dance.Data.Localization.LText</Type>
 <Required>1</Required>
@@ -33,6 +29,17 @@ Valid values are:PreRegistration, Registering, RegistrationClosed, Processing, C
 <Unique>1</Unique>
 </Index>
 
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.id = ..%Id()
+	set proxy.code = ..Code
+	set proxy.name = ..Name.Value
+	quit proxy
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.TournamentStatusD</DataLocation>
@@ -42,8 +49,6 @@ Valid values are:PreRegistration, Registering, RegistrationClosed, Processing, C
 <StreamLocation>^Dance.Data.TournamentStatusS</StreamLocation>
 <ExtentSize>100000</ExtentSize>
 <Data name="TournamentStatusDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>

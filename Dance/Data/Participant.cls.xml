@@ -6,19 +6,6 @@ Couple - participant of the competition</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63295,5554.902115</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonParticipant</Default>
-</Parameter>
-
-<Property name="Created">
-<Type>%TimeStamp</Type>
-</Property>
-
-<Property name="Couple">
-<Type>Couple</Type>
-<Required>1</Required>
-</Property>
-
 <Property name="Competition">
 <Type>Dance.Data.Competition</Type>
 <Cardinality>one</Cardinality>
@@ -41,82 +28,29 @@ Couple - participant of the competition</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
-<Property name="CoupleCompetitionsCount">
-<Type>%Integer</Type>
-<Calculated>1</Calculated>
-<SqlComputeCode>set {CoupleCompetitionsCount} = ##class({%%CLASSNAME}).GetCoupleCompetitionsCount({Competition}, {Couple})</SqlComputeCode>
-<SqlComputed>1</SqlComputed>
-</Property>
-
 <Property name="IsActive">
 <Type>%Boolean</Type>
 <InitialExpression>1</InitialExpression>
 <Required>1</Required>
 </Property>
 
-<Index name="CommonIdx">
-<Properties>Competition,Couple</Properties>
-<Unique>1</Unique>
-</Index>
+<Property name="Created">
+<Type>%TimeStamp</Type>
+</Property>
 
 <Index name="CompetitionIdx">
 <Properties>Competition</Properties>
 </Index>
 
-<Index name="CoupleIdx">
-<Properties>Couple</Properties>
-</Index>
-
-<Method name="Create">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[competitionId:%String,coupleId:%String,&st]]></FormalSpec>
-<ReturnType>Participant</ReturnType>
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	if ..CommonIdxExists(competitionId, coupleId) {
-		set obj = ..CommonIdxOpen(competitionId, coupleId)
-		set obj.IsActive = 1
-		set st = obj.%Save()
-		quit obj
-	}
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.competition = ..Competition.ConvertToProxyObject()
+	set proxy.isActive = ..IsActive
+	set proxy.created = ..Created
 	
-	set obj = ..%New()
-	set obj.Couple = ##class(Dance.Data.Couple).%OpenId(coupleId)
-	set obj.Competition = ##class(Dance.Data.Competition).%OpenId(competitionId) 
-	set obj.Created = $ZDT($ZTS, 3)
-	set st = obj.%Save()
-	quit obj
-]]></Implementation>
-</Method>
-
-<Method name="GetPaymentStatus">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>participantId:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	set status = "none"
-	
-	&sql(SELECT TStatus INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
-
-	quit status
-]]></Implementation>
-</Method>
-
-<Method name="GetCoupleCompetitionsCount">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>competitionId:%String,coupleId:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set trnId = ""
-	&sql(SELECT Competition->Tournament INTO :trnId 
-		 FROM Dance_Data.Participant 
-		 WHERE Competition = :competitionId AND Couple = :coupleId)
-	
-	set count = 0
-	&sql(SELECT COUNT(ID) INTO :count 
-		 FROM Dance_Data.Participant 
-		 WHERE IsActive=1 AND Couple = :coupleId AND Competition->Tournament = :trnId)
-	
-	quit count
+	quit proxy
 ]]></Implementation>
 </Method>
 
@@ -135,6 +69,56 @@ Change IsActive property to 0</Description>
 	quit obj.%Save()
 ]]></Implementation>
 </Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod Create(competitionId As %String, coupleId As %String, ByRef st) As Participant
+{
+	if ..CommonIdxExists(competitionId, coupleId) {
+		set obj = ..CommonIdxOpen(competitionId, coupleId)
+		set obj.IsActive = 1
+		set st = obj.%Save()
+		quit obj
+	}
+	
+	set obj = ..%New()
+	set obj.Couple = ##class(Dance.Data.Couple).%OpenId(coupleId)
+	set obj.Competition = ##class(Dance.Data.Competition).%OpenId(competitionId) 
+	set obj.Created = $ZDT($ZTS, 3)
+	set st = obj.%Save()
+	quit obj
+}
+
+ClassMethod GetPaymentStatus(participantId As %String) As %String
+{
+	set status = "none"
+	
+	&sql(SELECT TStatus INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
+
+	quit status
+}
+
+ClassMethod GetCoupleCompetitionsCount(competitionId As %String, coupleId As %String) As %Status
+{
+	set trnId = ""
+	&sql(SELECT Competition->Tournament INTO :trnId 
+		 FROM Dance_Data.Participant 
+		 WHERE Competition = :competitionId AND Couple = :coupleId)
+	
+	set count = 0
+	&sql(SELECT COUNT(ID) INTO :count 
+		 FROM Dance_Data.Participant 
+		 WHERE IsActive=1 AND Couple = :coupleId AND Competition->Tournament = :trnId)
+	
+	quit count
+}
+
+
+
+*/
+]]></Content>
+</UDLText>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>

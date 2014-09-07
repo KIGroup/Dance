@@ -6,12 +6,7 @@ Tickets of the participants</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63318,50950.081309</TimeCreated>
 
-<Property name="Updated">
-<Type>%TimeStamp</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="IdInternal">
+<Property name="Number">
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
@@ -22,25 +17,23 @@ Tickets of the participants</Description>
 </Property>
 
 <Property name="TStatus">
-<Type>%String</Type>
+<Type>TicketStatus</Type>
 <Required>1</Required>
 </Property>
 
-<Property name="PaymentCreated">
-<Type>%TimeStamp</Type>
-</Property>
-
-<Property name="CodeOne">
-<Type>%String</Type>
-</Property>
-
-<Property name="CodeTwo">
-<Type>%String</Type>
-</Property>
-
-<Property name="Description">
+<Property name="Title">
 <Type>%Text</Type>
 <Parameter name="MAXLEN" value="3000"/>
+</Property>
+
+<Property name="Created">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Updated">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
 </Property>
 
 <Property name="Participant">
@@ -51,42 +44,9 @@ Tickets of the participants</Description>
 <Required>1</Required>
 </Property>
 
-<Index name="IdInternalIdx">
-<Properties>IdInternal</Properties>
-<Unique>1</Unique>
-</Index>
-
 <Index name="ParticipantIdx">
 <Properties>Participant</Properties>
 </Index>
-
-<Method name="Save">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
-<ReturnType>Ticket</ReturnType>
-<Implementation><![CDATA[
-	set obj = ..IdInternalIdxOpen(data.idInternal,,.st)
-	if $$$ISERR(st){
-		set obj = ..%New()
-	}
-	
-	set obj.IdInternal = data.idInternal
-	set obj.TStatus = data.tStatus
-	set obj.Amount = data.amount
-	set obj.PaymentCreated = data.paymentCreated
-	set obj.Description = data.description
-	set obj.CodeOne = data.codeOne
-	set obj.CodeTwo = data.codeTwo
-	
-	set obj.Participant = ##class(Dance.Data.Participant).%OpenId(data.participantId)
-	
-	set obj.Updated = $ZDT($ZTS,3)
-	
-	set st = obj.%Save()
-	
-	quit obj
-]]></Implementation>
-</Method>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
@@ -101,37 +61,25 @@ Tickets of the participants</Description>
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>Participant</Value>
+<Value>Number</Value>
 </Value>
 <Value name="3">
-<Value>IdInternal</Value>
-</Value>
-<Value name="4">
 <Value>Amount</Value>
 </Value>
-<Value name="5">
+<Value name="4">
 <Value>TStatus</Value>
 </Value>
+<Value name="5">
+<Value>Title</Value>
+</Value>
 <Value name="6">
-<Value>PaymentDate</Value>
+<Value>Created</Value>
 </Value>
 <Value name="7">
-<Value>OrderIdInternal</Value>
+<Value>Updated</Value>
 </Value>
 <Value name="8">
-<Value>CodeOne</Value>
-</Value>
-<Value name="9">
-<Value>CodeTwo</Value>
-</Value>
-<Value name="10">
-<Value>Description</Value>
-</Value>
-<Value name="11">
-<Value>PaymentCreated</Value>
-</Value>
-<Value name="12">
-<Value>Updated</Value>
+<Value>Participant</Value>
 </Value>
 </Data>
 </Storage>

@@ -4,32 +4,17 @@
 <Super>%Persistent</Super>
 <TimeCreated>63274,63498.354989</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonPerson</Default>
-</Parameter>
-
-<Property name="LastUpdated">
-<Type>%TimeStamp</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="NumberUDSR">
+<Property name="Number">
 <Description>
-Union DanceSport Russia number</Description>
-<Type>%String</Type>
-</Property>
-
-<Property name="NumberWDSF">
-<Description>
-WDSF number</Description>
+Athlete number</Description>
 <Type>%String</Type>
 </Property>
 
 <Property name="Gender">
 <Description>
 Male or Female</Description>
-<Type>%Char</Type>
-<Parameter name="VALUELIST" value=",M,F"/>
+<Type>%String</Type>
+<Parameter name="VALUELIST" value=",Male,Female"/>
 </Property>
 
 <Property name="FirstName">
@@ -46,75 +31,38 @@ Last name</Description>
 <Required>1</Required>
 </Property>
 
-<Property name="DOB">
-<Description>
-Date of birth</Description>
-<Type>%Date</Type>
-<Parameter name="FORMAT" value="3"/>
-</Property>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Property MaxDOB As %Date(FORMAT = 3);
-
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Property MinDOB As %Date(FORMAT = 3);
-
-]]></Content>
-</UDLText>
-
-<Property name="STClass">
-<Description>
-For WDSF dancer
-For WDSF dancer</Description>
-<Type>DancerClass</Type>
-</Property>
-
-<Property name="LAClass">
-<Type>DancerClass</Type>
-</Property>
-
 <Property name="Country">
 <Type>Country</Type>
+<Required>1</Required>
 </Property>
 
-<Property name="City">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
+<Property name="Updated">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
 </Property>
 
-<Property name="Club">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="MainTrainer">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="OtherTrainers">
-<Type>%Text</Type>
-<Parameter name="MAXLEN" value="2000"/>
-</Property>
-
-<Index name="NumberUDSRIdx">
-<Properties>NumberUDSR</Properties>
-</Index>
-
-<Index name="NumberWDSFIdx">
-<Properties>NumberWDSF</Properties>
-</Index>
-
-<Method name="UpdateFromString">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>data:%String,gender:%Char</FormalSpec>
-<ReturnType>%Status</ReturnType>
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.id = ..%Id()
+	set proxy.number = ..Number
+	set proxy.lastName = ..LastName.Value
+	set proxy.firstName = ..FirstName.Value
+	set proxy.gender = ..Gender	
+	set proxy.updated = ..Updated
+	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
+	set proxy.otherInfo.country = ..Country.ConvertToProxyObject()
+		
+	quit proxy
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod UpdateFromString(data As %String, gender As %Char) As %Status
+{
 	do ##class(%MessageDictionary).SetSessionLanguage("ru")
 	set st = $$$OK
 	
@@ -184,50 +132,33 @@ For WDSF dancer</Description>
 	}
 	
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="GetByNumberUSDR">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>number:%String</FormalSpec>
-<ReturnType>Person</ReturnType>
-<Implementation><![CDATA[
+ClassMethod GetByNumberUSDR(number As %String) As Person
+{
 	set number = +number
 	set id = ""
 	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberUDSR = :number)
 	quit ..%OpenId(id)
-]]></Implementation>
-</Method>
+}
 
-<Method name="GetByNumberWDSF">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>number:%String</FormalSpec>
-<ReturnType>Person</ReturnType>
-<Implementation><![CDATA[
+ClassMethod GetByNumberWDSF(number As %String) As Person
+{
 	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberWDSF = :number)
 	quit ..%OpenId(id)
-]]></Implementation>
-</Method>
+}
 
-<Method name="GetByNumber">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>number:%String</FormalSpec>
-<ReturnType>Person</ReturnType>
-<Implementation><![CDATA[
+ClassMethod GetByNumber(number As %String) As Person
+{
 	set number = +number
 	set id = ""
 	&sql(SELECT ID INTO :id FROM Dance_Data.Person WHERE NumberWDSF = :number OR NumberUDSR = :number)
 	quit ..%OpenId(id)
-]]></Implementation>
-</Method>
+}
 
-<Method name="Save">
-<Description>
-Create or save modified person</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
-<ReturnType>Dance.Data.Person</ReturnType>
-<Implementation><![CDATA[
+/// Create or save modified person
+ClassMethod Save(data As %RegisteredObject, ByRef st) As Dance.Data.Person
+{
 	do ##class(Dance.Utils.Journal).Create("Log","Data.Person.Save", 
 	"ID = "_data.id_"; "_
 	"LastName = "_data.lastName_"; "_
@@ -263,15 +194,6 @@ Create or save modified person</Description>
 	if (data.dob '= ""){
 		set person.DOB = $ZDH(data.dob, 3)
 	}
-	/*
-	if (data.minDOB '= ""){
-		set person.MinDOB = $ZDH(data.minDOB, 3)
-	}
-	
-	if (data.maxDOB '= ""){
-		set person.MaxDOB = $ZDH(data.maxDOB, 3)
-	}
-	*/
 	if ($ISOBJECT(data.laClass) = $$$YES) && (##class(Dance.Data.DancerClass).%ExistsId(data.laClass.id)){ 
 		set person.LAClass = ##class(Dance.Data.DancerClass).%OpenId(data.laClass.id)
 	}
@@ -284,16 +206,11 @@ Create or save modified person</Description>
 	set st = person.%Save()
 
 	quit person
-]]></Implementation>
-</Method>
+}
 
-<Method name="Delete">
-<Description>
-Delete person if it is available</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>personId:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+/// Delete person if it is available
+ClassMethod Delete(personId As %String) As %Status
+{
 	set person = ..%OpenId(personId, 4)
 
 	set st = ##class(Dance.Data.Localization.LText).Delete(person.LastName.%Id())
@@ -306,16 +223,11 @@ Delete person if it is available</Description>
 	quit:$$$ISERR(st) ##class(Dance.Utils.Msg).GetErrorStatus("DeletePerson", " | "_st) 
 	
 	quit $$$OK
-]]></Implementation>
-</Method>
+}
 
-<Method name="SetCompetitionsOtherTournamentsOnDay">
-<Description>
-Get person competitions in other tournaments in that day(yyyy-mm-dd)</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&list:%ListOfObjects,trnId:%String,personId:%String,date:%String]]></FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+/// Get person competitions in other tournaments in that day(yyyy-mm-dd)
+ClassMethod SetCompetitionsOtherTournamentsOnDay(ByRef list As %ListOfObjects, trnId As %String, personId As %String, date As %String) As %Status
+{
 	&sql(DECLARE Cur1 CURSOR FOR
 		 SELECT Competition
 		 FROM Dance_Data.Participant
@@ -336,8 +248,10 @@ Get person competitions in other tournaments in that day(yyyy-mm-dd)</Descriptio
 	&sql(CLOSE Cur1)
 	
 	quit $$$OK
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
@@ -352,7 +266,7 @@ Get person competitions in other tournaments in that day(yyyy-mm-dd)</Descriptio
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>NumberUDSR</Value>
+<Value>Number</Value>
 </Value>
 <Value name="3">
 <Value>Gender</Value>
@@ -364,58 +278,13 @@ Get person competitions in other tournaments in that day(yyyy-mm-dd)</Descriptio
 <Value>LastName</Value>
 </Value>
 <Value name="6">
-<Value>MiddleName</Value>
-</Value>
-<Value name="7">
-<Value>DOB</Value>
-</Value>
-<Value name="8">
-<Value>NumberWDSF</Value>
-</Value>
-<Value name="9">
-<Value>STClass</Value>
-</Value>
-<Value name="10">
-<Value>STClassDate</Value>
-</Value>
-<Value name="11">
-<Value>LAClass</Value>
-</Value>
-<Value name="12">
-<Value>LAClassDate</Value>
-</Value>
-<Value name="13">
-<Value>SportCategoty</Value>
-</Value>
-<Value name="14">
-<Value>SportCategotyDate</Value>
-</Value>
-<Value name="15">
 <Value>Country</Value>
 </Value>
-<Value name="16">
-<Value>City</Value>
-</Value>
-<Value name="17">
-<Value>Club</Value>
-</Value>
-<Value name="18">
-<Value>MainTrainer</Value>
-</Value>
-<Value name="19">
-<Value>OtherTrainers</Value>
-</Value>
-<Value name="20">
-<Value>InsuranceValidDate</Value>
-</Value>
-<Value name="21">
+<Value name="7">
 <Value>LastUpdated</Value>
 </Value>
-<Value name="22">
-<Value>MaxDOB</Value>
-</Value>
-<Value name="23">
-<Value>MinDOB</Value>
+<Value name="8">
+<Value>Updated</Value>
 </Value>
 </Data>
 </Storage>

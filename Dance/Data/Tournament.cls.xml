@@ -134,6 +134,46 @@ Tournaments</Description>
 <Unique>1</Unique>
 </Index>
 
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	
+	set proxy.id = ..%Id()
+	set proxy.idInternal = ..IdInternal
+	set proxy.idExternal = ..IdExternal
+		
+	if (##class(Dance.Data.Tournament).CheckUpdatePrivilege() = $$$OK){
+		set proxy.hash = ..Hash
+	}
+		
+	set proxy.name = ..Name.Value
+	set proxy.fullName = ..FullName.Value
+	set proxy.startDate = $ZDATE(..StartDate, 3)
+	set proxy.endDate = $ZDATE(..EndDate, 3)
+	set proxy.status = ..TStatus.ConvertToProxyObject()
+	set proxy.rank = ..TRank.ConvertToProxyObject()
+	set proxy.competitionsCount = ..CompetitionsCount
+	set proxy.participantsCount = ..ParticipantsCount
+	set proxy.participantsUniqueCount = ..ParticipantsUniqueCount
+	
+		
+	set proxy.location = ##class(%ZEN.proxyObject).%New()
+	set proxy.location.country = ..Country.ConvertToProxyObject()
+	set proxy.location.cityName = ..City.Value
+		
+	set proxy.organizer = ##class(%ZEN.proxyObject).%New()
+	set proxy.organizer.info = ..OrganizerInfo.Value
+	set proxy.organizer.site = ..OrganizerSite
+		
+	set proxy.tabUDSRAllowed = ..TabUDSRAllowed
+	set proxy.tabWDSFAllowed = ..TabWDSFAllowed
+	set proxy.tabOtherAllowed = ..TabOtherAllowed
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
 <Method name="Save">
 <Description>
 Create or Update object</Description>
@@ -280,18 +320,18 @@ Check update privilege</Description>
 <Implementation><![CDATA[
 	set count = 0
 	&sql(SELECT COUNT(DISTINCT Couple) INTO :count
-		 FROM Dance_Data.Participant 
+		 FROM Dance_Data.ParticipantCouple 
 		 WHERE Competition->Tournament = :tournamentId)
 	
 	quit count
 ]]></Implementation>
 </Method>
 
-<Method name="GetPersonByFullNameFromTournament">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>trnId:%String,lastName:%String,firstName:%String</FormalSpec>
-<ReturnType>Dance.Data.Person</ReturnType>
-<Implementation><![CDATA[
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod GetPersonByFullNameFromTournament(trnId As %String, lastName As %String, firstName As %String) As Dance.Data.Person
+{
 	set id = ""
 	
 	&sql(SELECT DISTINCT person.ID INTO :id
@@ -304,8 +344,10 @@ Check update privilege</Description>
 		 WHERE ltvalLN.Value = :lastName AND ltvalFN.Value = :firstName)
 	
 	quit ##class(Dance.Data.Person).%OpenId(id)
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.CoupleUDSR">
+<Super>Dance.Data.Couple</Super>
+<TimeCreated>63436,60731.792448</TimeCreated>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##super()
+	
+	set proxy.otherInfo = proxy.man.otherInfo
+	if (proxy.otherInfo.club = "") {
+		set proxy.otherInfo.club = proxy.woman.otherInfo.club 
+	}
+	
+	if (proxy.otherInfo.city = "") {
+		set proxy.otherInfo.city = proxy.woman.otherInfo.city 
+	}
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="GetByNumbers">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[manId:%String,womanId:%String,&st]]></FormalSpec>
+<ReturnType>Couple</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	#dim obj As CoupleWDSF = ""
+	
+	if (..CommonIdxExists(manId, womanId)){
+		set obj = ..CommonIdxOpen(manId, womanId)
+		return obj
+	}
+	
+	set obj = ..%New()
+	set obj.Man = ##class(PersonUDSR).NumberUDSROpen(manId,,.st)	
+	if $$$ISERR(st) || (obj.Man.Gender '= "Male"){
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_Person_UDSR_NotFound", " | "_st)
+		quit $$$NULLOREF
+	}
+	
+	set obj.Woman = ##class(PersonUDSR).NumberUDSROpen(womanId,,.st)	
+	if $$$ISERR(st) || (obj.Woman.Gender '= "Female"){
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_Person_UDSR_NotFound", " | "_st)
+		quit $$$NULLOREF
+	}
+	
+	set st = obj.%Save()
+	
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+</Storage>
+</Class>
+</Export>
