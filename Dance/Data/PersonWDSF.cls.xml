@@ -43,8 +43,9 @@ Create or save modified person</Description>
 	}
 	
 	set person.Gender = data.gender	
-	set person.ageCategory = data.ageCategory
+	set person.AgeCategory = data.ageCategory
 	set person.Country = ##class(Dance.Data.Country).%OpenId(data.otherInfo.country.id)
+	set person.Updated = $ZDT($ZTS, 3)
 	
 	quit person
 ]]></Implementation>
@@ -59,12 +60,12 @@ Create or save modified person</Description>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.number = data.id
-	set proxy.lastName = data.lastName
-	set proxy.firstName = data.firstName
+	set proxy.lastName = data.surname
+	set proxy.firstName = data.name
 	set proxy.gender = data.sex
 	set proxy.ageCategory = data.ageGroup
 	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
-	set proxy.otherInfo.country = ##class(Country).GetByName(data.Country)
+	set proxy.otherInfo.country = ##class(Country).GetByName(data.country).ConvertToProxyObject()
 	
 	quit ..Save(proxy, .st)
 ]]></Implementation>

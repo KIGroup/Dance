@@ -94,6 +94,7 @@ Public REST URLs</Description>
 <!-- ========================================================================================================= -->
 
 <Route Method="GET" Url="/person/udsr/:number" Call="Dance.Web.JsonUser:GetPersonByUDSRNumber"/>
+<Route Method="GET" Url="/person/wdsf/:number" Call="Dance.Web.JsonUser:GetPersonByWDSFNumber"/>
 
 
 <!-- ========================================================================================================= -->

@@ -29,34 +29,9 @@
 <Implementation><![CDATA[
 	set proxy = ##super()
 	
-	/*
-	set proxy.otherInfo.country = ##class(Country).ConvertToProxyObject(..Man.Country)
+	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
+	set proxy.otherInfo.country = ..Man.Country.ConvertToProxyObject()
 			
-	if (..Man.NumberWDSF = "") && (..Woman.NumberWDSF = ""){
-		set club = ..Man.Club
-		if (club = "") set club = ..Woman.Club 
-		
-		set mainTrainer = ..Man.MainTrainer
-		if (mainTrainer = "") set mainTrainer = ..Woman.MainTrainer 
-		
-		set otherTrainers = ..Man.OtherTrainers
-		if (otherTrainers = "") set otherTrainers = ..Woman.OtherTrainers
-		
-		set proxy.otherInfo.city = ..Man.City
-		set proxy.otherInfo.club = club
-		set proxy.otherInfo.mainTrainer = mainTrainer
-		set proxy.otherInfo.otherTrainers = otherTrainers
-	}
-	elseif (convertParams.tournamentId '= ""){
-		set coupleInfo = ..GetWDSFOtherInfoForTournament(convertParams.tournamentId, proxy.id)
-		set proxy.man.dob = coupleInfo.manDob
-		set proxy.woman.dob = coupleInfo.womanDob
-		set proxy.otherInfo.city = coupleInfo.city
-		set proxy.otherInfo.club = coupleInfo.club
-		set proxy.otherInfo.mainTrainer = coupleInfo.mainTrainer
-		set proxy.otherInfo.otherTrainers = coupleInfo.otherTrainers
-	}
-	*/
 	quit proxy
 ]]></Implementation>
 </Method>
@@ -79,8 +54,6 @@
 		}	
 	}
 	
-	if (..CommonIdxExists(manId, womanId)){
-	}
 	
 	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByNumbers(manNumber, womanNumber, .st)
 	quit:$$$ISERR(st) obj

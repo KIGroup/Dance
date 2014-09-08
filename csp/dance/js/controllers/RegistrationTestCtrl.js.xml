@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationTestCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+//               
 
 /*===========================================================================================
 Registration         
@@ -18,7 +18,15 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     };
 
     $scope.tabWDSF = {
-        searchForm: {}
+        searchForm: {},
+        formCouple: {
+            btnBackVisible: true,
+            btnNextVisible: true
+        },
+        formSingle: {
+            btnBackVisible: true,
+            btnNextVisible: true
+        }
     };
     
     $scope.tabOTHER = {
@@ -82,6 +90,9 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
 
       /// Load All Competitions in Tournament  
     $scope.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        if (!$scope.tournament)
+            return;
+        
         $scope.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
 
         var dataSending= {
@@ -166,6 +177,8 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     // ===========================================================================================================================================
     $scope.tabUDSR.select = function(){
         $scope.selectedTab = 'UDSR';
+        console.log('tabUDSR.select');
+        $scope.competitionTable.refresh();
     };
 
     $scope.tabUDSR.searchForm.search = function(manNumber, womanNumber){
@@ -179,7 +192,8 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
             $scope.tabOTHER.disabled = true;
             $scope.tabUDSR.searchForm.processing = false;
             $scope.competitionTable.avialableMode = true;
-            $scope.competitionTable.selectable = true;  
+            $scope.competitionTable.selectable = true; 
+            $scope.competitionTable.refresh(); 
         };
 
         if (manNumber != '' && womanNumber != ''){
@@ -207,7 +221,7 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     };
 
     $scope.tabUDSR.searchForm.clear = function(){
-        $scope.form_udsrCouple.$setPristine();
+        $scope.form_udsrSearch.$setPristine();
         $scope.tabUDSR.searchForm.manNumber = '';
         $scope.tabUDSR.searchForm.womanNumber = '';
         $scope.tabUDSR.couple = null;
@@ -220,9 +234,163 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
         $scope.tabOTHER.disabled = false;
         $scope.tabUDSR.searchForm.processing = false;
         $scope.competitionTable.avialableMode = false;
-        $scope.competitionTable.selectable = false;  
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
     };
 
+    $scope.tabUDSR.registration = function(){
+        console.log('udsr reg');
+    };
+
+
+    // ===========================================================================================================================================
+    // Tab WDSF                                                                                                                           Tab WDSF
+    // ===========================================================================================================================================
+    $scope.tabWDSF.select = function(){
+        $scope.selectedTab = 'WDSF';
+        console.log('tabWDSF.select');
+        $scope.competitionTable.refresh();
+    };
+
+    $scope.tabWDSF.searchForm.search = function(manNumber, womanNumber){
+        if (manNumber == '' && womanNumber == '')
+            return;
+
+        $scope.tabWDSF.searchForm.processing = true;
+
+        var afterSuccess = function(){
+            $scope.tabUDSR.disabled = true;
+            $scope.tabOTHER.disabled = true;
+            $scope.tabWDSF.searchForm.processing = false;
+        };
+
+        if (manNumber != '' && womanNumber != ''){
+            CoupleSrvc.getWDSFByNumbers(manNumber, womanNumber).then(
+                function(data){
+                    afterSuccess();
+                    $scope.tabWDSF.couple = data;
+                },
+                function(data, status, headers, config){
+                    $scope.tabWDSF.searchForm.processing = false;
+                    $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+        else{
+            PersonSrvc.getByWDSFNumber(manNumber ? manNumber : womanNumber).then(
+                function(data){
+                    afterSuccess();
+                    $scope.tabWDSF.athlete = data;
+                },
+                function(data, status, headers, config){
+                    $scope.tabWDSF.searchForm.processing = false;
+                    $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+    };
+
+    $scope.tabWDSF.searchForm.clear = function(){
+        $scope.form_wdsfSearch.$setPristine();
+        $scope.tabWDSF.searchForm.manNumber = '';
+        $scope.tabWDSF.searchForm.womanNumber = '';
+        $scope.tabWDSF.couple = null;
+        $scope.tabWDSF.athlete = null; 
+    };
+
+    $scope.tabWDSF.formCouple.back = function(){
+        if ($scope.tabWDSF.formCouple.btnRegistrationVisible){
+            $scope.tabWDSF.formCouple.btnNextVisible = true;
+            $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
+            $scope.tabWDSF.formCouple.disabled = false;
+        }
+        else{
+            $scope.tabWDSF.searchForm.clear();
+            $scope.tabUDSR.disabled = false;
+            $scope.tabOTHER.disabled = false;
+            $scope.tabWDSF.searchForm.processing = false;    
+        }
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabWDSF.formCouple.next = function(){
+        $scope.tabWDSF.couple.man.dob = UtilsSrvc.getValidDate($scope.tabWDSF.couple.man.dob);
+        $scope.tabWDSF.couple.woman.dob = UtilsSrvc.getValidDate($scope.tabWDSF.couple.woman.dob);
+        
+        if ($scope.tabWDSF.couple.man.dob == "" || $scope.tabWDSF.couple.woman.dob == ""){
+            return;
+        }
+
+        $scope.tabWDSF.formCouple.disabled = true;
+        $scope.tabWDSF.formCouple.btnNextVisible = false;
+        $scope.tabWDSF.formCouple.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabWDSF.formSingle.back = function(){
+        if ($scope.tabWDSF.formSingle.btnRegistrationVisible){
+            $scope.tabWDSF.formSingle.btnNextVisible = true;
+            $scope.tabWDSF.formSingle.btnRegistrationVisible = false;
+            $scope.tabWDSF.formSingle.disabled = false;
+        }
+        else{
+            $scope.tabWDSF.searchForm.clear();
+            $scope.tabUDSR.disabled = false;
+            $scope.tabOTHER.disabled = false;
+            $scope.tabWDSF.searchForm.processing = false;    
+        }
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabWDSF.formSingle.next = function(){
+        $scope.tabWDSF.athlete.dob = UtilsSrvc.getValidDate($scope.tabWDSF.athlete.dob);
+        
+        if ($scope.tabWDSF.athlete.dob == ""){
+            return;
+        }
+
+        $scope.tabWDSF.formSingle.disabled = true;
+        $scope.tabWDSF.formSingle.btnNextVisible = false;
+        $scope.tabWDSF.formSingle.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+
+    $scope.tabWDSF.registration = function(){
+        console.log('wdsf reg');
+    };
+
+
+    // ===========================================================================================================================================
+    // Confirm Dialog                                                                                                               Confirm Dialog
+    // ===========================================================================================================================================
+    $scope.confirmDialog = {};
+
+    $scope.confirmDialog.open = function(type, applyMethod){
+        $scope.confirmDialog.data = {};  
+        $scope.confirmDialog.data.type = type;
+        $scope.confirmDialog.data.couple = angular.copy($scope['tab' + type].couple) || null;
+        $scope.confirmDialog.data.athlete = angular.copy($scope['tab' + type].athlete) || null; 
+        $scope.confirmDialog.apply = applyMethod;
+
+        $('#ConfirmDialog').modal('show');
+        $scope.confirmDialog.visible = true;
+    };
+
+    $scope.confirmDialog.close = function(){
+        $('#ConfirmDialog').modal('hide');
+        $scope.confirmDialog.visible = false;  
+    };
 
     $scope.init();
 });  

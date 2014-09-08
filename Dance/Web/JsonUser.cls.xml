@@ -4,6 +4,130 @@
 <Super>Dance.Web.JsonBase</Super>
 <TimeCreated>63436,73778.660914</TimeCreated>
 
+<Method name="RegistrationUDSR">
+<Description>
+
+====================================================================================================================
+Registration                                                                                            Registration
+====================================================================================================================
+
+Registration UDSR participants in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		
+		set (prtId, prtClass) = ""
+	    if $ISOBJECT(data.couple){
+			set prtId = data.couple.id
+		    set prtClass = "Dance.Data.ParticipantCouple"
+		}
+		elseif $ISOBJECT(data.athlete){
+			set prtId = data.athlete.id
+		   	set prtClass = "Dance.Data.ParticipantSingle"
+		}
+		    
+		for i=1:1:data.competitions.Count(){
+		    set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+		    if (competition.Tournament.TStatus.Code '= "Registration") {
+			    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+		    }
+		    	
+		    do $CLASSMETHOD(prtClass, "Create", competition.%Id(), prtId, .st)
+		    	
+		    if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+		}
+      	  
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationWDSF">
+<Description>
+Registration UDSR participants in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		
+		
+      	
+      	  
+      	
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="Registration">
+<Description>
+Registration UDSR, WDSF, OTEHR participants in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+      	
+      	#dim competition As Dance.Data.Competition = ""
+
+      	
+      	if (data.type = "UDSF") || (data.type = "WDSF"){
+	      	set (prtId, prtClass) = ""
+	      	if $ISOBJECT(data.couple){
+		    	set prtId = data.couple.id
+		    	set prtClass = "Dance.Data.ParticipantCouple"
+		    }
+		    elseif $ISOBJECT(data.athlete){
+			    set prtId = data.athlete.id
+		    	set prtClass = "Dance.Data.ParticipantSingle"
+		    }
+         	
+	      	for i=1:1:data.competitions.Count(){
+		    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+		    	if (competition.Tournament.TStatus.Code '= "Registration") {
+			    	$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+		    	}
+		    	
+		    	do $CLASSMETHOD(prtClass, "Create", competition.%Id(), prtId, .st)
+		    	
+		    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+		    }
+      	}  
+      	  
+      	TCOMMIT
+	}
+	catch ex {
+		TROLLBACK
+		set st = ex.AsStatus()
+	}
+			
+	quit st
+]]></Implementation>
+</Method>
+
 <Method name="GetTournamentById">
 <Description>
 
@@ -316,48 +440,44 @@ Available participants competitions for grid</Description>
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
       	
       	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
-      	set newCoupleIsSolo = 0
       	set maleSTClass = ""
       	set maleLAClass = ""
+      	set isSolo = $$$NO
+      	set man = ""
       	
-      	if (params.other.couple.type = "udsr"){
-	      	set maleSTClass = params.other.couple.man.stClass.code
-      		set maleLAClass = params.other.couple.man.laClass.code
-      	 
-	      	// current year - year of birth
-      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
-      		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
+      	if $ISOBJECT(params.other.couple){
+      		set man = params.other.couple.man
+      		set whereCondition = whereCondition_" AND Type->Code = 'Couples' "
+      		if (params.other.type '= "OTHER"){
+      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantCouple as prtc WHERE prtc.Couple="_params.other.couple.id_") "
+      		}
       	}
-      	elseif (params.other.couple.type = "wdsf"){
-	      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
-	      	set whereCondition = whereCondition_"AND IsInternational=1 AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"
-      	}
-      	elseif (params.other.couple.type = "new"){
-	    	// current year - year of birth
-      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(params.other.couple.man.dob, "-", 1)
-      		set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge"   	
-      	}
+      	elseif $ISOBJECT(params.other.athlete){
+			set man = params.other.athlete
+	      	set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
+	      	if (params.other.type '= "OTHER"){
+      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantSingle as prtc WHERE prtc.Athlete="_params.other.athlete.id_") "
+      		}
+	   	}
       	
-      	// Only new competitions fo existing couples
-      	if (params.other.couple.type = "udsr") || (params.other.couple.type = "wdsf"){
-	    	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(params.other.couple.man.id, params.other.couple.woman.id)
-			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.Participant as prtc WHERE prtc.Couple="_couple.%Id()_")"
-      	}
+      	// current year - year of birth
+      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
+      	set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge "
       	
-      	// Solo or couple type
-      	if ((params.other.couple.man.id = params.other.couple.woman.id) && (params.other.couple.man.id '= "")) || (params.other.couple.isSolo = $$$YES){
-      		set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
+      	if (params.other.type = "UDSR"){
+	      	set maleSTClass = man.stClass.code
+      		set maleLAClass = man.laClass.code     	   	
       	}
-      	else{
-	      	set whereCondition = whereCondition_" AND Type->Code = 'Couples'"
+      	elseif (params.other.type = "WDSF"){
+	      	set whereCondition = whereCondition_" AND IsInternational = 1 "
       	}
       	
-      	//$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
-	
+     	
 		set sql = "SELECT ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
 		
 		set statement = ##class(%SQL.Statement).%New()	
 		$$$THROWONERROR(status, statement.%Prepare(sql))		
+
 		set rs = statement.%Execute()
 		set ^tt = sql
 		set proxyItems = ##class(%ListOfObjects).%New()			
@@ -654,7 +774,7 @@ Registration new couple in the tournament</Description>
 Person                                                                                                        Person
 ====================================================================================================================
 
-Get couple UDSR by numbers</Description>
+Get person UDSR by numbers</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>number:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -664,6 +784,40 @@ Get couple UDSR by numbers</Description>
 	try{
 		set athlete = ##class(Dance.Data.PersonUDSR).NumberUDSRIdxOpen(number,,.st)
 		$$$THROWONERROR(st, st)
+		do athlete.ConvertToProxyObject().%ToJSON()
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetPersonByWDSFNumber">
+<Description>
+Get person UDSR by numbers</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>number:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		if (##class(Dance.Data.PersonWDSF).NumberWDSFIdxExists(number)){
+			set athlete = ##class(Dance.Data.PersonWDSF).NumberWDSFIdxOpen(number,,.st)
+			set diffDays = $SYSTEM.SQL.DATEDIFF("dd", $P(athlete.Updated, " ", 1), $P($ZDT($ZTS, 3), " ", 1))
+			if (diffDays <= 7){
+				return athlete.ConvertToProxyObject().%ToJSON()
+			}	 	
+		}
+		
+		set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetPerson(number, .st)
+		$$$THROWONERROR(st, st)
+		
+		set athlete = ##class(Dance.Data.PersonWDSF).SaveFromWDSF(wdsfData, .st)		
+		$$$THROWONERROR(st, st)
+		
 		do athlete.ConvertToProxyObject().%ToJSON()
 	}
 	catch(ex){

@@ -8,7 +8,7 @@
 <Description>
 do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[pMethod:%String,pUrl:%String,&st:%Status=$$$OK]]></FormalSpec>
+<FormalSpec><![CDATA[pMethod:%String,pUrl:%String,data:%ZEN.proxyObject="",&st:%Status=$$$OK]]></FormalSpec>
 <Private>1</Private>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -22,6 +22,20 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
   		set req.Port = $G(^Settings("Dance","WdsfController", "Port"), 80)
   		set req.Authorization = "Basic "_$system.Encryption.Base64Encode($g(^Settings("Dance","WdsfController", "Login"))_":"_$g(^Settings("Dance","WdsfController", "Password")))
   		
+  		if $ISOBJECT(data) {
+   			set req.ContentType="application/json"
+   			set tIO = $IO
+   			set tMnemSpace = ##class(%Library.Device).GetMnemonicRoutine()
+   			try{
+	  			$$$TOE(sc,##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(req.EntityBody, data))
+	  			use tIO::("^"_tMnemSpace)
+   			}
+   			catch ex{
+	  			use tIO::("^"_tMnemSpace)
+	  			throw ex
+   			}
+  		}
+ 
   		set pUrl = $G(^Settings("Dance","WdsfController", "API"))_pUrl
   		
   		$$$TOE(st, req.Send($zconvert(pMethod, "U"), pUrl))
@@ -42,6 +56,34 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="Registration">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[competitionId:%String,manNumber:%String,womanNumber:%String,&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set data = ##class(%ZEN.proxyObject).%New()
+	set data.competitionId = competitionId
+	set data.manNumber = manNumber
+	set data.womanNumber = womanNumber
+	
+	quit ..Call("POST", "/registration", data, .st)
+]]></Implementation>
+</Method>
+
+<Method name="Deregistration">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[competitionId:%String,manNumber:%String,womanNumber:%String,&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set data = ##class(%ZEN.proxyObject).%New()
+	set data.competitionId = competitionId
+	set data.manNumber = manNumber
+	set data.womanNumber = womanNumber
+	
+	quit ..Call("POST", "/deregistration", data, .st)
+]]></Implementation>
+</Method>
+
 <Method name="GetCouples">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[min:%String="",&st:%Status]]></FormalSpec>
@@ -52,7 +94,7 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 		set filter = "?min="_min
 	}
 	
-	quit ..Call("GET", "/couple"_filter, .st)
+	quit ..Call("GET", "/couple"_filter,, .st)
 ]]></Implementation>
 </Method>
 
@@ -60,7 +102,7 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[manNumber:%String,womanNumber:%String,&st:%Status]]></FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
-<Implementation><![CDATA[	quit ..Call("GET", "/couple?manNumber="_manNumber_"&womanNumber="_womanNumber, .st)
+<Implementation><![CDATA[	quit ..Call("GET", "/couple?manNumber="_manNumber_"&womanNumber="_womanNumber,, .st)
 ]]></Implementation>
 </Method>
 
@@ -68,7 +110,7 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[id:%String,&st:%Status]]></FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
-<Implementation><![CDATA[	quit ..Call("GET", "/person/"_id, .st)
+<Implementation><![CDATA[	quit ..Call("GET", "/person/"_id,, .st)
 ]]></Implementation>
 </Method>
 </Class>
