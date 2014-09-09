@@ -162,9 +162,9 @@
 						<p><span class="spnTitle" ng-bind="'Номер WDSF'|localize"></span>: <span ng-bind="tabWDSF.couple.man.number"></span></p>
 						<p><span class="spnTitle" ng-bind="'Фамилия, Имя'|localize"></span>: <span ng-bind="tabWDSF.couple.man.lastName + ' ' + tabWDSF.couple.man.firstName"></span></p>
 						<div class="control-group" style="">
-							<label class="control-label spnTitle" style="border: none!important;" ng-bind="('Дата рождения'|localize) + '*'"></label>
+							<label class="control-label spnTitle" style="border: none!important;">{{('Дата рождения'|localize)}}<i ng-style="{color: (form_wdsfCoupleData.manDob.$error.required ? 'red' : 'green')}">*</i></label>
 							<div class="controls">
-							    <input style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tabWDSF.couple.man.dob" min="'1900-01-01'" show-weeks="false" required ng-disabled="tabWDSF.formCouple.disabled"/>
+							    <input name="manDob" style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tabWDSF.couple.man.dob" min="'1900-01-01'" show-weeks="false" required ng-disabled="tabWDSF.formCouple.disabled"/>
 							</div>
 						</div>
 
@@ -187,9 +187,9 @@
 						<p><span class="spnTitle" ng-bind="'Номер WDSF'|localize"></span>: <span ng-bind="tabWDSF.couple.woman.number"></span></p>
 						<p><span class="spnTitle" ng-bind="'Фамилия, Имя'|localize"></span>: <span ng-bind="tabWDSF.couple.woman.lastName + ' ' + tabWDSF.couple.woman.firstName"></span></p>
 						<div class="control-group">
-							<label class="control-label spnTitle" style="border: none!important;" ng-bind="('Дата рождения'|localize) + '*'"></label>
+							<label class="control-label spnTitle" style="border: none!important;">{{('Дата рождения'|localize)}}<i ng-style="{color: (form_wdsfCoupleData.womanDob.$error.required ? 'red' : 'green')}">*</i></label>
 							<div class="controls">
-							    <input style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tabWDSF.couple.woman.dob" min="'1900-01-01'" show-weeks="false" ng-disabled="tabWDSF.formCouple.disabled" required/>
+							    <input name="womanDob" style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tabWDSF.couple.woman.dob" min="'1900-01-01'" show-weeks="false" ng-disabled="tabWDSF.formCouple.disabled" required/>
 							</div>
 						</div>
 					</div>
@@ -202,25 +202,25 @@
 						<div class="row-fluid">
 							<div class="span6">
 								<div class="control-group">
-			            			<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
+			            			<label class="control-label">{{('Город'|localize)}}<i ng-style="{color: (form_wdsfCoupleData.city.$error.required ? 'red' : 'green')}">*</i></label>
 			            			<div class="controls">
-			            				<input class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.city" ng-disabled="tabWDSF.formCouple.disabled" required></input>
+			            				<input name="city" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.city" ng-disabled="tabWDSF.formCouple.disabled" required></input>
 			            			</div>
 			        			</div>
 			        		</div>
 			        		<div class="span6">
 								<div class="control-group">
-			            			<label class="control-label" ng-bind="('Клуб'|localize) + '*'"></label>
+			            			<label class="control-label">{{('Клуб'|localize)}}<i ng-style="{color: (form_wdsfCoupleData.club.$error.required ? 'red' : 'green')}">*</i></label>
 			            			<div class="controls">
-			            				<input class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.club" ng-disabled="tabWDSF.formCouple.disabled" required></input>
+			            				<input name="club" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.club" ng-disabled="tabWDSF.formCouple.disabled" required></input>
 			            			</div>
 			        			</div>
 			        		</div>
 			        	</div>
 				    	<div class="control-group">
-				        	<label class="control-label" ng-bind="('Тренер #1. Фамилия, Имя'|localize) + '*'"></label>
+				        	<label class="control-label">{{('Тренер #1. Фамилия, Имя'|localize)}}<i ng-style="{color: (form_wdsfCoupleData.mainTrainer.$error.required ? 'red' : 'green')}">*</i></label>
 				        	<div class="controls">
-				    			<input class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.mainTrainer" ng-disabled="tabWDSF.formCouple.disabled" required></input>
+				    			<input name="mainTrainer" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.mainTrainer" ng-disabled="tabWDSF.formCouple.disabled" required></input>
 		                	</div>
 				    	</div>
 				    	<div class="control-group">

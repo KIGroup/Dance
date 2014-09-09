@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Data.ParticipantCouple">
+<Class name="Dance.Data.ParticipantCoupleUDSR">
 <Super>Participant</Super>
-<TimeCreated>63436,60952.60569</TimeCreated>
+<TimeCreated>63440,4238.448759</TimeCreated>
 
 <Property name="Couple">
-<Type>Couple</Type>
+<Type>CoupleUDSR</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="CompetitionCoupleIdx">
+<Index name="CmpCplUDSRIdx">
 <Properties>Competition,Couple</Properties>
 <Unique>1</Unique>
 </Index>
@@ -26,20 +26,19 @@
 
 <Method name="Create">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[competitionId:%String,coupleId:%String,&st]]></FormalSpec>
+<FormalSpec><![CDATA[competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
-	if ..CompetitionCoupleIdxExists(competitionId, coupleId) {
-		set obj = ..CompetitionCoupleIdxOpen(competitionId, coupleId)
+	if ..CmpCplUDSRIdxExists(competition.%Id(), couple.id) {
+		set obj = ..CmpCplUDSRIdxOpen(competition.%Id(), couple.id)
 		set obj.IsActive = 1
 		set st = obj.%Save()
 		quit obj
 	}
 	
 	set obj = ..%New()
-	set obj.Couple = ##class(Dance.Data.Couple).%OpenId(coupleId)
-	set obj.Competition = ##class(Dance.Data.Competition).%OpenId(competitionId) 
-	set obj.Created = $ZDT($ZTS, 3)
+	set obj.Couple = ##class(Dance.Data.CoupleUDSR).%OpenId(couple.id)
+	set obj.Competition = competition 
 	set st = obj.%Save()
 	quit obj
 ]]></Implementation>

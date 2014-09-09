@@ -70,6 +70,16 @@ Change IsActive property to 0</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="%OnNew">
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	set ..Created = $ZDT($ZTS, 3)	
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
 <UDLText name="T">
 <Content><![CDATA[
 /*

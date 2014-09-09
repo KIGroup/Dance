@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.ParticipantCoupleOther">
+<Super>Participant</Super>
+<TimeCreated>63440,4317.627564</TimeCreated>
+
+<Property name="ManLastName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="ManFirstName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="ManDOB">
+<Type>%Date</Type>
+<Required>1</Required>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="WomanLastName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="WomanFirstName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="WomanDOB">
+<Type>%Date</Type>
+<Required>1</Required>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="Country">
+<Type>Country</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="City">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="MainTrainer">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="OtherTrainers">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##super()
+	set proxy.man = ##class(%ZEN.proxyObject).%New()
+	set proxy.man.gender = "Male"
+	set proxy.man.lastName = ..ManLastName
+	set proxy.man.firstName = ..ManFirstName
+	set proxy.man.dob = $ZD(..ManDOB, 3)
+	
+	set proxy.woman = ##class(%ZEN.proxyObject).%New()
+	set proxy.woman.gender = "Female"
+	set proxy.woman.lastName = ..WomanLastName
+	set proxy.woman.firstName = ..WomanFirstName
+	set proxy.woman.dob = $ZD(..WomanDOB, 3)
+	
+	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
+	set proxy.otherInfo.country = ..Country.ConvertToProxyObject()
+	set proxy.otherInfo.city = ..City
+	set proxy.otherInfo.club = ..Club
+	set proxy.otherInfo.mainTrainer = ..MainTrainer
+	set proxy.otherInfo.otherTrainers = ..OtherTrainers
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
+<ReturnType>Participant</ReturnType>
+<Implementation><![CDATA[
+	set obj = ..%New()
+	set obj.Competition = competition 
+	
+	set obj.ManLastName = $ZCVT(couple.man.lastName, "I", "UTF8")
+	set obj.ManFirstName = $ZCVT(couple.man.firstName, "I", "UTF8")
+	set obj.ManDOB = $ZDH(couple.man.dob, 3)
+	
+	set obj.WomanLastName = $ZCVT(couple.woman.lastName, "I", "UTF8")
+	set obj.WomanFirstName = $ZCVT(couple.woman.firstName, "I", "UTF8")
+	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
+	
+	set obj.Country = ##class(Country).%OpenId(couple.otherInfo.country.id)	
+	set obj.City = $ZCVT(couple.otherInfo.city, "I", "UTF8")
+	set obj.Club = $ZCVT(couple.otherInfo.club, "I", "UTF8")
+	set obj.MainTrainer = $ZCVT(couple.otherInfo.mainTrainer, "I", "UTF8")
+	set obj.OtherTrainers = $ZCVT(couple.otherInfo.otherTrainers, "I", "UTF8")
+	
+	set st = obj.%Save()
+	
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>ParticipantCoupleOtherDefaultData</DefaultData>
+<Data name="ParticipantCoupleOtherDefaultData">
+<Subscript>"ParticipantCoupleOther"</Subscript>
+<Value name="1">
+<Value>ManLastName</Value>
+</Value>
+<Value name="2">
+<Value>ManFirstName</Value>
+</Value>
+<Value name="3">
+<Value>ManDOB</Value>
+</Value>
+<Value name="4">
+<Value>WomanLastName</Value>
+</Value>
+<Value name="5">
+<Value>WomanFirstName</Value>
+</Value>
+<Value name="6">
+<Value>WomanDOB</Value>
+</Value>
+<Value name="7">
+<Value>Country</Value>
+</Value>
+<Value name="8">
+<Value>City</Value>
+</Value>
+<Value name="9">
+<Value>Club</Value>
+</Value>
+<Value name="10">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="11">
+<Value>OtherTrainers</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.ParticipantSingleOther">
+<Super>Participant</Super>
+<TimeCreated>63440,4374.537436</TimeCreated>
+
+<Property name="Gender">
+<Type>%String</Type>
+<Parameter name="VALUELIST" value=",Male,Female"/>
+</Property>
+
+<Property name="LastName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="FirstName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="DOB">
+<Type>%Date</Type>
+<Required>1</Required>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="Country">
+<Type>Country</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="City">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="MainTrainer">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="OtherTrainers">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##super()
+	set proxy.athlete = ##class(%ZEN.proxyObject).%New()
+	set proxy.athlete.gender = ..Gender
+	set proxy.athlete.lastName = ..LastName
+	set proxy.athlete.firstName = ..FirstName
+	set proxy.athlete.dob = $ZD(..DOB, 3)
+	
+	set proxy.athlete.otherInfo = ##class(%ZEN.proxyObject).%New()
+	set proxy.athlete.otherInfo.country = ..Country.ConvertToProxyObject()
+	set proxy.athlete.otherInfo.city = ..City
+	set proxy.athlete.otherInfo.club = ..Club
+	set proxy.athlete.otherInfo.mainTrainer = ..MainTrainer
+	set proxy.athlete.otherInfo.otherTrainers = ..OtherTrainers
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[competition:Competition,athlete:%ZEN.proxyObject,&st]]></FormalSpec>
+<ReturnType>Participant</ReturnType>
+<Implementation><![CDATA[
+	set obj = ..%New()
+	set obj.Competition = competition 
+	
+	set obj.Gender = $ZCVT(athlete.gender, "I", "UTF8")
+	set obj.LastName = $ZCVT(athlete.lastName, "I", "UTF8")
+	set obj.FirstName = $ZCVT(athlete.firstName, "I", "UTF8")
+	set obj.DOB = $ZDH(athlete.dob, 3)
+	
+	set obj.Country = ##class(Country).%OpenId(athlete.otherInfo.country.id)	
+	set obj.City = $ZCVT(athlete.otherInfo.city, "I", "UTF8")
+	set obj.Club = $ZCVT(athlete.otherInfo.club, "I", "UTF8")
+	set obj.MainTrainer = $ZCVT(athlete.otherInfo.mainTrainer, "I", "UTF8")
+	set obj.OtherTrainers = $ZCVT(athlete.otherInfo.otherTrainers, "I", "UTF8")
+	
+	set st = obj.%Save()
+	
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>ParticipantSingleOtherDefaultData</DefaultData>
+<Data name="ParticipantSingleOtherDefaultData">
+<Subscript>"ParticipantSingleOther"</Subscript>
+<Value name="1">
+<Value>LastName</Value>
+</Value>
+<Value name="2">
+<Value>FirstName</Value>
+</Value>
+<Value name="3">
+<Value>DOB</Value>
+</Value>
+<Value name="4">
+<Value>Country</Value>
+</Value>
+<Value name="5">
+<Value>City</Value>
+</Value>
+<Value name="6">
+<Value>Club</Value>
+</Value>
+<Value name="7">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="8">
+<Value>OtherTrainers</Value>
+</Value>
+<Value name="9">
+<Value>Gender</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

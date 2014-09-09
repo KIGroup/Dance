@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Data.ParticipantCoupleWDSF">
+<Super>Participant</Super>
+<TimeCreated>63440,4297.586433</TimeCreated>
+
+<Property name="Couple">
+<Type>CoupleUDSR</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="ManDOB">
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="WomanDOB">
+<Type>%Date</Type>
+<Parameter name="FORMAT" value="3"/>
+</Property>
+
+<Property name="City">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="MainTrainer">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="OtherTrainers">
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Index name="CmpCplWDSFIdx">
+<Properties>Competition,Couple</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="ConvertToProxyObject">
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##super()
+	set proxy.couple = ..Couple.ConvertToProxyObject()
+	
+	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="Create">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
+<ReturnType>Participant</ReturnType>
+<Implementation><![CDATA[
+	if ..CmpCplWDSFIdxExists(competition.%Id(), couple.id) {
+		set obj = ..CmpCplWDSFIdxOpen(competition.%Id(), couple.id)
+		set obj.IsActive = 1
+		set st = obj.%Save()
+		quit obj
+	}
+	
+	set obj = ..%New()
+	set obj.Couple = ##class(Dance.Data.CoupleWDSF).%OpenId(couple.id)
+	set obj.Competition = competition 
+	set obj.ManDOB = $ZDH(couple.man.dob, 3)
+	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
+	set obj.City = $ZCVT(couple.otherInfo.city, "I", "UTF8")
+	set obj.Club = $ZCVT(couple.otherInfo.club, "I", "UTF8")
+	set obj.MainTrainer = $ZCVT(couple.otherInfo.mainTrainer, "I", "UTF8")
+	set obj.OtherTrainers = $ZCVT(couple.otherInfo.otherTrainers, "I", "UTF8")
+	
+	set st = obj.%Save()
+	quit obj
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>ParticipantCoupleWDSFDefaultData</DefaultData>
+<Data name="ParticipantCoupleWDSFDefaultData">
+<Subscript>"ParticipantCoupleWDSF"</Subscript>
+<Value name="1">
+<Value>ManDOB</Value>
+</Value>
+<Value name="2">
+<Value>WomanDOB</Value>
+</Value>
+<Value name="3">
+<Value>City</Value>
+</Value>
+<Value name="4">
+<Value>Club</Value>
+</Value>
+<Value name="5">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="6">
+<Value>OtherTrainers</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
