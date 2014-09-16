@@ -95,6 +95,22 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
 	    
    		if ($scope.page.competition.startDate == "")
    			return;
+   		
+   		if ($scope.page.competition.dancerClasses){
+	   		var oneExistsSelected = false;
+	   		for (var i=0; i < $scope.page.competition.dancerClasses.length; i++){
+	   			if ($scope.page.competition.dancerClasses[i].selected == 1){
+	   				oneExistsSelected = true;
+	   				break;
+	   			}
+	   		}
+	   		
+	   		if (!oneExistsSelected){
+	   			$scope.page.alert = UtilsSrvc.getAlert('Внимание!', 'Выберите хотя бы один класс танцора.', 'info', true);
+	   			return;
+	   		}
+	   	}
+   		
    			 
    		CompetitionSrvc.save($scope.page.tournament.id, $scope.page.competition).then(
             function(data){

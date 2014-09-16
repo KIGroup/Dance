@@ -21,12 +21,12 @@ Couple - participant of the competition</Description>
 <Relationship>1</Relationship>
 </Property>
 
-<Property name="PaymentStatus">
-<Type>%String</Type>
-<Calculated>1</Calculated>
-<SqlComputeCode>set {PaymentStatus} = ##class({%%CLASSNAME}).GetPaymentStatus({%%ID})</SqlComputeCode>
-<SqlComputed>1</SqlComputed>
-</Property>
+<UDLText name="T">
+<Content><![CDATA[
+// Property PaymentStatus As %String [ Calculated, SqlComputeCode = {set {PaymentStatus} = ##class({%%CLASSNAME}).GetPaymentStatus({%%ID})}, SqlComputed ];
+
+]]></Content>
+</UDLText>
 
 <Property name="IsActive">
 <Type>%Boolean</Type>

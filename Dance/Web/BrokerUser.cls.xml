@@ -13,6 +13,9 @@ Public REST URLs</Description>
 <!-- ========================================================================================================= -->
 <!-- Registration                                                                                 Registration -->
 <!-- ========================================================================================================= -->
+<Route Method="POST" Url="/registration/udsr" Call="Dance.Web.JsonUser:RegistrationUDSR"/>
+<Route Method="POST" Url="/registration/wdsf" Call="Dance.Web.JsonUser:RegistrationWDSF"/>
+<Route Method="POST" Url="/registration/other" Call="Dance.Web.JsonUser:RegistrationOTHER"/>
 
 
 
@@ -59,6 +62,10 @@ Public REST URLs</Description>
 
 <!-- GET Types, All competition types -->
 <Route Method="GET"  Url="/competition/type" Call="Dance.Web.JsonUser:GetCompetitionTypes"/>
+
+
+<!-- GET WDSF competitions by filter -->
+<Route Method="GET" Url="/competitionwdsf/country/:countryId/date/:date" Call="Dance.Web.JsonUser:GetAvailableCompetitionsWDSFByFilter"/>
 
 
 <!-- ========================================================================================================= -->

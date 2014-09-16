@@ -30,7 +30,8 @@
 	        	<div class="control-group">
 		            <label class="control-label" ng-bind="('Дисциплина'|localize) + '*'"></label>
 		            <div class="controls">
-		                <select class="span12" ng-model="competition.discipline.id" ng-options="discipline.id as discipline.name for discipline in disciplines" required>
+		                <select class="span12" ng-model="competition.discipline.id" ng-options="discipline.id as discipline.name for discipline in disciplines" ng-required="true">
+		                	<option></option>
 		                </select>
 		            </div>
 		        </div>
@@ -38,7 +39,7 @@
 	        <div class="span3">	
 	        	<label class="control-label" ng-bind="('Дата'|localize) + '*'"></label>
 	        	<div class="controls">
-	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="competition.startDate" show-weeks="false" ng-required="true" />
+	            	<input type="text" class="span12" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="competition.startDate" show-weeks="false" ng-click="clickOnDate()" required/>
 	        	</div>
 			</div>
 			<div class="span3">
@@ -55,6 +56,7 @@
 	 			<label class="control-label" ng-bind="('Возрастная группа'|localize) + '*'"></label>
 	        	<div class="controls">
 	            	<select class="span12" ng-model="competition.ageCategory.id" ng-options="age.id as (age.name + ' ('+ age.minAge + ' - ' + age.maxAge +')') for age in ageCategories" required>
+           				<option></option>
            			</select>
 	        	</div>
 	 		</div>
@@ -68,6 +70,7 @@
 	 			<label class="control-label" ng-bind="('Тип'|localize) + '*'"></label>
 	        	<div class="controls">
 	            	 <select class="span12" ng-model="competition.type.id" ng-options="type.id as type.name for type in types" required>
+           				<option></option>
            			</select>
 	        	</div>
 	 		</div>
@@ -81,18 +84,29 @@
 	</div>
 	<div class="control-group">
 		<div class="row-fluid">
-			<div class="span9">	
+			<div class="span7">	
 				<label class="control-label" ng-bind="('Классы'|localize) + '*'"></label>
 				<div class="btn-group" style="margin-bottom: 15px;">
 					<button type="button" class="btn btn-mini btnCheckBox" style="padding: 0 15px 0 15px;" ng-repeat="class in competition.dancerClasses"  ng-model="class.selected" ng-bind="class.name|localize"  btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0"></button>
 				</div>
 			</div>
-			<div class="span3">
-				 <label class="checkbox pull-right" style="padding-top: 25px;" >
-			    	<input type="checkbox" ng-model="competition.isInternational">{{'Международный'|localize}}
+			<div class="span5">
+				 <label class="checkbox" style="padding-top: 27px;" >
+			    	<input type="checkbox" ng-model="competition.isInternational" ng-disabled="!competition.startDate" title="{{'Выберите дату для активации переключателя'|localize}}">{{'Международный'|localize}}
 			    </label>
 			</div>
 		</div>
-	</div>	    
-</div>]]></CSP>
+	</div>
+	<div class="control-group" ng-show="competition.isInternational">
+		<label class="control-label" ng-bind="('Соответствующая группа WDSF'|localize) + '*'"></label>
+    	<div class="controls">
+        	<select class="span12" ng-model="competition.wdsf.id" style="margin:0;" ng-options="cmp.id as (cmp.date|convertCacheDate:('d MMMM y'|localize)) + ' • ' + cmp.location + ' • ' + cmp.type + ' • ' + cmp.discipline + ' • ' + cmp.ageCategory.name for cmp in competitionsWDSF" ng-required="competition.isInternational">
+   				<option></option>
+   			</select>
+   			<i style="font-size: 0.9em; margin-bottom: 10px;">Date • Location • Type • Discipline • Age group</i>
+    	</div>
+	</div>
+	 {{competition}} 
+</div>
+]]></CSP>
 </Export>

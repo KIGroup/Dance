@@ -18,10 +18,6 @@ Competition in the tournament, has participants</Description>
 <Required>1</Required>
 </Property>
 
-<Property name="IdWDSF">
-<Type>%String</Type>
-</Property>
-
 <Property name="IdExternal">
 <Type>%String</Type>
 <Required>1</Required>
@@ -68,10 +64,8 @@ Competition in the tournament, has participants</Description>
 <Required>1</Required>
 </Property>
 
-<Property name="IsInternational">
-<Type>%Boolean</Type>
-<InitialExpression>0</InitialExpression>
-<Required>1</Required>
+<Property name="WDSF">
+<Type>CompetitionWDSF</Type>
 </Property>
 
 <Property name="Limit">
@@ -109,6 +103,11 @@ Competition in the tournament, has participants</Description>
 <Unique>1</Unique>
 </Index>
 
+<Index name="WDSFIdx">
+<Properties>WDSF</Properties>
+<Unique>1</Unique>
+</Index>
+
 <Method name="ConvertToProxyObject">
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -123,9 +122,14 @@ Competition in the tournament, has participants</Description>
 	set proxy.startDate = $ZDATE(..StartDate, 3)
 	set proxy.startTime = $e(##class(%Library.Time).LogicalToDisplay(..StartTime), 1, 5)
 	
+	if $ISOBJECT(..WDSF){
+		set proxy.wdsf = ..WDSF.ConvertToProxyObject()
+		set proxy.isInternational = $$$YES
+	}
+	
 	set proxy.price = ..Price
 	set proxy.limit = ..Limit
-	set proxy.isInternational = ..IsInternational
+	//set proxy.isInternational = ..IsInternational
 	
 	set proxy.idInternal = ..IdInternal
 	set proxy.idExternal = ..IdExternal 
@@ -156,7 +160,6 @@ Create or update competition</Description>
 	"ID="_data.id_";"_
 	"IdInternal="_data.idInternal_";"_
 	"IdExternal="_data.idExternal_";"_
-	"IdWDSF="_data.idWDSF_";"_
 	"Name="_$ZCVT(data.name,"I", "UTF8")_";"_
 	"TournamentId="_data.tournamentId_";"_
 	"DisciplineId="_data.discipline.id_";"_
@@ -176,6 +179,14 @@ Create or update competition</Description>
 	    set cmp = ##class(Dance.Data.Competition).%OpenId(data.id)
       	set cmp.Name.Value = $ZCVT(data.name,"I", "UTF8")
     }
+    
+    if (data.isInternational = 1) && $ISOBJECT(data.wdsf){
+    	set cmp.WDSF = ##class(CompetitionWDSF).%OpenId(data.wdsf.id)
+    }
+    else{
+	    set cmp.WDSF = $$$NULLOREF
+    }
+    
       	
     set cmp.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
     set cmp.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
@@ -186,11 +197,9 @@ Create or update competition</Description>
       	
     set cmp.Price = data.price
     set cmp.Limit = data.limit
-    set cmp.IsInternational = (data.isInternational = $$$YES)
       
     set cmp.IdInternal = data.idInternal
     set cmp.IdExternal = data.idExternal
-    set cmp.IdWDSF = data.idWDSF
       	
 	// DancerClasses array
 	do cmp.DancerClasses.Clear()
@@ -316,6 +325,9 @@ Participants count in the competition</Description>
 </Value>
 <Value name="20">
 <Value>IdWDSF</Value>
+</Value>
+<Value name="21">
+<Value>WDSF</Value>
 </Value>
 </Data>
 <Data name="DancerClasses">

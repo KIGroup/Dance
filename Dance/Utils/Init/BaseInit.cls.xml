@@ -20,8 +20,9 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do ##class(Dance.Utils.Init.TournamentRank).Import()
 	do ##class(Dance.Utils.Init.Discipline).Import()
 	do ##class(Dance.Utils.Init.AgeCategory).Import()
-	//do ##class(Dance.Data.AgeCategoryWDSF).Import()
-	//do ##class(Dance.Utils.Init.AgeCategoryWDSF).Import()
+	do ##class(Dance.Data.AgeCategoryWDSF).Import()
+	set ^Settings("Dance", "LastSyncWDSFCompetitions") = "2014-01-01"
+	w ##class(Dance.Utils.TaskSyncWDSFController).SyncCompetitions()
 	
  	//do ..Settings()
  	//w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\boys.csv", "M")
@@ -35,17 +36,19 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 <Implementation><![CDATA[
 	do $CLASSMETHOD("Dance.Utils.Journal", "%KillExtent")
 	
-	do $CLASSMETHOD("Dance.Data.Import.Tournament", "%KillExtent")
-	do $CLASSMETHOD("Dance.Data.Import.Competition", "%KillExtent")
-	do $CLASSMETHOD("Dance.Data.Import.Ticket", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.Import.TournamentDanceplat", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.Import.CompetitionDanceplat", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.Import.TicketDanceplat", "%KillExtent")
 	
 	do $CLASSMETHOD("Dance.Data.AgeCategory", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.AgeCategoryWDSF", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Competition", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.CompetitionType", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.CompetitionWDSF", "%KillExtent")
+	
 	
 	do $CLASSMETHOD("Dance.Data.Country", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Couple", "%KillExtent")
-	do $CLASSMETHOD("Dance.Data.CoupleWDSFInfo", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Ticket", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.DancerClass", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Discipline", "%KillExtent")

@@ -16,31 +16,48 @@ Registration UDSR participants in the tournament</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
+	set regResults = ##class(%ListOfObjects).%New()
+	set proxy = ##class(%ZEN.proxyObject).%New()
 	
 	try{
 		TSTART
 		
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
 		
-		set (prtId, prtClass) = ""
-	    if $ISOBJECT(data.couple){
-			set prtId = data.couple.id
-		    set prtClass = "Dance.Data.ParticipantCouple"
+		set prt = ##class(%ZEN.proxyObject).%New()
+		set prtClass = ""
+		
+		if $ISOBJECT(data.couple){
+			set prt = data.couple
+		    set prtClass = "Dance.Data.ParticipantCoupleUDSR"
 		}
 		elseif $ISOBJECT(data.athlete){
-			set prtId = data.athlete.id
-		   	set prtClass = "Dance.Data.ParticipantSingle"
+			set prt = data.athlete
+		   	set prtClass = "Dance.Data.ParticipantSingleUDSR"
 		}
 		    
 		for i=1:1:data.competitions.Count(){
 		    set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+		    
+		    set regResult = ##class(%ZEN.proxyObject).%New()
+		    set regResult.participant = ##class(%ZEN.proxyObject).%New()
+		    set regResult.otherInfo = ##class(%ZEN.proxyObject).%New()
+		    	
 		    if (competition.Tournament.TStatus.Code '= "Registration") {
-			    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+			    set regResult.status = $SYSTEM.Status.GetErrorText(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+		    	set regResult.participant.competition = competition.ConvertToProxyObject() 
+		    	continue
 		    }
 		    	
-		    do $CLASSMETHOD(prtClass, "Create", competition.%Id(), prtId, .st)
-		    	
-		    if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
+		    set participant = $CLASSMETHOD(prtClass, "Create", competition, prt, .st)
+		    if $$$ISERR(st) {
+			    set regResult.status = $SYSTEM.Status.GetErrorText(##class(Dance.Utils.Msg).GetErrorStatus("ParticipantCreateError"))
+		    	set regResult.participant.competition = competition.ConvertToProxyObject()
+		    }
+		    else{
+			    set regResult.status = $$$OK
+		    	set regResult.participant = participant.ConvertToProxyObject()
+		    }
 		}
       	  
       	TCOMMIT
@@ -56,25 +73,234 @@ Registration UDSR participants in the tournament</Description>
 
 <Method name="RegistrationWDSF">
 <Description>
-Registration UDSR participants in the tournament</Description>
+Registration WDSF participants in the tournament</Description>
 <ClassMethod>1</ClassMethod>
+<FormalSpec>data:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.status = $$$OK
 	
+	set regResults = ##class(%ListOfObjects).%New()
+	    
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		TSTART
 		
+		if '$ISOBJECT(data){
+			$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		}
 		
-      	
-      	  
-      	
-	}
-	catch ex {
-		set st = ex.AsStatus()
-	}
+      	set prt = ##class(%ZEN.proxyObject).%New()
+		set wcPostData = ##class(%ZEN.proxyObject).%New()
+		set wcPostData.competitions = ##class(%ListOfDataTypes).%New()
+		
+		set isSoloType = ""
+		if $ISOBJECT(data.couple){
+			set isSoloType = $$$NO
+			set wcPostData.manNumber = data.couple.man.number
+			set wcPostData.womanNumber = data.couple.woman.number
+		}
+		elseif $ISOBJECT(data.athlete){
+			set isSoloType = $$$YES
+			set wcPostData.manNumber = data.athlete.number
+			set wcPostData.womanNumber = ""
+		}
+		
+		for i=1:1:data.competitions.Count(){
+		    set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i))
+		
+			set regResult = ##class(%ZEN.proxyObject).%New()
+		    set regResult.competition = competition.ConvertToProxyObject()
 			
-	quit st
+		    if (competition.Tournament.TStatus.Code '= "Registration"){
+			    set regResult.status = ##class(Dance.Utils.Msg).GetMsg("RegistrationClosedError")
+			    continue
+		    }
+		    
+		    #dim participant As Dance.Data.Participant = ""
+		    if (isSoloType = $$$NO){
+				set participant = ##class(Dance.Data.ParticipantCoupleWDSF).Create(competition, data.couple, .st)
+			}
+			elseif (isSoloType = $$$YES){
+				set participant = ##class(Dance.Data.ParticipantSingleWDSF).Create(competition, data.athlete, .st)
+			}
+		
+		    if $$$ISERR(st){
+			    set regResult.status = $SYSTEM.Status.GetErrorText(st)
+		    }
+		    else{
+			    set regResult.status = $$$YES
+			    set regResult.participantId = participant.%Id()
+			    do wcPostData.competitions.Insert(competition.WDSF.%Id())
+		    }
+		    
+		    do regResults.Insert(regResult)
+		}
+		
+      	// Not removed! This string fix a bug!
+      	w ""
+      	
+      	set wcResponseData = ##class(Dance.Wdsf.ControllerAPI).Registration(wcPostData, .st)
+		
+		if $$$ISERR(st){
+			if ($ISOBJECT(wcResponseData) && (wcResponseData.status '=1)) || '$ISOBJECT(wcResponseData){
+				set proxy.errorDetails = wcResponseData
+				$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_ConnectionWDSFControllerFailed", "| "_$SYSTEM.Status.GetErrorText(st)))
+			}
+		}  
+		
+		for i=1:1:wcResponseData.results.Count(){
+			set wcRequest = wcResponseData.results.GetAt(i).request
+			set wcResponse = wcResponseData.results.GetAt(i).response
+			
+			set regResult = ##class(%ZEN.proxyObject).%New()
+			for r=1:1:regResults.Count(){
+				if (regResults.GetAt(r).competition.wdsf.id = wcRequest.competitionId){
+					set regResult = regResults.GetAt(r)
+					quit
+				}
+			}
+			
+			set regResult.otherInfo = wcResponse
+			if (wcResponse.code < 2000){
+				set regResult.status = $$$OK
+			}
+			else{
+				set st = ##class(Dance.Data.Participant).%DeleteId(regResult.participantId)
+				if $$$ISERR(st){
+					do ##class(Dance.Data.Participant).Deactivate(regResult.participantId)
+				}
+				set regResult.participantId = ""
+				set regResult.status = $SYSTEM.Status.GetErrorText(##class(Dance.Utils.Msg).GetErrorStatus("error_RegistrationInWDSFController"))
+			}		
+		}
+     
+     	TCOMMIT
+     	
+     	set proxy.results = regResults
+    }
+	catch ex {
+		TROLLBACK 
+		//if $DATA(%response){
+			set %response.Status = 400
+		//}	
+		set proxy.status = $SYSTEM.Status.GetErrorText(ex.AsStatus())  	
+	}
+	
+	do proxy.%ToJSON()
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationWDSF2">
+<Description>
+Registration WDSF participants in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>data:%ZEN.proxyObject=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set regResults = ##class(%ListOfObjects).%New()
+	set proxy = ##class(%ZEN.proxyObject).%New()
+		    
+	try{
+		if '$ISOBJECT(data){
+			$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		}
+		
+      	set prt = ##class(%ZEN.proxyObject).%New()
+		set wcPostData = ##class(%ZEN.proxyObject).%New()
+		set wcPostData.competitions = ##class(%ListOfDataTypes).%New()
+		
+		if $ISOBJECT(data.couple){
+			set wcPostData.manNumber = data.couple.man.number
+			set wcPostData.womanNumber = data.couple.woman.number
+			set prtClass = "Dance.Data.ParticipantCoupleWDSF"
+			set prt = data.couple
+		}
+		elseif $ISOBJECT(data.athlete){
+			set wcPostData.manNumber = data.athlete.number
+			set prtClass = "Dance.Data.ParticipantSingleWDSF"
+			set prt = data.athlete
+		}
+		
+		for i=1:1:data.competitions.Count(){
+			set currRegResult = ##class(%ZEN.proxyObject).%New()
+			set currRegResult.otherInfo = ##class(%ZEN.proxyObject).%New()
+			
+		    set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
+		    if (competition.Tournament.TStatus.Code '= "Registration") {
+			    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+		    }
+		    	
+		    set participant = $CLASSMETHOD(prtClass, "Create", competition, prt, .st)	
+		    //w !,"Participant Id = "_participant.%Id()
+		    
+		    if $$$ISERR(st){
+			    set currRegResult.status = $SYSTEM.Status.GetErrorText(st)
+			    set currRegResult.competition = data.competitions.GetAt(i)
+			    set currRegResult.otherInfo.message = ##class(Dance.Utils.Msg).GetMsg("SaveParticipantError") 
+		    }
+		    else{
+			    set currRegResult.competition = data.competitions.GetAt(i)
+			    set currRegResult.participant = participant.ConvertToProxyObject()
+			    do wcPostData.competitions.Insert(data.competitions.GetAt(i).idWDSF)
+		    }
+		    
+		    do regResults.Insert(currRegResult)
+		}
+      	
+      	set wcResponseData =##class(Dance.Wdsf.ControllerAPI).Registration(wcPostData, .st)
+		
+		if $$$ISERR(st){
+			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_ConnectionWDSFControllerFailed"))
+		}  
+		
+		for i=1:1:wcResponseData.results.Count(){
+			set wcRequest = wcResponseData.results.GetAt(i).request
+			set wcResponse = wcResponseData.results.GetAt(i).response
+			
+			set regResult = ""
+			for r=1:1:regResults.Count(){
+				if (regResults.GetAt(r).competition.idWDSF = wcRequest.competitionId){
+					set regResult = regResults.GetAt(r)
+					quit
+				}
+			}
+			
+			if (wcResponse.code < 2000){
+				set regResult.status = $$$OK
+				set regResult.otherInfo = wcResponse
+			}
+			else{
+				do ##class(Dance.Data.Participant).Deactivate(regResult.participant.id)
+				set regResult.status = ##class(Dance.Utils.Msg).GetErrorStatus("error_RegistrationInWDSFController")
+				set regResult.participant = ""
+		    	set regResult.otherInfo.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationInWDSFController") 	
+			}
+		}
+      
+      	
+    }
+	catch ex {
+		//set %response.Status = 400
+	  	set proxy.error = $SYSTEM.Status.GetErrorText(ex.AsStatus())  	
+	}
+	
+	set proxy.results = regResults
+	do proxy.%ToJSON()	
+		
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="RegistrationOTHER">
+<Description>
+Registration UDSR participants in the tournament</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	q $$$OK
 ]]></Implementation>
 </Method>
 
@@ -381,7 +607,7 @@ Get all tournament competitions for grid</Description>
       	}
       	
       	if (params.other.type = "WDSF"){
-      		set whereCondition = whereCondition_" AND IsInternational = 1"
+      		set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
       	}
       	
       	$$$THROWONERROR(st, ..WriteJsonForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition))
@@ -449,14 +675,20 @@ Available participants competitions for grid</Description>
       		set man = params.other.couple.man
       		set whereCondition = whereCondition_" AND Type->Code = 'Couples' "
       		if (params.other.type '= "OTHER"){
-      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantCouple as prtc WHERE prtc.Couple="_params.other.couple.id_") "
+	      		set tableName = $CASE(params.other.type, "WDSF" : "Dance_Data.ParticipantCoupleWDSF", 
+      													 "UDSR" : "Dance_Data.ParticipantCoupleUDSR")
+      			
+      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM "_tableName_" as prtc WHERE prtc.Couple="_params.other.couple.id_") "
       		}
       	}
       	elseif $ISOBJECT(params.other.athlete){
 			set man = params.other.athlete
 	      	set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
 	      	if (params.other.type '= "OTHER"){
-      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantSingle as prtc WHERE prtc.Athlete="_params.other.athlete.id_") "
+      			set tableName = $CASE(params.other.type, "WDSF" : "Dance_Data.ParticipantSingleWDSF", 
+      													 "UDSR" : "Dance_Data.ParticipantSingleUDSR")
+	      		
+      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM "_tableName_" as prtc WHERE prtc.Athlete="_params.other.athlete.id_") "
       		}
 	   	}
       	
@@ -469,7 +701,7 @@ Available participants competitions for grid</Description>
       		set maleLAClass = man.laClass.code     	   	
       	}
       	elseif (params.other.type = "WDSF"){
-	      	set whereCondition = whereCondition_" AND IsInternational = 1 "
+	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL"
       	}
       	
      	
@@ -540,6 +772,47 @@ Available participants competitions for grid</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetAvailableCompetitionsWDSFByFilter">
+<Description>
+Get WDSF competitions by filter</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>countryId:%String,date:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		set date = $ZDH(date, 15)		
+		set list = ##class(%ListOfObjects).%New()
+		
+		&sql(DECLARE CmpWDSFCur1 CURSOR FOR
+			 SELECT cmpWDSF.ID
+			 FROM Dance_Data.CompetitionWDSF as cmpWDSF
+			 WHERE cmpWDSF.StartDate = :date AND cmpWDSF.Country = :countryId AND  0 = (SELECT COUNT(cmp.ID) FROM Dance_Data.Competition as cmp WHERE cmp.WDSF = cmpWDSF.ID)
+			 ORDER BY cmpWDSF.ID)
+		
+		&sql(OPEN CmpWDSFCur1)
+		for{
+			&sql(FETCH CmpWDSFCur1 INTO :id) 
+			quit:(SQLCODE '= 0)
+		
+			do list.Insert(##class(Dance.Data.CompetitionWDSF).%OpenId(id).ConvertToProxyObject())	
+		}
+		
+		&sql(CLOSE CmpWDSFCur1)
+		
+		set proxy = ##class(%ZEN.proxyObject).%New()
+		set proxy.children = list
+		do proxy.%ToJSON()
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
 <Method name="GetTournamentParticipantsForGrid">
 <Description>
 
@@ -591,13 +864,12 @@ Get all participants of the competition for grid</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="GetCoupleParticipants">
-<Description>
-Get participants of the couple (in the tournament) </Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>tournamentId:%String,coupleId:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+<UDLText name="T">
+<Content><![CDATA[
+/*
+/// Get participants of the couple (in the tournament) 
+ClassMethod GetCoupleParticipants(tournamentId As %String, coupleId As %String) As %Status
+{
 	set st = $$$OK
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.children = ##class(%ListOfObjects).%New()
@@ -630,8 +902,10 @@ Get participants of the couple (in the tournament) </Description>
 	}
 	
 	q st
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 
 <Method name="GetCoupleById">
 <Description>

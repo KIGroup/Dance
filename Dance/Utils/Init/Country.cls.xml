@@ -764,6 +764,7 @@
 		do country.%Save()	
 	}
 	
+	do ##class(%MessageDictionary).SetSessionLanguage("ru")
 	quit $$$OK
 ]]></Implementation>
 </Method>

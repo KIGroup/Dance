@@ -21,6 +21,7 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
   		set req.Server = $G(^Settings("Dance","WdsfController", "Server"))
   		set req.Port = $G(^Settings("Dance","WdsfController", "Port"), 80)
   		set req.Authorization = "Basic "_$system.Encryption.Base64Encode($g(^Settings("Dance","WdsfController", "Login"))_":"_$g(^Settings("Dance","WdsfController", "Password")))
+  		do req.SetHeader("Accept-Language", ##class(%MessageDictionary).GetSessionLanguage())
   		
   		if $ISOBJECT(data) {
    			set req.ContentType="application/json"
@@ -35,16 +36,17 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 	  			throw ex
    			}
   		}
- 
+
   		set pUrl = $G(^Settings("Dance","WdsfController", "API"))_pUrl
-  		
+  		//w !,pUrl,!
   		$$$TOE(st, req.Send($zconvert(pMethod, "U"), pUrl))
+		
+		set json = $ZCVT(req.HttpResponse.Data.Read(1000000000), "I", "UTF8")
+ 		set ^temp("json") = json
  		
- 		set json = req.HttpResponse.Data.Read()
- 	
- 		$$$TOE(st,##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(json,,.pResponse))
+ 		$$$TOE(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(json,,.pResponse))
  		
- 		if (req.HttpResponse.StatusCode > 300){
+ 		if (req.HttpResponse.StatusCode '= 200){
  			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("Bad response status.", " Code="_req.HttpResponse.StatusCode))
  		}
  	}
@@ -58,15 +60,9 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 
 <Method name="Registration">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[competitionId:%String,manNumber:%String,womanNumber:%String,&st:%Status]]></FormalSpec>
+<FormalSpec><![CDATA[data:%ZEN.proxyObject,&st:%Status]]></FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
-<Implementation><![CDATA[
-	set data = ##class(%ZEN.proxyObject).%New()
-	set data.competitionId = competitionId
-	set data.manNumber = manNumber
-	set data.womanNumber = womanNumber
-	
-	quit ..Call("POST", "/registration", data, .st)
+<Implementation><![CDATA[	quit ..Call("POST", "/registration", data, .st)
 ]]></Implementation>
 </Method>
 
@@ -111,6 +107,31 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 <FormalSpec><![CDATA[id:%String,&st:%Status]]></FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[	quit ..Call("GET", "/person/"_id,, .st)
+]]></Implementation>
+</Method>
+
+<Method name="GetCompetitions">
+<Description>
+country(any word), tournamentId, status, from(YYYY-MM-DD), to(YYYY-MM-DD), modifiedsince(YYYY-MM-DDThh:mm:ss)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[from:%String="",to:%String="",modifiedsince:%TimeStamp="",&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set filter = "?v=1"
+	
+	if (from '= "") set filter = filter_"&from="_from
+	if (to '= "") set filter = filter_"&to="_to 
+	if (modifiedsince '= "") set filter = filter_"&modifiedsince="_$REPLACE(modifiedsince, " ", "T")
+	
+	quit ..Call("GET", "/competition"_filter,, .st)
+]]></Implementation>
+</Method>
+
+<Method name="GetAgeGroups">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[	quit ..Call("GET", "/ageGroup",, .st)
 ]]></Implementation>
 </Method>
 </Class>

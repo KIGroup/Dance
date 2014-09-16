@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/directives/competitionform.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//dd
+//     
 
 directivesModule.directive('competitionform', function(){
     return {
@@ -11,9 +11,12 @@ directivesModule.directive('competitionform', function(){
         templateUrl: 'components/competitionform.csp',
         
         scope: {
-            competition: '='       
+            competition: '=',
+            tournament: '='       
         },
         controller: function($scope, DisciplineSrvc, AgeCategorySrvc, CompetitionSrvc, UtilsSrvc){
+            $scope.competitionsWDSF = [];
+
             /// Load Disciplines
             $scope.loadDisciplines = function(){
                 DisciplineSrvc.getAll().then(
@@ -42,6 +45,34 @@ directivesModule.directive('competitionform', function(){
                     },
                     function(data, status, headers, config){
                     });
+            };
+			  
+            $scope.loadCompetitionsWDSFByFilter = function(){
+                $scope.competition.startDate = UtilsSrvc.getValidDate($scope.competition.startDate);
+                if ($scope.competition.startDate=="")
+                    return;
+               
+                var trnId = $scope.competition.id ? $scope.competition.tournament.location.country.id : $scope.tournament.location.country.id;
+
+                CompetitionSrvc.getWDSFByFilter(trnId, $scope.competition.startDate).then(
+                    function(data){
+                        $scope.competitionsWDSF = data.children;
+                    },
+                    function(data, status, headers, config){
+                    });
+            };
+
+            $scope.$watch('competition.isInternational', function(){
+                if (!$scope.competition.isInternational)
+                    return;
+
+                $scope.loadCompetitionsWDSFByFilter();
+            });
+
+            $scope.clickOnDate = function(){
+                $scope.competitionsWDSF = [];
+                $scope.competition.wdsf = {};
+                $scope.competition.isInternational = false;
             };
 
             $scope.loadDisciplines();

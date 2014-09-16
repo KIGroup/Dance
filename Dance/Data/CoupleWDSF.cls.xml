@@ -28,10 +28,10 @@
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##super()
-	
 	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
 	set proxy.otherInfo.country = ..Man.Country.ConvertToProxyObject()
-			
+	set proxy.otherInfo.ageCategory = ..AgeCategory
+	set proxy.otherInfo.status = ..CStatus
 	quit proxy
 ]]></Implementation>
 </Method>

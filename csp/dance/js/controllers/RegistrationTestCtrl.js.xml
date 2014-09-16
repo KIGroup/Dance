@@ -2,17 +2,18 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationTestCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//               
+//                      
 
 /*===========================================================================================
 Registration         
 ===========================================================================================*/
 
-controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, CoupleSrvc){
+controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, RegistrationSrvc, CoupleSrvc){
 	$scope.menu.pages.selected = {};
     $scope.menu.shortMenu = true;
 
     $scope.pageStore.registration = $scope.pageStore.registration || {grid:{}};  
+    
     $scope.tabUDSR = {
         searchForm: {}
     };
@@ -30,6 +31,20 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     };
     
     $scope.tabOTHER = {
+        couple: {},
+        athlete: null,
+        genders: [
+            {name: $filter('localize')('Мужской'), code: 'Male'}, 
+            {name: $filter('localize')('Женский'), code: 'Female'}
+        ],
+        formCouple: {
+            btnBackVisible: true,
+            btnNextVisible: true
+        },
+        formSingle: {
+            btnBackVisible: true,
+            btnNextVisible: true
+        }  
     };
 
     $scope.competitionTable = {};
@@ -92,7 +107,8 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     $scope.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
         if (!$scope.tournament)
             return;
-        
+         
+        $scope.competitionTable.items = [];
         $scope.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
 
         var dataSending= {
@@ -154,6 +170,15 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     /// Refresh competition table  
     $scope.competitionTable.refresh = function(){ 
         $scope.competitionTable.forciblyUpdate++; 
+    };
+
+    $scope.competitionTable.getSelectedIdArray = function(){ 
+        var idArray = [];
+        for (var i=0; i < $scope.competitionTable.selectedItems.length; i++){
+            idArray.push($scope.competitionTable.selectedItems[i].id);
+        } 
+
+        return idArray;
     };
 
     /// Load Tournament by ID   
@@ -248,7 +273,6 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     // ===========================================================================================================================================
     $scope.tabWDSF.select = function(){
         $scope.selectedTab = 'WDSF';
-        console.log('tabWDSF.select');
         $scope.competitionTable.refresh();
     };
 
@@ -269,6 +293,10 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
                 function(data){
                     afterSuccess();
                     $scope.tabWDSF.couple = data;
+                    if (data.otherInfo.status != 'Active'){
+                        $scope.tabWDSF.formCouple.disabled = true;
+                        $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', 'Статус пары не "Active"! Регистрация пары невозможна.', 'error', true);
+                    }
                 },
                 function(data, status, headers, config){
                     $scope.tabWDSF.searchForm.processing = false;
@@ -300,7 +328,6 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
         if ($scope.tabWDSF.formCouple.btnRegistrationVisible){
             $scope.tabWDSF.formCouple.btnNextVisible = true;
             $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
-            $scope.tabWDSF.formCouple.disabled = false;
         }
         else{
             $scope.tabWDSF.searchForm.clear();
@@ -309,6 +336,8 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
             $scope.tabWDSF.searchForm.processing = false;    
         }
 
+        $scope.tabWDSF.alert.visible = false;
+        $scope.tabWDSF.formCouple.disabled = false;
         $scope.competitionTable.avialableMode = false;
         $scope.competitionTable.selectable = false;
         $scope.competitionTable.refresh();  
@@ -335,7 +364,6 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
         if ($scope.tabWDSF.formSingle.btnRegistrationVisible){
             $scope.tabWDSF.formSingle.btnNextVisible = true;
             $scope.tabWDSF.formSingle.btnRegistrationVisible = false;
-            $scope.tabWDSF.formSingle.disabled = false;
         }
         else{
             $scope.tabWDSF.searchForm.clear();
@@ -344,11 +372,12 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
             $scope.tabWDSF.searchForm.processing = false;    
         }
 
+        $scope.tabWDSF.formSingle.disabled = false;
         $scope.competitionTable.avialableMode = false;
         $scope.competitionTable.selectable = false;
         $scope.competitionTable.refresh();  
     };
-
+  
     $scope.tabWDSF.formSingle.next = function(){
         $scope.tabWDSF.athlete.dob = UtilsSrvc.getValidDate($scope.tabWDSF.athlete.dob);
         
@@ -367,7 +396,113 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
 
 
     $scope.tabWDSF.registration = function(){
-        console.log('wdsf reg');
+        var postData = {
+            competitions: $scope.competitionTable.getSelectedIdArray(),
+            couple: $scope.tabWDSF.couple || null,
+            athlete: $scope.tabWDSF.athlete || null 
+        };
+
+        RegistrationSrvc.WDSF(postData).then(
+            function(data){
+                $scope.regResponse = data;
+                console.log('reg success', data);
+            },
+            function(data){
+                $scope.regResponse = data;
+                console.log('reg error', data);
+            });  
+    };
+
+
+
+    // ===========================================================================================================================================
+    // Tab OTHER                                                                                                                          Tab WDSF
+    // ===========================================================================================================================================
+    $scope.tabOTHER.select = function(){
+        $scope.selectedTab = 'OTHER';
+        $scope.competitionTable.refresh();
+    };
+
+    $scope.tabOTHER.formCouple.back = function(){
+        if ($scope.tabOTHER.formCouple.btnRegistrationVisible){
+            $scope.tabOTHER.formCouple.btnNextVisible = true;
+            $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
+            $scope.tabOTHER.formCouple.disabled = false;
+        }
+        else{
+            $scope.tabUDSR.disabled = false;
+            $scope.tabWDSF.disabled = false;
+        }
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabOTHER.formCouple.next = function(){
+        $scope.tabOTHER.couple.man.dob = UtilsSrvc.getValidDate($scope.tabOTHER.couple.man.dob);
+        $scope.tabOTHER.couple.woman.dob = UtilsSrvc.getValidDate($scope.tabOTHER.couple.woman.dob);
+        
+        if ($scope.tabOTHER.couple.man.dob == "" || $scope.tabOTHER.couple.woman.dob == ""){
+            return;
+        }
+
+        $scope.tabOTHER.formCouple.disabled = true;
+        $scope.tabOTHER.formCouple.btnNextVisible = false;
+        $scope.tabOTHER.formCouple.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabOTHER.formSingle.back = function(){
+        if ($scope.tabOTHER.formSingle.btnRegistrationVisible){
+            $scope.tabOTHER.formSingle.btnNextVisible = true;
+            $scope.tabOTHER.formSingle.btnRegistrationVisible = false;
+            $scope.tabOTHER.formSingle.disabled = false;
+        }
+        else{
+            $scope.tabUDSR.disabled = false;
+            $scope.tabOTHER.disabled = false;
+        }
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabOTHER.formSingle.next = function(){
+        $scope.tabOTHER.athlete.dob = UtilsSrvc.getValidDate($scope.tabOTHER.athlete.dob);
+        
+        if ($scope.tabOTHER.athlete.dob == ""){
+            return;
+        }
+
+        $scope.tabOTHER.formSingle.disabled = true;
+        $scope.tabOTHER.formSingle.btnNextVisible = false;
+        $scope.tabOTHER.formSingle.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+
+    $scope.tabOTHER.registration = function(){
+        var postData = {
+            competitions: $scope.competitionTable.getSelectedIdArray(),
+            couple: $scope.tabOTHER.couple || null,
+            athlete: $scope.tabOTHER.athlete || null 
+        };
+
+        RegistrationSrvc.OTHER(postData).then(
+            function(data){
+                console.log('reg success', data);
+            },
+            function(data){
+                $scope.tabOTHER.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });  
     };
 
 
@@ -392,7 +527,194 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
         $scope.confirmDialog.visible = false;  
     };
 
+
+
+    /// Load WDSF Countries
+    $scope.loadCountries = function(){
+        OtherSrvc.getCountries().then(
+            function(data){
+                $scope.countries = data.children;
+            },
+            function(data, status, headers, config){
+                $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+    $scope.loadCountries();
     $scope.init();
+
+
+
+
+    $scope.regResponse = {
+    "results":[ {
+            "competition": {
+                "ageCategory": {
+                    "code":"Взрослые",
+                    "id":1,
+                    "maxAge":99,
+                    "minAge":19,
+                    "name":"Взрослые"
+                },
+                "dancerClasses":[ {
+                        "code":5,
+                        "id":1,
+                        "name":"A"
+                    }, {
+                        "code":4,
+                        "id":2,
+                        "name":"B"
+                    }, {
+                        "code":2,
+                        "id":3,
+                        "name":"C"
+                    }, {
+                        "code":3,
+                        "id":4,
+                        "name":"D"
+                    }, {
+                        "code":6,
+                        "id":5,
+                        "name":"E"
+                    }, {
+                        "code":7,
+                        "id":6,
+                        "name":"H"
+                    }, {
+                        "code":8,
+                        "id":7,
+                        "name":"M"
+                    }, {
+                        "code":9,
+                        "id":8,
+                        "name":"S"
+                    }
+                ],
+                "discipline": {
+                    "code":"Ст",
+                    "id":1,
+                    "name":"Европейская"
+                },
+                "id":1,
+                "idExternal":1,
+                "idInternal":1,
+                "isInternational":1,
+                "limit":22,
+                "name":"Гранприкс Стандард Адульт",
+                "participantsCount":0,
+                "price":1333,
+                "startDate":"2014-08-12",
+                "startTime":"12:00",
+                "tournament": {
+                    "competitionsCount":6,
+                    "endDate":"2014-08-14",
+                    "fullName":"Кубок Берлина\nГермания",
+                    "id":1,
+                    "idExternal":1,
+                    "idInternal":1,
+                    "location": {
+                        "cityName":"Стругхард",
+                        "country": {
+                            "id":78,
+                            "name":"Германия"
+                        }
+                    },
+                    "name":"Гераманский турнир",
+                    "organizer": {
+                        "info":"",
+                        "site":""
+                    },
+                    "participantsCount":0,
+                    "participantsUniqueCount":0,
+                    "rank": {
+                        "code":"МС",
+                        "id":3,
+                        "name":"Международное соревнование",
+                        "shortName":"МС"
+                    },
+                    "startDate":"2014-08-04",
+                    "status": {
+                        "code":"Registration",
+                        "id":2,
+                        "name":"Регистрация"
+                    },
+                    "tabOtherAllowed":1,
+                    "tabUDSRAllowed":1,
+                    "tabWDSFAllowed":1
+                },
+                "type": {
+                    "code":"Couples",
+                    "id":1,
+                    "name":"Пары"
+                },
+                "wdsf": {
+                    "LastModifiedWDSF":"2014-08-13 18:08:22",
+                    "LastSyncWDSF":"2014-09-01 18:40:44",
+                    "TournamentId":5451,
+                    "ageCategory": {
+                        "allowedToDance":["ADULT","UNDER 21","RISING STAR"
+                        ],
+                        "division":"Any",
+                        "fromAge":19,
+                        "id":10,
+                        "maxDob":"1995-12-31",
+                        "minDob":"1985-01-01",
+                        "name":"ADULT",
+                        "toAge":29
+                    },
+                    "country": {
+                        "id":78,
+                        "name":"Германия"
+                    },
+                    "date":"2014-08-12",
+                    "discipline":"STANDARD",
+                    "division":"Professional",
+                    "id":45276,
+                    "isSolo":0,
+                    "location":"Stuttgart",
+                    "status":"Closed",
+                    "type":"PD SUPER GRAND PRIX"
+                }
+            },
+            "otherInfo": {
+                "code":2011,
+                "message":"Статус группы не позволяет выполнить регистрацию.",
+                "otherInfo": {
+                    "competition": {
+                        "ageGroup":"ADULT",
+                        "country":"Germany",
+                        "date":"2014-08-12",
+                        "discipline":"STANDARD",
+                        "division":"Professional",
+                        "id":45276,
+                        "isSolo":0,
+                        "lastModifiedWDSF":"2014-08-13 18:08:22",
+                        "lastSyncWDSF":"2014-09-01 18:40:44",
+                        "location":"Stuttgart",
+                        "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/45276",
+                        "status":"Closed",
+                        "tournament": {
+                            "ageGroups":"YOUTH, ADULT, SENIOR I, MASTER CLASS I, MASTER CLASS II, SENIOR II, SENIOR III, SENIOR IV",
+                            "competitionsCount":14,
+                            "country":"Germany",
+                            "disciplines":"LATIN, STANDARD",
+                            "endDate":"2014-08-16",
+                            "id":5451,
+                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/5451",
+                            "startDate":"2014-08-12",
+                            "types":"GRAND SLAM, OPEN, PD, PD SUPER GRAND PRIX"
+                        },
+                        "type":"PD SUPER GRAND PRIX"
+                    }
+                },
+                "status":"Ошибка"
+            },
+            "participantId":"",
+            "status":"0"
+        }
+    ],
+    "status":1
+    };
 });  
 ]]></CSP>
 </Export>

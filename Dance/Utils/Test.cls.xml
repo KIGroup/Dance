@@ -4,6 +4,34 @@
 <Abstract>1</Abstract>
 <TimeCreated>63339,74275.849932</TimeCreated>
 
+<Method name="TestRegistrationWDSF">
+<Description>
+do ##class(Dance.Utils.Test).TestRegistrationWDSF()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	try{
+		set data = ##class(%ZEN.proxyObject).%New()
+		set data.competitions = ##class(%ListOfDataTypes).%New()
+		do data.competitions.Insert(2)
+		set data.couple = ##class(Dance.Data.CoupleWDSF).GetByNumbers(10073546,10073691,.st).ConvertToProxyObject()
+		set data.couple.man.dob = "1995-01-01"
+		set data.couple.woman.dob = "1996-03-05"
+		set data.couple.otherInfo.city = "London"
+		set data.couple.otherInfo.club = "Cha-cah club"
+		set data.couple.otherInfo.mainTrainer = "Petrov Oleg"
+		set data.couple.otherInfo.otherTrainers = "Volkov Pavel, Andreev Victor"
+		
+		w !, ##class(Dance.Web.JsonUser).RegistrationWDSF(data)
+	}
+	catch(ex){
+		do $SYSTEM.OBJ.DisplayError(ex.AsStatus())
+	}
+		
+	q $$$OK
+]]></Implementation>
+</Method>
+
 <Method name="InitTest">
 <Description>
 do ##class(Dance.Utils.Test).InitTest()</Description>
