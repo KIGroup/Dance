@@ -36,6 +36,13 @@ mainModule.config(['$routeProvider', function($routeProvider) {
 
 	// 
 	$routeProvider.when('/tournament/:tournamentId/couple/:coupleId/competitions', {templateUrl: 'partials/payment.csp' , controller: 'PaymentCtrl'});
+	$routeProvider.when('/tournament/:tournamentId/athlete/:athleteId/competitions', {templateUrl: 'partials/payment.csp' , controller: 'PaymentCtrl'});
+	
+	// 
+	$routeProvider.when('/tournament/:tournamentId/other/couple/:coupleKey/competitions', {templateUrl: 'partials/payment.csp' , controller: 'PaymentCtrl'});
+	$routeProvider.when('/tournament/:tournamentId/other/athlete/:athleteKey/competitions', {templateUrl: 'partials/payment.csp' , controller: 'PaymentCtrl'});
+
+	
 	
 	// Add competition	
 	$routeProvider.when('/tournament/:tournamentId/competition', {templateUrl: 'partials/competition.csp' , controller: 'CompetitionCtrl'});
@@ -66,9 +73,7 @@ mainModule.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/feedback', {templateUrl: 'partials/feedback.csp' , controller: 'FeedBackCtrl'});
 	
 	
-	
-	$routeProvider.when('/tournament/:tournamentId/regtest', {templateUrl: 'partials/registrationtest.csp' , controller: 'RegistrationTestCtrl'});
-	
-    $routeProvider.otherwise({redirectTo: '/tournaments'});
+
+   // $routeProvider.otherwise({redirectTo: '/tournaments'});
 }]);]]></CSP>
 </Export>

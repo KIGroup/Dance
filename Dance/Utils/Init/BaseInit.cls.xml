@@ -20,7 +20,9 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do ##class(Dance.Utils.Init.TournamentRank).Import()
 	do ##class(Dance.Utils.Init.Discipline).Import()
 	do ##class(Dance.Utils.Init.AgeCategory).Import()
+	do ##class(Dance.Utils.Init.TicketStatus).Import()
 	do ##class(Dance.Data.AgeCategoryWDSF).Import()
+	
 	set ^Settings("Dance", "LastSyncWDSFCompetitions") = "2014-01-01"
 	w ##class(Dance.Utils.TaskSyncWDSFController).SyncCompetitions()
 	
@@ -50,6 +52,7 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do $CLASSMETHOD("Dance.Data.Country", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Couple", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Ticket", "%KillExtent")
+	do $CLASSMETHOD("Dance.Data.TicketStatus", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.DancerClass", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Discipline", "%KillExtent")
 	do $CLASSMETHOD("Dance.Data.Participant", "%KillExtent")

@@ -4,6 +4,12 @@
 <Super>Participant</Super>
 <TimeCreated>63440,4317.627564</TimeCreated>
 
+<Property name="CoupleKey">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
 <Property name="ManLastName">
 <Type>%String</Type>
 <Required>1</Required>
@@ -72,24 +78,27 @@
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##super()
-	set proxy.man = ##class(%ZEN.proxyObject).%New()
-	set proxy.man.gender = "Male"
-	set proxy.man.lastName = ..ManLastName
-	set proxy.man.firstName = ..ManFirstName
-	set proxy.man.dob = $ZD(..ManDOB, 3)
+	set proxy.couple = ##class(%ZEN.proxyObject).%New()
+	set proxy.couple.key = ..CoupleKey
 	
-	set proxy.woman = ##class(%ZEN.proxyObject).%New()
-	set proxy.woman.gender = "Female"
-	set proxy.woman.lastName = ..WomanLastName
-	set proxy.woman.firstName = ..WomanFirstName
-	set proxy.woman.dob = $ZD(..WomanDOB, 3)
+	set proxy.couple.man = ##class(%ZEN.proxyObject).%New()
+	set proxy.couple.man.gender = "Male"
+	set proxy.couple.man.lastName = ..ManLastName
+	set proxy.couple.man.firstName = ..ManFirstName
+	set proxy.couple.man.dob = $ZD(..ManDOB, 3)
 	
-	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
-	set proxy.otherInfo.country = ..Country.ConvertToProxyObject()
-	set proxy.otherInfo.city = ..City
-	set proxy.otherInfo.club = ..Club
-	set proxy.otherInfo.mainTrainer = ..MainTrainer
-	set proxy.otherInfo.otherTrainers = ..OtherTrainers
+	set proxy.couple.woman = ##class(%ZEN.proxyObject).%New()
+	set proxy.couple.woman.gender = "Female"
+	set proxy.couple.woman.lastName = ..WomanLastName
+	set proxy.couple.woman.firstName = ..WomanFirstName
+	set proxy.couple.woman.dob = $ZD(..WomanDOB, 3)
+	
+	set proxy.couple.otherInfo = ##class(%ZEN.proxyObject).%New()
+	set proxy.couple.otherInfo.country = ..Country.ConvertToProxyObject()
+	set proxy.couple.otherInfo.city = ..City
+	set proxy.couple.otherInfo.club = ..Club
+	set proxy.couple.otherInfo.mainTrainer = ..MainTrainer
+	set proxy.couple.otherInfo.otherTrainers = ..OtherTrainers
 	
 	quit proxy
 ]]></Implementation>
@@ -101,6 +110,7 @@
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
 	set obj = ..%New()
+
 	set obj.Competition = competition 
 	
 	set obj.ManLastName = $ZCVT(couple.man.lastName, "I", "UTF8")
@@ -117,6 +127,7 @@
 	set obj.MainTrainer = $ZCVT(couple.otherInfo.mainTrainer, "I", "UTF8")
 	set obj.OtherTrainers = $ZCVT(couple.otherInfo.otherTrainers, "I", "UTF8")
 	
+	set obj.CoupleKey = couple.key	
 	set st = obj.%Save()
 	
 	quit obj
@@ -160,6 +171,12 @@
 </Value>
 <Value name="11">
 <Value>OtherTrainers</Value>
+</Value>
+<Value name="12">
+<Value>CoupleHash</Value>
+</Value>
+<Value name="13">
+<Value>CoupleKey</Value>
 </Value>
 </Data>
 </Storage>

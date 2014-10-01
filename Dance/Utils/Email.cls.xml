@@ -37,7 +37,8 @@
     	set smtp.smtpserver = $GET(^Settings("Dance","EmailSMTPSERVER"))
     	set smtp.port = $GET(^Settings("Dance","EmailSMTPPORT"))
   		set smtp.authenticator = auth
-  	
+  		set smtp.SSLConfiguration = $GET(^Settings("Dance","EmailSSL"))
+  		
     	$$$THROWONERROR(status, smtp.Send(mail))
 	}
 	catch (ex){

@@ -4,6 +4,13 @@
 <Super>Participant</Super>
 <TimeCreated>63440,4238.448759</TimeCreated>
 
+<UDLText name="T">
+<Content><![CDATA[
+// Property FullName As %String [ Calculated, SqlComputeCode = {set {FullName} = ##class({%%CLASSNAME}).GetFullName({Couple})}, SqlComputed ];
+
+]]></Content>
+</UDLText>
+
 <Property name="Couple">
 <Type>CoupleUDSR</Type>
 <Required>1</Required>

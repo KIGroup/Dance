@@ -28,6 +28,7 @@
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##super()
+	set proxy.type = "WDSF"
 	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
 	set proxy.otherInfo.country = ..Man.Country.ConvertToProxyObject()
 	set proxy.otherInfo.ageCategory = ..AgeCategory
@@ -58,7 +59,10 @@
 	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByNumbers(manNumber, womanNumber, .st)
 	quit:$$$ISERR(st) obj
 	
-	set obj = ..%New()
+	if '$ISOBJECT(obj){
+		set obj = ..%New()
+	}
+	
 	set obj.WDSFId = wdsfData.id
 	set obj.Man = ##class(PersonWDSF).SaveFromWDSF(wdsfData.man, .st)	
 	quit:$$$ISERR(st) obj

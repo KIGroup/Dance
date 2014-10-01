@@ -34,6 +34,12 @@ Couples</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetFullName">
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit ..Man.LastName.Value_" "_..Man.FirstName.Value_"; "_..Woman.LastName.Value_" "_..Woman.FirstName.Value
+]]></Implementation>
+</Method>
+
 <Method name="Create">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[manId:%String,womanId:%String,&status]]></FormalSpec>

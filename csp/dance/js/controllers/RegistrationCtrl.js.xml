@@ -2,561 +2,854 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
-
+//   
+ 
 /*===========================================================================================
-Registration
+Registration         
 ===========================================================================================*/
-
-controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, CoupleSrvc){
+  
+controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
 	$scope.menu.pages.selected = {};
     $scope.menu.shortMenu = true;
 
-    $scope.page = {};
-    $scope.page.regUrl = {visible: false};
-    $scope.page.genders = [{name: $filter('localize')('Мужской'), code: 'M'}, {name: $filter('localize')('Женский'), code: 'F'}];
-    $scope.page.coupleOtherInfo = {};
-    $scope.page.competitionTable = {};
-    $scope.page.tournament = {};
-    $scope.page.udsrCouple = {man: {},
-                              woman: {}};
+    $scope.pageStore.registration = $scope.pageStore.registration || {grid:{}};  
+    
+    $scope.tabUDSR = {
+        searchForm: {}
+    };
 
-    $scope.page.wdsfCouple = {btnNextVisible: true,
-	    					  man: {dob: '1990-10-10'},
-                              woman: {dob: '1993-10-10'}}; 
-                             
-    $scope.page.newCouple = {btnNextVisible: true,
-                             man: {},
-                             woman: {},
-                             type: 'Couple',
-                             otherInfo:{country:{}}};  
+    $scope.tabWDSF = {
+        searchForm: {},
+        formCouple: {
+            btnBackVisible: true,
+            btnNextVisible: true
+        },
+        formSingle: {
+            btnBackVisible: true,
+            btnNextVisible: true
+        }
+    };
+    
+    $scope.tabOTHER = {
+        couple: {},
+        athlete: null,
+        genders: [
+            {name: $filter('localize')('Мужской'), code: 'Male'}, 
+            {name: $filter('localize')('Женский'), code: 'Female'}
+        ],
+        formCouple: {
+            btnBackVisible: false,
+            btnNextVisible: true
+        },
+        formSingle: {
+            btnBackVisible: false,
+            btnNextVisible: true
+        }  
+    };
 
-    /*/========================================================== 
-    $scope.page.newCouple.man.lastName = 'Петров';
-    $scope.page.newCouple.man.firstName = 'Петр';
-    $scope.page.newCouple.man.dob = '1990-10-20';
+    $scope.competitionTable = {};
 
-    $scope.page.newCouple.woman.lastName = 'Максимова';
-    $scope.page.newCouple.woman.firstName = 'Лариса';
-    $scope.page.newCouple.woman.dob = '1991-11-10';
-
-    $scope.page.newCouple.otherInfo.country.id = 1;
-    $scope.page.newCouple.otherInfo.city = 'Лондон';
-    $scope.page.newCouple.otherInfo.club = 'Крает';
-    $scope.page.newCouple.otherInfo.mainTrainer = 'Сикмонов Павел';    
-    //==========================================================*/
-	
- 	if (!$scope.pageStore.registration) 
-        $scope.pageStore.registration = {grid:{}};
-
-
-    $scope.page.init = function(){
+    $scope.init = function(){
         //    
-    	// Competition table
-    	//
-        $scope.page.competitionTable.columns = [
-                          {name: 'Дата'             , sqlName: 'StartDate'               , isSorted: true , isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
-                          {name: 'Время'            , sqlName: 'StartTime'               , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
-                          {name: 'Название'         , sqlName: 'Name->Value'             , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Программа'        , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Возрастная группа', sqlName: 'AgeCategory'             , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Класс'            , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Тип'              , sqlName: 'Type->Name->Value'       , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '50px'}},
-                          {name: 'Цена'             , sqlName: 'Price'                   , isSorted: false, isSortable: false , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
+        // Competition table
+        //
+        $scope.competitionTable.columns = [
+                          {name: 'Дата', sqlName: 'StartDate', isSorted: true , isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},
+                          {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
+                          {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
+                          {name: 'Цена', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
         
-        $scope.page.competitionTable.properties = [
+        $scope.competitionTable.properties = [
                           {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'startTime'},
-                          {name:'name'},
+                          {name:'fullName',
+                                calculate: function(item){
+                                    item.fullName = item.name;
+                                    if (item.wdsf && item.wdsf.status != 'Registering'){
+                                        item.fullName += ' (WDSF status is ' + item.wdsf.status + ' !)';
+                                    } 
+                                }},
                           {name:'discipline.name'},
-                          {name:'ageCategory.fullName', calculate: function(item){
-                                                       item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
-                                                    }},
-                          {name:'dancerClassesString', calculate: function(item){
-                                                            item.dancerClassesString = '';
-                                                            for(var i=0; i < item.dancerClasses.length; i++){
-                                                                item.dancerClassesString = item.dancerClassesString + ', ' + item.dancerClasses[i].name;
-                                                            }
+                          {name:'ageCategory.fullName', 
+                                calculate: function(item){
+                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
+                                }},
+                          {name:'dancerClassesString', 
+                                calculate: function(item){
+                                    item.dancerClassesString = '';
+                                    for(var i=0; i < item.dancerClasses.length; i++){
+                                        item.dancerClassesString = item.dancerClassesString + ', ' + item.dancerClasses[i].name;
+                                    }
 
-                                                            item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
-                                                        }},
+                                    item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
+                                }},
                           {name:'type.name'},
                           {name:'price', cellStyle: {textAlign: 'right'}}];
 
-        $scope.page.competitionTable.pageSize = 1000; 
-        $scope.page.competitionTable.pageCurr = 1;
-        $scope.page.competitionTable.itemsTotal = 0;
-        $scope.page.competitionTable.selectable = false;
-        $scope.page.competitionTable.selectedItems = [];
-        $scope.page.competitionTable.multiSelectMode = true;
-        $scope.page.competitionTable.forciblyUpdate = 0;
+        $scope.competitionTable.pageSize = 1000; 
+        $scope.competitionTable.pageCurr = 1;
+        $scope.competitionTable.itemsTotal = 0;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.selectedItems = [];
+        $scope.competitionTable.multiSelectMode = true;
+        $scope.competitionTable.forciblyUpdate = 0;
 
         $scope.pageStore.registration.grid.tableShortView = $scope.pageStore.registration.grid.tableShortView == null ? true : $scope.pageStore.registration.grid.tableShortView;
         
         if ($scope.pageStore.registration.grid.tableShortView){
-            $scope.page.competitionTable.setHiddenCoulumns(true);
+            $scope.competitionTable.setHiddenCoulumns(true);
         }
         else{
-            $scope.page.competitionTable.setHiddenCoulumns(false);
+            $scope.competitionTable.setHiddenCoulumns(false);
         }  
+
+        // Load tournament
+        $scope.loadTournament($routeParams.tournamentId);
     };
 
-
-    /// Load Tournament by ID   
-    $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
-            function(data){
-                $scope.page.tournament = data;
-
-                if (data.tabOtherAllowed){
-                    $scope.page.coupleType='new';
-                    $scope.page.udsrCouple.tabActive = false;    
-                	$scope.page.wdsfCouple.tabActive = false;
-                	$scope.page.newCouple.tabActive = true;  
-                }
-                
-                if (data.tabWDSFAllowed){ 
-                    $scope.page.coupleType='wdsf';
-                    $scope.page.udsrCouple.tabActive = false;    
-                	$scope.page.wdsfCouple.tabActive = true;
-                	$scope.page.newCouple.tabActive = false;    
-                }
-
-                if (data.tabUDSRAllowed){
-                    $scope.page.coupleType='udsr';
-                    $scope.page.udsrCouple.tabActive = true;     
-                	$scope.page.wdsfCouple.tabActive = false;
-                	$scope.page.newCouple.tabActive = false;
-                }
-
-                $scope.page.competitionTable.refresh();
-                if ($scope.page.tournament.status.code != 'Registration')
-                    $scope.page.tournamentAlert = UtilsSrvc.getAlert('Внимание!', $filter('localize')('Регистрация участников невозможна! Статус турнира - "') + $scope.page.tournament.status.name + '".', 'error', true);
-            },
-            function(data, status, headers, config){
-                $scope.page.tournamentAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });
-    };
-
-    /// Load types of competition
-    $scope.page.loadCompetitionTypes = function(){  
-        $scope.page.competitionTable.types = [{code: 'Couple', name: $filter('localize')('Пара')}, {code: 'Solo', name: $filter('localize')('Соло')}];
-    };
- 
     /// Load All Competitions in Tournament  
-    $scope.page.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
-        $scope.page.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
+    $scope.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
+        if (!$scope.tournament)
+            return;
+         
+        $scope.competitionTable.items = [];
+        $scope.competitionTable.selectedItems = [];
+        $scope.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
 
-        if ($scope.page.competitionTable.avialableMode){
-            var couple = {};
-            
-            switch($scope.page.coupleType){
-                case 'udsr':{
-                    couple = {type: 'udsr', man: $scope.page.udsrCouple.man, woman: $scope.page.udsrCouple.woman};
-                    break;
-                }
-                case 'wdsf':{
-                    couple = {type: 'wdsf', man: $scope.page.wdsfCouple.man, woman: $scope.page.wdsfCouple.woman};    
-                    break;
-                }
-                case 'new':{
-                    couple = {type: 'new', isSolo: $scope.page.newCouple.type == 'Solo', man: $scope.page.newCouple.man, woman: $scope.page.newCouple.woman};
-                    break;
-                }
-            }
+        var dataSending= {
+            type: $scope.selectedTab, /* UDSR, WDSF, OTHER*/
+            tournamentId: $scope.tournament.id
+        };
+
+        if ($scope.competitionTable.avialableMode){
+            dataSending.couple = $scope['tab' + $scope.selectedTab].couple || null;
+            dataSending.athlete = $scope['tab' + $scope.selectedTab].athlete || null;
         
-            CompetitionSrvc.getAllAvialableForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {couple: couple, tournamentId: $scope.page.tournament.id}).then(
+            CompetitionSrvc.getAllAvialableForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, dataSending).then(
                 function(data){
                     data = data.children;
-                    $scope.page.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
-                    $scope.page.competitionTable.itemsTotal = data.itemsTotal;
-                    $scope.page.competitionTable.items = data.items; 
-                    $scope.page.competitionTable.onSelect(null);
+                    $scope.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
+                    $scope.competitionTable.itemsTotal = data.itemsTotal;
+                    $scope.competitionTable.items = data.items; 
+                    $scope.competitionTable.onSelect(null);
 
-                    $scope.page.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
+                    $scope.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
                 },
                 function(data, status, headers, config){
-                    $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-                    $scope.page.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
+                    $scope.cmpAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                    $scope.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
                 });
         }
         else{
-            CompetitionSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {coupleType: $scope.page.coupleType, tournamentId: $scope.page.tournament.id}).then(
+            CompetitionSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, dataSending).then(
                 function(data){
-    	            data = data.children;
-                    $scope.page.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
-                    $scope.page.competitionTable.itemsTotal = data.itemsTotal;
-                    $scope.page.competitionTable.items = data.items; 
-                    $scope.page.competitionTable.caption = $filter('localize')('Все группы');
+                    data = data.children;
+                    $scope.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
+                    $scope.competitionTable.itemsTotal = data.itemsTotal;
+                    $scope.competitionTable.items = data.items; 
+                    $scope.competitionTable.caption = $filter('localize')('Все группы');
 
-                    $scope.page.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
+                    $scope.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
                 },
                 function(data, status, headers, config){
-                    $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-                    $scope.page.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
+                    $scope.cmpAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                    $scope.competitionTable.itemsStatus = $filter('localize')('Произошла ошибка при загрузке групп.');
                 });
         }
     };
 
-    $scope.page.competitionTable.setHiddenCoulumns = function(value){
+    $scope.competitionTable.setHiddenCoulumns = function(value){
         var indexes = [1,3,4,5,6];
         for(var n=0; n < indexes.length; n++){
-            $scope.page.competitionTable.columns[indexes[n]].hidden = value;     
+            $scope.competitionTable.columns[indexes[n]].hidden = value;     
         }
     };
 
     // Select competition
-    $scope.page.competitionTable.onSelect = function(item){
-        $scope.page.competitionTable.caption = $filter('localize')('Доступные группы для регистрации.') + ' ' + $filter('localize')('Выбрано %1 из %2.')
-                                               .replace(/%1/g, $scope.page.competitionTable.selectedItems.length)
-                                               .replace(/%2/g, $scope.page.competitionTable.items.length);
-                                               
+    $scope.competitionTable.onSelect = function(item){
+        $scope.competitionTable.caption = $filter('localize')('Доступные группы для регистрации.') + ' ' + $filter('localize')('Выбрано %1 из %2.')
+                                               .replace(/%1/g, $scope.competitionTable.selectedItems.length)
+                                               .replace(/%2/g, $scope.competitionTable.items.length);                                    
     };
 
     /// Refresh competition table  
-    $scope.page.competitionTable.refresh = function(){ 
-    	$scope.page.competitionTable.forciblyUpdate++; 
+    $scope.competitionTable.refresh = function(){ 
+        $scope.competitionTable.forciblyUpdate++; 
+    };
+
+    $scope.competitionTable.getSelectedIdArray = function(){ 
+        var idArray = [];
+        for (var i=0; i < $scope.competitionTable.selectedItems.length; i++){
+            idArray.push($scope.competitionTable.selectedItems[i].id);
+        } 
+
+        return idArray;
+    };
+
+    /// Load Tournament by ID   
+    $scope.loadTournament = function(id){
+        TournamentSrvc.getById(id).then(
+            function(data){
+                $scope.tournament = data;
+                $scope.tabUDSR.visible = data.tabUDSRAllowed == 1;
+                $scope.tabWDSF.visible = data.tabWDSFAllowed == 1;
+                $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
+                $scope.competitionTable.refresh();
+            },
+            function(data, status, headers, config){
+                $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+
+    $scope.openParticipantCompetitions = function(type){
+        switch(type){
+            case 'UDSR':
+            $location.path('/tournament/' + $scope.tournament.id + ($scope.tabUDSR.couple ? '/couple/' + $scope.tabUDSR.couple.id : '/athlete/' + $scope.tabUDSR.athlete.id) + '/competitions');
+            break;
+
+            case 'WDSF':
+            $location.path('/tournament/' + $scope.tournament.id + ($scope.tabWDSF.couple ? '/couple/' + $scope.tabWDSF.couple.id : '/athlete/' + $scope.tabWDSF.athlete.id) + '/competitions');
+            break;
+
+            case 'OTHER':
+            $location.path('/tournament/' + $scope.tournament.id + '/other' + ($scope.tabOTHER.couple ? '/couple/' + $scope.tabOTHER.couple.key : '/athlete/' + $scope.tabOTHER.athlete.key) + '/competitions');
+            break;            
+        }
+    };
+
+
+    $scope.loadCountParticipantCompetitions = function(type){
+        var filter = '?tournamentId=' + $scope.tournament.id;
+        switch(type){
+            case 'UDSR':
+                filter +=  $scope.tabUDSR.couple ? ('&coupleId=' + $scope.tabUDSR.couple.id) : '';
+                filter +=  $scope.tabUDSR.athlete ? ('&athleteId=' + $scope.tabUDSR.athlete.id) : '';
+                break;
+            case 'WDSF':
+                filter +=  $scope.tabWDSF.couple ? ('&coupleId=' + $scope.tabWDSF.couple.id) : '';
+                filter +=  $scope.tabWDSF.athlete ? ('&athleteId=' + $scope.tabWDSF.athlete.id) : '';
+                break;
+            case 'OTHER':
+                filter +=  $scope.tabOTHER.couple ? ('&coupleKey=' + $scope.tabOTHER.couple.key) : '';
+                filter +=  $scope.tabOTHER.athlete ? ('&athleteKey=' + $scope.tabOTHER.athlete.key) : '';
+                break;
+        }
+
+        $scope.regCompetitionsCount = 0;
+
+        ParticipantSrvc.getCompetitionsCount(filter).then(
+            function(data){
+                $scope.regCompetitionsCount = data.count;
+            },
+            function(data, status, headers, config){
+                $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+            });
+    };
+
+    // ===========================================================================================================================================
+    // Tab UDSR                                                                                                                           Tab UDSR
+    // ===========================================================================================================================================
+    $scope.tabUDSR.select = function(){
+        $scope.selectedTab = 'UDSR';
+        console.log('tabUDSR.select');
+        $scope.competitionTable.refresh();
+    };
+
+    $scope.tabUDSR.searchForm.search = function(manNumber, womanNumber){
+        if (manNumber == '' && womanNumber == '')
+            return;
+
+        $scope.tabUDSR.searchForm.processing = true;
+
+        var afterSuccess = function(){
+            $scope.tabWDSF.disabled = true;
+            $scope.tabOTHER.disabled = true;
+            $scope.tabUDSR.searchForm.processing = false;
+            $scope.competitionTable.avialableMode = true;
+            $scope.competitionTable.selectable = true; 
+            $scope.competitionTable.refresh();
+            $scope.loadCountParticipantCompetitions('UDSR');  
+        };
+
+        if (manNumber != '' && womanNumber != ''){
+            CoupleSrvc.getUDSRByNumbers(manNumber, womanNumber).then(
+                function(data){
+                    $scope.tabUDSR.couple = data;
+                    afterSuccess();
+                },
+                function(data, status, headers, config){
+                    $scope.tabUDSR.searchForm.processing = false;
+                    $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+        else{
+            PersonSrvc.getByUDSRNumber(manNumber ? manNumber : womanNumber).then(
+                function(data){
+                    $scope.tabUDSR.athlete = data;
+                    afterSuccess();
+                },
+                function(data, status, headers, config){
+                    $scope.tabUDSR.searchForm.processing = false;
+                    $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+    };
+
+    $scope.tabUDSR.searchForm.clear = function(){
+        $scope.form_udsrSearch.$setPristine();
+        $scope.tabUDSR.searchForm.manNumber = '';
+        $scope.tabUDSR.searchForm.womanNumber = '';
+        $scope.tabUDSR.couple = null;
+        $scope.tabUDSR.athlete = null; 
+    };
+
+    $scope.tabUDSR.back = function(){
+        $scope.tabUDSR.searchForm.clear();
+        $scope.tabWDSF.disabled = false;
+        $scope.tabOTHER.disabled = false;
+        $scope.tabUDSR.searchForm.processing = false;
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabUDSR.registration = function(){
+        var postData = {
+            competitions: $scope.competitionTable.getSelectedIdArray(),
+            couple: $scope.tabUDSR.couple || null,
+            athlete: $scope.tabUDSR.athlete || null 
+        };
+
+        RegistrationSrvc.UDSR(postData).then(
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                $scope.loadCountParticipantCompetitions('UDSR');
+                console.log('reg success', data);
+            },
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                console.log('reg error', data);
+            });  
+    };
+
+
+    // ===========================================================================================================================================
+    // Tab WDSF                                                                                                                           Tab WDSF
+    // ===========================================================================================================================================
+    $scope.tabWDSF.select = function(){
+        $scope.selectedTab = 'WDSF';
+        $scope.competitionTable.refresh();
+    };
+
+    $scope.tabWDSF.searchForm.search = function(manNumber, womanNumber){
+        if (manNumber == '' && womanNumber == '')
+            return;
+
+        $scope.tabWDSF.searchForm.processing = true;
+
+        var afterSuccess = function(){
+            $scope.tabUDSR.disabled = true;
+            $scope.tabOTHER.disabled = true;
+            $scope.tabWDSF.searchForm.processing = false;
+            $scope.loadCountParticipantCompetitions('WDSF');
+        };
+
+        if (manNumber != '' && womanNumber != ''){
+            CoupleSrvc.getWDSFByNumbers(manNumber, womanNumber).then(
+                function(data){
+                    $scope.tabWDSF.couple = data;
+                    afterSuccess();
+                    if (data.otherInfo.status != 'Active'){
+                        $scope.tabWDSF.formCouple.disabled = true;
+                        $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', 'Статус пары не "Active"! Регистрация пары невозможна.', 'error', true);
+                    }
+                },
+                function(data, status, headers, config){
+                    $scope.tabWDSF.searchForm.processing = false;
+                    $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+        else{
+            PersonSrvc.getByWDSFNumber(manNumber ? manNumber : womanNumber).then(
+                function(data){
+                    $scope.tabWDSF.athlete = data;
+                    afterSuccess();
+                },
+                function(data, status, headers, config){
+                    $scope.tabWDSF.searchForm.processing = false;
+                    $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                });  
+        }
+    };
+
+    $scope.tabWDSF.searchForm.clear = function(){
+        $scope.form_wdsfSearch.$setPristine();
+        $scope.tabWDSF.searchForm.manNumber = '';
+        $scope.tabWDSF.searchForm.womanNumber = '';
+        $scope.tabWDSF.couple = null;
+        $scope.tabWDSF.athlete = null; 
+    };
+
+    $scope.tabWDSF.formCouple.back = function(){
+        if ($scope.tabWDSF.formCouple.btnRegistrationVisible){
+            $scope.tabWDSF.formCouple.btnNextVisible = true;
+            $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
+            $scope.regCompetitionsCount = 0;
+        }
+        else{
+            $scope.tabWDSF.searchForm.clear();
+            $scope.tabUDSR.disabled = false;
+            $scope.tabOTHER.disabled = false;
+            $scope.tabWDSF.searchForm.processing = false;    
+        }
+
+        $scope.tabWDSF.alert.visible = false;
+        $scope.tabWDSF.formCouple.disabled = false;
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabWDSF.formCouple.next = function(){
+        $scope.tabWDSF.couple.man.dob = UtilsSrvc.getValidDate($scope.tabWDSF.couple.man.dob);
+        $scope.tabWDSF.couple.woman.dob = UtilsSrvc.getValidDate($scope.tabWDSF.couple.woman.dob);
+        
+        if ($scope.tabWDSF.couple.man.dob == "" || $scope.tabWDSF.couple.woman.dob == ""){
+            return;
+        }
+
+        $scope.tabWDSF.formCouple.disabled = true;
+        $scope.tabWDSF.formCouple.btnNextVisible = false;
+        $scope.tabWDSF.formCouple.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabWDSF.formSingle.back = function(){
+        if ($scope.tabWDSF.formSingle.btnRegistrationVisible){
+            $scope.tabWDSF.formSingle.btnNextVisible = true;
+            $scope.tabWDSF.formSingle.btnRegistrationVisible = false;
+            $scope.regCompetitionsCount = 0;
+        }
+        else{
+            $scope.tabWDSF.searchForm.clear();
+            $scope.tabUDSR.disabled = false;
+            $scope.tabOTHER.disabled = false;
+            $scope.tabWDSF.searchForm.processing = false;    
+        }
+
+        $scope.tabWDSF.formSingle.disabled = false;
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
     };
   
+    $scope.tabWDSF.formSingle.next = function(){
+        $scope.tabWDSF.athlete.dob = UtilsSrvc.getValidDate($scope.tabWDSF.athlete.dob);
+        
+        if ($scope.tabWDSF.athlete.dob == ""){
+            return;
+        }
+
+        $scope.tabWDSF.formSingle.disabled = true;
+        $scope.tabWDSF.formSingle.btnNextVisible = false;
+        $scope.tabWDSF.formSingle.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+
+    $scope.tabWDSF.registration = function(){
+        var postData = {
+            competitions: $scope.competitionTable.getSelectedIdArray(),
+            couple: $scope.tabWDSF.couple || null,
+            athlete: $scope.tabWDSF.athlete || null 
+        };
+
+        RegistrationSrvc.WDSF(postData).then(
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                $scope.loadCountParticipantCompetitions('WDSF');
+                console.log('reg success', data);
+            },
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                console.log('reg error', data);
+            });  
+    };
+
+
+
+    // ===========================================================================================================================================
+    // Tab OTHER                                                                                                                          Tab WDSF
+    // ===========================================================================================================================================
+    $scope.tabOTHER.select = function(){
+        $scope.selectedTab = 'OTHER';
+        $scope.competitionTable.refresh();
+    };
+
+    $scope.tabOTHER.formCouple.back = function(){
+        if ($scope.tabOTHER.formCouple.btnRegistrationVisible){
+            $scope.tabOTHER.formCouple.btnNextVisible = true;
+            $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
+            $scope.tabOTHER.formCouple.disabled = false;
+            $scope.regCompetitionsCount = 0;
+            $scope.tabOTHER.formCouple.btnBackVisible = false;
+        }
+        else{
+            $scope.tabUDSR.disabled = false;
+            $scope.tabWDSF.disabled = false;
+        }
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabOTHER.formCouple.next = function(){
+        $scope.tabOTHER.couple.man.dob = UtilsSrvc.getValidDate($scope.tabOTHER.couple.man.dob);
+        $scope.tabOTHER.couple.woman.dob = UtilsSrvc.getValidDate($scope.tabOTHER.couple.woman.dob);
+        
+        if ($scope.tabOTHER.couple.man.dob == "" || $scope.tabOTHER.couple.woman.dob == ""){
+            return;
+        }
+
+        $scope.tabOTHER.couple.key = ParticipantSrvc.getOtherCoupleKey($scope.tabOTHER.couple);
+        $scope.loadCountParticipantCompetitions('OTHER');
+        
+        $scope.tabOTHER.formCouple.disabled = true;
+        $scope.tabOTHER.formCouple.btnNextVisible = false;
+        $scope.tabOTHER.formCouple.btnBackVisible = true;
+        $scope.tabOTHER.formCouple.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabOTHER.formSingle.back = function(){
+        if ($scope.tabOTHER.formSingle.btnRegistrationVisible){
+            $scope.tabOTHER.formSingle.btnNextVisible = true;
+            $scope.tabOTHER.formSingle.btnRegistrationVisible = false;
+            $scope.tabOTHER.formSingle.disabled = false;
+            $scope.regCompetitionsCount = 0;
+            $scope.tabOTHER.formSingle.btnBackVisible = false;
+        }
+        else{
+            $scope.tabUDSR.disabled = false;
+            $scope.tabOTHER.disabled = false;
+        }
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+    $scope.tabOTHER.formSingle.next = function(){
+        $scope.tabOTHER.athlete.dob = UtilsSrvc.getValidDate($scope.tabOTHER.athlete.dob);
+        
+        if ($scope.tabOTHER.athlete.dob == ""){
+            return;
+        }
+
+        $scope.tabOTHER.athlete.key = ParticipantSrvc.getOtherAthleteKey($scope.tabOTHER.athlete).replace(/\//g, "SLASH");
+        $scope.loadCountParticipantCompetitions('OTHER');
+
+        $scope.tabOTHER.formSingle.disabled = true;
+        $scope.tabOTHER.formSingle.btnNextVisible = false;
+        $scope.tabOTHER.formSingle.btnBackVisible = true;
+        $scope.tabOTHER.formSingle.btnRegistrationVisible = true;
+        
+        $scope.competitionTable.selectable = true; 
+        $scope.competitionTable.avialableMode = true;
+        $scope.competitionTable.refresh();  
+    };
+
+
+    $scope.tabOTHER.registration = function(){
+        var postData = {
+            competitions: $scope.competitionTable.getSelectedIdArray(),
+            couple: $scope.tabOTHER.couple || null,
+            athlete: $scope.tabOTHER.athlete || null 
+        };
+
+        RegistrationSrvc.OTHER(postData).then(
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                $scope.loadCountParticipantCompetitions('OTHER');
+                console.log('reg success', data);
+            },
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                console.log('reg error', data);
+            });  
+    };
+
+
+    // ===========================================================================================================================================
+    // Confirm Dialog                                                                                                               Confirm Dialog
+    // ===========================================================================================================================================
+    $scope.confirmDialog = {};
+
+    $scope.confirmDialog.open = function(type, applyMethod){
+        $scope.confirmDialog.data = {};  
+        $scope.confirmDialog.data.type = type;
+        $scope.confirmDialog.data.couple = angular.copy($scope['tab' + type].couple) || null;
+        $scope.confirmDialog.data.athlete = angular.copy($scope['tab' + type].athlete) || null; 
+        $scope.confirmDialog.apply = applyMethod;
+
+        $('#ConfirmDialog').modal('show');
+        $scope.confirmDialog.visible = true;
+    };
+
+    $scope.confirmDialog.close = function(){
+        $('#ConfirmDialog').modal('hide');
+        $scope.confirmDialog.visible = false;  
+    };
+
+
+
     /// Load WDSF Countries
-    $scope.page.loadCountries = function(){
+    $scope.loadCountries = function(){
         OtherSrvc.getCountries().then(
             function(data){
-                $scope.page.countries = data.children;
+                $scope.countries = data.children;
             },
             function(data, status, headers, config){
-                $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
+                $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
 
-    /// Load count of tournament competitons for couple 
-    $scope.page.loadCoupleCompetitionsCount = function(tournamentId, coupleId){
-        $scope.page.coupleOtherInfo.competitionsCount = 0;
-        
-        if (!tournamentId || !coupleId)
-            return;
+    $scope.loadCountries();
+    $scope.init();
+ 
 
-        CoupleSrvc.getCompetitionsCount(tournamentId, coupleId).then(
-            function(data){
-                $scope.page.coupleOtherInfo.competitionsCount = data.count;
-            },
-            function(data, status, headers, config){
-                //$scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });
-    }; 
-   
-    $scope.page.showCoupleGroups = function(tournamentId, coupleId){
-        $location.path("/tournament/" + tournamentId + "/couple/" + coupleId + "/competitions"); 
-    };
-
-
-    $scope.page.openConfirmDlg = function(type, man, woman, otherInfo, regMethod){
-        $scope.page.confirmData = {};  
-        $scope.page.confirmData.type = type; 
-    
-        if (type == 'udsr'){
-            $scope.page.confirmData.couple = {man: $scope.page.udsrCouple.man, 
-                                              woman: $scope.page.udsrCouple.woman, 
-                                              otherInfo: $scope.page.udsrCouple.otherInfo};        
+    $scope.getResultTableRow = function(res){
+        if (res.status == 1){
+            return $filter('localize')('Регистрация завершена.') + '\n' + res.competition.name + ' (' + res.competition.startDate + ')';
         }
-        else if (type == 'wdsf'){
-            $scope.page.confirmData.couple = {man: $scope.page.wdsfCouple.man, 
-                                              woman: $scope.page.wdsfCouple.woman, 
-                                              otherInfo: $scope.page.wdsfCouple.otherInfo};        
-        }
-        else if (type == 'new'){
-            $scope.page.confirmData.couple = {man: $scope.page.newCouple.man, 
-                                              woman: $scope.page.newCouple.woman, 
-                                              otherInfo: $scope.page.newCouple.otherInfo};        
 
-            for(var i=0; i < $scope.page.countries.length; i++){
-                if ($scope.page.countries[i].id == $scope.page.confirmData.couple.otherInfo.country.id){
-                    $scope.page.confirmData.couple.otherInfo.country = $scope.page.countries[i];
-                }
+        var row = $filter('localize')('Регистрация невозможна. ') + res.otherInfo.message + '\n';
+        row += res.competition.name + ' (' + res.competition.startDate + ')\n';
+
+        if (res.otherInfo.conflictCompetitions && res.otherInfo.conflictCompetitions.length != 0){
+            row += 'Обнаружены конфликтные группы для участника ' + (res.otherInfo.athlete ? res.otherInfo.athlete.lastName + ' ' + res.otherInfo.athlete.firstName : '') + ':';
+            for (var i = 0; i < res.otherInfo.conflictCompetitions.length; i++){
+                row += '\n • ' + res.otherInfo.conflictCompetitions[i].name + ', ' + res.otherInfo.conflictCompetitions[i].startDate + ', Турнир: ' + res.competition.tournament.name;
             }
         }
-
-        $scope.page.confirmData.couple = {man: man, woman: woman, otherInfo: otherInfo};
-        $scope.page.confirmData.register = regMethod;
-
-        $('#ConfirmModal').modal('show');
-        $scope.page.confirmModalVisible = true;
-    };
-
-
-    $scope.page.closeConfirmDlg = function(){
-        $('#ConfirmModal').modal('hide');
-        $scope.page.confirmModalVisible = false;  
-    };
-
-
-    ///==========================================================================================================================================================================
-    /// UDSR COUPLE                                                                                                                                                   UDSR COUPLE 
-    ///==========================================================================================================================================================================
-    // Search couple by min    
-    $scope.page.udsrCouple.search = function(manNum, womanNum){
-        $scope.page.coupleOtherInfo.id = null;
-
-        $scope.page.udsrCouple.processingImgVisible = true;
-        $scope.page.udsrCouple.alert.visible = false;
-
-        $scope.page.competitionTable.avialableMode = false;
-        $scope.page.competitionTable.selectable = false;
-
-        CoupleSrvc.getUDSRByNumbers(manNum, womanNum).then(
-            function(data){
-                $scope.page.udsrCouple.exists = true;
-                $scope.page.coupleOtherInfo.id = data.id;
-                $scope.page.udsrCouple.man = data.man;
-                $scope.page.udsrCouple.woman = data.woman;
-                $scope.page.udsrCouple.otherInfo = data.otherInfo
-
-                $scope.page.wdsfCouple.tabDisabled = true;  
-                $scope.page.newCouple.tabDisabled = true;  
-         
-                $scope.page.competitionTable.avialableMode = true;
-                $scope.page.competitionTable.selectable = true;
-                $scope.page.competitionTable.refresh();
-
-                $scope.page.udsrCouple.processingImgVisible = false;
-
-                $scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);               
-            },
-            function(data, status, headers, config){
-                $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-                $scope.page.udsrCouple.processingImgVisible = false;
-            });  
-    };
-
-    // Clear search form
-    $scope.page.udsrCouple.clear = function(){
-        $scope.page.coupleOtherInfo.id = null;
         
-        $scope.form_udsrCouple.$setPristine(); 
-        $scope.page.udsrCouple.exists = false;
-        $scope.page.udsrCouple.man = {}; 
-        $scope.page.udsrCouple.woman = {}; 
-        $scope.page.udsrCouple.alert.visible=false;
 
-        $scope.page.wdsfCouple.tabDisabled = false;  
-        $scope.page.newCouple.tabDisabled = false;  
-        
-        $scope.page.competitionTable.avialableMode = false;
-        $scope.page.competitionTable.selectable = false;
-        $scope.page.competitionTable.selectedItems = [];
-        $scope.page.competitionTable.refresh();    
-    };
 
-    // Registration USDR couple
-    $scope.page.udsrCouple.register = function(){
-        CoupleSrvc.registrationExisting({man: $scope.page.udsrCouple.man, woman: $scope.page.udsrCouple.woman, competitions: $scope.page.competitionTable.selectedItems}).then(
-            function(data){
-                //$scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Готово!', 'Регистрация успешно завершена!', 'info', true);
-            	//$scope.page.competitionTable.selectedItems = [];
-            	//$scope.page.competitionTable.refresh();
-                //$scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-                //$timeout(function(){
-                $scope.pageStore.tournamentPayment = {gridCompetitions: {}, showAlert: true};
-                $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-                //}, 1500);
-            },
-            function(data, status, headers, config){
-                $scope.page.udsrCouple.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });  
-    };
-
-    
-    ///==========================================================================================================================================================================
-    /// WDSF COUPLE                                                                                                                                                   WDSF COUPLE 
-    ///==========================================================================================================================================================================
-    // Search WDSF couple by min
-    $scope.page.wdsfCouple.search = function(manNum, womanNum){
-        $scope.page.coupleOtherInfo.id = null;
-        
-        $scope.page.wdsfCouple.processingImgVisible = true;
-        $scope.page.wdsfCouple.alert.visible = false;
-        
-        $scope.page.competitionTable.avialableMode = false;
-        $scope.page.competitionTable.selectable = false;
-
-        CoupleSrvc.getWDSFByNumbers(manNum, womanNum).then(
-            function(data){
-                $scope.page.wdsfCouple.exists = true;
-                $scope.page.wdsfCouple.btnClearVisible = true;
-                $scope.page.coupleOtherInfo.id = data.id;
-                $scope.page.wdsfCouple.man = data.man;
-                $scope.page.wdsfCouple.woman = data.woman;
-                $scope.page.wdsfCouple.otherInfo = data.otherInfo
-
-                $scope.page.udsrCouple.tabDisabled = true;  
-                $scope.page.newCouple.tabDisabled = true;
-
-                //$scope.page.competitionTable.avialableMode = true;
-                //$scope.page.competitionTable.selectable = true;
-                //$scope.page.competitionTable.refresh();
-                
-                $scope.page.wdsfCouple.processingImgVisible = false;  
-
-                $scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-            },
-            function(data, status, headers, config){
-                $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-                $scope.page.wdsfCouple.processingImgVisible = false;
-            });  
-    };
-
-    // Next button click
-    $scope.page.wdsfCouple.next = function(){
-        $scope.page.wdsfCouple.man.dob = UtilsSrvc.getValidDate($scope.page.wdsfCouple.man.dob);
-        $scope.page.wdsfCouple.woman.dob = UtilsSrvc.getValidDate($scope.page.wdsfCouple.woman.dob);
-        
-        if ($scope.page.wdsfCouple.man.id == $scope.page.wdsfCouple.woman.id){
-            $scope.page.wdsfCouple.woman.dob = $scope.page.wdsfCouple.man.dob;
-            
-            if ($scope.page.wdsfCouple.man.dob == "") 
-                return;   
+        /*
+        if ($scope.selectedTab == 'WDSF'){
+            switch(res.otherInfo.code){
+                case 2014:
+                {
+                    row = 'Conflict comps';
+                    break;
+                }
+                default:
+                {
+                    row = res.otherInfo.message + '\n' +
+                          res.competition.name;
+                    break;
+                } 
+            }
+        }    
+        else{
+            row = (res.status == 1 ? $filter('localize')('Регистрация завершена.') : res.status) + 
+                  '\n' +
+                  res.competition.name + ' (' + res.competition.startDate + ')';
         }
-        else if ($scope.page.wdsfCouple.man.dob == "" || $scope.page.wdsfCouple.woman.dob == ""){
-            return;
+        */   
+        return row;
+    };
+
+    $scope.regResponse = {
+    "results":[ {
+            "competition": {
+                "ageCategory": {
+                    "code":"Взрослые",
+                    "id":1,
+                    "maxAge":99,
+                    "minAge":19,
+                    "name":"Взрослые"
+                },
+                "dancerClasses":[ {
+                        "code":5,
+                        "id":1,
+                        "name":"A"
+                    }, {
+                        "code":4,
+                        "id":2,
+                        "name":"B"
+                    }, {
+                        "code":2,
+                        "id":3,
+                        "name":"C"
+                    }, {
+                        "code":3,
+                        "id":4,
+                        "name":"D"
+                    }, {
+                        "code":6,
+                        "id":5,
+                        "name":"E"
+                    }, {
+                        "code":7,
+                        "id":6,
+                        "name":"H"
+                    }, {
+                        "code":8,
+                        "id":7,
+                        "name":"M"
+                    }, {
+                        "code":9,
+                        "id":8,
+                        "name":"S"
+                    }
+                ],
+                "discipline": {
+                    "code":"Ст",
+                    "id":1,
+                    "name":"Европейская"
+                },
+                "id":1,
+                "idExternal":1,
+                "idInternal":1,
+                "isInternational":1,
+                "limit":22,
+                "name":"Гранприкс Стандард Адульт",
+                "participantsCount":0,
+                "price":1333,
+                "startDate":"2014-08-12",
+                "startTime":"12:00",
+                "tournament": {
+                    "competitionsCount":6,
+                    "endDate":"2014-08-14",
+                    "fullName":"Кубок Берлина\nГермания",
+                    "id":1,
+                    "idExternal":1,
+                    "idInternal":1,
+                    "location": {
+                        "cityName":"Стругхард",
+                        "country": {
+                            "id":78,
+                            "name":"Германия"
+                        }
+                    },
+                    "name":"Гераманский турнир",
+                    "organizer": {
+                        "info":"",
+                        "site":""
+                    },
+                    "participantsCount":0,
+                    "participantsUniqueCount":0,
+                    "rank": {
+                        "code":"МС",
+                        "id":3,
+                        "name":"Международное соревнование",
+                        "shortName":"МС"
+                    },
+                    "startDate":"2014-08-04",
+                    "status": {
+                        "code":"Registration",
+                        "id":2,
+                        "name":"Регистрация"
+                    },
+                    "tabOtherAllowed":1,
+                    "tabUDSRAllowed":1,
+                    "tabWDSFAllowed":1
+                },
+                "type": {
+                    "code":"Couples",
+                    "id":1,
+                    "name":"Пары"
+                },
+                "wdsf": {
+                    "LastModifiedWDSF":"2014-08-13 18:08:22",
+                    "LastSyncWDSF":"2014-09-01 18:40:44",
+                    "TournamentId":5451,
+                    "ageCategory": {
+                        "allowedToDance":["ADULT","UNDER 21","RISING STAR"
+                        ],
+                        "division":"Any",
+                        "fromAge":19,
+                        "id":10,
+                        "maxDob":"1995-12-31",
+                        "minDob":"1985-01-01",
+                        "name":"ADULT",
+                        "toAge":29
+                    },
+                    "country": {
+                        "id":78,
+                        "name":"Германия"
+                    },
+                    "date":"2014-08-12",
+                    "discipline":"STANDARD",
+                    "division":"Professional",
+                    "id":45276,
+                    "isSolo":0,
+                    "location":"Stuttgart",
+                    "status":"Closed",
+                    "type":"PD SUPER GRAND PRIX"
+                }
+            },
+            "otherInfo": {
+                "code":2011,
+                "message":"Статус группы не позволяет выполнить регистрацию.",
+                "otherInfo": {
+                    "competition": {
+                        "ageGroup":"ADULT",
+                        "country":"Germany",
+                        "date":"2014-08-12",
+                        "discipline":"STANDARD",
+                        "division":"Professional",
+                        "id":45276,
+                        "isSolo":0,
+                        "lastModifiedWDSF":"2014-08-13 18:08:22",
+                        "lastSyncWDSF":"2014-09-01 18:40:44",
+                        "location":"Stuttgart",
+                        "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/45276",
+                        "status":"Closed",
+                        "tournament": {
+                            "ageGroups":"YOUTH, ADULT, SENIOR I, MASTER CLASS I, MASTER CLASS II, SENIOR II, SENIOR III, SENIOR IV",
+                            "competitionsCount":14,
+                            "country":"Germany",
+                            "disciplines":"LATIN, STANDARD",
+                            "endDate":"2014-08-16",
+                            "id":5451,
+                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/5451",
+                            "startDate":"2014-08-12",
+                            "types":"GRAND SLAM, OPEN, PD, PD SUPER GRAND PRIX"
+                        },
+                        "type":"PD SUPER GRAND PRIX"
+                    }
+                },
+                "status":"Ошибка"
+            },
+            "participantId":"",
+            "status":"0"
         }
-
-        $scope.page.wdsfCouple.fieldsDisabled = true;
-        $scope.page.wdsfCouple.btnClearVisible = false;
-        $scope.page.wdsfCouple.btnBackVisible = true;
-        $scope.page.wdsfCouple.btnNextVisible = false;
-        $scope.page.wdsfCouple.btnRegisterVisible = true;
-
-        $scope.page.competitionTable.avialableMode = true;
-        $scope.page.competitionTable.selectable = true;
-        $scope.page.competitionTable.refresh();
+    ],
+    "status":1
     };
-
-    // Clear WDSF search form
-    $scope.page.wdsfCouple.clear = function(){
-        $scope.page.coupleOtherInfo.id = null;
-
-        $scope.form_wdsfCouple.$setPristine(); 
-        $scope.page.wdsfCouple.exists = false;
-        $scope.page.wdsfCouple.man = {}; 
-        $scope.page.wdsfCouple.woman = {}; 
-        $scope.page.wdsfCouple.alert.visible = false;
-
-        $scope.page.udsrCouple.tabDisabled = false;  
-        $scope.page.newCouple.tabDisabled = false;
-
-        $scope.page.competitionTable.avialableMode = false;
-        $scope.page.competitionTable.selectable = false;
-        $scope.page.competitionTable.selectedItems = [];
-        $scope.page.competitionTable.refresh();  
-    };
-
-    // Back button click
-    $scope.page.wdsfCouple.back = function(){
-        $scope.page.wdsfCouple.fieldsDisabled = false;
-        $scope.page.wdsfCouple.btnClearVisible = true;
-        $scope.page.wdsfCouple.btnBackVisible = false;
-        $scope.page.wdsfCouple.btnNextVisible = true;
-        $scope.page.wdsfCouple.btnRegisterVisible = false;
-
-        $scope.page.competitionTable.avialableMode = false;
-        $scope.page.competitionTable.selectable = false;
-        $scope.page.competitionTable.selectedItems = [];
-        $scope.page.competitionTable.refresh();
-    };
-
-
-    // Registration WDSF couple
-    $scope.page.wdsfCouple.register = function(){
-        CoupleSrvc.registrationExisting({type: $scope.page.coupleType,
-                                         man: $scope.page.wdsfCouple.man, 
-                                         woman: $scope.page.wdsfCouple.woman, 
-                                         otherInfo: $scope.page.wdsfCouple.otherInfo, 
-                                         competitions: $scope.page.competitionTable.selectedItems}).then(
-            function(data){
-                //$scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Готово!', 'Registration was successful!', 'info', true);
-                //$scope.page.competitionTable.selectedItems=[];
-                //$scope.page.competitionTable.refresh();
-                //$scope.page.loadCoupleCompetitionsCount($scope.page.tournament.id, $scope.page.coupleOtherInfo.id); 
-                
-                //$timeout(function(){
-                $scope.pageStore.tournamentPayment = {gridCompetitions: {}, showAlert: true};    
-                $scope.page.showCoupleGroups($scope.page.tournament.id, $scope.page.coupleOtherInfo.id);
-                //}, 1500);
-            },
-            function(data, status, headers, config){
-                $scope.page.wdsfCouple.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });  
-    };
- 
-    ///==========================================================================================================================================================================
-    /// NEW COUPLE                                                                                                                                                     NEW COUPLE 
-    ///==========================================================================================================================================================================
-    // Next button click
-    $scope.page.newCouple.next = function(){
-        $scope.page.newCouple.man.dob = UtilsSrvc.getValidDate($scope.page.newCouple.man.dob);
-        $scope.page.newCouple.woman.dob = UtilsSrvc.getValidDate($scope.page.newCouple.woman.dob);
-        if ($scope.page.newCouple.man.dob == '' || ($scope.page.newCouple.woman.dob == '' && $scope.page.newCouple.type != 'Solo'))
-            return;
-
-        $scope.page.udsrCouple.tabDisabled = true;
-        $scope.page.wdsfCouple.tabDisabled = true;
-        
-        $scope.page.newCouple.fieldsDisabled = true;
-        $scope.page.newCouple.btnBackVisible = true;
-        $scope.page.newCouple.btnNextVisible = false;
-        $scope.page.newCouple.btnRegisterVisible = true;
-
-        $scope.page.competitionTable.avialableMode = true;
-        $scope.page.competitionTable.selectable = true;
-        $scope.page.competitionTable.refresh();
-    };
-
-    // Back button click
-    $scope.page.newCouple.back = function(){
-        $scope.page.udsrCouple.tabDisabled = false; 
-        $scope.page.wdsfCouple.tabDisabled = false;
-
-        $scope.page.newCouple.fieldsDisabled = false;
-        $scope.page.newCouple.btnBackVisible = false;
-        $scope.page.newCouple.btnNextVisible = true;
-        $scope.page.newCouple.btnRegisterVisible = false;
-
-        $scope.page.competitionTable.avialableMode = false;
-        $scope.page.competitionTable.selectable = false;
-        $scope.page.competitionTable.selectedItems = [];
-        $scope.page.competitionTable.refresh();
-    };
-
-    // Registration New Couple
-    $scope.page.newCouple.register = function(){
-        $scope.page.newCouple.man.dob = UtilsSrvc.getValidDate($scope.page.newCouple.man.dob);
-        $scope.page.newCouple.woman.dob = UtilsSrvc.getValidDate($scope.page.newCouple.woman.dob);
-        if ($scope.page.newCouple.man.dob == '' || ($scope.page.newCouple.woman.dob == '' && $scope.page.newCouple.type != 'Solo'))
-            return; 
-
-        $scope.page.newCouple.competitions = $scope.page.competitionTable.selectedItems;
-
-        CoupleSrvc.registrationNew({tournamentId: $scope.page.tournament.id, 
-                                    isSolo: $scope.page.newCouple.type == 'Solo',
-                                    soloGender: $scope.page.newCouple.soloGender,
-                                    man: $scope.page.newCouple.man, 
-                                    woman: $scope.page.newCouple.woman,  
-                                    otherInfo: $scope.page.newCouple.otherInfo,
-                                    competitions: $scope.page.competitionTable.selectedItems}).then(
-            function(data){
-                $window.document.forms["danceplatOtherPay"].submit();  
-            },
-            function(data, status, headers, config){
-                $scope.page.newCouple.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
-            });  
-    };
-
-
-    $scope.page.init();
-    $scope.page.loadCountries();
-    $scope.page.loadTournament($routeParams.tournamentId);
-    $scope.page.loadCompetitionTypes();
-});
-
+});  
 ]]></CSP>
 </Export>

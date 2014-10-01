@@ -86,7 +86,13 @@ servicesModule.factory('UtilsSrvc', function($dialog, $filter) {
             }
 
             return value == undefined ? defaultValue : value;
-        }
+        },
+        base64Encode: function(s) {
+    		return btoa(unescape(encodeURIComponent(s)));
+  		},
+  		base64Decode: function(s) {
+    		return decodeURIComponent(escape(atob(s)));
+  		}
     }
 });
   

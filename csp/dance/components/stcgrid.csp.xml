@@ -56,7 +56,7 @@
     </tfoot>
     <tbody ng-class="{selectableMode: selectable==true}">
         <tr ng-repeat="item in items" ng-class="getRowClass(item.rowClass)">
-            <td ng-bind="$index + pageSize*(pageCurr - 1) + 1" ng-click="select(item, {cellSelectable: false})"></td>
+            <td class="tableNumber" ng-bind="$index + pageSize*(pageCurr - 1) + 1" ng-click="select(item, {cellSelectable: false})"></td>
             <td ng-repeat="property in properties" ng-hide="columns[$index].hidden" ng-click="select(item, property)" ng-style="property.cellStyle">
                 <pre ng-class="property.getCssClass(item)" title="{{property.cellTitle}}" ng-bind="getPropertyValue(item, property)" ng-click="selectCell(item, property)"></pre>
             </td>

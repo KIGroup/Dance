@@ -146,7 +146,6 @@
     <script language="javascript" src="js/controllers/TournamentParticipantsCtrl.js"></script>
     
     <script language="javascript" src="js/controllers/RegistrationCtrl.js"></script>
-    <script language="javascript" src="js/controllers/RegistrationTestCtrl.js"></script>
     <script language="javascript" src="js/controllers/PaymentCtrl.js"></script>
     
 

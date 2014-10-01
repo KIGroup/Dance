@@ -307,7 +307,15 @@ Check update privilege</Description>
 	set count = 0
 	&sql(SELECT COUNT(ID) INTO :count
 		 FROM Dance_Data.Participant 
-		 WHERE Competition->Tournament = :tournamentId)
+		 WHERE Competition->Tournament = :tournamentId 
+		 	   AND 
+		 	   ID NOT IN (SELECT ID 
+		 				  FROM Dance_Data.ParticipantCoupleOther
+		 				  WHERE TicketStatus = 'Not paid'
+		 				  UNION
+		 				  SELECT ID 
+		 				  FROM Dance_Data.ParticipantSingleOther
+		 				  WHERE TicketStatus = 'Not paid'))
 	
 	quit count
 ]]></Implementation>

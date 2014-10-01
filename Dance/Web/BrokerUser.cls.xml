@@ -72,12 +72,12 @@ Public REST URLs</Description>
 <!-- Participant                                                                                   Participant -->
 <!-- ========================================================================================================= -->
 
-<Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonUser:GetParticipantsForGrid"/>
+<Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonUser:GetCompetitionParticipantsForGrid"/>
 
 <Route Method="POST" Url="/tournament/participant/grid" Call="Dance.Web.JsonUser:GetTournamentParticipantsForGrid"/>
 
-<!--  -->
-<Route Method="GET" Url="/tournament/:id/couple/:id/competition" Call="Dance.Web.JsonUser:GetCoupleParticipants"/>
+
+<Route Method="GET" Url="/participant" Call="Dance.Web.JsonUser:GetAllDancerParticipants"/>
 
 
 
@@ -127,6 +127,11 @@ Public REST URLs</Description>
 
 
 <Route Method="GET" Url="/person/stats" Call="Dance.Web.JsonUser:GetPersonStatistics"/>
+	
+	
+<!--  -->
+<Route Method="GET" Url="/count/participant/competition" Call="Dance.Web.JsonUser:GetCountParticipantCompetitions"/>
+	
 	
 </Routes>
 ]]></Data>

@@ -8,7 +8,7 @@
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##super()
-	
+	set proxy.type = "UDSR"
 	set proxy.otherInfo = proxy.man.otherInfo
 	if (proxy.otherInfo.club = "") {
 		set proxy.otherInfo.club = proxy.woman.otherInfo.club 

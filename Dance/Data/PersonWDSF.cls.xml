@@ -18,6 +18,7 @@
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##super()
+	set proxy.type = "WDSF"
 	set proxy.ageCategory = ..AgeCategory		
 	quit proxy
 ]]></Implementation>

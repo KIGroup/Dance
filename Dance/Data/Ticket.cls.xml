@@ -46,6 +46,7 @@ Tickets of the participants</Description>
 
 <Index name="ParticipantIdx">
 <Properties>Participant</Properties>
+<Unique>1</Unique>
 </Index>
 
 <Storage name="Default">

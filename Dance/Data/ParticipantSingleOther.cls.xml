@@ -4,6 +4,11 @@
 <Super>Participant</Super>
 <TimeCreated>63440,4374.537436</TimeCreated>
 
+<Property name="AthleteKey">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Gender">
 <Type>%String</Type>
 <Parameter name="VALUELIST" value=",Male,Female"/>
@@ -60,6 +65,7 @@
 <Implementation><![CDATA[
 	set proxy = ##super()
 	set proxy.athlete = ##class(%ZEN.proxyObject).%New()
+	set proxy.athlete.key = ..AthleteKey
 	set proxy.athlete.gender = ..Gender
 	set proxy.athlete.lastName = ..LastName
 	set proxy.athlete.firstName = ..FirstName
@@ -95,6 +101,7 @@
 	set obj.MainTrainer = $ZCVT(athlete.otherInfo.mainTrainer, "I", "UTF8")
 	set obj.OtherTrainers = $ZCVT(athlete.otherInfo.otherTrainers, "I", "UTF8")
 	
+	set obj.AthleteKey = athlete.key
 	set st = obj.%Save()
 	
 	quit obj
@@ -132,6 +139,9 @@
 </Value>
 <Value name="9">
 <Value>Gender</Value>
+</Value>
+<Value name="10">
+<Value>AthleteKey</Value>
 </Value>
 </Data>
 </Storage>

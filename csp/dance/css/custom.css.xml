@@ -8,6 +8,7 @@
 
 .tableNumber,.atableAction{
   width: 20px;
+  vertical-align: middle!important;
 }
 
 .atableAction{
@@ -368,7 +369,7 @@ filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
 .noneCouplePayment,.cancelCouplePayment{
-	color: rgb(180,180,180)!important;
+	color: rgb(130,130,130)!important;
 }
 
 .cancelCouplePayment{

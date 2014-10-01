@@ -100,13 +100,12 @@
 	<div class="control-group" ng-show="competition.isInternational">
 		<label class="control-label" ng-bind="('Соответствующая группа WDSF'|localize) + '*'"></label>
     	<div class="controls">
-        	<select class="span12" ng-model="competition.wdsf.id" style="margin:0;" ng-options="cmp.id as (cmp.date|convertCacheDate:('d MMMM y'|localize)) + ' • ' + cmp.location + ' • ' + cmp.type + ' • ' + cmp.discipline + ' • ' + cmp.ageCategory.name for cmp in competitionsWDSF" ng-required="competition.isInternational">
+        	<select class="span12" ng-model="competition.wdsf.id" style="margin:0;" ng-options="cmp.id as (cmp.date|convertCacheDate:('d MMMM y'|localize)) + ' • ' + cmp.location + ' • ' + cmp.type + ' • ' + cmp.discipline + ' • ' + cmp.ageCategory.name + ' • ' + cmp.status for cmp in competitionsWDSF" ng-required="competition.isInternational">
    				<option></option>
    			</select>
-   			<i style="font-size: 0.9em; margin-bottom: 10px;">Date • Location • Type • Discipline • Age group</i>
+   			<i style="font-size: 0.9em; margin-bottom: 10px;">Date • Location • Type • Discipline • Age group • Status</i>
     	</div>
 	</div>
-	 {{competition}} 
 </div>
 ]]></CSP>
 </Export>

@@ -6,6 +6,13 @@ Couple - participant of the competition</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63295,5554.902115</TimeCreated>
 
+<Property name="FullName">
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {FullName} = ##class({%%CLASSNAME}).GetFullName({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
 <Property name="Competition">
 <Type>Dance.Data.Competition</Type>
 <Cardinality>one</Cardinality>
@@ -21,12 +28,12 @@ Couple - participant of the competition</Description>
 <Relationship>1</Relationship>
 </Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Property PaymentStatus As %String [ Calculated, SqlComputeCode = {set {PaymentStatus} = ##class({%%CLASSNAME}).GetPaymentStatus({%%ID})}, SqlComputed ];
-
-]]></Content>
-</UDLText>
+<Property name="TicketStatus">
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {TicketStatus} = ##class({%%CLASSNAME}).GetTicketStatus({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
 
 <Property name="IsActive">
 <Type>%Boolean</Type>
@@ -46,11 +53,26 @@ Couple - participant of the competition</Description>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.id = ..%Id()
 	set proxy.competition = ..Competition.ConvertToProxyObject()
 	set proxy.isActive = ..IsActive
 	set proxy.created = ..Created
+	set proxy.ticketStatus = ##class(TicketStatus).CodeIdxOpen(..TicketStatus).ConvertToProxyObject()
 	
 	quit proxy
+]]></Implementation>
+</Method>
+
+<Method name="GetFullName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>prtId:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set fullName = ""
+	set prt = ..%OpenId(prtId)
+	quit $CASE($CLASSNAME(prt), "Dance.Data.ParticipantCoupleUDSR" : prt.Couple.GetFullName(),
+								"Dance.Data.ParticipantCoupleWDSF" : prt.Couple.GetFullName(),
+																   : "-")
 ]]></Implementation>
 </Method>
 
@@ -99,16 +121,26 @@ ClassMethod Create(competitionId As %String, coupleId As %String, ByRef st) As P
 	set st = obj.%Save()
 	quit obj
 }
+*/
+]]></Content>
+</UDLText>
 
-ClassMethod GetPaymentStatus(participantId As %String) As %String
-{
-	set status = "none"
+<Method name="GetTicketStatus">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>participantId:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set status = "Not paid"
 	
-	&sql(SELECT TStatus INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
+	&sql(SELECT TStatus->Code INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
 
 	quit status
-}
+]]></Implementation>
+</Method>
 
+<UDLText name="T">
+<Content><![CDATA[
+/*
 ClassMethod GetCoupleCompetitionsCount(competitionId As %String, coupleId As %String) As %Status
 {
 	set trnId = ""

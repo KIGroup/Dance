@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationTestCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//                      
+//                       
 
 /*===========================================================================================
 Registration         
@@ -109,6 +109,7 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
             return;
          
         $scope.competitionTable.items = [];
+        $scope.competitionTable.selectedItems = [];
         $scope.competitionTable.itemsStatus = $filter('localize')('Идет загрузка групп...');
 
         var dataSending= {
@@ -264,7 +265,23 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
     };
 
     $scope.tabUDSR.registration = function(){
-        console.log('udsr reg');
+        var postData = {
+            competitions: $scope.competitionTable.getSelectedIdArray(),
+            couple: $scope.tabUDSR.couple || null,
+            athlete: $scope.tabUDSR.athlete || null 
+        };
+
+        RegistrationSrvc.UDSR(postData).then(
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                console.log('reg success', data);
+            },
+            function(data){
+                $scope.regResponse = data;
+                $scope.resultTableVisible = true;
+                console.log('reg error', data);
+            });  
     };
 
 
@@ -542,9 +559,33 @@ controllersModule.controller('RegistrationTestCtrl', function($scope, $timeout, 
 
     $scope.loadCountries();
     $scope.init();
+ 
 
-
-
+    $scope.getResultTableRow = function(res){
+        var row = '';
+        if ($scope.selectedTab == 'WDSF'){
+            switch(res.otherInfo.code){
+                case 2014:
+                {
+                    row = 'Conflict comps';
+                    break;
+                }
+                default:
+                {
+                    row = res.otherInfo.message + '\n' +
+                          res.competition.name;
+                    break;
+                } 
+            }
+        }    
+        else{
+            row = (res.status == 1 ? $filter('localize')('Регистрация завершена.') : res.status) + 
+                  '\n' +
+                  res.competition.name + ' (' + res.competition.startDate + ')';
+        }
+ 
+        return row;
+    };
 
     $scope.regResponse = {
     "results":[ {

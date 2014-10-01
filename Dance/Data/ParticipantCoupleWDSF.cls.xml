@@ -50,6 +50,13 @@
 	set proxy = ##super()
 	set proxy.couple = ..Couple.ConvertToProxyObject()
 	
+	set proxy.couple.man.dob = $ZD(..ManDOB, 3)
+	set proxy.couple.woman.dob = $ZD(..WomanDOB, 3)
+	set proxy.couple.otherInfo.city = ..City
+	set proxy.couple.otherInfo.club = ..Club
+	set proxy.couple.otherInfo.mainTrainer = ..MainTrainer
+	set proxy.couple.otherInfo.otherTrainers = ..OtherTrainers
+	
 	quit proxy
 ]]></Implementation>
 </Method>

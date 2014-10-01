@@ -3,12 +3,12 @@
 <CSP name="dance/js/services/ParticipantSrvc.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
 //d
-
+ 
 /*===========================================================================================
 Participant service, access to REST API
 ===========================================================================================*/
 
-servicesModule.factory('ParticipantSrvc', function(RESTSrvc) {    
+servicesModule.factory('ParticipantSrvc', function(RESTSrvc, UtilsSrvc) {    
     return {
         getAllForGrid: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
             var first = pageSize * (pageCurr - 1) + 1;
@@ -34,12 +34,21 @@ servicesModule.factory('ParticipantSrvc', function(RESTSrvc) {
             
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/tournament/participant/grid', data: obj});
         },
-        getAllForCouple: function(tournamentId, coupleId){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + tournamentId + '/couple/' + coupleId + '/competition'});
+        getAllForDancer: function(filter){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/participant' + filter});
+        },
+        getCompetitionsCount: function(filter){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/count/participant/competition' + filter});
         },
         removeById: function(id){
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/participant/' + id});
-        }
+        },
+        getOtherCoupleKey: function(couple){
+	    	return UtilsSrvc.base64Encode(couple.man.lastName + ',' + couple.man.firstName + ',' + couple.man.dob + ';' + couple.woman.lastName + ',' + couple.woman.firstName + ',' + couple.woman.dob);
+	    },
+	    getOtherAthleteKey: function(athlete){
+	    	return UtilsSrvc.base64Encode(athlete.lastName + ',' + athlete.firstName + ',' + athlete.dob);
+	    }
     }
 });
 ]]></CSP>

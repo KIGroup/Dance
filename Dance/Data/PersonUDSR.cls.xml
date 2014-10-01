@@ -48,6 +48,7 @@ Date of birth</Description>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##super()
+	set proxy.type = "UDSR"
 	
 	if (..DOB){
 		set proxy.dob = $ZD(..DOB, 3)

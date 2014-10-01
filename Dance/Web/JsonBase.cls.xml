@@ -45,14 +45,15 @@ Transform sql to json</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="WriteJsonForGrid">
+<Method name="GetProxyObjectsForGrid">
 <Description>
 Paged output of table, for any class with parameters, sorting and searching</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>sql:%String,className:%String,params:%RegisteredObject,whereRequired:%String="",groupCondition:%String=""</FormalSpec>
-<ReturnType>%Status</ReturnType>
+<ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set status = $$$OK
+	set proxyResult = ##class(%ZEN.proxyObject).%New()
 	
 	try{
 		// Определяем что находится в WHERE.
@@ -98,13 +99,12 @@ Paged output of table, for any class with parameters, sorting and searching</Des
 		set proxyResult.children = ##class(%ZEN.proxyObject).%New()
 		set proxyResult.children.items = proxyItems
 	    set proxyResult.children.itemsTotal = itemsTotal
-	    do proxyResult.%ToJSON()
 	}
-	catch ex{
-		set status = ex.AsStatus()	
+	catch ex {
+		set proxyResult.status = $SYSTEM.Status.GetErrorText(ex.AsStatus())	
 	}
 	
-	quit status
+	quit proxyResult
 ]]></Implementation>
 </Method>
 

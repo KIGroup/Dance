@@ -58,6 +58,54 @@ Last name</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetConflictCompetitions">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[personId:%String,cmpId:%String,&st]]></FormalSpec>
+<ReturnType>%ListOfObjects</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	set cmpList = ##class(%ListOfObjects).%New()
+	
+	set cmp = ##class(Competition).%OpenId(cmpId,,.st)
+	set cmpTournamentId = cmp.Tournament.%Id()
+	
+	&sql(DECLARE CrsCmpConflict CURSOR FOR
+			SELECT ID INTO :cmpConflictId
+		 	FROM Dance_Data.Competition
+		 	WHERE Tournament->TStatus->Code <> 'Closed' 
+		 	   AND Tournament->TStatus->Code <> 'Cancelled'
+		 	   AND Tournament <> :cmpTournamentId 
+		 	   AND StartDate = :cmp.StartDate
+		 	   AND ID IN (SELECT prtCoupleUDSR.Competition 
+		 	   			  FROM Dance_Data.ParticipantCoupleUDSR as prtCoupleUDSR 
+		 	   			  WHERE prtCoupleUDSR.Competition->StartDate = :cmp.StartDate AND prtCoupleUDSR.Couple->Man = :personId OR prtCoupleUDSR.Couple->Woman = :personId
+		 	   			  UNION
+		 	   			  SELECT prtCoupleWDSF.Competition 
+		 	   			  FROM Dance_Data.ParticipantCoupleWDSF as prtCoupleWDSF 
+		 	   			  WHERE prtCoupleWDSF.Competition->StartDate = :cmp.StartDate AND prtCoupleWDSF.Couple->Man = :personId OR prtCoupleWDSF.Couple->Woman = :personId
+		 	   			  UNION
+		 	   			  SELECT prtSingleUDSR.Competition 
+		 	   			  FROM Dance_Data.ParticipantSingleUDSR as prtSingleUDSR 
+		 	   			  WHERE prtSingleUDSR.Competition->StartDate = :cmp.StartDate AND prtSingleUDSR.Athlete = :personId
+		 	   			  UNION
+		 	   			  SELECT prtSingleWDSF.Competition 
+		 	   			  FROM Dance_Data.ParticipantSingleWDSF as prtSingleWDSF 
+		 	   			  WHERE prtSingleWDSF.Competition->StartDate = :cmp.StartDate AND prtSingleWDSF.Athlete = :personId))
+		
+	&sql(OPEN CrsCmpConflict)
+	for{
+		&sql(FETCH CrsCmpConflict INTO :cmpConflictId) 
+		quit:(SQLCODE '= 0)
+		
+		do cmpList.Insert(##class(Competition).%OpenId(cmpConflictId).ConvertToProxyObject())
+	}
+		
+	&sql(CLOSE CrsCmpConflict)
+	
+	quit cmpList
+]]></Implementation>
+</Method>
+
 <UDLText name="T">
 <Content><![CDATA[
 /*
