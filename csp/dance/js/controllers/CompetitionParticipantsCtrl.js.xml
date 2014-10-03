@@ -100,7 +100,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     $scope.page.participantTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
         $scope.page.participantTable.itemsStatus = $filter('localize')('Идет загрузка данных...');
 
-        ParticipantSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {competitionId: $scope.page.competition.id}).then(
+        ParticipantSrvc.getAllForCompetition(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {competitionId: $scope.page.competition.id}).then(
             function(data){
 	            data = data.children;
                 $scope.page.participantTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);

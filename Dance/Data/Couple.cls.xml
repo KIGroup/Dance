@@ -36,7 +36,7 @@ Couples</Description>
 
 <Method name="GetFullName">
 <ReturnType>%String</ReturnType>
-<Implementation><![CDATA[	quit ..Man.LastName.Value_" "_..Man.FirstName.Value_"; "_..Woman.LastName.Value_" "_..Woman.FirstName.Value
+<Implementation><![CDATA[	quit ..Man.GetFullName()_"; "_..Woman.GetFullName()
 ]]></Implementation>
 </Method>
 

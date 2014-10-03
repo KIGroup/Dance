@@ -24,6 +24,15 @@ Registration UDSR participants in the tournament</Description>
 		
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
 		
+		#dim recorder As Dance.Data.Recorder = "" 
+		
+		// Find recorder
+		set recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash)
+		
+		if '$ISOBJECT(recorder) {
+			set recorder = ##class(Dance.Data.Recorder).GetSystemRecorder()
+		}
+		
 		set prt = ##class(%ZEN.proxyObject).%New()
 		set prtClass = ""
 		
@@ -45,11 +54,11 @@ Registration UDSR participants in the tournament</Description>
 		    
 		    set regResult = ##class(%ZEN.proxyObject).%New()
 		    set regResult.competition = competition.ConvertToProxyObject()
-		    set regResult.participant = ##class(%ZEN.proxyObject).%New()
 		    set regResult.otherInfo = ##class(%ZEN.proxyObject).%New()
 		    	
 		    if (competition.Tournament.TStatus.Code '= "Registration") {
-			    set regResult.status = $SYSTEM.Status.GetErrorText(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+			    set regResult.status = 0
+			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
 		    	continue
 		    }
 		    
@@ -57,7 +66,8 @@ Registration UDSR participants in the tournament</Description>
 		    for d=1:1:dancers.Count(){
 				set cmpListConflict = ##class(Dance.Data.Person).GetConflictCompetitions(dancers.GetAt(d).id, competition.%Id(), .st)
 		    	if (cmpListConflict.Count() > 0){
-		    		set regResult.status = $SYSTEM.Status.GetErrorText(##class(Dance.Utils.Msg).GetErrorStatus("ConflictCompetitionFound"))
+		    		set regResult.status = 0
+		    		set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_ConflictCompetitionIsFound")
 		    		set regResult.otherInfo.conflictCompetitions = cmpListConflict
 		    		set regResult.otherInfo.athlete = ##class(Dance.Data.Person).%OpenId(dancers.GetAt(d).id).ConvertToProxyObject()
 		    		set isCmpConflict = $$$YES
@@ -65,9 +75,11 @@ Registration UDSR participants in the tournament</Description>
 			}
 		    
 		    if (isCmpConflict = $$$NO) {			
-			    set participant = $CLASSMETHOD(prtClass, "Create", competition, prt, .st)
+			    set participant = $CLASSMETHOD(prtClass, "Create", recorder, competition, prt, .st)
+			    
 			    if $$$ISERR(st) {
-				    set regResult.status = $SYSTEM.Status.GetErrorText(##class(Dance.Utils.Msg).GetErrorStatus("ParticipantCreateError"))
+				    set regResult.status = 0
+				    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_ParticipantNotCreated")_" "_$SYSTEM.Status.GetErrorText(st)
 			    }
 			    else{
 				    set regResult.status = $$$OK
@@ -83,10 +95,9 @@ Registration UDSR participants in the tournament</Description>
     }
 	catch ex {
 		TROLLBACK 
-		//if $DATA(%response){
-			set %response.Status = 400
-		//}	
-		set proxy.status = $SYSTEM.Status.GetErrorText(ex.AsStatus())  	
+		set %response.Status = 400
+		set proxy.status = 0
+		set proxy.message = ##class(Dance.Utils.Msg).GetMsg("error_FatalError")_" "_$SYSTEM.Status.GetErrorText(ex.AsStatus())  	
 	}
 	
 	quit proxy.%ToJSON()
@@ -898,13 +909,35 @@ Get WDSF competitions by filter</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="GetTournamentParticipantsForGrid">
+<Method name="GetAllParticipantsForGrid">
 <Description>
 
 ====================================================================================================================
 Participant                                                                                              Participant
 ====================================================================================================================
 
+Get all participants for grid</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+ 		
+ 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params)
+		do result.%ToJSON()
+	}
+	catch ex {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetTournamentParticipantsForGrid">
+<Description>
 Get all participants of the tournament for grid</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>

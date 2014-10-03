@@ -26,7 +26,7 @@
 
 <Method name="Create">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[competition:Competition,athlete:%ZEN.proxyObject,&st]]></FormalSpec>
+<FormalSpec><![CDATA[recorder:Recorder,competition:Competition,athlete:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
 	if ..CmpAtUDSRIdxExists(competition.%Id(), athlete.id) {
@@ -37,6 +37,7 @@
 	}
 	
 	set obj = ..%New()
+	set obj.Recorder = recorder
 	set obj.Athlete = ##class(PersonUDSR).%OpenId(athlete.id)
 	set obj.Competition = competition 
 	set st = obj.%Save()

@@ -13,6 +13,11 @@ Couple - participant of the competition</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
+<Property name="Recorder">
+<Type>Recorder</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Competition">
 <Type>Dance.Data.Competition</Type>
 <Cardinality>one</Cardinality>
@@ -70,9 +75,13 @@ Couple - participant of the competition</Description>
 <Implementation><![CDATA[
 	set fullName = ""
 	set prt = ..%OpenId(prtId)
-	quit $CASE($CLASSNAME(prt), "Dance.Data.ParticipantCoupleUDSR" : prt.Couple.GetFullName(),
-								"Dance.Data.ParticipantCoupleWDSF" : prt.Couple.GetFullName(),
-																   : "-")
+	quit $CASE($CLASSNAME(prt), "Dance.Data.ParticipantCoupleUDSR"  : prt.Couple.GetFullName(),
+								"Dance.Data.ParticipantCoupleWDSF"  : prt.Couple.GetFullName(),
+								"Dance.Data.ParticipantSingleUDSR"  : prt.Athlete.GetFullName(),
+								"Dance.Data.ParticipantSingleWDSF"  : prt.Athlete.GetFullName(),
+								"Dance.Data.ParticipantCoupleOther" : prt.ManLastName_" "_prt.ManFirstName_"; "_prt.WomanLastName_" "_prt.WomanFirstName,
+								"Dance.Data.ParticipantSingleOther" : prt.LastName_" "_prt.FirstName,
+																    : "-")
 ]]></Implementation>
 </Method>
 

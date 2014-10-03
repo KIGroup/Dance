@@ -72,13 +72,13 @@ Public REST URLs</Description>
 <!-- Participant                                                                                   Participant -->
 <!-- ========================================================================================================= -->
 
-<Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonUser:GetCompetitionParticipantsForGrid"/>
+<Route Method="POST" Url="/competition/participant/grid" Call="Dance.Web.JsonUser:GetCompetitionParticipantsForGrid"/>
 
 <Route Method="POST" Url="/tournament/participant/grid" Call="Dance.Web.JsonUser:GetTournamentParticipantsForGrid"/>
 
+<Route Method="GET" Url="/dancer/participant" Call="Dance.Web.JsonUser:GetAllDancerParticipants"/>
 
-<Route Method="GET" Url="/participant" Call="Dance.Web.JsonUser:GetAllDancerParticipants"/>
-
+<Route Method="POST" Url="/participant/grid" Call="Dance.Web.JsonUser:GetAllParticipantsForGrid"/>
 
 
 <!-- ========================================================================================================= -->

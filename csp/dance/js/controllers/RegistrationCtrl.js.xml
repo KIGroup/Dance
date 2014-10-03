@@ -2,15 +2,19 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//   
+//   d d       
  
 /*===========================================================================================
 Registration         
 ===========================================================================================*/
   
-controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
+controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $cookies, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
 	$scope.menu.pages.selected = {};
     $scope.menu.shortMenu = true;
+
+    if ($routeParams.recorderHash){
+        $cookies.recorderHash = $routeParams.recorderHash;
+    }
 
     $scope.pageStore.registration = $scope.pageStore.registration || {grid:{}};  
     
@@ -322,7 +326,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
         var postData = {
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabUDSR.couple || null,
-            athlete: $scope.tabUDSR.athlete || null 
+            athlete: $scope.tabUDSR.athlete || null,
+            recorderHash: $scope.recorderHash 
         };
 
         RegistrationSrvc.UDSR(postData).then(
@@ -640,47 +645,64 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
  
 
     $scope.getResultTableRow = function(res){
+        var row = '';
+
         if (res.status == 1){
-            return $filter('localize')('Регистрация завершена.') + '\n' + res.competition.name + ' (' + res.competition.startDate + ')';
+            row += $filter('localize')('Готово!') + ' ' + $filter('localize')('Регистрация выполнена.') + '\n' +
+                   $filter('localize')('Группа') + ': ' + res.competition.name + '. ' + $filter('convertCacheDate')(res.competition.startDate, $filter('localize')('d MMMM y')) + '.';
+            
+            return row;
         }
 
-        var row = $filter('localize')('Регистрация невозможна. ') + res.otherInfo.message + '\n';
-        row += res.competition.name + ' (' + res.competition.startDate + ')\n';
-
-        if (res.otherInfo.conflictCompetitions && res.otherInfo.conflictCompetitions.length != 0){
-            row += 'Обнаружены конфликтные группы для участника ' + (res.otherInfo.athlete ? res.otherInfo.athlete.lastName + ' ' + res.otherInfo.athlete.firstName : '') + ':';
-            for (var i = 0; i < res.otherInfo.conflictCompetitions.length; i++){
-                row += '\n • ' + res.otherInfo.conflictCompetitions[i].name + ', ' + res.otherInfo.conflictCompetitions[i].startDate + ', Турнир: ' + res.competition.tournament.name;
-            }
-        }
+        row += $filter('localize')('Ошибка!') + ' ' + $filter('localize')('Регистрация не выполнена.') + '\n' +
+               $filter('localize')('Группа') + ': ' + res.competition.name + '. ' + $filter('convertCacheDate')(res.competition.startDate, $filter('localize')('d MMMM y')) + '.\n';
         
-
-
-        /*
         if ($scope.selectedTab == 'WDSF'){
-            switch(res.otherInfo.code){
+            // wdsf controller response
+            var wcResponse = res.otherInfo;
+
+            row += $filter('localize')('Сообщение') + ': ' + wcResponse.message + '\n';
+            
+            switch(wcResponse.code){
+                // Conflict competitions for athlete
                 case 2014:
                 {
-                    row = 'Conflict comps';
+                    if (wcResponse.otherInfo && wcResponse.otherInfo.conflictCompetitions && wcResponse.otherInfo.conflictCompetitions.length != 0){
+                        row += $filter('localize')('Обнаружены конфликтные группы для участника') + ' ' + (wcResponse.otherInfo.athlete ? wcResponse.otherInfo.athlete.surname + ' ' + wcResponse.otherInfo.athlete.name : '') + ':';
+                       
+                        for (var i = 0; i < res.otherInfo.otherInfo.conflictCompetitions.length; i++){
+                            var conflictCmp = wcResponse.otherInfo.conflictCompetitions[i];
+                            row += '\n • ' + conflictCmp.type + '. ' + 
+                                             conflictCmp.discipline + '. ' + 
+                                             conflictCmp.ageGroup + '. ' + 
+                                             $filter('convertCacheDate')(conflictCmp.date, $filter('localize')('d MMMM y')) + '. ' + 
+                                             $filter('localize')('Место проведения') + ' - ' + conflictCmp.country + ', ' +  conflictCmp.location + '.';
+                        }
+                    }
                     break;
                 }
-                default:
-                {
-                    row = res.otherInfo.message + '\n' +
-                          res.competition.name;
-                    break;
-                } 
             }
         }    
-        else{
-            row = (res.status == 1 ? $filter('localize')('Регистрация завершена.') : res.status) + 
-                  '\n' +
-                  res.competition.name + ' (' + res.competition.startDate + ')';
+        else {
+            row += $filter('localize')('Сообщение') + ': ' + res.otherInfo.message + '\n';
+
+            // Conflict competitions for UDSR athlete
+            if (res.otherInfo.conflictCompetitions && res.otherInfo.conflictCompetitions.length != 0){
+                row += $filter('localize')('Обнаружены конфликтные группы для участника') + ' ' + (res.otherInfo.athlete ? res.otherInfo.athlete.lastName + ' ' + res.otherInfo.athlete.firstName : '') + ':';
+                
+                for (var i = 0; i < res.otherInfo.conflictCompetitions.length; i++){
+                    var conflictCmp = res.otherInfo.conflictCompetitions[i];
+                    row += '\n • ' + conflictCmp.name + '. ' + 
+                                     $filter('convertCacheDate')(conflictCmp.startDate, $filter('localize')('d MMMM y')) + '. ' + 
+                                     $filter('localize')('Место проведения') + ' - ' + conflictCmp.tournament.location.country.name + ', ' + conflictCmp.tournament.location.cityName + '.';
+                }
+            }
         }
-        */   
+
         return row;
     };
 
+    $scope.resultTableVisible = !true;
     $scope.regResponse = {
     "results":[ {
             "competition": {
@@ -704,25 +726,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                         "id":3,
                         "name":"C"
                     }, {
-                        "code":3,
-                        "id":4,
-                        "name":"D"
-                    }, {
                         "code":6,
                         "id":5,
                         "name":"E"
-                    }, {
-                        "code":7,
-                        "id":6,
-                        "name":"H"
-                    }, {
-                        "code":8,
-                        "id":7,
-                        "name":"M"
-                    }, {
-                        "code":9,
-                        "id":8,
-                        "name":"S"
                     }
                 ],
                 "discipline": {
@@ -730,31 +736,32 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                     "id":1,
                     "name":"Европейская"
                 },
-                "id":1,
-                "idExternal":1,
-                "idInternal":1,
+                "id":11,
+                "idExternal":2342342,
+                "idInternal":234234,
                 "isInternational":1,
-                "limit":22,
-                "name":"Гранприкс Стандард Адульт",
+                "limit":3,
+                "name":"Опен Стандард Адульт",
                 "participantsCount":0,
-                "price":1333,
-                "startDate":"2014-08-12",
+                "price":3234,
+                "startDate":"2014-09-20",
                 "startTime":"12:00",
                 "tournament": {
-                    "competitionsCount":6,
-                    "endDate":"2014-08-14",
-                    "fullName":"Кубок Берлина\nГермания",
-                    "id":1,
-                    "idExternal":1,
-                    "idInternal":1,
+                    "competitionsCount":1,
+                    "endDate":"2014-09-27",
+                    "fullName":"Румынский турнир",
+                    "hash":4333,
+                    "id":3,
+                    "idExternal":3432,
+                    "idInternal":3243,
                     "location": {
-                        "cityName":"Стругхард",
+                        "cityName":"Румынский город",
                         "country": {
-                            "id":78,
-                            "name":"Германия"
+                            "id":175,
+                            "name":"Румыния"
                         }
                     },
-                    "name":"Гераманский турнир",
+                    "name":"Румынский турнир",
                     "organizer": {
                         "info":"",
                         "site":""
@@ -767,7 +774,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                         "name":"Международное соревнование",
                         "shortName":"МС"
                     },
-                    "startDate":"2014-08-04",
+                    "startDate":"2014-09-17",
                     "status": {
                         "code":"Registration",
                         "id":2,
@@ -783,9 +790,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                     "name":"Пары"
                 },
                 "wdsf": {
-                    "LastModifiedWDSF":"2014-08-13 18:08:22",
-                    "LastSyncWDSF":"2014-09-01 18:40:44",
-                    "TournamentId":5451,
+                    "LastModifiedWDSF":"2014-03-25 13:23:06",
+                    "LastSyncWDSF":"2014-09-01 18:41:29",
+                    "TournamentId":6342,
                     "ageCategory": {
                         "allowedToDance":["ADULT","UNDER 21","RISING STAR"
                         ],
@@ -798,58 +805,95 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $loc
                         "toAge":29
                     },
                     "country": {
-                        "id":78,
-                        "name":"Германия"
+                        "id":175,
+                        "name":"Румыния"
                     },
-                    "date":"2014-08-12",
+                    "date":"2014-09-20",
                     "discipline":"STANDARD",
-                    "division":"Professional",
-                    "id":45276,
+                    "division":"General",
+                    "id":46805,
                     "isSolo":0,
-                    "location":"Stuttgart",
-                    "status":"Closed",
-                    "type":"PD SUPER GRAND PRIX"
+                    "location":"Brasov",
+                    "status":"Registering",
+                    "type":"WORLD OPEN"
                 }
             },
             "otherInfo": {
-                "code":2011,
-                "message":"Статус группы не позволяет выполнить регистрацию.",
+                "code":2014,
+                "message":"Регистрация участника в данную группу невозможна. Спортсмен (10069138) уже принимает участие в группе другого турнира в этот день.",
                 "otherInfo": {
-                    "competition": {
-                        "ageGroup":"ADULT",
-                        "country":"Germany",
-                        "date":"2014-08-12",
-                        "discipline":"STANDARD",
-                        "division":"Professional",
-                        "id":45276,
-                        "isSolo":0,
-                        "lastModifiedWDSF":"2014-08-13 18:08:22",
-                        "lastSyncWDSF":"2014-09-01 18:40:44",
-                        "location":"Stuttgart",
-                        "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/45276",
-                        "status":"Closed",
-                        "tournament": {
-                            "ageGroups":"YOUTH, ADULT, SENIOR I, MASTER CLASS I, MASTER CLASS II, SENIOR II, SENIOR III, SENIOR IV",
-                            "competitionsCount":14,
-                            "country":"Germany",
-                            "disciplines":"LATIN, STANDARD",
-                            "endDate":"2014-08-16",
-                            "id":5451,
-                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/5451",
-                            "startDate":"2014-08-12",
-                            "types":"GRAND SLAM, OPEN, PD, PD SUPER GRAND PRIX"
-                        },
-                        "type":"PD SUPER GRAND PRIX"
-                    }
+                    "athlete": {
+                        "ageGroup":"SENIOR II A",
+                        "country":"Spain",
+                        "id":10069138,
+                        "lastSyncWDSF":"2014-10-02 15:21:47",
+                        "name":"Javier",
+                        "nationality":"Spain",
+                        "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/person\/10069138",
+                        "sex":"Male",
+                        "surname":"Abad"
+                    },
+                    "conflictCompetitions":[ {
+                            "ageGroup":"SENIOR I",
+                            "country":"Belgium",
+                            "date":"2014-09-20",
+                            "discipline":"STANDARD",
+                            "division":"General",
+                            "id":46814,
+                            "isSolo":0,
+                            "lastModifiedWDSF":"2014-03-26 13:16:32",
+                            "lastSyncWDSF":"2014-09-01 18:41:32",
+                            "location":"Antwerp",
+                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/46814",
+                            "status":"Registering",
+                            "tournament": {
+                                "ageGroups":"UNDER 21, ADULT, SENIOR I, SENIOR II, SENIOR III, SENIOR IV",
+                                "competitionsCount":10,
+                                "country":"Belgium",
+                                "disciplines":"LATIN, STANDARD",
+                                "endDate":"2014-09-21",
+                                "id":6344,
+                                "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/6344",
+                                "startDate":"2014-09-20",
+                                "types":"OPEN"
+                            },
+                            "type":"OPEN"
+                        }, {
+                            "ageGroup":"SENIOR I",
+                            "country":"Belgium",
+                            "date":"2014-09-20",
+                            "discipline":"LATIN",
+                            "division":"General",
+                            "id":46818,
+                            "isSolo":0,
+                            "lastModifiedWDSF":"2014-03-26 13:17:05",
+                            "lastSyncWDSF":"2014-09-01 18:41:34",
+                            "location":"Antwerp",
+                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/46818",
+                            "status":"Registering",
+                            "tournament": {
+                                "ageGroups":"UNDER 21, ADULT, SENIOR I, SENIOR II, SENIOR III, SENIOR IV",
+                                "competitionsCount":10,
+                                "country":"Belgium",
+                                "disciplines":"LATIN, STANDARD",
+                                "endDate":"2014-09-21",
+                                "id":6344,
+                                "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/6344",
+                                "startDate":"2014-09-20",
+                                "types":"OPEN"
+                            },
+                            "type":"OPEN"
+                        }
+                    ]
                 },
                 "status":"Ошибка"
             },
             "participantId":"",
-            "status":"0"
+            "status":"ОШИБКА #5001: No msg for key = error_RegistrationInWDSFController "
         }
     ],
     "status":1
-    };
+}
 });  
 ]]></CSP>
 </Export>

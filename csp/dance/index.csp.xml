@@ -74,8 +74,12 @@
                       <li ng-class="{aSelected: menu.pages.import.childrens.persons.id==menu.pages.selected.id}"     ><a ng-href="{{menu.pages.import.childrens.persons.url}}"      ng-bind="menu.pages.import.childrens.persons.name"      ng-click="menu.selectMenu(menu.pages.import.childrens.persons)"></a></li>
                     </ul>
                   </li>            
+  
+    	          <li ng-class="menu.pages.searchprt.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" ng-click="menu.selectMenu(menu.pages.searchprt)"></a></li>
+  
                 </ul>
               
+   
                 <ul class="nav pull-right">
                   <li ng-class="menu.pages.feedback.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" ng-click="menu.selectMenu(menu.pages.feedback)"></a></li>
                   <li class="dropdown">
@@ -96,10 +100,13 @@
           <div ng-show="menu.shortMenu">
             <div class="container">
               <div class="nav">
-              		<li><a class="homeIcon" title="{{'На главную'|localize}}" href="#/tournaments"><i class="fa fa-home fa-lg"></i></a></li>
+              	<li><a ng-hide="menu.pages.searchprt.id==menu.pages.selected.id" ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" title="{{'Писк регистрации участника по фамилии!'|localize}}" style="padding-left: 0;"></a></li>
+                <li><a ng-show="menu.pages.searchprt.id==menu.pages.selected.id" href="" ng-bind="'Вернуться назад'|localize" onclick="window.history.back()" style="padding-left: 0;"></a></li>
+               
+              	<li><a class="homeIcon" style="margin-left: 60px;" title="{{'На главную'|localize}}" href="#/tournaments"><i class="fa fa-home fa-lg"></i></a></li>
               </div>
             	
-              <div class="nav-responsive-collapse">
+              <div class="nav-responsive-collapse">   
                 <ul class="nav pull-right">
                   <li><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
                   <li><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" ng-bind="'Вернуться назад'|localize" onclick="window.history.back()"></a></li>
@@ -119,7 +126,7 @@
         </div>
       <div ng-view>
       </div>
-      
+      {{recorderHash}}
     </div>
     
     <script language="javascript">
@@ -144,6 +151,7 @@
     <script language="javascript" src="js/controllers/TournamentsCtrl.js"></script>
     <script language="javascript" src="js/controllers/TournamentCompetitionsCtrl.js"></script>
     <script language="javascript" src="js/controllers/TournamentParticipantsCtrl.js"></script>
+    <script language="javascript" src="js/controllers/SearchParticipantsCtrl.js"></script>
     
     <script language="javascript" src="js/controllers/RegistrationCtrl.js"></script>
     <script language="javascript" src="js/controllers/PaymentCtrl.js"></script>

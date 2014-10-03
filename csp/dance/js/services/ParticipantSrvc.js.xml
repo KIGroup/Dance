@@ -22,6 +22,18 @@ servicesModule.factory('ParticipantSrvc', function(RESTSrvc, UtilsSrvc) {
             
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/participant/grid', data: obj});
         },
+        getAllForCompetition: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
+            var first = pageSize * (pageCurr - 1) + 1;
+            var obj = {sqlName: sqlName, 
+                       isDown: isDown, 
+                       first: first, 
+                       last: first + pageSize - 1,
+                       searchSqlName: searchSqlName, 
+                       searchText: searchText,
+                       other: other};
+            
+            return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/competition/participant/grid', data: obj});
+        },
         getAllForTournament: function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, other){
             var first = pageSize * (pageCurr - 1) + 1;
             var obj = {sqlName: sqlName, 
@@ -35,7 +47,7 @@ servicesModule.factory('ParticipantSrvc', function(RESTSrvc, UtilsSrvc) {
             return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/tournament/participant/grid', data: obj});
         },
         getAllForDancer: function(filter){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/participant' + filter});
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/dancer/participant' + filter});
         },
         getCompetitionsCount: function(filter){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/count/participant/competition' + filter});

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/MainCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//d
+//c
 
 /*===========================================================================================
 Главный контроллер, работа с языком и меню
@@ -10,7 +10,8 @@
 
 controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $window, OtherSrvc, UtilsSrvc){
     $scope.pageStore = {};
-    
+    $scope.recorderHash = $cookies.recorderHash || "none"; 
+
     $scope.getLocalString = function(word){
 		return $filter('localize')(word);
 	};
@@ -32,6 +33,7 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
                                                   competitions: {id: 'import-competitions', url: '#/import/competitions', parentId: 'import', name: $filter('localize')('Группы')},
                                                   tickets     : {id: 'import-tickets'     , url: '#/import/tickets'     , parentId: 'import', name: $filter('localize')('Tickets')},
                                                   persons     : {id: 'import-persons'     , url: '#/import/persons'     , parentId: 'import', name: $filter('localize')('Участники СТСР')}}},
+                         searchprt: {id: 'searchprt', url: '#/search/participants', name: $filter('localize')('Поиск регистрации')},
                          feedback: {id: 'feedback', url: '#/feedback', name: $filter('localize')('Обратная связь')}
                         }; 
   

@@ -173,11 +173,11 @@
 							    <input name="manDob" style="width:150px" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="tabWDSF.couple.man.dob" min="'1900-01-01'" show-weeks="false" required ng-disabled="tabWDSF.formCouple.disabled"/>
 							</div>
 						</div>
-
-						<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Часть данных получена от WDSF.'|localize}}</p>
-						<p style="padding-bottom: 7px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Заполните / измените остальные поля.'|localize}}</p>
-
-						<div ng-hide="resultTableVisible">
+						<div style="position: absolute; width: 300px;">
+							<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Часть данных получена от WDSF.'|localize}}</p>
+							<p style="padding-bottom: 7px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Заполните / измените остальные поля.'|localize}}</p>
+						</div>
+						<div ng-hide="resultTableVisible" style="padding-top: 70px;">
 							<button type="button" ng-show="tabWDSF.formCouple.btnBackVisible" class="btn btn-small" ng-click="tabWDSF.formCouple.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 						    <button type="button" ng-show="tabWDSF.formCouple.btnNextVisible" class="btn btn-small" ng-click="tabWDSF.formCouple.next()" ng-disabled="!form_wdsfCoupleData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
 						    <button type="button" ng-show="tabWDSF.formCouple.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0">
@@ -343,17 +343,17 @@
 							<div class="control-group">
 					            <label class="control-label">{{'Фамилия'|localize}}<i class="requiredStar" ng-style="{color: (form_otherCoupleData.manLastName.$error.required ? 'red' : 'green')}">*</i></label>
 					            <div class="controls">
-					            	<input name="manLastName" class="span10" type="text" ng-model="tabOTHER.couple.man.lastName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
+					            	<input name="manLastName" class="span12" type="text" ng-model="tabOTHER.couple.man.lastName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
 					            </div>
 					        </div>
 					        <div class="control-group">
 					            <label class="control-label">{{'Имя'|localize}}<i class="requiredStar" ng-style="{color: (form_otherCoupleData.manFirstName.$error.required ? 'red' : 'green')}">*</i></label>
 					            <div class="controls">
-					            	<input name="manFirstName" class="span10" type="text" ng-model="tabOTHER.couple.man.firstName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
+					            	<input name="manFirstName" class="span12" type="text" ng-model="tabOTHER.couple.man.firstName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
 					            </div>
 					        </div>
 					        <div class="row-fluid">
-								<div class="span5">
+								<div class="span7">
 									<div class="control-group">
 							        	<label class="control-label">{{'Дата рождения'|localize}}<i class="requiredStar" ng-style="{color: (form_otherCoupleData.manDob.$error.required ? 'red' : 'green')}">*</i></label>
 							        	<div class="controls">
@@ -362,8 +362,6 @@
 							    	</div>
 							    </div>
 							    <div class="span5">
-							    </div>
-							    <div class="span2">
 							    </div>
 					    	</div>
 					  		<div class="control-group" style="margin-top: 25px;" ng-hide="resultTableVisible">
@@ -391,17 +389,17 @@
 							<div class="control-group">
 					            <label class="control-label">{{'Фамилия'|localize}}<i class="requiredStar" ng-style="{color: (form_otherCoupleData.womanLastName.$error.required ? 'red' : 'green')}">*</i></label>
 					            <div class="controls">
-					            	<input name="womanLastName" class="span10" type="text" ng-model="tabOTHER.couple.woman.lastName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
+					            	<input name="womanLastName" class="span12" type="text" ng-model="tabOTHER.couple.woman.lastName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
 					            </div>
 					        </div>
 					        <div class="control-group">
 					            <label class="control-label">{{'Имя'|localize}}<i class="requiredStar" ng-style="{color: (form_otherCoupleData.womanFirstName.$error.required ? 'red' : 'green')}">*</i></label>
 					            <div class="controls">
-					            	<input name="womanFirstName" class="span10" type="text" ng-model="tabOTHER.couple.woman.firstName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
+					            	<input name="womanFirstName" class="span12" type="text" ng-model="tabOTHER.couple.woman.firstName" ng-disabled="tabOTHER.formCouple.disabled" required></input>
 					            </div>
 					        </div>
 					        <div class="row-fluid">
-								<div class="span5">
+								<div class="span7">
 									<div class="control-group">
 							        	<label class="control-label">{{'Дата рождения'|localize}}<i class="requiredStar" ng-style="{color: (form_otherCoupleData.womanDob.$error.required ? 'red' : 'green')}">*</i></label>
 							        	<div class="controls">
@@ -410,8 +408,6 @@
 							    	</div>
 							    </div>
 							    <div class="span5">
-							    </div>
-							    <div class="span2">
 							    </div>
 					    	</div>
 			
@@ -479,17 +475,17 @@
 							<div class="control-group">
 					            <label class="control-label">{{'Фамилия'|localize}}<i class="requiredStar" ng-style="{color: (form_otherSingleData.manLastName.$error.required ? 'red' : 'green')}">*</i></label>
 					            <div class="controls">
-					            	<input name="manLastName" class="span10" type="text" ng-model="tabOTHER.athlete.lastName" ng-disabled="tabOTHER.formSingle.disabled" required></input>
+					            	<input name="manLastName" class="span12" type="text" ng-model="tabOTHER.athlete.lastName" ng-disabled="tabOTHER.formSingle.disabled" required></input>
 					            </div>
 					        </div>
 					        <div class="control-group">
 					            <label class="control-label">{{'Имя'|localize}}<i class="requiredStar" ng-style="{color: (form_otherSingleData.manFirstName.$error.required ? 'red' : 'green')}">*</i></label>
 					            <div class="controls">
-					            	<input name="manFirstName" class="span10" type="text" ng-model="tabOTHER.athlete.firstName" ng-disabled="tabOTHER.formSingle.disabled" required></input>
+					            	<input name="manFirstName" class="span12" type="text" ng-model="tabOTHER.athlete.firstName" ng-disabled="tabOTHER.formSingle.disabled" required></input>
 					            </div>
 					        </div>
 					        <div class="row-fluid">
-								<div class="span5">
+								<div class="span7">
 									<div class="control-group">
 							        	<label class="control-label">{{'Дата рождения'|localize}}<i class="requiredStar" ng-style="{color: (form_otherSingleData.manDob.$error.required ? 'red' : 'green')}">*</i></label>
 							        	<div class="controls">
@@ -500,11 +496,9 @@
 							    <div class="span5">
 								    <div class="control-group">
 							        	<label class="control-label">{{'Пол'|localize}}<i class="requiredStar" ng-style="{color: (form_otherSingleData.gender.$error.required ? 'red' : 'green')}">*</i></label>
-							    		<select name="gender" style="width: 100px;" ng-model="tabOTHER.athlete.gender" ng-options="gender.code as gender.name for gender in tabOTHER.genders" ng-disabled="tabOTHER.formSingle.disabled"  required>
+							    		<select name="gender" class="span12" ng-model="tabOTHER.athlete.gender" ng-options="gender.code as gender.name for gender in tabOTHER.genders" ng-disabled="tabOTHER.formSingle.disabled"  required>
 	           							</select>
 	           						</div>
-							    </div>
-							    <div class="span2">
 							    </div>
 					    	</div>
 					  		<div class="control-group" ng-hide="resultTableVisible">
@@ -648,13 +642,16 @@
 	<table class="table table-bordered table-hover" style="margin-top: 15px;">
 	    <thead>
 	        <tr>
-	            <th>#</th>
+	            <th></th>
 	            <th ng-bind="'Информация о регистрации в группу'|localize"></th>
 	        </tr>
 	    </thead>
 	    <tbody>
-	        <tr ng-repeat="res in regResponse.results" ng-class="{errorItem: res.status != 1}">
-	            <td class="tableNumber"><pre ng-bind="$index + 1"></pre></td>
+	        <tr ng-repeat="res in regResponse.results">
+	            <td class="tableNumber">
+	            	<i class="fa fa-check" ng-show="res.status==1" style="color: green; padding: 4px 3px 4px 5px;"></i>
+	            	<i class="fa fa-warning" ng-hide="res.status==1" style="color: red; padding: 4px;"></i>
+	            </td>
 	            <td><pre ng-bind="getResultTableRow(res)"></pre></td>
 	        </tr>
 	    </tbody>

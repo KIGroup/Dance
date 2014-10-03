@@ -326,12 +326,41 @@ Check update privilege</Description>
 <FormalSpec>tournamentId:%String</FormalSpec>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
-	set count = 0
-	&sql(SELECT COUNT(DISTINCT Couple) INTO :count
-		 FROM Dance_Data.ParticipantCouple 
-		 WHERE Competition->Tournament = :tournamentId)
+	set (coupleCount, athleteCount) = 0
 	
-	quit count
+	&sql(SELECT COUNT(Cpl) INTO :coupleCount 
+		 FROM
+		 (
+		 	SELECT DISTINCT Couple As Cpl
+		 	FROM Dance_Data.ParticipantCoupleUDSR 
+		 	WHERE Competition->Tournament = :tournamentId
+		 	UNION
+		 	SELECT DISTINCT Couple As Cpl
+		 	FROM Dance_Data.ParticipantCoupleWDSF 
+		 	WHERE Competition->Tournament = :tournamentId
+		 	UNION
+		 	SELECT DISTINCT CoupleKey As Cpl
+		 	FROM Dance_Data.ParticipantCoupleOther 
+		 	WHERE Competition->Tournament = :tournamentId AND TicketStatus <> 'Not paid'
+		 ))
+		 
+	&sql(SELECT COUNT(Ath) INTO :athleteCount 
+		 FROM
+		 (
+		 	SELECT DISTINCT Athlete As Ath
+		 	FROM Dance_Data.ParticipantSingleUDSR 
+		 	WHERE Competition->Tournament = :tournamentId
+		 	UNION
+		 	SELECT DISTINCT Athlete As Ath
+		 	FROM Dance_Data.ParticipantSingleWDSF 
+		 	WHERE Competition->Tournament = :tournamentId
+		 	UNION
+		 	SELECT DISTINCT AthleteKey As Ath
+		 	FROM Dance_Data.ParticipantSingleOther 
+		 	WHERE Competition->Tournament = :tournamentId AND TicketStatus <> 'Not paid'
+		 ))
+	
+	quit coupleCount + athleteCount
 ]]></Implementation>
 </Method>
 

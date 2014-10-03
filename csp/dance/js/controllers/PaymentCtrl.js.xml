@@ -49,20 +49,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                                                         }},
                           {name:'competition.type.name'},
                           {name:'competition.price', cellStyle: {textAlign: 'right'}},
-                          {name:'paymentStatusString', cellStyle: {textAlign: 'center'}, 
-                                                        calculate: function(item){
-                                                            switch(item.paymentStatus){
-                                                                case 'none':
-                                                                    item.paymentStatusString = $filter('localize')('Не оплачено');
-                                                                    break;
-                                                                case 'pay':
-                                                                    item.paymentStatusString = $filter('localize')('Оплачено');
-                                                                    break;
-                                                                case 'cancel':
-                                                                    item.paymentStatusString = $filter('localize')('Отменен');
-                                                                    break;
-                                                            }
-                                                      }}];  
+                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center'}}];  
 
         $scope.competitionTable.pageSize = 300;
         $scope.competitionTable.pageCurr = 1;

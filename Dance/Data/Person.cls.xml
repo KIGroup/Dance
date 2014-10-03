@@ -58,6 +58,12 @@ Last name</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetFullName">
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit ..LastName.Value_" "_..FirstName.Value
+]]></Implementation>
+</Method>
+
 <Method name="GetConflictCompetitions">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[personId:%String,cmpId:%String,&st]]></FormalSpec>
