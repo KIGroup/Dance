@@ -143,7 +143,7 @@ Competition in the tournament, has participants</Description>
 		do proxy.dancerClasses.Insert(dc.ConvertToProxyObject())
 	}
 	
-	set proxy.participantsCount = ..Participants.Count()
+	set proxy.participantsCount = ..ParticipantsCount
 	
 	quit proxy
 ]]></Implementation>
@@ -246,7 +246,7 @@ Participants count in the competition</Description>
 	set count = 0
 	&sql(SELECT COUNT(ID) INTO :count
 		 FROM Dance_Data.Participant 
-		 WHERE Competition = :competitionId)
+		 WHERE Competition = :competitionId AND IsActive = 1)
 	
 	quit count
 ]]></Implementation>

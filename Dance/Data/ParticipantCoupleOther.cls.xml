@@ -106,11 +106,12 @@
 
 <Method name="Create">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
+<FormalSpec><![CDATA[recorder:Recorder,competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
 	set obj = ..%New()
 
+	set obj.Recorder = recorder
 	set obj.Competition = competition 
 	
 	set obj.ManLastName = $ZCVT(couple.man.lastName, "I", "UTF8")

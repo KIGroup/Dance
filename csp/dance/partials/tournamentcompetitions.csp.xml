@@ -4,12 +4,15 @@
 <div class="row-fluid">
 	<pre ng-bind="page.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
+	<pre ng-hide="page.tournament.id">{{'\n\n\n'}}</pre>
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация участников »'|localize"></a>
+	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="trnMenu" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.tournament.id}}/participants" class="cellLink" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Список всех участников »'|localize"></a>
+	<a ng-href="" class="trnMenuSelected" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы •'|localize"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a ng-href="#/tournament/{{page.tournament.id}}/participants" class="trnMenu" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Все участники »'|localize"></a>
 </div>
 <br>
 

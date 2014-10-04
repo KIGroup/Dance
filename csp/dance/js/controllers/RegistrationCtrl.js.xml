@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//   d d       
+//   d d       d 
  
 /*===========================================================================================
 Registration         
@@ -340,6 +340,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             function(data){
                 $scope.regResponse = data;
                 $scope.resultTableVisible = true;
+                $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
                 console.log('reg error', data);
             });  
     };
@@ -492,6 +493,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             function(data){
                 $scope.regResponse = data;
                 $scope.resultTableVisible = true;
+                $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
                 console.log('reg error', data);
             });  
     };
@@ -601,6 +603,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             function(data){
                 $scope.regResponse = data;
                 $scope.resultTableVisible = true;
+                $scope.tabOTHER.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
                 console.log('reg error', data);
             });  
     };

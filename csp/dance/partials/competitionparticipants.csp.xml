@@ -7,11 +7,13 @@
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="#/tournament/{{page.competition.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация участников »'|localize"></a>
+	<a ng-href="#/tournament/{{page.competition.tournament.id}}/registration" class="trnMenu" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.competition.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Cписок всех групп »'|localize"></a>
+	<a ng-href="#/tournament/{{page.competition.tournament.id}}/competitions" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.competition.tournament.id}}/participants" class="cellLink" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Список всех участников »'|localize"></a>
+	<a ng-href="#/tournament/{{page.competition.tournament.id}}/participants" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Все участники »'|localize"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a ng-href="" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Участники группы •'|localize"></a>
 </div>
 <br>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>

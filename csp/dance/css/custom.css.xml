@@ -177,7 +177,7 @@ border: none!important;
 }
 
 
-.cellLink,.cellCoupleLink{
+.cellLink,.cellCoupleLink,.trnMenu{
 	color: rgb(4, 97, 170)!important;
 }
 
@@ -188,7 +188,6 @@ border: none!important;
 
 .cellLinkDisabled{
 	color: rgb(139, 135, 135)!important;
-	
 }
 
 .cellLinkDisabled:hover{
@@ -202,6 +201,15 @@ border: none!important;
 
 .cellCoupleLink{
 	margin-top: 10px!important;
+}
+
+.trnMenuSelected{
+	color: rgb(165, 4, 4)!important;
+}
+
+.trnMenuSelected:hover{
+	text-decoration: none;
+	cursor: default;
 }
 
 pre {

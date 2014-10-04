@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//csddddddd
+//
   
 /*===========================================================================================
 Competition Participants 
@@ -22,9 +22,11 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     	// Participant table
     	//   
         $scope.page.participantTable.columns = [ 
-                          {name: 'Партнер / Партнерша', sqlName: 'FullName', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true, captionStyle: {width: '250px'}},
+                          {name: 'Партнер / Партнерша', sqlName: 'FullName', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
                           {name: 'Клуб / Город', sqlName: '-', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
+                          /*
                           {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
+                          */
                           {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
                           {name: 'Группы участника', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}}];
@@ -55,9 +57,11 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                           {name:'clubAndCity', getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                                 }},
+                          /*
                           {name:'trainers', getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                                 }},
+                          */
                           {name:'countryName', cellStyle: {verticalAlign: 'middle'}, 
                                                 getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
@@ -152,7 +156,15 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                 });  
         };
 
-        UtilsSrvc.openMessageBox('Удалить пару / участника из группы?', item.couple.man.lastName + ' - ' + item.couple.woman.lastName, remove);    
+        var msg = '';
+        if (item.couple){
+            msg = item.couple.man.lastName + ' - ' + item.couple.woman.lastName;
+        }
+        else{
+            msg = item.athlete.lastName + item.athlete.firstName;   
+        }
+
+        UtilsSrvc.openMessageBox('Удалить пару / участника из группы?', msg, remove);    
     };
     
     /// Load Competition by ID

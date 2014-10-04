@@ -4,45 +4,21 @@
 <div class="row-fluid">
 	<pre ng-bind="page.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
+	<pre ng-hide="page.tournament.id">{{'\n\n\n'}}</pre>
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация участников »'|localize"></a>
+	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Cписок всех групп »'|localize"></a>
+	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a ng-href="" class="trnMenuSelected" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Все участники •'|localize"></a>
 </div>
 <br>
-<!--
-<div class="accordion">
-	<div class="accordion-group" style="border-bottom: none;">
-		<div class="accordion-heading">
-			<a class="accordion-toggle" ng-bind="'Participants of the tournament'|localize"></a>
-		</div>
-		<div class="accordion-body">
-			<div class="accordion-inner">
-				<div class="row-fluid">
-					<div class="span6">
-						<p><span class="spnTitle" ng-bind="'Tournament'|localize"></span>: <span ng-bind="page.tournament.name"></span></p>
-						<p><span class="spnTitle" ng-bind="('City'|localize) + ', ' + ('Country'|localize)"></span>: <span ng-bind="page.tournament.location.cityName + ', ' + page.tournament.location.country.name"></span></p>
-						<p><span class="spnTitle" ng-hide="page.tournament.organizer.info==''" ng-bind="'Organizer'|localize"></span>: <span ng-bind="page.tournament.organizer.info"></span></p>
-						<p><span class="spnTitle" ng-hide="page.tournament.organizer.site==''" ng-bind="'Organizer web-site'|localize" ></span>: <span ng-bind="page.tournament.organizer.site"></span></p>
-					</div>
-					<div class="span6">
-						<p><span class="spnTitle" ng-bind="'Start date / end date'|localize"></span>: <span ng-bind="(page.tournament.startDate|convertCacheDate:('d MMMM y'|localize)) + ' / ' + (page.tournament.endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>
-						<p><span class="spnTitle" ng-bind="'Rank'|localize"></span>: <span ng-bind="page.tournament.rank.name"></span></p>
-						<p><span class="spnTitle" ng-bind="'Status'|localize"></span>: <span ng-bind="page.tournament.status.name"></span></p>
-						<p><span class="spnTitle" ng-bind="'Total competitions'|localize"></span>: <a class="cellLink" ng-href="{{'#/tournament/' + page.tournament.id + '/competitions'}}" title="{{'Watch competitions list'|localize}}" ng-bind="page.tournament.competitionsCount + ' &raquo;'"></a></p>
-						<p><span class="spnTitle" ng-bind="'Total participants / unique'|localize"></span>: <span ng-bind="page.tournament.participantsCount + ' / ' + page.tournament.participantsUniqueCount"></span></p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
--->
+
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
 
-<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира, всего '|localize) + page.participantTable.itemsTotal"></span>
+<span style="font-weight: bold;" ng-bind="('Участники турнира. Всего'|localize) + ' - '+ page.participantTable.itemsTotal + ', ' + ('уникальных'|localize) + ' - ' + page.tournament.participantsUniqueCount + '.'"></span>
 <div class="row-fluid">
 	<stcgrid
     	grid="pageStore.participants.grid"
@@ -64,8 +40,12 @@
 	    multi-select-mode="page.participantTable.multiSelectMode"
 		on-select-cell="page.participantTable.onSelectCell(item,property)"	
 
-		action-column-visible="false"
-
+		action-column-visible="true"
+		action-column-icon="'fa fa-ellipsis-h'"
+	   	
+	   	first-row-action-icon="'fa fa-times'"
+		first-row-action-title="'Удалить'|localize"
+		first-row-action-method="page.participantTable.remove(item)"
 	    	
 		forcibly-update="page.participantTable.forciblyUpdate"
 	/>

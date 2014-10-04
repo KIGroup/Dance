@@ -63,7 +63,7 @@
 
 <Method name="Create">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
+<FormalSpec><![CDATA[recorder:Recorder,competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
 	if ..CmpCplWDSFIdxExists(competition.%Id(), couple.id) {
@@ -74,6 +74,7 @@
 	}
 	
 	set obj = ..%New()
+	set obj.Recorder = recorder
 	set obj.Couple = ##class(Dance.Data.CoupleWDSF).%OpenId(couple.id)
 	set obj.Competition = competition 
 	set obj.ManDOB = $ZDH(couple.man.dob, 3)
