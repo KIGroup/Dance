@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//   d d       d 
+//   d d       
  
 /*===========================================================================================
 Registration         
@@ -470,6 +470,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
         $scope.tabWDSF.formSingle.btnNextVisible = false;
         $scope.tabWDSF.formSingle.btnRegistrationVisible = true;
         
+        $scope.loadCountParticipantCompetitions('WDSF');
+
         $scope.competitionTable.selectable = true; 
         $scope.competitionTable.avialableMode = true;
         $scope.competitionTable.refresh();  
@@ -480,14 +482,24 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
         var postData = {
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabWDSF.couple || null,
-            athlete: $scope.tabWDSF.athlete || null 
+            athlete: $scope.tabWDSF.athlete || null,
+            recorderHash: $scope.recorderHash  
         };
 
+        $scope.tabWDSF.regProcessing = true;
         RegistrationSrvc.WDSF(postData).then(
             function(data){
                 $scope.regResponse = data;
                 $scope.resultTableVisible = true;
-                $scope.loadCountParticipantCompetitions('WDSF');
+                
+                if (data && data.status == 1){
+                    $scope.loadCountParticipantCompetitions('WDSF');
+                }
+                else{
+                    $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
+                }
+                
+                $scope.tabWDSF.regProcessing = false;
                 console.log('reg success', data);
             },
             function(data){
@@ -495,6 +507,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
                 $scope.resultTableVisible = true;
                 $scope.tabWDSF.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
                 console.log('reg error', data);
+                $scope.tabWDSF.regProcessing = false;
             });  
     };
 
@@ -590,7 +603,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
         var postData = {
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabOTHER.couple || null,
-            athlete: $scope.tabOTHER.athlete || null 
+            athlete: $scope.tabOTHER.athlete || null,
+            recorderHash: $scope.recorderHash  
         };
 
         RegistrationSrvc.OTHER(postData).then(

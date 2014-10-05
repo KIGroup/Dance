@@ -16,11 +16,42 @@ Get error status by key</Description>
 
 <Method name="GetMsg">
 <Description>
-Get localized error message</Description>
+Get localized message</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>key</FormalSpec>
+<FormalSpec>key:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
-<Implementation><![CDATA[	quit $GET(^CacheMsg("Dance", $$$SessionLanguage, key), "No msg for key = "_key)
+<Implementation><![CDATA[	quit $GET(^Dance.Utils.Msg(key, $$$SessionLanguage), "No msg for key = "_key)
+]]></Implementation>
+</Method>
+
+<Method name="SetMsg">
+<Description>
+Set localized message</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>lang:%String,key:%String,value:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set ^Dance.Utils.Msg(key, lang) = value
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="SetMsgForLangs">
+<Description>
+Set localized messages for langs</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>key:%String,ruValue:%String,enValue:%String,deValue:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..SetMsg("ru", key, ruValue)
+	
+	if (enValue = "") set enValue = key
+	do ..SetMsg("en", key, enValue)
+	
+	if (deValue = "") set deValue = key
+	do ..SetMsg("de", key, deValue)
+	
+	quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -30,90 +61,104 @@ do ##class(Dance.Utils.Msg).Init()</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	set ^CacheMsg("Dance", "ru", "ManNotFoundByNumber") = "Партнер не найден!"
-	set ^CacheMsg("Dance", "en", "ManNotFoundByNumber") = "Man not found!"
-	set ^CacheMsg("Dance", "de", "ManNotFoundByNumber") = "Partner nicht gefunden!"
+	do ..SetMsgForLangs("error_RegistrationClosed",
+						"Добавление участника невозможно. Регистрация в турнир уже завершена.",
+						"",
+						"")
+						
+	do ..SetMsgForLangs("error_ConflictCompetitionIsFound",
+						"Обнаружены конфликтные группы.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_ParticipantNotCreated",
+						"При добавлении участника возникла ошибка.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_FatalError",
+						"Произошла фатальная ошибка.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_ConnectionWDSFControllerFailed",
+						"Соединение с WDSF контроллером завершилось ошибкой.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_DancerClassNotFound",
+						"Класс танцора не найден.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_PersonUDSRNotFound",
+						"Спортсмен СТСР не найден.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_CreateLocalization",
+						"Создание мультиязычного поля невозможно",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_DeleteLocalization",
+						"Удаление мультиязычного поля невозможно.",
+						"",
+						"")
+
+	do ..SetMsgForLangs("error_SaveLocalization",
+						"Сохранение мультиязычного поля невозможно.",
+						"",
+						"")
+						
+	do ..SetMsgForLangs("error_NoPrivilegeForDelete",
+						"Нет привилегий для удаления.",
+						"",
+						"")
 	
-	set ^CacheMsg("Dance", "ru", "WomanNotFoundByNumber") = "Партнерша не найдена!"
-	set ^CacheMsg("Dance", "en", "WomanNotFoundByNumber") = "Woman not found!"
-	set ^CacheMsg("Dance", "de", "WomanNotFoundByNumber") = "Partnersuche nicht gefunden!"
+	do ..SetMsgForLangs("error_NoPrivilegeForUpdate",
+						"Нет привилегий для обновления.",
+						"",
+						"")
 	
-	set ^CacheMsg("Dance", "ru", "CoupleNotFound") = "Пара не найдена!"
-	set ^CacheMsg("Dance", "en", "CoupleNotFound") = "Couple not found!"
-	set ^CacheMsg("Dance", "de", "CoupleNotFound") = "Paar gefunden!"
+	do ..SetMsgForLangs("error_BadResponseStatus",
+						"Ошибочный статус ответа сервера.",
+						"",
+						"")
+						
 	
-	set ^CacheMsg("Dance", "ru", "AddParticipantError") = "При добавлении участника возникла ошибка"
-	set ^CacheMsg("Dance", "en", "AddParticipantError") = "When you add a participant error occurred"
-	set ^CacheMsg("Dance", "de", "AddParticipantError") = "Wenn Sie einen Teilnehmer Fehler aufgetreten hinzufügen"
+	do ..SetMsgForLangs("error_TournamentDeactivate",
+						"Произошла ошибка при удалении турнира.",
+						"",
+						"")
+											
 	
-	set ^CacheMsg("Dance", "ru", "createLoc") = "Мультиязычное поле не создано"
-	set ^CacheMsg("Dance", "en", "createLoc") = "Multilanguage field is not created"
-	set ^CacheMsg("Dance", "de", "createLoc") = "Mehrsprachig Feld wird nicht erstellt"
-	
-	set ^CacheMsg("Dance", "ru", "DancerClassNotFound") = "Класс не найден"
-	set ^CacheMsg("Dance", "en", "DancerClassNotFound") = "Dancer class not found"
-	set ^CacheMsg("Dance", "de", "DancerClassNotFound") = "Klasse nicht gefunden"
-	
-	set ^CacheMsg("Dance", "ru", "DeactivateCompetitionError") = "Произошла ошибка при удалении группы"
-	set ^CacheMsg("Dance", "en", "DeactivateCompetitionError") = "Error occurred while deleting a competition"
-	set ^CacheMsg("Dance", "de", "DeactivateCompetitionError") = "Beim Löschen einer Gruppe ist ein Fehler aufgetreten"
-	
-	set ^CacheMsg("Dance", "ru", "DeactivateTournamentError") = "Произошла ошибка при удалении турнира"
-	set ^CacheMsg("Dance", "en", "DeactivateTournamentError") = "Error occurred while deleting a tournament"
-	set ^CacheMsg("Dance", "de", "DeactivateTournamentError") = "Beim Löschen des Turniers ist ein Fehler aufgetreten"
-	
-	set ^CacheMsg("Dance", "ru", "deleteLoc") = "Произошла ошибка при удалении мультиязычного поля"
-	set ^CacheMsg("Dance", "en", "deleteLoc") = "An error occurred while removing a multilingual field"
-	set ^CacheMsg("Dance", "de", "deleteLoc") = "Beim Entfernen eines mehrsprachigen Gebiet ist ein Fehler aufgetreten"
-	
-	set ^CacheMsg("Dance", "ru", "DeletePerson") = "Произошла ошибка при удалении спортсмена"
-	set ^CacheMsg("Dance", "en", "DeletePerson") = "An error occurred while removing the athlete"
-	set ^CacheMsg("Dance", "de", "DeletePerson") = "Beim Entfernen der Athlet ist ein Fehler aufgetreten"
-	
-	set ^CacheMsg("Dance", "ru", "EmptyMaleAndFemaleNamesOnTicket") = "Пустые фамилии участников в билете"
-	set ^CacheMsg("Dance", "en", "EmptyMaleAndFemaleNamesOnTicket") = "Empty male and female last names on ticket"
-	set ^CacheMsg("Dance", "de", "EmptyMaleAndFemaleNamesOnTicket") = "Leere Namen der Teilnehmer in der Ticket"
-	
-	set ^CacheMsg("Dance", "ru", "NoPrivilegeForDelete") = "Нет привилегий на удаление"
-	set ^CacheMsg("Dance", "en", "NoPrivilegeForDelete") = "No privilege for delete"
-	set ^CacheMsg("Dance", "de", "NoPrivilegeForDelete") = "Keine Berechtigung zum Löschen"
-	
-	set ^CacheMsg("Dance", "ru", "NoPrivilegeForUpdate") = "Нет привилегий на обновление"
-	set ^CacheMsg("Dance", "en", "NoPrivilegeForUpdate") = "No privilege for update"
-	set ^CacheMsg("Dance", "de", "NoPrivilegeForUpdate") = "Keine Privilegien zu aktualisieren"
-	
-	set ^CacheMsg("Dance", "ru", "RegistrationClosedError") = "Регистрация невозможна"
-	set ^CacheMsg("Dance", "en", "RegistrationClosedError") = "Registration is not possible"
-	set ^CacheMsg("Dance", "de", "RegistrationClosedError") = "Keine Anmeldung ist"
-	
-	set ^CacheMsg("Dance", "ru", "SaveCompetitionError") = "При сохранении группы произошла ошибка"
-	set ^CacheMsg("Dance", "en", "SaveCompetitionError") = "When you save a competition error occurred"
-	set ^CacheMsg("Dance", "de", "SaveCompetitionError") = "Wenn Sie eine Gruppe Fehler aufgetreten sparen"
-	
-	set ^CacheMsg("Dance", "ru", "SaveFeedBackError") = "При сохранении отзыва произошла ошибка"
-	set ^CacheMsg("Dance", "en", "SaveFeedBackError") = "When you save a feedback error occurred"
-	set ^CacheMsg("Dance", "de", "SaveFeedBackError") = "Unter Beibehaltung ein Fehler aufgetreten Bewertungen"
-	
-	set ^CacheMsg("Dance", "ru", "saveLoc") = "Сохранение мультиязычного поля невозможно"
-	set ^CacheMsg("Dance", "en", "saveLoc") = "Saving a multilingual field is impossible"
-	set ^CacheMsg("Dance", "de", "saveLoc") = "Speichern einer mehrsprachigen Gebiet ist unmöglich"
-	
-	set ^CacheMsg("Dance", "ru", "SaveParticipantError") = "Сохранение участника невозможно"
-	set ^CacheMsg("Dance", "en", "SaveParticipantError") = "Saving the participant is impossible"
-	set ^CacheMsg("Dance", "de", "SaveParticipantError") = "Speichern der Partei kann nicht sein"
-	
-	set ^CacheMsg("Dance", "ru", "SaveTournamentError") = "Сохранение турнира невозможно"
-	set ^CacheMsg("Dance", "en", "SaveTournamentError") = "Saving the tournament is impossible"
-	set ^CacheMsg("Dance", "de", "SaveTournamentError") = "Speichern des Turniers kann nicht sein"
-	
-	set ^CacheMsg("Dance", "ru", "WdsfManSaveError") = "Создание WDSF участника невозможно (мужчина)"
-	set ^CacheMsg("Dance", "en", "WdsfManSaveError") = "Create WDSF participant is impossible (male)"
-	set ^CacheMsg("Dance", "de", "WdsfManSaveError") = "Neues WDSF Partei unmöglich (männlich)"
-	
-	set ^CacheMsg("Dance", "ru", "WdsfWomanSaveError") = "Создание WDSF участника невозможно (женщина)"
-	set ^CacheMsg("Dance", "en", "WdsfWomanSaveError") = "Create WDSF participant is impossible (female)"
-	set ^CacheMsg("Dance", "de", "WdsfWomanSaveError") = "Neues WDSF Partei unmöglich (weiblich)"
-	
+	do ..SetMsgForLangs("error_CompetitionDeactivate",
+						"Произошла ошибка при удалении группы.",
+						"",
+						"")
+						
+	do ..SetMsgForLangs("error_ParticipantDeactivate",
+						"Произошла ошибка при удалении регистрации.",
+						"",
+						"")
+						
+	do ..SetMsgForLangs("error_TournamentSave",
+						"Турнир не сохранен.",
+						"",
+						"")
+						
+	do ..SetMsgForLangs("error_CompetitionSave",
+						"Группа не сохранена.",
+						"",
+						"")
+						
+	do ..SetMsgForLangs("error_FeedBackSave",
+						"Отзыв не сохранен.",
+						"",
+						"")
+
+						
 	q $$$OK
 ]]></Implementation>
 </Method>

@@ -57,6 +57,14 @@
 	
 	
 	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByNumbers(manNumber, womanNumber, .st)
+	if $$$ISERR(st) {
+		if $ISOBJECT(wdsfData){
+			set st = $system.Status.Error(5001, wdsfData.message)
+		}
+		
+		quit obj
+	}
+	
 	quit:$$$ISERR(st) obj
 	
 	if '$ISOBJECT(obj){

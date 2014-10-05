@@ -83,10 +83,10 @@ Set value for language=lang for object with id=ltxt</Description>
 		set lv.LText = ##class(LText).%OpenId(ltxt)
 		set lv.Value = value
 		set sc = lv.%Save()
-		if $$$ISERR(sc) quit ##class(Dance.Utils.Msg).GetErrorStatus("saveLoc", "| "_sc)
+		if $$$ISERR(sc) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| "_sc)
 	}
 	elseif (SQLCODE '= 0) {
-		quit ##class(Dance.Utils.Msg).GetErrorStatus("saveLoc", "| SQLCODE="_SQLCODE)
+		quit ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| SQLCODE="_SQLCODE)
 	}
 
 	quit $$$OK
@@ -101,7 +101,7 @@ Delete all values for all languages for object LText</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	&sql(DELETE FROM Dance_Data_Localization.LTextValue WHERE LText = :ltxt)
-	if (SQLCODE '= 0) && (SQLCODE '= 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("deleteLoc", " | SQLCODE="_SQLCODE)
+	if (SQLCODE '= 0) && (SQLCODE '= 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_DeleteLocalization", " | SQLCODE="_SQLCODE)
 	
 	quit $$$OK
 ]]></Implementation>

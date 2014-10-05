@@ -39,13 +39,13 @@
 	set obj = ..%New()
 	set obj.Man = ##class(PersonUDSR).NumberUDSRIdxOpen(manNumber,,.st)	
 	if $$$ISERR(st) || (obj.Man.Gender '= "Male"){
-		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_Person_UDSR_NotFound", " | "_st)
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_PersonUDSRNotFound", " | "_manNumber)
 		quit $$$NULLOREF
 	}
 	
 	set obj.Woman = ##class(PersonUDSR).NumberUDSRIdxOpen(womanNumber,,.st)	
 	if $$$ISERR(st) || (obj.Woman.Gender '= "Female"){
-		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_Person_UDSR_NotFound", " | "_st)
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_PersonUDSRNotFound", " | "_womanNumber)
 		quit $$$NULLOREF
 	}
 	

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/partials/registration.csp" application="/csp/dance/" default="1"><![CDATA[
-
 <div class="row-fluid">
 	<pre ng-bind="tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
@@ -183,11 +182,12 @@
 						<div ng-hide="resultTableVisible" style="padding-top: 70px;">
 							<button type="button" ng-show="tabWDSF.formCouple.btnBackVisible" class="btn btn-small" ng-click="tabWDSF.formCouple.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 						    <button type="button" ng-show="tabWDSF.formCouple.btnNextVisible" class="btn btn-small" ng-click="tabWDSF.formCouple.next()" ng-disabled="!form_wdsfCoupleData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
-						    <button type="button" ng-show="tabWDSF.formCouple.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0">
+						    <button type="button" ng-show="tabWDSF.formCouple.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0 || tabWDSF.regProcessing">
 						    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
 						    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
 						    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 						    </button>
+						    <img ng-show="tabWDSF.regProcessing" style="padding: 5px;" src="img/loader2.gif"/>
 						</div>
 					</div>
 					<!-- Woman -->
@@ -270,11 +270,12 @@
 						<div ng-hide="resultTableVisible">
 							<button type="button" ng-show="tabWDSF.formSingle.btnBackVisible" class="btn btn-small" ng-click="tabWDSF.formSingle.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 						    <button type="button" ng-show="tabWDSF.formSingle.btnNextVisible" class="btn btn-small" ng-click="tabWDSF.formSingle.next()" ng-disabled="!form_wdsfAthleteData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
-						    <button type="button" ng-show="tabWDSF.formSingle.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0">
+						    <button type="button" ng-show="tabWDSF.formSingle.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0 || tabWDSF.regProcessing">
 						    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
 						    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
 						    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 						    </button>
+						    <img ng-show="tabWDSF.regProcessing" style="padding: 5px;" src="img/loader2.gif"/>
 						</div>
 					</div>
 					<!-- Other info -->
@@ -683,13 +684,13 @@
 		<pre>
 				WDSF
 				man		woman
-				10085531 10072137 <a href="" ng-click="tabWDSF.searchForm.manNumber='10085531'; tabWDSF.searchForm.womanNumber='10072137';">select</a>
-				10073546 10073691 <a href="" ng-click="tabWDSF.searchForm.manNumber='10073546'; tabWDSF.searchForm.womanNumber='10073691';">select</a>
-				10064937 10064930 <a href="" ng-click="tabWDSF.searchForm.manNumber='10064937'; tabWDSF.searchForm.womanNumber='10064930';">select</a>
-				10086246 10086247 <a href="" ng-click="tabWDSF.searchForm.manNumber='10086246'; tabWDSF.searchForm.womanNumber='10086247';">select</a>
-				10076712 10076219 <a href="" ng-click="tabWDSF.searchForm.manNumber='10076712'; tabWDSF.searchForm.womanNumber='10076219';">select</a>
-				10069138 10069139 <a href="" ng-click="tabWDSF.searchForm.manNumber='10069138'; tabWDSF.searchForm.womanNumber='10069139';">select</a>
-				10050619 10050620 <a href="" ng-click="tabWDSF.searchForm.manNumber='10050619'; tabWDSF.searchForm.womanNumber='10050620';">select</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10085531'; tabWDSF.searchForm.womanNumber='10072137';">10085531 10072137. Retired. SENIOR I</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10073546'; tabWDSF.searchForm.womanNumber='10073691';">10073546 10073691. Active. YOUTH</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10064937'; tabWDSF.searchForm.womanNumber='10064930';">10064937 10064930. Active. JUNIOR I</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10086246'; tabWDSF.searchForm.womanNumber='10086247';">10086246 10086247. Active. JUNIOR I</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10076712'; tabWDSF.searchForm.womanNumber='10076219';">10076712 10076219. Active. YOUTH</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10069138'; tabWDSF.searchForm.womanNumber='10069139';">10069138 10069139. Active. SENIOR I</a>
+				<a href="" ng-click="tabWDSF.searchForm.manNumber='10050619'; tabWDSF.searchForm.womanNumber='10050620';">10050619 10050620. Active. MASTER CLASS II</a>
 		</pre>
 	</div>
 </div>

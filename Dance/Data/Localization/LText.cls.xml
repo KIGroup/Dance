@@ -70,7 +70,7 @@ value will be same in all languages.</Description>
 	set ltxt = ..%New()
 	set ltxt.Guid = $SYSTEM.Util.CreateGUID()
 	 
-	if $$$ISERR(ltxt.%Save()) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("createLoc"))
+	if $$$ISERR(ltxt.%Save()) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_CreateLocalization"))
 	
 	set ltxt.Value = value
 	
@@ -112,7 +112,7 @@ Delete object from all languages</Description>
 	if $$$ISERR(status) quit status
 	
 	set status = ..%DeleteId(id,4)
-	if $$$ISERR(status) quit ##class(Dance.Utils.Msg).GetErrorStatus("deleteLoc", " | "_status)
+	if $$$ISERR(status) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_DeleteLocalization", " | "_status)
 	
 	quit $$$OK
 ]]></Implementation>

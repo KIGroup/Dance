@@ -28,11 +28,11 @@ servicesModule.factory('UtilsSrvc', function($dialog, $filter) {
 	    		}
     		 });
     	},
-    	getAlert: function(title, msg, eventType, visible){
-        	if (eventType == 'error'){
-        		msg = msg.replace(/#5001/g, '');
-        	}
-        	
+    	getAlert: function(title, msg, eventType, visible){ 	
+        	if (msg && eventType == 'error'){
+				msg = msg.replace(/#5001/g, '');
+			}
+
         	return {title: $filter('localize')(title),
                     msg: $filter('localize')(msg),
                     cssClass: 'alert alert-' + eventType,

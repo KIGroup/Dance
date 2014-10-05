@@ -207,7 +207,7 @@ Create or update competition</Description>
 	    continue:(data.dancerClasses.GetAt(i).selected '= $$$YES)
 	      	
 	    set dancerClasses = ##class(Dance.Data.DancerClass).%OpenId(data.dancerClasses.GetAt(i).id,,.st)
-	    if $$$ISERR(st) return ##class(Dance.Utils.Msg).GetErrorStatus("DancerClassNotFound"," | "_st)
+	    if $$$ISERR(st) return ##class(Dance.Utils.Msg).GetErrorStatus("error_DancerClassNotFound"," | "_st)
 	    
 	    do cmp.DancerClasses.SetAt(dancerClasses, dancerClasses.%Id())
 	}

@@ -123,7 +123,7 @@ Date of birth</Description>
 	for i=1:1:data.competitions.Count(){
 		set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
 		if (competition.Tournament.TStatus.Code '= "Registration") {
-		    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
+		    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_RegistrationClosed"))
 	    }
 	    
 		do obj.Competitions.Insert(competition)

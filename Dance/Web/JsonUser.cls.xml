@@ -110,8 +110,10 @@ Registration WDSF participants in the tournament</Description>
 <Implementation><![CDATA[
 	set st = $$$OK
 	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.status = $$$OK
+	
 	set regResults = ##class(%ListOfObjects).%New()
-	    
+	
 	try{
 		TSTART
 		
@@ -173,14 +175,14 @@ Registration WDSF participants in the tournament</Description>
 		    do regResults.Insert(regResult)
 		}
 		
-      	// Not removed! This is string fix a bug!
+      	// Not removed! This is string fix a bug! Bug - empty response.
       	w ""
       	
       	// Registration in the wdsf controller
-      	set wcResponseData = ##class(Dance.Wdsf.ControllerAPI).Registration(wcPostData, .st)
+      	set wcResponseData = ##class(Dance.Wdsf.ControllerAPI).Registration(wcPostData, recorder, .st)
 		
 		if $$$ISERR(st){
-			if ($ISOBJECT(wcResponseData) && (wcResponseData.status '= 1)) || '$ISOBJECT(wcResponseData){
+			if ($ISOBJECT(wcResponseData) && (wcResponseData.status '= $$$OK)) || '$ISOBJECT(wcResponseData){
 				set proxy.errorDetails = wcResponseData
 				$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_ConnectionWDSFControllerFailed", "| "_$SYSTEM.Status.GetErrorText(st)))
 			}
@@ -220,7 +222,6 @@ Registration WDSF participants in the tournament</Description>
     }
 	catch ex {
 		TROLLBACK 
-		set %response.Status = 400
 		set proxy.status = 0
 		set proxy.message = ##class(Dance.Utils.Msg).GetMsg("error_FatalError")_" "_$SYSTEM.Status.GetErrorText(ex.AsStatus())  	
 	}
@@ -916,49 +917,6 @@ Get all participants of the competition for grid</Description>
 ]]></Implementation>
 </Method>
 
-<UDLText name="T">
-<Content><![CDATA[
-/*
-/// Get participants of the couple (in the tournament) 
-ClassMethod GetCoupleParticipants(tournamentId As %String, coupleId As %String) As %Status
-{
-	set st = $$$OK
-	set proxy = ##class(%ZEN.proxyObject).%New()
-	set proxy.children = ##class(%ListOfObjects).%New()
-	
-	try{
-		set convertParams = ##class(%ZEN.proxyObject).%New()
-		set convertParams.isFullInfo = $$$YES
-		
-		&sql(DECLARE PrtCur CURSOR FOR
-			 SELECT ID 
-			 FROM Dance_Data.ParticipantCouple
-			 WHERE Couple = :coupleId AND Competition->Tournament = :tournamentId)	
-		
-		&sql(OPEN PrtCur)
-		for  
-		{	
-			&sql(FETCH PrtCur INTO :id) 
-			quit:(SQLCODE '= 0)
-	
-			set prtProxy = ##class(Dance.Data.ParticipantCouple).%OpenId(id).ConvertToProxyObject()
-			do proxy.children.Insert(prtProxy)
-		}
-		
-		&sql(CLOSE PrtCur)
-		
-		do proxy.%ToJSON()
-	}
-	catch ex{
-		set st = ex.AsStatus()	
-	}
-	
-	q st
-}
-*/
-]]></Content>
-</UDLText>
-
 <Method name="GetCoupleById">
 <Description>
 
@@ -1023,72 +981,6 @@ Get couple UDSR by numbers</Description>
 		set st = ex.AsStatus()
 	}
 	
-	quit st
-]]></Implementation>
-</Method>
-
-<Method name="RegistrationExistingCouple">
-<Description>
-Registration UDSR or WDSF couple in the tournament</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set st = $$$OK
-	
-	try{
-		TSTART
-		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
-      	
-      	set couple = ##class(Dance.Data.Couple).CommonIdxOpen(data.man.id, data.woman.id)
-      	
-      	#dim competition As Dance.Data.Competition = ""
-      	
-      	for i=1:1:data.competitions.Count(){
-	    	set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i).id)
-	    	if (competition.Tournament.TStatus.Code '= "Registration") {
-		    	$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("RegistrationClosedError"))
-	    	}
-	    	
-	    	do ##class(Dance.Data.ParticipantCouple).Create(competition.%Id(), couple.%Id(), .st)
-	    	
-	    	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
-	    }
-	    
-      	TCOMMIT
-	}
-	catch ex {
-		TROLLBACK
-		set st = ex.AsStatus()
-	}
-			
-	quit st
-]]></Implementation>
-</Method>
-
-<Method name="RegistrationNewCouple">
-<Description>
-Registration new couple in the tournament</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set st = $$$OK
-	
-	try{
-		TSTART
-		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
-      	
-      	do ##class(Dance.Data.ParticipantTemp).Create(data,.st)
-      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveParticipantError"," | "_st))
-      	
-      	TCOMMIT
-	}
-	catch ex {
-		TROLLBACK
-		set st = ex.AsStatus()
-	}
-			
 	quit st
 ]]></Implementation>
 </Method>
@@ -1309,7 +1201,7 @@ Feedback from users </Description>
       	
       	set st = fb.%Save()
       	
-      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("SaveFeedBackError"," | "_st))
+      	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_FeedBackSave"," | "_st))
       	
       	
 		do ##class(Dance.Utils.Email).Send($GET(^Settings("Dance","OperatorEmail")), 

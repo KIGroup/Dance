@@ -8,7 +8,7 @@
 <Description>
 do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[pMethod:%String,pUrl:%String,data:%ZEN.proxyObject="",&st:%Status=$$$OK]]></FormalSpec>
+<FormalSpec><![CDATA[pMethod:%String,pUrl:%String,data:%ZEN.proxyObject="",&st:%Status=$$$OK,recorder:Dance.Data.Recorder=""]]></FormalSpec>
 <Private>1</Private>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -20,8 +20,13 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
   		set req = ##class(%Net.HttpRequest).%New()
   		set req.Server = $G(^Settings("Dance","WdsfController", "Server"))
   		set req.Port = $G(^Settings("Dance","WdsfController", "Port"), 80)
-  		set req.Authorization = "Basic "_$system.Encryption.Base64Encode($g(^Settings("Dance","WdsfController", "Login"))_":"_$g(^Settings("Dance","WdsfController", "Password")))
   		do req.SetHeader("Accept-Language", ##class(%MessageDictionary).GetSessionLanguage())
+  		
+  		if '$ISOBJECT(recorder){
+  			set recorder = ##class(Dance.Data.Recorder).GetSystemRecorder()
+  		}
+  		
+  		set req.Authorization = "Basic "_$system.Encryption.Base64Encode(recorder.Login_":"_recorder.Password)
   		
   		if $ISOBJECT(data) {
    			set req.ContentType="application/json"
@@ -47,7 +52,7 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
  		$$$TOE(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(json,,.pResponse))
  		
  		if (req.HttpResponse.StatusCode '= 200){
- 			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("Bad response status.", " Code="_req.HttpResponse.StatusCode))
+ 			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_BadResponseStatus", " Code="_req.HttpResponse.StatusCode))
  		}
  	}
  	catch (ex) {
@@ -60,9 +65,9 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 
 <Method name="Registration">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[data:%ZEN.proxyObject,&st:%Status]]></FormalSpec>
+<FormalSpec><![CDATA[data:%ZEN.proxyObject,recorder:Dance.Data.Recorder,&st:%Status]]></FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
-<Implementation><![CDATA[	quit ..Call("POST", "/registration", data, .st)
+<Implementation><![CDATA[	quit ..Call("POST", "/registration", data, .st, recorder)
 ]]></Implementation>
 </Method>
 

@@ -265,7 +265,7 @@ Check delete privilege</Description>
 <Implementation><![CDATA[
 	SET SQLCODE=""
 	&sql(%CHECKPRIV DELETE ON Dance_Data.Tournament)
-	if (SQLCODE = 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("NoPrivilegeForDelete", " USERNAME="_$USERNAME)
+	if (SQLCODE = 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_NoPrivilegeForDelete", " USERNAME="_$USERNAME)
 	
 	quit $$$OK
 ]]></Implementation>
@@ -279,7 +279,7 @@ Check update privilege</Description>
 <Implementation><![CDATA[
 	SET SQLCODE=""
 	&sql(%CHECKPRIV UPDATE ON Dance_Data.Tournament)
-	if (SQLCODE = 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("NoPrivilegeForUpdate", " USERNAME="_$USERNAME)
+	if (SQLCODE = 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_NoPrivilegeForUpdate", " USERNAME="_$USERNAME)
 	
 	quit $$$OK
 ]]></Implementation>
@@ -333,15 +333,15 @@ Check update privilege</Description>
 		 (
 		 	SELECT DISTINCT Couple As Cpl
 		 	FROM Dance_Data.ParticipantCoupleUDSR 
-		 	WHERE Competition->Tournament = :tournamentId
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
 		 	UNION
 		 	SELECT DISTINCT Couple As Cpl
 		 	FROM Dance_Data.ParticipantCoupleWDSF 
-		 	WHERE Competition->Tournament = :tournamentId
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
 		 	UNION
 		 	SELECT DISTINCT CoupleKey As Cpl
 		 	FROM Dance_Data.ParticipantCoupleOther 
-		 	WHERE Competition->Tournament = :tournamentId AND TicketStatus <> 'Not paid'
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND TicketStatus <> 'Not paid'
 		 ))
 		 
 	&sql(SELECT COUNT(Ath) INTO :athleteCount 
@@ -349,15 +349,15 @@ Check update privilege</Description>
 		 (
 		 	SELECT DISTINCT Athlete As Ath
 		 	FROM Dance_Data.ParticipantSingleUDSR 
-		 	WHERE Competition->Tournament = :tournamentId
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
 		 	UNION
 		 	SELECT DISTINCT Athlete As Ath
 		 	FROM Dance_Data.ParticipantSingleWDSF 
-		 	WHERE Competition->Tournament = :tournamentId
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
 		 	UNION
 		 	SELECT DISTINCT AthleteKey As Ath
 		 	FROM Dance_Data.ParticipantSingleOther 
-		 	WHERE Competition->Tournament = :tournamentId AND TicketStatus <> 'Not paid'
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND TicketStatus <> 'Not paid'
 		 ))
 	
 	quit coupleCount + athleteCount
