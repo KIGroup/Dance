@@ -17,6 +17,8 @@
 <br>
 
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
+<p style="margin:0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'|localize}} <span class="noneCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие не оплачено.'|localize}} <span class="cancelCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие отменено.'|localize}}</p>
+
 
 <span style="font-weight: bold;" ng-bind="('Участники турнира. Всего'|localize) + ' - '+ page.participantTable.itemsTotal + ', ' + ('уникальных'|localize) + ' - ' + page.tournament.participantsUniqueCount + '.'"></span>
 <div class="row-fluid">

@@ -16,7 +16,8 @@
 </div>
 <br>
 
-<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка участников группы нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
+<p style="margin: 0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка участников группы нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
+
 <div class="row-fluid">
 	<div class="row-fluid" style="margin-bottom: 12px;">
 		<span style="font-weight: bold;" ng-bind="'Группы турнира'|localize"></span>

@@ -16,6 +16,7 @@
 	<a ng-href="" ng-show="athlete" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Группы участника •'|localize"></a>
 	<a ng-href="" ng-show="couple" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Группы пары •'|localize"></a>
 </div>
+
 <br>
 
 <stcalert data="registrationAlert" style="margin: 10px 0 20px 0;"/>
@@ -119,133 +120,137 @@
  		<button type="button" class="close" data-dismiss="modal" aria-hidden="true"  ng-click="confirmModalVisible=false">×</button>
 		<h4 id="ConfirmLabel" ng-bind="'Данные для передачи в платежную систему'|localize"></h4>
 	</div>
-	<div class="modal-body">
-		<!-- Single -->
-		<div class="row-fluid" ng-show="confirmData.athlete">
-			<div class="span5">
-		        <div class="control-group">
-		        	<label class="control-label" style="font-weight: bold;" ng-bind="('Участник'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.athlete.lastName" required disabled></input>
-                	</div>
-		    	</div>
+	<div class="modal-body" style="padding: 0 0 5px;">
+		<div style="height: 310px; overflow: auto; border-bottom: 1px solid #CECECE; padding: 10px;">
+			<!-- Single -->
+			<div class="row-fluid" ng-show="confirmData.athlete">
+				<div class="span5">
+			        <div class="control-group">
+			        	<label class="control-label" style="font-weight: bold;" ng-bind="('Участник'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.athlete.lastName" required disabled></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span3">
+			        <div class="control-group">
+			        	<label class="control-label" style="color: white;" ng-bind="'Имя'|localize"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.athlete.firstName" required disabled></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span4">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.athlete.dob" show-weeks="false" ng-required="true" disabled/>
+	                	</div>
+			    	</div>
+				</div>
 			</div>
-			<div class="span3">
-		        <div class="control-group">
-		        	<label class="control-label" style="color: white;" ng-bind="'Имя'|localize"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.athlete.firstName" required disabled></input>
-                	</div>
-		    	</div>
-			</div>
-			<div class="span4">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.athlete.dob" show-weeks="false" ng-required="true" disabled/>
-                	</div>
-		    	</div>
-			</div>
-		</div>
 
-		<!-- Man -->
-		<div class="row-fluid" ng-show="confirmData.couple">
-			<div class="span5">
-		        <div class="control-group">
-		        	<label class="control-label" style="font-weight: bold;" ng-bind="('Партнер'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.man.lastName" required disabled></input>
-                	</div>
-		    	</div>
+			<!-- Man -->
+			<div class="row-fluid" ng-show="confirmData.couple">
+				<div class="span5">
+			        <div class="control-group">
+			        	<label class="control-label" style="font-weight: bold;" ng-bind="('Партнер'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.man.lastName" required disabled></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span3">
+			        <div class="control-group">
+			        	<label class="control-label" style="color: white;" ng-bind="'Имя'|localize"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.man.firstName" required disabled></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span4">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.couple.man.dob" show-weeks="false" ng-required="true" disabled/>
+	                	</div>
+			    	</div>
+				</div>
 			</div>
-			<div class="span3">
-		        <div class="control-group">
-		        	<label class="control-label" style="color: white;" ng-bind="'Имя'|localize"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.man.firstName" required disabled></input>
-                	</div>
-		    	</div>
+			<!-- Woman -->
+			<div class="row-fluid" ng-show="confirmData.couple">
+				<div class="span5">
+			        <div class="control-group">
+			        	<label class="control-label" style="font-weight: bold;" ng-bind="('Партнерша'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.woman.lastName" required disabled></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span3">
+			        <div class="control-group">
+			        	<label class="control-label" style="color: white;" ng-bind="'Имя'|localize"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.woman.firstName" required disabled></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span4">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.couple.woman.dob" show-weeks="false" ng-required="true" disabled/>
+	                	</div>
+			    	</div>
+				</div>
 			</div>
-			<div class="span4">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.couple.man.dob" show-weeks="false" ng-required="true" disabled/>
-                	</div>
-		    	</div>
+			<!-- Other Info -->
+			<p><span style="font-weight: bold;" ng-bind="('Дополнительная информация'|localize) + ':'"></span></p>
+			<div class="row-fluid">
+				<div class="span6">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Страна'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<select class="span12" ng-model="confirmData.couple.otherInfo.country" ng-options="country as country.name for country in countries" ng-disabled="newCouple.fieldsDisabled">
+				            </select> 
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span6">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.city" required></input>
+	                	</div>
+			    	</div>
+				</div>
 			</div>
+			<div class="row-fluid">
+				<div class="span6">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Клуб'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.club" required></input>
+	                	</div>
+			    	</div>
+				</div>
+				<div class="span6">
+			        <div class="control-group">
+			        	<label class="control-label" ng-bind="('Главный тренер'|localize) + '*'"></label>
+			        	<div class="controls">
+			    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.mainTrainer" required></input>
+	                	</div>
+			    	</div>
+				</div>
+			</div>
+		
+			<p style="margin: 0 0 2px;"><span style="font-weight: bold;" ng-bind="('Группы'|localize) + ':'"></span></p>
+			<p style="margin: 0 0 2px;" ng-repeat="cmp in competitionTable.selectedItems">
+				<span ng-bind="($index+1) + '. ' + (cmp.competition.startDate|convertCacheDate:('d MMMM y'|localize)) + '. ' + cmp.competition.name + ', ' + cmp.competition.price + ' ' + ('руб.'|localize)"></span>
+			</p>
 		</div>
-		<!-- Woman -->
-		<div class="row-fluid" ng-show="confirmData.couple">
-			<div class="span5">
-		        <div class="control-group">
-		        	<label class="control-label" style="font-weight: bold;" ng-bind="('Партнерша'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.woman.lastName" required disabled></input>
-                	</div>
-		    	</div>
-			</div>
-			<div class="span3">
-		        <div class="control-group">
-		        	<label class="control-label" style="color: white;" ng-bind="'Имя'|localize"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.woman.firstName" required disabled></input>
-                	</div>
-		    	</div>
-			</div>
-			<div class="span4">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.couple.woman.dob" show-weeks="false" ng-required="true" disabled/>
-                	</div>
-		    	</div>
-			</div>
-		</div>
-		<!-- Other Info -->
-		<p><span style="font-weight: bold;" ng-bind="('Дополнительная информация'|localize) + ':'"></span></p>
-		<div class="row-fluid">
-			<div class="span6">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Страна'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<select class="span12" ng-model="confirmData.couple.otherInfo.country" ng-options="country as country.name for country in countries" ng-disabled="newCouple.fieldsDisabled">
-			            </select> 
-                	</div>
-		    	</div>
-			</div>
-			<div class="span6">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.city" required></input>
-                	</div>
-		    	</div>
-			</div>
-		</div>
-		<div class="row-fluid">
-			<div class="span6">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Клуб'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.club" required></input>
-                	</div>
-		    	</div>
-			</div>
-			<div class="span6">
-		        <div class="control-group">
-		        	<label class="control-label" ng-bind="('Главный тренер'|localize) + '*'"></label>
-		        	<div class="controls">
-		    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.mainTrainer" required></input>
-                	</div>
-		    	</div>
-			</div>
-		</div>
-
-		<p style="margin: 0 0 2px;"><span style="font-weight: bold;" ng-bind="('Группы'|localize) + ':'"></span></p>
-		<p style="margin: 0 0 2px;" ng-repeat="cmp in competitionTable.selectedItems"><span ng-bind="($index+1) + '. ' + cmp.competition.name"></span></p>
 		<br>
-		<div class="control-group">
+		<div class="control-group" style="padding: 0 15px;">
    			<button type="button" class="btn btn-small" ng-click="goToPaymentSystem(confirmData.formId); closeConfirmDlg()"><i class="fa fa-download"></i>&nbsp;{{('Передать данные'|localize)}}</button>
    			<button type="button" class="btn btn-small pull-right" ng-click="closeConfirmDlg()"><i class="fa fa-ban"></i>&nbsp;{{('Отмена'|localize)}}</button>
     	</div>

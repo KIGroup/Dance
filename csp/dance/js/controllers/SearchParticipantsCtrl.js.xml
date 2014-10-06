@@ -24,8 +24,8 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
                           {name: 'Партнер / Партнерша', sqlName: 'FullName', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
                           {name: 'Клуб / Город', sqlName: '-', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
-                          {name: 'Группы участника', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
-                          {name: 'Группа', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
+                          {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
         
         $scope.participantTable.properties = [ 
         				  {name:'fullName', getCssClass: function(item){
@@ -34,9 +34,9 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
         				  					calculate: function(item){
                                                         item.competition.fullName = item.competition.name + '\n' + 
                                                                                     item.competition.tournament.location.cityName + '. ' + $filter('convertCacheDate')(item.competition.startDate, $filter('localize')('d MMMM y')) + ' »';
-                                                        item.competitionsLink = $filter('localize')('Просмотр') + ' »';
-
+                                                       
                                                         if (item.couple){
+	                                                        item.competitionsLink = $filter('localize')('Группы пары') + ' »';
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
 
@@ -45,6 +45,7 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
+                                                            item.competitionsLink = $filter('localize')('Группы участника') + ' »';
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
                                                             item.clubAndCity = item.athlete.otherInfo.club + '\n' + item.athlete.otherInfo.city;

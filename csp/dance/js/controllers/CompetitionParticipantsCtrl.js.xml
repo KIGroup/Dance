@@ -29,16 +29,16 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                           */
                           {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
-                          {name: 'Группы участника', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}}];
+                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}}];
         
         $scope.page.participantTable.properties = [ 
                           {name:'fullName', getCssClass: function(item){
                                                 return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                             },
                                             calculate: function(item){
-                                                        item.competitionsLink = $filter('localize')('Просмотр') + ' »';
-
                                                         if (item.couple){
+                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' »';
+
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
 
@@ -47,6 +47,8 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
+	                                                        item.competitionsLink = $filter('localize')('Группы участника') + ' »';
+
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
                                                             item.clubAndCity = item.athlete.otherInfo.club + '\n' + item.athlete.otherInfo.city;
