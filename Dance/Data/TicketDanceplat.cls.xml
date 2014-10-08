@@ -21,6 +21,7 @@
 <ClassMethod>1</ClassMethod>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
+	/*
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.id = ..%Id()
 	set proxy.number = ..Number
@@ -30,6 +31,7 @@
 	set proxy.created = ..Created
 	set proxy.updated = ..Updated
 	set proxy.participant = ..Participant.ConvertToProxyObject()
+	*/
 	quit proxy
 ]]></Implementation>
 </Method>
@@ -39,6 +41,7 @@
 <FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
 <ReturnType>Ticket</ReturnType>
 <Implementation><![CDATA[
+	/*
 	#dim obj As TicketDanceplat
 	
 	if (..NumberIdxExists(data.number)){
@@ -60,8 +63,217 @@
 	set obj.CodeTwo = data.codeTwo
 	
 	set st = obj.%Save()
-	
+	*/
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="SaveAllFromImportTable">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.TicketDanceplat.TaskTickets.SaveAllFromImportTable()", "Start")
+	
+	try{
+		&sql(DECLARE TicketCurs CURSOR FOR 
+		 	 SELECT ID
+		 	 FROM Dance_Data_Import.TicketDanceplat as tic
+		 	 WHERE (SELECT cmp.Tournament->TStatus->Code FROM Dance_Data.Competition as cmp WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration')	
+		
+		&sql(OPEN TicketCurs)
+		for  
+		{	
+			&sql(FETCH TicketCurs INTO :id) 
+			quit:(SQLCODE '= 0)
+			
+			set ticketImport = ##class(Dance.Data.Import.TicketDanceplat).%OpenId(id)
+			set competition = ##class(Dance.Data.Competition).IdInternalIdxOpen(ticketImport.GroupIdInternal)
+			if '$ISOBJECT(competition) continue
+			
+			do ..SaveOneFromImportTable(ticketImport, competition)
+		}
+		
+		&sql(CLOSE TicketCurs)	
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.TicketDanceplat.TaskTickets.SaveAllFromImportTable()", "End")
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="SaveOneFromImportTable">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ticketImport:Dance.Data.Import.TicketDanceplat,competition:Dance.Data.Competition</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		do ##class(Dance.Utils.Journal).Create("Log", "SaveOneFromImportTable(ticketImportId="_ticketImport.%Id()_")", "Start, trnId="_competition.Tournament.%Id()_" cmpId="_competition.%Id())
+		
+		TSTART
+		
+		#dim participant As Dance.Data.Participant = ""
+		
+		// Find UDSR By Number
+		#dim manUDSR As Dance.Data.PersonUDSR = ##class(Dance.Data.PersonUDSR).NumberIdxOpen(ticketImport.MaleNumber)
+		#dim womanUDSR As Dance.Data.PersonUDSR = ##class(Dance.Data.PersonUDSR).NumberIdxOpen(ticketImport.FemaleNumber)
+		
+		if $ISOBJECT(manUDSR) || $ISOBJECT(womanUDSR)
+		
+		if $ISOBJECT(manUDSR) || $ISOBJECT(womanUDSR){
+			// UDSR couple or athlete	
+			set prtObject = ""
+			set prtClassName = "Dance.Data.ParticipantSingleUDSR"
+	
+			if $ISOBJECT(manUDSR) && $ISOBJECT(womanUDSR){
+				// Couple UDSR
+				set prtObject = ##class(Dance.Data.CoupleUDSR).GetByNumbers(manUDSR.Number, womanUDSR.Number)	
+				set prtClassName = "Dance.Data.ParticipantCoupleUDSR"
+			}
+			elseif $ISOBJECT(manUDSR){
+				// Athlete UDSR, Male
+				set prtObject = manUDSR
+			}
+			elseif $ISOBJECT(womanUDSR){
+				// Athlete UDSR, Female
+				set prtObject = womanUDSR
+			}
+			
+			// Create participant
+			set participant = $CLASSMETHOD(prtClassName, "Create", ##class(Dance.Data.Recorder).GetSystemRecorder(), competition, prtObject.ConvertToProxyObject(), .st)
+		}
+		else {
+			// Other couple or athlete
+			
+		}
+		/*/ Find UDSR|WDSF persons
+		set man = ##class(Dance.Data.Person).GetByNumber(ticketImport.MaleNumber)
+		set woman = ##class(Dance.Data.Person).GetByNumber(ticketImport.FemaleNumber)
+			
+		set couple = ""		
+	
+		if $ISOBJECT(man) && $ISOBJECT(woman){
+			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is object, Woman is object. Man data = {id: '"_man.%Id()_"', lastName: '"_man.LastName.Value_"'} Woman data = {id: '"_woman.%Id()_"', lastName: '"_woman.LastName.Value_"'}")
+			set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id(), .st)
+			$$$THROWONERROR(st, st)
+		}
+		elseif $ISOBJECT(man){
+			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is object, Woman is NULL. Man data = {id: '"_man.%Id()_"', lastName: '"_man.LastName.Value_"'}")
+			set couple = ##class(Dance.Data.Couple).Create(man.%Id(), man.%Id(), .st)
+			$$$THROWONERROR(st, st)
+		}
+		elseif $ISOBJECT(woman){
+			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is NULL, Woman is object. Woman data = {id: '"_woman.%Id()_"', lastName: '"_woman.LastName.Value_"'}")
+			set couple = ##class(Dance.Data.Couple).Create(woman.%Id(), woman.%Id(), .st)
+			$$$THROWONERROR(st, st)
+		}
+		else{
+			// Unknown couple|solo
+			set couple = ..CreateCoupleFromTicket(ticketImport, .st)
+			$$$THROWONERROR(st, st)
+		}
+			
+		set ticketData = ##class(%ZEN.proxyObject).%New()
+		set ticketData.idInternal = ticketImport.IdInternal
+		set ticketData.amount = ticketImport.Amount
+		set ticketData.paymentCreated = ticketImport.PaymentCreated
+		set ticketData.codeOne = ticketImport.CodeOne
+		set ticketData.codeTwo = ticketImport.CodeTwo
+		set ticketData.description = ticketImport.Description
+		set ticketData.tStatus = ticketImport.TStatus
+			
+		set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id(), .st)
+		$$$THROWONERROR(st, st)
+			
+		set ticketData.participantId = participant.%Id()
+		do ##class(Dance.Data.Ticket).Save(ticketData, .st)
+		$$$THROWONERROR(st, st)
+		
+		do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "End")
+		*/	
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set st = ex.AsStatus()
+		do $system.OBJ.DisplayError(st)
+	}
+	
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetPersonUDSRFromImportedTicket">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ticketImport:Dance.Data.Import.TicketDanceplat,gender:%String</FormalSpec>
+<ReturnType>Dance.Data.PersonUDSR</ReturnType>
+<Implementation><![CDATA[
+	set propertyHead = $CASE(gender, "Male" : "Male", : "Female")
+	
+	// Find by number
+	#dim person As Dance.Data.PersonUDSR = ##class(Dance.Data.PersonUDSR).NumberUDSRIdxOpen($PROPERTY(ticketImport, propertyHead_"Number"))
+	quit:$ISOBJECT(person) person
+	
+	// Find by filter in the table
+	set filter = ##class(%ZEN.proxyObject).%New()
+	set filter.lastName = $PROPERTY(ticketImport, propertyHead_"LastName")
+	set filter.firstName = $PROPERTY(ticketImport, propertyHead_"FirstName")
+	set filter.dob = $PROPERTY(ticketImport, propertyHead_"DOBOrAge")
+	set filter.age = $PROPERTY(ticketImport, propertyHead_"DOBOrAge")	
+	
+	quit ##class(Dance.Data.PersonUDSR).GetByFilter(filter)
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<Description>
+do ##class(Dance.Data.TicketDanceplat).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	try{
+		for id=1:1:1100 {
+			set ticket = ##class(Dance.Data.Import.TicketDanceplat).%OpenId(id,,.st)
+			continue:($$$ISERR(st) || ##class(Dance.Data.Competition).IdInternalIdxExists(ticket.GroupIdInternal) = $$$NO)
+			
+			w !,"--------------------------------------------------------"
+			w !,"Ticket "_ticket.%Id()
+			w !,"Ticket male. MaleNumber="_ticket.MaleNumber_", MaleFullName="_ticket.MaleLastName_" "_ticket.MaleFirstName_"; Club="_ticket.Club_";"
+			set male = ..GetPersonUDSRFromImportedTicket(ticket, "Male")
+			if $ISOBJECT(male){
+				w !, "Person male "_male.%Id()_". FullName="_male.LastName.Value_" "_male.FirstName.Value_"; Club="_male.Club_";"
+			}
+			else {
+				w !, "Person male not found "
+			}
+			
+			w !
+			w !,"Ticket female. FemaleNumber="_ticket.FemaleNumber_", FemaleFullName="_ticket.FemaleLastName_" "_ticket.FemaleFirstName_"; Club="_ticket.Club_";"
+			set female = ..GetPersonUDSRFromImportedTicket(ticket, "Female")
+			if $ISOBJECT(female){
+				w !, "Person female "_female.%Id()_". FullName="_female.LastName.Value_" "_female.FirstName.Value_"; Club="_female.Club_";"
+			}
+			else {
+				w !, "Person female not found "
+			}
+			
+			if ($ISOBJECT(male) && '$ISOBJECT(female)) || ('$ISOBJECT(male) && $ISOBJECT(female)){
+				w !, "-- one from couple exists"
+			}
+		}
+	}
+	catch(ex){
+		do $SYSTEM.OBJ.DisplayError(ex.AsStatus())
+	}
+	
+	quit $$$OK
 ]]></Implementation>
 </Method>
 

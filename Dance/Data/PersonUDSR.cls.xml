@@ -148,6 +148,35 @@ Date of birth</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetByFilter">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filter:%RegisteredObject</FormalSpec>
+<ReturnType>Person</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+
+	&sql(SELECT person.ID INTO :id
+		 FROM Dance_Data.PersonUDSR as person 
+		 	INNER JOIN 
+		 	Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
+		 	INNER JOIN 
+		 	Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
+		 WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
+		 	   AND 
+		 	   %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)) 
+		 	   AND 
+		 	   (DATEPART('YEAR', person.DOB) || '-' || DATEPART('MONTH', person.DOB) || '-' || DATEPART('DAY', person.DOB) = :filter.dob
+		 	   	OR
+		 	   	DATEDIFF(YEAR, person.DOB, NOW()) = :filter.age
+		 	   	OR
+		 	   	%UPPER(person.City) = %UPPER(TRIM(BOTH ' ' FROM :filter.city))
+		 	   	OR
+		 	   	%UPPER(person.Club) = %UPPER(TRIM(BOTH ' ' FROM :filter.club))))
+
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DefaultData>PersonUDSRDefaultData</DefaultData>

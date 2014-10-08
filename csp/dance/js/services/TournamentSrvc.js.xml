@@ -41,7 +41,7 @@ servicesModule.factory('TournamentSrvc', function(RESTSrvc) {
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});
         },
         getAllByYear: function(year){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournamentyears/' + year});
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/year/' + year});
         },
         getAllYears: function(){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournamentyears'});

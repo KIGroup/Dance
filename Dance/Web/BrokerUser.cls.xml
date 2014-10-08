@@ -32,16 +32,14 @@ Public REST URLs</Description>
 <!-- GET ALL [GRID], Tournament -->
 <Route Method="POST" Url="/tournament/grid" Call="Dance.Web.JsonUser:GetTournamentsForGrid"/>
 
-<!-- GET BY YEAR, Tournament [Short Info]-->
-<Route Method="GET" Url="/tournamentyears/:value"   Call="Dance.Web.JsonUser:GetTournamentByYear"/>
-
 <!-- GET ALL, Tournament status -->
 <Route Method="GET" Url="/tournamentStatus" Call="Dance.Web.JsonUser:GetTournamentStatuses"/>
 
 <!-- GET ALL, Tournament rank -->
 <Route Method="GET" Url="/tournamentRank" Call="Dance.Web.JsonUser:GetTournamentRanks"/>
 
-
+<!-- GET BY YEAR, Tournament [Short Info]-->
+<Route Method="GET" Url="/tournament/year/:year" Call="Dance.Web.JsonUser:GetTournamentsByYear"/>
 
 <!-- ========================================================================================================= -->
 <!-- Competition                                                                                   Competition -->

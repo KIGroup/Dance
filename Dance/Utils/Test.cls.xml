@@ -4,6 +4,16 @@
 <Abstract>1</Abstract>
 <TimeCreated>63339,74275.849932</TimeCreated>
 
+<Method name="Test">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	for i=1:1:2000{
+		w !, i_". "_$CHAR(i)_", "
+	}
+]]></Implementation>
+</Method>
+
 <Method name="TestRegistrationWDSF">
 <Description>
 do ##class(Dance.Utils.Test).TestRegistrationWDSF()</Description>

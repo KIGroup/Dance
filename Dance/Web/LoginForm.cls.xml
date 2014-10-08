@@ -10,7 +10,7 @@
 <Implementation><![CDATA[
 	&html<<html>
 	<head>        
-		<title>Stc</title>
+		<title>Dance sport</title>
         <script language="javascript" src="js/common.js"></script>
         <script language="javascript">
         	window.onload = function() {

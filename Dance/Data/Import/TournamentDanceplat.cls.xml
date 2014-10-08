@@ -71,7 +71,7 @@ Convert "Tournament imported" object to %ZEN.proxyObject (for JSON)</Description
 <Description>
 Create or update tournament</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>newObj:Dance.Data.Import.Tournament</FormalSpec>
+<FormalSpec>newObj:Dance.Data.Import.TournamentDanceplat</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set newObj.Name = $REPLACE($REPLACE(newObj.Name, $c(10), ""), "&quot;", """")
@@ -109,5 +109,38 @@ Example:
 */
 ]]></Content>
 </UDLText>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data8B13.TournamentD117BD</DataLocation>
+<DefaultData>TournamentDanceplatDefaultData</DefaultData>
+<IdLocation>^Dance.Data8B13.TournamentD117BD</IdLocation>
+<IndexLocation>^Dance.Data8B13.TournamentD117BI</IndexLocation>
+<StreamLocation>^Dance.Data8B13.TournamentD117BS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="TournamentDanceplatDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>IdExternal</Value>
+</Value>
+<Value name="3">
+<Value>IdInternal</Value>
+</Value>
+<Value name="4">
+<Value>TDate</Value>
+</Value>
+<Value name="5">
+<Value>Hash</Value>
+</Value>
+<Value name="6">
+<Value>Name</Value>
+</Value>
+<Value name="7">
+<Value>IsRemoved</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

@@ -138,10 +138,12 @@ Other Info</Description>
 <Description>
 Create or update ticket</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>newObj:Dance.Data.Import.Ticket</FormalSpec>
+<FormalSpec>newObj:Dance.Data.Import.TicketDanceplat</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set newObj.Description = $REPLACE($REPLACE(newObj.Description, $c(10), ""), "&quot;", """")
+	set newObj.City = $REPLACE(newObj.City, $C(10), "")
+	set newObj.Club = $REPLACE(newObj.Club, $C(10), "")
 	
 	if (..IdInternalIdxExists(newObj.IdInternal) = 0){
 		quit newObj.%Save()
@@ -154,16 +156,23 @@ Create or update ticket</Description>
 	set oldObj.CodeOne = newObj.CodeOne
 	set oldObj.CodeTwo = newObj.CodeTwo
 	//set oldObj.Created = newObj.Created
-	set oldObj.Description = newObj.Description
-	set oldObj.FemaleDOBOrAge = newObj.FemaleDOBOrAge
-	set oldObj.FemaleFirstName = newObj.FemaleFirstName
-	set oldObj.FemaleLastName = newObj.FemaleLastName
-	set oldObj.FemaleNumber = newObj.FemaleNumber
 	set oldObj.GroupIdInternal = newObj.GroupIdInternal
-	set oldObj.MaleDOBOrAge = newObj.MaleDOBOrAge
-	set oldObj.MaleFirstName = newObj.MaleFirstName
+	set oldObj.Description = newObj.Description
+	
+	if ($LENGTH(newObj.FemaleLastName) < 2) set newObj.FemaleLastName = ""
+	if ($LENGTH(newObj.FemaleFirstName) < 2) set newObj.FemaleFirstName = ""
+	set oldObj.FemaleLastName = newObj.FemaleLastName
+	set oldObj.FemaleFirstName = newObj.FemaleFirstName
+	set oldObj.FemaleDOBOrAge = newObj.FemaleDOBOrAge
+	set oldObj.FemaleNumber = +newObj.FemaleNumber
+	
+	if ($LENGTH(newObj.MaleLastName) < 2) set newObj.MaleLastName = ""
+	if ($LENGTH(newObj.MaleFirstName) < 2) set newObj.MaleFirstName = ""
 	set oldObj.MaleLastName = newObj.MaleLastName
-	set oldObj.MaleNumber = newObj.MaleNumber
+	set oldObj.MaleFirstName = newObj.MaleFirstName
+	set oldObj.MaleDOBOrAge = newObj.MaleDOBOrAge
+	set oldObj.MaleNumber = +newObj.MaleNumber
+	
 	set oldObj.OrderIdInternal = newObj.OrderIdInternal
 	set oldObj.TournamentIdExternal = newObj.TournamentIdExternal
 	set oldObj.Trainers = newObj.Trainers
@@ -173,11 +182,11 @@ Create or update ticket</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="CreatePersonFromTicket">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[ticket:Dance.Data.Import.Ticket,isMan:%Boolean,&st]]></FormalSpec>
-<ReturnType>Dance.Data.Person</ReturnType>
-<Implementation><![CDATA[
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod CreatePersonFromTicket(ticket As Dance.Data.Import.Ticket, isMan As %Boolean, ByRef st) As Dance.Data.Person
+{
 	set st = $$$OK
 	set person = ""
 	
@@ -221,8 +230,10 @@ Create or update ticket</Description>
 	}
 	
 	quit person
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 
 <UDLText name="T">
 <Content><![CDATA[
@@ -259,5 +270,86 @@ Example:
 */
 ]]></Content>
 </UDLText>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data8B13.TicketDance8D8DD</DataLocation>
+<DefaultData>TicketDanceplatDefaultData</DefaultData>
+<IdLocation>^Dance.Data8B13.TicketDance8D8DD</IdLocation>
+<IndexLocation>^Dance.Data8B13.TicketDance8D8DI</IndexLocation>
+<StreamLocation>^Dance.Data8B13.TicketDance8D8DS</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="TicketDanceplatDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>IdInternal</Value>
+</Value>
+<Value name="3">
+<Value>TournamentIdExternal</Value>
+</Value>
+<Value name="4">
+<Value>GroupIdInternal</Value>
+</Value>
+<Value name="5">
+<Value>MaleLastName</Value>
+</Value>
+<Value name="6">
+<Value>MaleFirstName</Value>
+</Value>
+<Value name="7">
+<Value>MaleNumber</Value>
+</Value>
+<Value name="8">
+<Value>MaleDOBOrAge</Value>
+</Value>
+<Value name="9">
+<Value>FemaleLastName</Value>
+</Value>
+<Value name="10">
+<Value>FemaleFirstName</Value>
+</Value>
+<Value name="11">
+<Value>FemaleNumber</Value>
+</Value>
+<Value name="12">
+<Value>FemaleDOBOrAge</Value>
+</Value>
+<Value name="13">
+<Value>Trainers</Value>
+</Value>
+<Value name="14">
+<Value>City</Value>
+</Value>
+<Value name="15">
+<Value>Club</Value>
+</Value>
+<Value name="16">
+<Value>Amount</Value>
+</Value>
+<Value name="17">
+<Value>TDay</Value>
+</Value>
+<Value name="18">
+<Value>TStatus</Value>
+</Value>
+<Value name="19">
+<Value>PaymentCreated</Value>
+</Value>
+<Value name="20">
+<Value>OrderIdInternal</Value>
+</Value>
+<Value name="21">
+<Value>CodeOne</Value>
+</Value>
+<Value name="22">
+<Value>CodeTwo</Value>
+</Value>
+<Value name="23">
+<Value>Description</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

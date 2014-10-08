@@ -127,7 +127,7 @@ Imported competitions from other system</Description>
 			do proxy.info.errorMessages.Insert("Возрастная группа не найдена! Код = "_..AgeCategoryCode)
 		}
 			
-		if (object.IsSoloType = $$$YES){
+		if (..IsSoloType = $$$YES){
 			set typeCode = "Solo"
 		}
 		else{
@@ -143,7 +143,7 @@ Imported competitions from other system</Description>
 		}
 		
 		set proxy.dancerClasses = ##class(Dance.Data.DancerClass).GetAll().children
-		set dancerClassesList = $LISTFROMSTRING(object.DancerClassCodes, ",")
+		set dancerClassesList = $LISTFROMSTRING(..DancerClassCodes, ",")
 		for i=1:1:$LL(dancerClassesList){
 			set class = $LIST(dancerClassesList, i)
 			if (class = "") continue
@@ -170,8 +170,7 @@ Imported competitions from other system</Description>
 		set proxy.info.isErrored = (proxy.info.errorMessages.Count() '= 0)
 	}
 	catch(ex){
-		//set proxy = ##class(%ZEN.proxyObject).%New()
-		//w ex.AsStatus()
+		set proxy.errorText = $SYSTEM.Status.GetErrorText(ex.AsStatus())
 	}
 	
 	quit proxy
@@ -182,7 +181,7 @@ Imported competitions from other system</Description>
 <Description>
 Create or update item</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>newObj:Dance.Data.Import.Competition</FormalSpec>
+<FormalSpec>newObj:Dance.Data.Import.CompetitionDanceplat</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set newObj.Name = $REPLACE($REPLACE(newObj.Name, $c(10), ""), "&quot;", """")
@@ -209,5 +208,62 @@ Create or update item</Description>
 	quit oldObj.%Save()
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data8B13.Competition18A0D</DataLocation>
+<DefaultData>CompetitionDanceplatDefaultData</DefaultData>
+<IdLocation>^Dance.Data8B13.Competition18A0D</IdLocation>
+<IndexLocation>^Dance.Data8B13.Competition18A0I</IndexLocation>
+<StreamLocation>^Dance.Data8B13.Competition18A0S</StreamLocation>
+<ExtentSize>100000</ExtentSize>
+<Data name="CompetitionDanceplatDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>TournamentIdExternal</Value>
+</Value>
+<Value name="3">
+<Value>IdInternal</Value>
+</Value>
+<Value name="4">
+<Value>IdExternal</Value>
+</Value>
+<Value name="5">
+<Value>Name</Value>
+</Value>
+<Value name="6">
+<Value>Rank</Value>
+</Value>
+<Value name="7">
+<Value>DisciplineCode</Value>
+</Value>
+<Value name="8">
+<Value>AgeCategoryCode</Value>
+</Value>
+<Value name="9">
+<Value>DancerClassCodes</Value>
+</Value>
+<Value name="10">
+<Value>StartDate</Value>
+</Value>
+<Value name="11">
+<Value>Limit</Value>
+</Value>
+<Value name="12">
+<Value>IsSoloType</Value>
+</Value>
+<Value name="13">
+<Value>MaxAge</Value>
+</Value>
+<Value name="14">
+<Value>MinAge</Value>
+</Value>
+<Value name="15">
+<Value>Price</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

@@ -63,7 +63,7 @@ directivesModule.directive('competitionform', function(){
             };
 
             $scope.$watch('competition.isInternational', function(){
-                if (!$scope.competition.isInternational)
+                if (!$scope.competition || !$scope.competition.isInternational)
                     return;
 
                 $scope.loadCompetitionsWDSFByFilter();

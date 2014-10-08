@@ -22,7 +22,7 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	d ##class(Dance.Data.Import.Ticket).%KillExtent()
+	d ##class(Dance.Data.Import.TicketDanceplat).%KillExtent()
 	d ##class(Dance.Data.Ticket).%KillExtent()
 	
 	set st = $$$OK
@@ -39,7 +39,7 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 			&sql(FETCH TCur INTO :idInternal, :hash) 
 			quit:(SQLCODE '= 0)
 			set page = $G(^Settings("Dance", "Import", "TicketsPage"))_"?trn="_idInternal_"&hash="_hash_"&all=1"
-			w ##class(Dance.Data.Import.ImportBase).Import("Dance.Data.Import.Ticket", page)    
+			w ##class(Dance.Data.Import.ImportDanceplat).Import("Dance.Data.Import.TicketDanceplat", page)    
 		}
 		
 		&sql(CLOSE TCur)
@@ -48,15 +48,16 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 		set st = ex.AsStatus()
 	}
 	
-	do ..CreateAllTickets()
+	//do ..CreateAllTickets()
 	quit st
 ]]></Implementation>
 </Method>
 
-<Method name="CreateAllTickets">
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod SaveAllTickets() As %Status
+{
 	set st = $$$OK
 	
 	do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateAllTickets()", "Start")
@@ -64,7 +65,7 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 	try{
 		&sql(DECLARE TicketCurs CURSOR FOR 
 		 	 SELECT ID
-		 	 FROM Dance_Data_Import.Ticket as tic
+		 	 FROM Dance_Data_Import.TicketDanceplat as tic
 		 	 WHERE (SELECT cmp.Tournament->TStatus->Code FROM Dance_Data.Competition as cmp WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration')	
 		
 		&sql(OPEN TicketCurs)
@@ -89,14 +90,10 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 	do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateAllTickets()", "End")
 	
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="CreateOneTicket">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>ticketImport:Dance.Data.Import.Ticket,competition:Dance.Data.Competition</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+ClassMethod CreateOneTicket(ticketImport As Dance.Data.Import.Ticket, competition As Dance.Data.Competition) As %Status
+{
 	set st = $$$OK
 	
 	try{
@@ -158,14 +155,113 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 	}
 	
 	quit st
-]]></Implementation>
-</Method>
+}
 
-<Method name="CreateCoupleFromTicket">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[ticket:Dance.Data.Import.Ticket,&st]]></FormalSpec>
-<ReturnType>Dance.Data.Couple</ReturnType>
-<Implementation><![CDATA[
+/*
+
+ClassMethod CreateAllTickets() As %Status
+{
+	set st = $$$OK
+	
+	do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateAllTickets()", "Start")
+	
+	try{
+		&sql(DECLARE TicketCurs CURSOR FOR 
+		 	 SELECT ID
+		 	 FROM Dance_Data_Import.Ticket as tic
+		 	 WHERE (SELECT cmp.Tournament->TStatus->Code FROM Dance_Data.Competition as cmp WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration')	
+		
+		&sql(OPEN TicketCurs)
+		for  
+		{	
+			&sql(FETCH TicketCurs INTO :id) 
+			quit:(SQLCODE '= 0)
+			
+			set ticketImport = ##class(Dance.Data.Import.Ticket).%OpenId(id)
+			set competition = ##class(Dance.Data.Competition).IdInternalIdxOpen(ticketImport.GroupIdInternal)
+			if '$ISOBJECT(competition) continue
+			
+			do ..CreateOneTicket(ticketImport, competition)
+		}
+		
+		&sql(CLOSE TicketCurs)	
+	}
+	catch(ex){
+		set st = ex.AsStatus()
+	}
+	
+	do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateAllTickets()", "End")
+	
+	quit st
+}
+
+ClassMethod CreateOneTicket(ticketImport As Dance.Data.Import.Ticket, competition As Dance.Data.Competition) As %Status
+{
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Start, trnId="_competition.Tournament.%Id()_" cmpId="_competition.%Id())
+		
+		// Find UDSR|WDSF persons
+		set man = ##class(Dance.Data.Person).GetByNumber(ticketImport.MaleNumber)
+		set woman = ##class(Dance.Data.Person).GetByNumber(ticketImport.FemaleNumber)
+			
+		set couple = ""		
+	
+		if $ISOBJECT(man) && $ISOBJECT(woman){
+			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is object, Woman is object. Man data = {id: '"_man.%Id()_"', lastName: '"_man.LastName.Value_"'} Woman data = {id: '"_woman.%Id()_"', lastName: '"_woman.LastName.Value_"'}")
+			set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id(), .st)
+			$$$THROWONERROR(st, st)
+		}
+		elseif $ISOBJECT(man){
+			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is object, Woman is NULL. Man data = {id: '"_man.%Id()_"', lastName: '"_man.LastName.Value_"'}")
+			set couple = ##class(Dance.Data.Couple).Create(man.%Id(), man.%Id(), .st)
+			$$$THROWONERROR(st, st)
+		}
+		elseif $ISOBJECT(woman){
+			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is NULL, Woman is object. Woman data = {id: '"_woman.%Id()_"', lastName: '"_woman.LastName.Value_"'}")
+			set couple = ##class(Dance.Data.Couple).Create(woman.%Id(), woman.%Id(), .st)
+			$$$THROWONERROR(st, st)
+		}
+		else{
+			// Unknown couple|solo
+			set couple = ..CreateCoupleFromTicket(ticketImport, .st)
+			$$$THROWONERROR(st, st)
+		}
+			
+		set ticketData = ##class(%ZEN.proxyObject).%New()
+		set ticketData.idInternal = ticketImport.IdInternal
+		set ticketData.amount = ticketImport.Amount
+		set ticketData.paymentCreated = ticketImport.PaymentCreated
+		set ticketData.codeOne = ticketImport.CodeOne
+		set ticketData.codeTwo = ticketImport.CodeTwo
+		set ticketData.description = ticketImport.Description
+		set ticketData.tStatus = ticketImport.TStatus
+			
+		set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id(), .st)
+		$$$THROWONERROR(st, st)
+			
+		set ticketData.participantId = participant.%Id()
+		do ##class(Dance.Data.Ticket).Save(ticketData, .st)
+		$$$THROWONERROR(st, st)
+		
+		do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "End")
+			
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK
+		set st = ex.AsStatus()
+		do $system.OBJ.DisplayError(st)
+	}
+	
+	quit st
+}
+
+ClassMethod CreateCoupleFromTicket(ticket As Dance.Data.Import.Ticket, ByRef st) As Dance.Data.Couple
+{
 	set st = $$$OK
 	set couple  = ""
 	
@@ -347,7 +443,9 @@ do ##class(Dance.Utils.TaskTickets).Import()</Description>
 	}
 	
 	quit couple
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 </Class>
 </Export>

@@ -4,6 +4,7 @@
 <div class="row-fluid">
 	<pre ng-bind="tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
+	<pre ng-hide="tournament.id" style="text-align: center;"><i class="fa fa-spinner fa-spin fa-lg" style="color: rgb(204, 204, 204);"></i></pre>
 </div>  
 <br>
 <div class="row-fluid" style="text-align: center;">
@@ -26,8 +27,8 @@
 <!-- Competitions -->
 <div class="row-fluid" style="padding-top: 10px;">
 	<div class="span8">
-		<span style="font-weight: bold;" ng-show="athlete">{{('Группы участника'|localize) + ' '}}<span class="tableCaptionImportant">{{athlete.lastName + ' ' + athlete.firstName}}</span>{{' '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' '}}<span class="tableCaptionImportant">{{athlete.otherInfo.club}}</span></span>
-		<span style="font-weight: bold;" ng-show="couple">{{('Группы пары'|localize) + ' '}}<span class="tableCaptionImportant">{{couple.man.lastName + ' ' + couple.man.firstName + ' - ' + couple.woman.lastName + ' ' + couple.woman.firstName}}</span>{{' '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' '}}<span class="tableCaptionImportant">{{couple.otherInfo.club}}</span></span>
+		<span style="font-weight: bold;" ng-show="athlete">{{('Группы'|localize) + ' ' + typeName + ('участника'|localize)}} <span class="tableCaptionImportant">{{athlete.lastName + ' ' + athlete.firstName}}</span>{{' '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' '}}<span class="tableCaptionImportant">{{athlete.otherInfo.club}}</span></span>
+		<span style="font-weight: bold;" ng-show="couple">{{('Группы'|localize) + ' ' + typeName + ('пары'|localize)}} <span class="tableCaptionImportant">{{couple.man.lastName + ' ' + couple.man.firstName + ' - ' + couple.woman.lastName + ' ' + couple.woman.firstName}}</span>{{' '}}&nbsp;&nbsp;&nbsp;{{('Клуб'|localize) + ' '}}<span class="tableCaptionImportant">{{couple.otherInfo.club}}</span></span>
 	</div>
 	<div class="span4">
 		<div class="btn-group pull-right">
@@ -65,18 +66,25 @@
 
 
 <button type="button" class="btn btn-small" ng-click="openConfirmDlg()" ng-disabled="competitionTable.selectedItems.length==0"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;{{'Оплатить на danceplat.ru'|localize}}</button>
+<span class="pull-right" ng-bind="('Выбрано'|localize) + ' ' + competitionTable.selectedItems.length + ' ' + ('групп из'|localize) + ' ' + competitionTable.itemsTotal"></span>
 
 <div class="row-fluid">
 	<div class="span4">
 		<div>
 			<danceplat-udsr-pay 
-				id="danceplatUdsrPay"
-
-				ng-hide="couple.man.numberWDSF != '' && couple.man.numberUDSR == ''"
-				
+				id="coupleDancePlatUDSRPayment"
 				trn-id="tournament.idInternal"
-				man-number-udsr="couple.man.numberUDSR"
-				woman-number-udsr="couple.woman.numberUDSR"
+				man-number-udsr="couple.man.number"
+				woman-number-udsr="couple.woman.number"
+				competitions="competitionList"
+				hide-all="true"
+				btn-name="''"/>
+
+			<danceplat-udsr-pay 
+				id="athleteDancePlatUDSRPayment"
+				trn-id="tournament.idInternal"
+				man-number-udsr="athlete.number"
+				woman-number-udsr="athlete.number"
 				competitions="competitionList"
 				hide-all="true"
 				btn-name="''"/>
@@ -85,8 +93,6 @@
 			<danceplat-other-pay 
 				id="danceplatOtherPay"
 				
-				ng-show="couple.man.numberWDSF != '' && couple.man.numberUDSR == ''"
-
 				trn-id="tournament.idInternal"
 
 				male-age="couple.man.dob"
@@ -108,7 +114,6 @@
 		</div>
 	</div>
 	<div class="span8">
-		<span class="pull-right" ng-bind="('Выбрано'|localize) + ' ' + competitionTable.selectedItems.length + ' ' + ('групп из'|localize) + ' ' + competitionTable.itemsTotal"></span>
 	</div>
 </div>	
 <br>
@@ -251,7 +256,7 @@
 		</div>
 		<br>
 		<div class="control-group" style="padding: 0 15px;">
-   			<button type="button" class="btn btn-small" ng-click="goToPaymentSystem(confirmData.formId); closeConfirmDlg()"><i class="fa fa-download"></i>&nbsp;{{('Передать данные'|localize)}}</button>
+   			<button type="button" class="btn btn-small" ng-click="submitConfirmDlg();"><i class="fa fa-download"></i>&nbsp;{{('Передать данные'|localize)}}</button>
    			<button type="button" class="btn btn-small pull-right" ng-click="closeConfirmDlg()"><i class="fa fa-ban"></i>&nbsp;{{('Отмена'|localize)}}</button>
     	</div>
     </div>

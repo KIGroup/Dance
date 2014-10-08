@@ -4,21 +4,6 @@
 <Abstract>1</Abstract>
 <TimeCreated>63438,7022.551555</TimeCreated>
 
-<Method name="InitSettings">
-<Description>
-do ##class(Dance.Data.Import.ImportDanceplat).InitSettings()</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set ^Settings("Dance", "ImportDanceplat", "Server") = "www.danceplat.ru"
-	set ^Settings("Dance", "ImportDanceplat", "TournamentsPage") = "toursfeed1.php?trn=10122&hash=b3c230573098e6ac0510654af758c227&all=1"
-	set ^Settings("Dance", "ImportDanceplat", "CompetitionsPage") = "groupsfeed2.php"
-	set ^Settings("Dance", "ImportDanceplat", "TicketsPage") = "stsrfeed5.php"
-	
-	quit $$$OK
-]]></Implementation>
-</Method>
-
 <Method name="Import">
 <Description>
 Import all objects from XML to table</Description>

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//ddcdddddd
+//
         
 /*===========================================================================================
 Payment
@@ -90,13 +90,27 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                 if ($scope.competitionTable.items.length != 0){
                     $scope.couple = angular.copy($scope.competitionTable.items[0].couple);
                     $scope.athlete = angular.copy($scope.competitionTable.items[0].athlete);
+                    $scope.type = $scope.couple ? $scope.couple.type : $scope.athlete.type;
+                    
+                    switch($scope.type){
+                        case 'WDSF':
+                            $scope.typeName = 'WDSF' + ' ';
+                            break;
+
+                        case 'UDSR':
+                            $scope.typeName = $filter('localize')('СТСР') + ' ';
+                            break;
+                        
+                        default:
+                            $scope.typeName = '';   
+                    };
                 }
 			}, 
             function(data){
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
-
+    
 
     $scope.competitionTable.setHiddenCoulumns = function(value){
         var indexes = [1,3,4,5,6];
@@ -133,10 +147,12 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
         $scope.confirmData = {};
         
         if ($scope.couple){
+            $scope.confirmData.formId = "couple";
             $scope.confirmData.couple = angular.copy($scope.couple);
             $scope.confirmData.otherInfo = $scope.confirmData.couple.otherInfo;
         }
         else if ($scope.athlete){
+            $scope.confirmData.formId = "athlete";
             $scope.confirmData.athlete = angular.copy($scope.athlete);
             $scope.confirmData.otherInfo = $scope.confirmData.athlete.otherInfo;
         }
@@ -144,45 +160,31 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
         var ids = UtilsSrvc.getIndexes($scope.countries, 'id', $scope.confirmData.otherInfo.country.id);
         $scope.confirmData.otherInfo.country = $scope.countries[ids.length !=0 ? ids[0] : 0];
         
-        $('#ConfirmModal').modal('show');
-        $scope.confirmModalVisible = true;
-
-        /*
-        $scope.confirmData = {couple: $scope.couple, type: '', formId: ''};
-
-        if ($scope.confirmData.couple.man.numberUDSR == "" && $scope.confirmData.couple.woman.numberUDSR == ""){
-            if ($scope.confirmData.couple.man.numberWDSF == "" && $scope.confirmData.couple.woman.numberWDSF == ""){
-                $scope.confirmData.type = "new";
-                $scope.confirmData.formId = "danceplatOtherPay";                
-            }
-            else{
-                $scope.confirmData.type = "wdsf";
-                $scope.confirmData.formId = "danceplatOtherPay";   
-            }
-        }
-        else{
-            $scope.confirmData.type = "udsr";
-            $scope.confirmData.formId = "danceplatOtherPay";
-            $scope.goToPaymentSystem( $scope.confirmData.formId);
+        if ($scope.type == 'UDSR'){
+            $scope.confirmData.formId += "DancePlatUDSRPayment";
+            $scope.goToPaymentSystem($scope.confirmData.formId);
             return;
+        } 
+        else{
+            $scope.confirmData.formId += "DancePlatOTHERPayment";
         }
 
-        for(var i=0; i < $scope.countries.length; i++){
-            if ($scope.countries[i].id == $scope.confirmData.couple.otherInfo.country.id){
-                $scope.confirmData.couple.otherInfo.country = $scope.countries[i];
-            }
-        }
-           
         $('#ConfirmModal').modal('show');
         $scope.confirmModalVisible = true;
-        */
     };
 
+
+    $scope.submitConfirmDlg = function(){
+        $scope.closeConfirmDlg();
+        alert('Нет формы для WDSF|других пар/участников.');
+        //$scope.goToPaymentSystem($scope.confirmData.formId);  
+    };
 
     $scope.closeConfirmDlg = function(){
         $('#ConfirmModal').modal('hide');
-        $scope.confirmModalVisible = false;  
+        $scope.confirmModalVisible = false;
     };
+
 
     $scope.goToPaymentSystem = function(formId){
         $window.document.forms[formId].submit(); 
