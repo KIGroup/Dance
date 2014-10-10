@@ -17,6 +17,11 @@
 <Parameter name="MAXLEN" value="300"/>
 </Property>
 
+<Property name="Name">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Password">
 <Type>%String</Type>
 <Required>1</Required>
@@ -62,7 +67,8 @@
 <ReturnType>Recorder</ReturnType>
 <Implementation><![CDATA[
 	set id = ""
-	&sql(SELECT ID INTO :id FROM Dance_Data.Recorder WHERE OtherInfo = 'System recorder')
+	set login = $GET(^Settings("Dance", "SystemRecorderLogin"))
+	&sql(SELECT ID INTO :id FROM Dance_Data.Recorder WHERE Login = :login)
 	quit ..%OpenId(id)
 ]]></Implementation>
 </Method>

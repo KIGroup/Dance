@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+//  
         
 /*===========================================================================================
 Payment
@@ -176,8 +176,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
 
     $scope.submitConfirmDlg = function(){
         $scope.closeConfirmDlg();
-        alert('Нет формы для WDSF|других пар/участников.');
-        //$scope.goToPaymentSystem($scope.confirmData.formId);  
+        $scope.goToPaymentSystem($scope.confirmData.formId);  
     };
 
     $scope.closeConfirmDlg = function(){

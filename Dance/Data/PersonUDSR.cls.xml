@@ -151,7 +151,7 @@ Date of birth</Description>
 <Method name="GetByFilter">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>filter:%RegisteredObject</FormalSpec>
-<ReturnType>Person</ReturnType>
+<ReturnType>PersonUDSR</ReturnType>
 <Implementation><![CDATA[
 	set id = ""
 

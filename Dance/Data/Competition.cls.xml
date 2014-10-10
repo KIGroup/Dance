@@ -81,13 +81,6 @@ Competition in the tournament, has participants</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
-<Property name="Participants">
-<Type>Dance.Data.Participant</Type>
-<Cardinality>many</Cardinality>
-<Inverse>Competition</Inverse>
-<Relationship>1</Relationship>
-</Property>
-
 <Property name="IsActive">
 <Type>%Boolean</Type>
 <InitialExpression>1</InitialExpression>
@@ -109,12 +102,20 @@ Competition in the tournament, has participants</Description>
 </Index>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>fullInfo:%Boolean=0</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.id = ..%Id()
 	set proxy.name = ..Name.Value
-	set proxy.tournament = ..Tournament.ConvertToProxyObject()
+	if (fullInfo) {
+		set proxy.tournament = ..Tournament.ConvertToProxyObject()
+	}
+	else {
+		set proxy.tournament = ##class(%ZEN.proxyObject).%New()
+		set proxy.tournament.id = ..Tournament.%Id()	
+	}
+	
 	set proxy.discipline = ..Discipline.ConvertToProxyObject()
 	set proxy.ageCategory = ..AgeCategory.ConvertToProxyObject()
 	set proxy.type = ..Type.ConvertToProxyObject()
@@ -129,7 +130,6 @@ Competition in the tournament, has participants</Description>
 	
 	set proxy.price = ..Price
 	set proxy.limit = ..Limit
-	//set proxy.isInternational = ..IsInternational
 	
 	set proxy.idInternal = ..IdInternal
 	set proxy.idExternal = ..IdExternal 
@@ -160,7 +160,7 @@ Create or update competition</Description>
 	"ID="_data.id_";"_
 	"IdInternal="_data.idInternal_";"_
 	"IdExternal="_data.idExternal_";"_
-	"Name="_$ZCVT(data.name,"I", "UTF8")_";"_
+	"Name="_data.name_";"_
 	"TournamentId="_data.tournamentId_";"_
 	"DisciplineId="_data.discipline.id_";"_
 	"AgeCategoryId="_data.ageCategory.id_";"_
@@ -172,12 +172,12 @@ Create or update competition</Description>
     if (data.id = ""){
     	set trn = ##class(Dance.Data.Tournament).%OpenId(data.tournamentId)
     	set cmp = ##class(Dance.Data.Competition).%New()
-      	set cmp.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name,"I", "UTF8"))
+      	set cmp.Name = ##class(Dance.Data.Localization.LText).Create(data.name)
       	set cmp.Tournament = trn
     }
     else{
 	    set cmp = ##class(Dance.Data.Competition).%OpenId(data.id)
-      	set cmp.Name.Value = $ZCVT(data.name,"I", "UTF8")
+      	set cmp.Name.Value = data.name
     }
     
     if (data.isInternational = 1) && $ISOBJECT(data.wdsf){

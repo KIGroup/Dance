@@ -59,7 +59,7 @@ Paged output of table, for any class with parameters, sorting and searching</Des
 		// Определяем что находится в WHERE.
 		if (whereRequired = "") && (params.searchText '= ""){
 			// Одно условие - поиск
-			set sql = sql_" WHERE "_..ParseParameter(params.searchSqlName)_" LIKE '%"_..ParseParameter($ZCONVERT(params.searchText, "I","UTF8"))_"%'"
+			set sql = sql_" WHERE "_..ParseParameter(params.searchSqlName)_" LIKE '%"_..ParseParameter(params.searchText)_"%'"
 		}
 		elseif (whereRequired '= "") && (params.searchText = ""){
 			// Одно условие - заданное, например - выборка по статусу
@@ -67,7 +67,7 @@ Paged output of table, for any class with parameters, sorting and searching</Des
 		}
 		elseif (whereRequired '= "") && (params.searchText '= ""){
 			// Два(+) условия = поиск и дополнительные
-			set sql = sql_" WHERE "_whereRequired_" AND "_..ParseParameter(params.searchSqlName)_" LIKE '%"_..ParseParameter($ZCONVERT(params.searchText, "I","UTF8"))_"%'"
+			set sql = sql_" WHERE "_whereRequired_" AND "_..ParseParameter(params.searchSqlName)_" LIKE '%"_..ParseParameter(params.searchText)_"%'"
 		}
 		
 		// Сортировка

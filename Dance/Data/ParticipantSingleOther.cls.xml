@@ -92,21 +92,46 @@
 	set obj.Recorder = recorder
 	set obj.Competition = competition 
 	
-	set obj.Gender = $ZCVT(athlete.gender, "I", "UTF8")
-	set obj.LastName = $ZCVT(athlete.lastName, "I", "UTF8")
-	set obj.FirstName = $ZCVT(athlete.firstName, "I", "UTF8")
+	set obj.Gender = athlete.gender
+	set obj.LastName = athlete.lastName
+	set obj.FirstName = athlete.firstName
 	set obj.DOB = $ZDH(athlete.dob, 3)
 	
 	set obj.Country = ##class(Country).%OpenId(athlete.otherInfo.country.id)	
-	set obj.City = $ZCVT(athlete.otherInfo.city, "I", "UTF8")
-	set obj.Club = $ZCVT(athlete.otherInfo.club, "I", "UTF8")
-	set obj.MainTrainer = $ZCVT(athlete.otherInfo.mainTrainer, "I", "UTF8")
-	set obj.OtherTrainers = $ZCVT(athlete.otherInfo.otherTrainers, "I", "UTF8")
+	set obj.City = athlete.otherInfo.city
+	set obj.Club = athlete.otherInfo.club
+	set obj.MainTrainer = athlete.otherInfo.mainTrainer
+	set obj.OtherTrainers = athlete.otherInfo.otherTrainers
 	
 	set obj.AthleteKey = athlete.key
 	set st = obj.%Save()
 	
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="GetByFilter">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filter:%RegisteredObject</FormalSpec>
+<ReturnType>ParticipantCoupleOther</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+
+	&sql(SELECT ID INTO :id
+		 FROM Dance_Data.ParticipantSingleOther 
+		 WHERE Competition = :filter.competitionId 
+		 	   AND
+		 	   %UPPER(LastName) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
+		 	   AND 
+		 	   %UPPER(FirstName) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName))
+		 	   AND
+		 	   (
+		 	   	 %UPPER(Club) = %UPPER(TRIM(BOTH ' ' FROM :filter.otherInfo.club)) 
+		 	   	 OR 
+		 	     %UPPER(City) = %UPPER(TRIM(BOTH ' ' FROM :filter.otherInfo.city))
+		 	   ))
+		 	   
+	quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
 

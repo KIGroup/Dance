@@ -19,10 +19,7 @@ Couple - participant of the competition</Description>
 </Property>
 
 <Property name="Competition">
-<Type>Dance.Data.Competition</Type>
-<Cardinality>one</Cardinality>
-<Inverse>Participants</Inverse>
-<Relationship>1</Relationship>
+<Type>Competition</Type>
 <Required>1</Required>
 </Property>
 
@@ -59,7 +56,7 @@ Couple - participant of the competition</Description>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.id = ..%Id()
-	set proxy.competition = ..Competition.ConvertToProxyObject()
+	set proxy.competition = ..Competition.ConvertToProxyObject($$$NO)
 	set proxy.isActive = ..IsActive
 	set proxy.created = ..Created
 	set proxy.ticketStatus = ##class(TicketStatus).CodeIdxOpen(..TicketStatus).ConvertToProxyObject()
@@ -197,6 +194,9 @@ ClassMethod GetCoupleCompetitionsCount(competitionId As %String, coupleId As %St
 </Value>
 <Value name="6">
 <Value>IsActive</Value>
+</Value>
+<Value name="7">
+<Value>Recorder</Value>
 </Value>
 </Data>
 </Storage>

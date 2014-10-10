@@ -21,7 +21,7 @@ Create or Update object</Description>
 		
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
       	
       	do ##class(Dance.Data.Tournament).Save(data, .st)
       	if $$$ISERR(st) $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_TournamentSave"," | "_st))
@@ -82,8 +82,7 @@ Create or Update object</Description>
 		TSTART
 		
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
-		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
       	
       	set data.tournamentId = tournamentId
       	do ##class(Dance.Data.Competition).Save(data,.st)
@@ -112,7 +111,7 @@ Create or Update object</Description>
 	try{	
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
       	
       	set proxy = ##class(%ZEN.proxyObject).%New()
       	set proxy.info = ##class(%ZEN.proxyObject).%New()
@@ -224,7 +223,7 @@ Import                                                                          
 		
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 	
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
     	
     	if (params.other.isFirstLoad = $$$YES){
 			$$$THROWONERROR(st, ##class(Dance.Data.Import.ImportDanceplat).Import("Dance.Data.Import.TournamentDanceplat", $G(^Settings("Dance", "ImportDanceplat", "TournamentsPage"))))
@@ -254,7 +253,7 @@ Write objects to device, page by page for grid. </Description>
 		
 		$$$THROWONERROR(st, ##class(Dance.Data.Tournament).CheckUpdatePrivilege())
 	
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
     	
     	set tournament = ##class(Dance.Data.Tournament).%OpenId(params.other.tournamentId)
     	
@@ -287,6 +286,41 @@ Write objects to device, page by page for grid. </Description>
     if $$$ISOK(##class(Dance.Data.Tournament).CheckUpdatePrivilege()){	
     	set proxy.link = $G(^Settings("Dance", "ImportDanceplat", "Server"))_"/"_$G(^Settings("Dance", "ImportDanceplat", "CompetitionsPage"))_"?trn="_tournament.IdInternal_"&hash="_tournament.Hash_"&all=1"
     }
+	
+	do proxy.%ToJSON()
+	
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetRecorders">
+<Description>
+Get recorders</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set proxy = ##class(%ZEN.proxyObject).%New()
+	set proxy.recorders = ##class(%ListOfObjects).%New()
+	
+	&sql(DECLARE CRRec CURSOR FOR 
+		 	SELECT Name, LoginHash
+		 	FROM Dance_Data.Recorder
+		 	ORDER BY Name)	
+		
+	&sql(OPEN CRRec)
+	for  
+	{	
+		&sql(FETCH CRRec INTO :name, :hash) 
+		quit:(SQLCODE '= 0)
+		
+		set rec = ##class(%ZEN.proxyObject).%New()	
+		set rec.hash = hash
+		set rec.name = name
+		
+		do proxy.recorders.Insert(rec)	
+	}
+	
+	&sql(CLOSE CRRec)
 	
 	do proxy.%ToJSON()
 	

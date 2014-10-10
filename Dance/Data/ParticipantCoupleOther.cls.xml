@@ -114,24 +114,53 @@
 	set obj.Recorder = recorder
 	set obj.Competition = competition 
 	
-	set obj.ManLastName = $ZCVT(couple.man.lastName, "I", "UTF8")
-	set obj.ManFirstName = $ZCVT(couple.man.firstName, "I", "UTF8")
+	set obj.ManLastName = couple.man.lastName
+	set obj.ManFirstName = couple.man.firstName
 	set obj.ManDOB = $ZDH(couple.man.dob, 3)
 	
-	set obj.WomanLastName = $ZCVT(couple.woman.lastName, "I", "UTF8")
-	set obj.WomanFirstName = $ZCVT(couple.woman.firstName, "I", "UTF8")
+	set obj.WomanLastName = couple.woman.lastName
+	set obj.WomanFirstName = couple.woman.firstName
 	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
 	
 	set obj.Country = ##class(Country).%OpenId(couple.otherInfo.country.id)	
-	set obj.City = $ZCVT(couple.otherInfo.city, "I", "UTF8")
-	set obj.Club = $ZCVT(couple.otherInfo.club, "I", "UTF8")
-	set obj.MainTrainer = $ZCVT(couple.otherInfo.mainTrainer, "I", "UTF8")
-	set obj.OtherTrainers = $ZCVT(couple.otherInfo.otherTrainers, "I", "UTF8")
+	set obj.City = couple.otherInfo.city
+	set obj.Club = couple.otherInfo.club
+	set obj.MainTrainer = couple.otherInfo.mainTrainer
+	set obj.OtherTrainers = couple.otherInfo.otherTrainers
 	
 	set obj.CoupleKey = couple.key	
 	set st = obj.%Save()
 	
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="GetByFilter">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filter:%RegisteredObject</FormalSpec>
+<ReturnType>ParticipantCoupleOther</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+
+	&sql(SELECT ID INTO :id
+		 FROM Dance_Data.ParticipantCoupleOther 
+		 WHERE Competition = :filter.competitionId 
+		 	   AND
+		 	   %UPPER(ManLastName) = %UPPER(TRIM(BOTH ' ' FROM :filter.man.lastName)) 
+		 	   AND 
+		 	   %UPPER(ManFirstName) = %UPPER(TRIM(BOTH ' ' FROM :filter.man.firstName))
+		 	   AND
+			   %UPPER(WomanLastName) = %UPPER(TRIM(BOTH ' ' FROM :filter.woman.lastName)) 
+		 	   AND 
+		 	   %UPPER(WomanFirstName) = %UPPER(TRIM(BOTH ' ' FROM :filter.woman.firstName))
+		 	   AND
+		 	   (
+		 	   	 %UPPER(Club) = %UPPER(TRIM(BOTH ' ' FROM :filter.otherInfo.club)) 
+		 	   	 OR 
+		 	     %UPPER(City) = %UPPER(TRIM(BOTH ' ' FROM :filter.otherInfo.city))
+		 	   ))
+		 	   
+	quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
 

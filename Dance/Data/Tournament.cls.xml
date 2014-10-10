@@ -186,7 +186,7 @@ Create or Update object</Description>
 	"IdInternal="_data.idInternal_";"_
 	"IdExternal="_data.idExternal_";"_
 	"Hash="_data.hash_";"_
-	"Name="_$ZCVT(data.name,"I", "UTF8")_";"_
+	"Name="_data.name_";"_
 	"TStatusId="_data.status.id_";"_
 	"TRankId="_data.rank.id_";"_
 	"CountryId="_data.location.country.id_";"_
@@ -197,24 +197,24 @@ Create or Update object</Description>
 	set trn = ""
 	if (data.id = ""){
 		set trn = ##class(Dance.Data.Tournament).%New()
-      	set trn.Name = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.name, "I", "UTF8"))
-      	set trn.FullName = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.fullName, "I", "UTF8"))
-      	set trn.City = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.location.cityName, "I", "UTF8"))
-      	set trn.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create($ZCVT(data.organizer.info, "I", "UTF8"))
+      	set trn.Name = ##class(Dance.Data.Localization.LText).Create(data.name)
+      	set trn.FullName = ##class(Dance.Data.Localization.LText).Create(data.fullName)
+      	set trn.City = ##class(Dance.Data.Localization.LText).Create(data.location.cityName)
+      	set trn.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create(data.organizer.info)
     }
     else{
 	    set trn = ##class(Dance.Data.Tournament).%OpenId(data.id)
-      	set trn.Name.Value = $ZCVT(data.name, "I", "UTF8")
-      	set trn.FullName.Value = $ZCVT(data.fullName, "I", "UTF8")
-      	set trn.City.Value = $ZCVT(data.location.cityName, "I", "UTF8")
-      	set trn.OrganizerInfo.Value = $ZCVT(data.organizer.info, "I", "UTF8")
+      	set trn.Name.Value = data.name
+      	set trn.FullName.Value = data.fullName
+      	set trn.City.Value = data.location.cityName
+      	set trn.OrganizerInfo.Value = data.organizer.info
    	}
       	
     set trn.IdInternal = data.idInternal
     set trn.IdExternal = data.idExternal
     set trn.Hash = data.hash
       	
-    set trn.OrganizerSite = $ZCVT(data.organizer.site, "I", "UTF8")
+    set trn.OrganizerSite = data.organizer.site
     
    	set trn.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
     set trn.TStatus = ##class(Dance.Data.TournamentStatus).%OpenId(data.status.id)

@@ -76,8 +76,8 @@
 			<div class="span6">
 				<p><span class="spnTitle" ng-bind="'Название'|localize"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].name"></span></p>
 				<p><span class="spnTitle" ng-bind="('Город'|localize) + ', ' + ('Страна'|localize)"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].location.cityName + ', ' + page.tournamentTable.selectedItems[0].location.country.name"></span></p>
-				<p><span class="spnTitle" ng-hide="page.tournamentTable.selectedItems[0].organizer.info==''" ng-bind="'Организатор'|localize"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].organizer.info"></span></p>
-				<p><span class="spnTitle" ng-hide="page.tournamentTable.selectedItems[0].organizer.site==''" ng-bind="'Веб-сайт организатора'|localize" ></span>: <span ng-bind="page.tournamentTable.selectedItems[0].organizer.site"></span></p>
+				<p ng-hide="page.tournamentTable.selectedItems[0].organizer.info==''"><span class="spnTitle" ng-bind="'Организатор'|localize"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].organizer.info"></span></p>
+				<p ng-hide="page.tournamentTable.selectedItems[0].organizer.site==''"><span class="spnTitle" ng-bind="'Веб-сайт организатора'|localize" ></span>: <a ng-href="{{'http://' + page.tournamentTable.selectedItems[0].organizer.site}}" target="_blank" ng-bind="'Перейти'|localize"></a></p>
 			</div>
 			<div class="span6">
 				<p><span class="spnTitle" ng-bind="'Дата начала / окончания'|localize"></span>: <span ng-bind="(page.tournamentTable.selectedItems[0].startDate|convertCacheDate:('d MMMM y'|localize)) + ' / ' + (page.tournamentTable.selectedItems[0].endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>

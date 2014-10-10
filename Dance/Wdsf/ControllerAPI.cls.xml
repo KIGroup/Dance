@@ -99,6 +99,17 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetCoupleByName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[manFullName:%String,womanFullName:%String,&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[
+	set filter = "?manFullName="_manFullName_"&womanFullName="_womanFullName
+	
+	quit ..Call("GET", "/couple"_filter,, .st)
+]]></Implementation>
+</Method>
+
 <Method name="GetCoupleByNumbers">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[manNumber:%String,womanNumber:%String,&st:%Status]]></FormalSpec>
@@ -112,6 +123,14 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
 <FormalSpec><![CDATA[id:%String,&st:%Status]]></FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[	quit ..Call("GET", "/person/"_id,, .st)
+]]></Implementation>
+</Method>
+
+<Method name="GetPersonsByFullName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[lastName:%String,firstName:%String,&st:%Status]]></FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<Implementation><![CDATA[	quit ..Call("GET", "/person?name="_lastName_","_firstName,, .st)
 ]]></Implementation>
 </Method>
 

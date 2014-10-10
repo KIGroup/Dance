@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//   d d       
+//   d d   
  
 /*===========================================================================================
 Registration         
@@ -110,9 +110,6 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
         else{
             $scope.competitionTable.setHiddenCoulumns(false);
         }  
-
-        // Load tournament
-        $scope.loadTournament($routeParams.tournamentId);
     };
 
     /// Load All Competitions in Tournament  
@@ -657,9 +654,6 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             });
     };
 
-    $scope.loadCountries();
-    $scope.init();
- 
 
     $scope.getResultTableRow = function(res){
         var row = '';
@@ -701,7 +695,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             }
         }    
         else {
-            row += $filter('localize')('Сообщение') + ': ' + res.otherInfo.message + '\n';
+            row += $filter('localize')('Сообщение') + ': ' + res.message + '\n';
 
             // Conflict competitions for UDSR athlete
             if (res.otherInfo.conflictCompetitions && res.otherInfo.conflictCompetitions.length != 0){
@@ -719,198 +713,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
         return row;
     };
 
-    $scope.resultTableVisible = !true;
-    $scope.regResponse = {
-    "results":[ {
-            "competition": {
-                "ageCategory": {
-                    "code":"Взрослые",
-                    "id":1,
-                    "maxAge":99,
-                    "minAge":19,
-                    "name":"Взрослые"
-                },
-                "dancerClasses":[ {
-                        "code":5,
-                        "id":1,
-                        "name":"A"
-                    }, {
-                        "code":4,
-                        "id":2,
-                        "name":"B"
-                    }, {
-                        "code":2,
-                        "id":3,
-                        "name":"C"
-                    }, {
-                        "code":6,
-                        "id":5,
-                        "name":"E"
-                    }
-                ],
-                "discipline": {
-                    "code":"Ст",
-                    "id":1,
-                    "name":"Европейская"
-                },
-                "id":11,
-                "idExternal":2342342,
-                "idInternal":234234,
-                "isInternational":1,
-                "limit":3,
-                "name":"Опен Стандард Адульт",
-                "participantsCount":0,
-                "price":3234,
-                "startDate":"2014-09-20",
-                "startTime":"12:00",
-                "tournament": {
-                    "competitionsCount":1,
-                    "endDate":"2014-09-27",
-                    "fullName":"Румынский турнир",
-                    "hash":4333,
-                    "id":3,
-                    "idExternal":3432,
-                    "idInternal":3243,
-                    "location": {
-                        "cityName":"Румынский город",
-                        "country": {
-                            "id":175,
-                            "name":"Румыния"
-                        }
-                    },
-                    "name":"Румынский турнир",
-                    "organizer": {
-                        "info":"",
-                        "site":""
-                    },
-                    "participantsCount":0,
-                    "participantsUniqueCount":0,
-                    "rank": {
-                        "code":"МС",
-                        "id":3,
-                        "name":"Международное соревнование",
-                        "shortName":"МС"
-                    },
-                    "startDate":"2014-09-17",
-                    "status": {
-                        "code":"Registration",
-                        "id":2,
-                        "name":"Регистрация"
-                    },
-                    "tabOtherAllowed":1,
-                    "tabUDSRAllowed":1,
-                    "tabWDSFAllowed":1
-                },
-                "type": {
-                    "code":"Couples",
-                    "id":1,
-                    "name":"Пары"
-                },
-                "wdsf": {
-                    "LastModifiedWDSF":"2014-03-25 13:23:06",
-                    "LastSyncWDSF":"2014-09-01 18:41:29",
-                    "TournamentId":6342,
-                    "ageCategory": {
-                        "allowedToDance":["ADULT","UNDER 21","RISING STAR"
-                        ],
-                        "division":"Any",
-                        "fromAge":19,
-                        "id":10,
-                        "maxDob":"1995-12-31",
-                        "minDob":"1985-01-01",
-                        "name":"ADULT",
-                        "toAge":29
-                    },
-                    "country": {
-                        "id":175,
-                        "name":"Румыния"
-                    },
-                    "date":"2014-09-20",
-                    "discipline":"STANDARD",
-                    "division":"General",
-                    "id":46805,
-                    "isSolo":0,
-                    "location":"Brasov",
-                    "status":"Registering",
-                    "type":"WORLD OPEN"
-                }
-            },
-            "otherInfo": {
-                "code":2014,
-                "message":"Регистрация участника в данную группу невозможна. Спортсмен (10069138) уже принимает участие в группе другого турнира в этот день.",
-                "otherInfo": {
-                    "athlete": {
-                        "ageGroup":"SENIOR II A",
-                        "country":"Spain",
-                        "id":10069138,
-                        "lastSyncWDSF":"2014-10-02 15:21:47",
-                        "name":"Javier",
-                        "nationality":"Spain",
-                        "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/person\/10069138",
-                        "sex":"Male",
-                        "surname":"Abad"
-                    },
-                    "conflictCompetitions":[ {
-                            "ageGroup":"SENIOR I",
-                            "country":"Belgium",
-                            "date":"2014-09-20",
-                            "discipline":"STANDARD",
-                            "division":"General",
-                            "id":46814,
-                            "isSolo":0,
-                            "lastModifiedWDSF":"2014-03-26 13:16:32",
-                            "lastSyncWDSF":"2014-09-01 18:41:32",
-                            "location":"Antwerp",
-                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/46814",
-                            "status":"Registering",
-                            "tournament": {
-                                "ageGroups":"UNDER 21, ADULT, SENIOR I, SENIOR II, SENIOR III, SENIOR IV",
-                                "competitionsCount":10,
-                                "country":"Belgium",
-                                "disciplines":"LATIN, STANDARD",
-                                "endDate":"2014-09-21",
-                                "id":6344,
-                                "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/6344",
-                                "startDate":"2014-09-20",
-                                "types":"OPEN"
-                            },
-                            "type":"OPEN"
-                        }, {
-                            "ageGroup":"SENIOR I",
-                            "country":"Belgium",
-                            "date":"2014-09-20",
-                            "discipline":"LATIN",
-                            "division":"General",
-                            "id":46818,
-                            "isSolo":0,
-                            "lastModifiedWDSF":"2014-03-26 13:17:05",
-                            "lastSyncWDSF":"2014-09-01 18:41:34",
-                            "location":"Antwerp",
-                            "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/competition\/46818",
-                            "status":"Registering",
-                            "tournament": {
-                                "ageGroups":"UNDER 21, ADULT, SENIOR I, SENIOR II, SENIOR III, SENIOR IV",
-                                "competitionsCount":10,
-                                "country":"Belgium",
-                                "disciplines":"LATIN, STANDARD",
-                                "endDate":"2014-09-21",
-                                "id":6344,
-                                "selfLink":"http:\/\/localhost:57772\/csp\/wdsfcontroller\/admin\/tournament\/6344",
-                                "startDate":"2014-09-20",
-                                "types":"OPEN"
-                            },
-                            "type":"OPEN"
-                        }
-                    ]
-                },
-                "status":"Ошибка"
-            },
-            "participantId":"",
-            "status":"ОШИБКА #5001: No msg for key = error_RegistrationInWDSFController "
-        }
-    ],
-    "status":1
-}
+    $scope.init();  
+    $scope.loadTournament($routeParams.tournamentId);
+    $scope.loadCountries();
 });  
 ]]></CSP>
 </Export>

@@ -73,15 +73,22 @@
 		<div>
 			<danceplat-udsr-pay 
 				id="coupleDancePlatUDSRPayment"
+
+				ng-show="couple && type=='UDSR'"
+
 				trn-id="tournament.idInternal"
 				man-number-udsr="couple.man.number"
 				woman-number-udsr="couple.woman.number"
 				competitions="competitionList"
 				hide-all="true"
 				btn-name="''"/>
-
+		</div>
+		<div>
 			<danceplat-udsr-pay 
 				id="athleteDancePlatUDSRPayment"
+				
+				ng-show="athlete && type=='UDSR'"
+
 				trn-id="tournament.idInternal"
 				man-number-udsr="athlete.number"
 				woman-number-udsr="athlete.number"
@@ -91,22 +98,49 @@
 		</div>
 		<div>
 			<danceplat-other-pay 
-				id="danceplatOtherPay"
+				id="coupleDancePlatOTHERPayment"
 				
+				ng-show="couple && type!='UDSR'"
+
 				trn-id="tournament.idInternal"
 
-				male-age="couple.man.dob"
-				male-last-name="couple.man.lastName"
-				male-first-name="couple.man.firstName"
+				male-age="confirmData.couple.man.dob"
+				male-last-name="confirmData.couple.man.lastName"
+				male-first-name="confirmData.couple.man.firstName"
 
-				female-age="couple.woman.dob"
-				female-last-name="couple.woman.lastName"
-				female-first-name="couple.woman.firstName"
+				female-age="confirmData.couple.woman.dob"
+				female-last-name="confirmData.couple.woman.lastName"
+				female-first-name="confirmData.couple.woman.firstName"
 
-				country="couple.otherInfo.country.name"
-				city="couple.otherInfo.city"
-				club="couple.otherInfo.club"
-				trainer="couple.otherInfo.mainTrainer"
+				country="confirmData.otherInfo.country.name"
+				city="confirmData.couple.otherInfo.city"
+				club="confirmData.couple.otherInfo.club"
+				trainer="confirmData.couple.otherInfo.mainTrainer"
+
+				competitions="competitionList"
+				hide-all="true"
+				btn-name="''"/>
+		</div>
+		<div>
+			<danceplat-other-pay 
+				id="athleteDancePlatOTHERPayment"
+				
+				ng-show="athlete && type!='UDSR'"
+
+				trn-id="tournament.idInternal"
+
+				male-age="confirmData.athlete.dob"
+				male-last-name="confirmData.athlete.lastName"
+				male-first-name="confirmData.athlete.firstName"
+
+				female-age="confirmData.athlete.dob"
+				female-last-name="confirmData.athlete.lastName"
+				female-first-name="confirmData.athlete.firstName"
+
+				country="confirmData.otherInfo.country.name"
+				city="confirmData.otherInfo.city"
+				club="confirmData.otherInfo.club"
+				trainer="confirmData.otherInfo.mainTrainer"
 
 				competitions="competitionList"
 				hide-all="true"
@@ -216,7 +250,7 @@
 			        <div class="control-group">
 			        	<label class="control-label" ng-bind="('Страна'|localize) + '*'"></label>
 			        	<div class="controls">
-			    			<select class="span12" ng-model="confirmData.couple.otherInfo.country" ng-options="country as country.name for country in countries" ng-disabled="newCouple.fieldsDisabled">
+			    			<select class="span12" ng-model="confirmData.otherInfo.country" ng-options="country as country.name for country in countries" ng-disabled="newCouple.fieldsDisabled">
 				            </select> 
 	                	</div>
 			    	</div>
@@ -225,7 +259,7 @@
 			        <div class="control-group">
 			        	<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.city" required></input>
+			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.city" required></input>
 	                	</div>
 			    	</div>
 				</div>
@@ -235,7 +269,7 @@
 			        <div class="control-group">
 			        	<label class="control-label" ng-bind="('Клуб'|localize) + '*'"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.club" required></input>
+			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.club" required></input>
 	                	</div>
 			    	</div>
 				</div>
@@ -243,7 +277,7 @@
 			        <div class="control-group">
 			        	<label class="control-label" ng-bind="('Главный тренер'|localize) + '*'"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" ng-model="confirmData.couple.otherInfo.mainTrainer" required></input>
+			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.mainTrainer" required></input>
 	                	</div>
 			    	</div>
 				</div>

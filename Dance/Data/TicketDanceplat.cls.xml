@@ -12,11 +12,6 @@
 <Type>%String</Type>
 </Property>
 
-<Index name="NumberIdx">
-<Properties>Number</Properties>
-<Unique>1</Unique>
-</Index>
-
 <Method name="ConvertToProxyObject">
 <ClassMethod>1</ClassMethod>
 <ReturnType>%ZEN.proxyObject</ReturnType>
@@ -41,7 +36,6 @@
 <FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
 <ReturnType>Ticket</ReturnType>
 <Implementation><![CDATA[
-	/*
 	#dim obj As TicketDanceplat
 	
 	if (..NumberIdxExists(data.number)){
@@ -49,7 +43,7 @@
 	}
 	else{
 		set obj = ..%New()
-		set obj.number = data.number	
+		set obj.Number = data.number	
 		set obj.Participant = ##class(Dance.Data.Participant).%OpenId(data.participant.id)
 	}
 	
@@ -63,7 +57,7 @@
 	set obj.CodeTwo = data.codeTwo
 	
 	set st = obj.%Save()
-	*/
+
 	quit obj
 ]]></Implementation>
 </Method>
@@ -77,10 +71,12 @@
 	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.TicketDanceplat.TaskTickets.SaveAllFromImportTable()", "Start")
 	
 	try{
+		set count = 0
 		&sql(DECLARE TicketCurs CURSOR FOR 
 		 	 SELECT ID
 		 	 FROM Dance_Data_Import.TicketDanceplat as tic
-		 	 WHERE (SELECT cmp.Tournament->TStatus->Code FROM Dance_Data.Competition as cmp WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration')	
+		 	 WHERE (SELECT cmp.Tournament->TStatus->Code FROM Dance_Data.Competition as cmp WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration'
+		 	 ORDER BY ID DESC)	
 		
 		&sql(OPEN TicketCurs)
 		for  
@@ -113,19 +109,23 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
+	set isTrace = $$$YES
+	w:(isTrace) !,!,"Start 'SaveOneFromImportTable' ticketId="_ticketImport.%Id()
 	
 	try{
 		do ##class(Dance.Utils.Journal).Create("Log", "SaveOneFromImportTable(ticketImportId="_ticketImport.%Id()_")", "Start, trnId="_competition.Tournament.%Id()_" cmpId="_competition.%Id())
 		
 		TSTART
 		
+		if (ticketImport.MaleLastName = "") && (ticketImport.FemaleLastName = ""){
+			$$$THROWONERROR(st, ##class(Dance.Utils.Msg).GetErrorStatus("error_Ticket_EmptyFields"))
+		}
+		
 		#dim participant As Dance.Data.Participant = ""
 		
 		// Find UDSR By Number
-		#dim manUDSR As Dance.Data.PersonUDSR = ##class(Dance.Data.PersonUDSR).NumberIdxOpen(ticketImport.MaleNumber)
-		#dim womanUDSR As Dance.Data.PersonUDSR = ##class(Dance.Data.PersonUDSR).NumberIdxOpen(ticketImport.FemaleNumber)
-		
-		if $ISOBJECT(manUDSR) || $ISOBJECT(womanUDSR)
+		#dim manUDSR As Dance.Data.PersonUDSR = ..GetPersonUDSRFromImportedTicket(ticketImport, "Male")
+		#dim womanUDSR As Dance.Data.PersonUDSR = ..GetPersonUDSRFromImportedTicket(ticketImport, "Female")
 		
 		if $ISOBJECT(manUDSR) || $ISOBJECT(womanUDSR){
 			// UDSR couple or athlete	
@@ -133,72 +133,91 @@
 			set prtClassName = "Dance.Data.ParticipantSingleUDSR"
 	
 			if $ISOBJECT(manUDSR) && $ISOBJECT(womanUDSR){
+				w:(isTrace) !,"--Find man and woman UDSR."
+				
 				// Couple UDSR
-				set prtObject = ##class(Dance.Data.CoupleUDSR).GetByNumbers(manUDSR.Number, womanUDSR.Number)	
+				set prtObject = ##class(Dance.Data.CoupleUDSR).GetByNumbers(manUDSR.Number, womanUDSR.Number,.st)	
 				set prtClassName = "Dance.Data.ParticipantCoupleUDSR"
+				$$$THROWONERROR(st, st)
 			}
 			elseif $ISOBJECT(manUDSR){
+				w:(isTrace) !,"--Find man UDSR."
+				
 				// Athlete UDSR, Male
 				set prtObject = manUDSR
 			}
 			elseif $ISOBJECT(womanUDSR){
+				w:(isTrace) !,"--Find woman UDSR."
+				
 				// Athlete UDSR, Female
 				set prtObject = womanUDSR
 			}
 			
-			// Create participant
+			// Create participant	
 			set participant = $CLASSMETHOD(prtClassName, "Create", ##class(Dance.Data.Recorder).GetSystemRecorder(), competition, prtObject.ConvertToProxyObject(), .st)
+			$$$THROWONERROR(st, st)
 		}
 		else {
-			// Other couple or athlete
+			// WDSF couple|athlete OR Other couple|athlete
+			if (ticketImport.MaleLastName '= "") && (ticketImport.FemaleLastName '= ""){
+				// Couple
+				// Find WDSF couple
+				set coupleWDSF = ..GetCoupleWDSFFromImportedTicket(ticketImport)
+				if $ISOBJECT(coupleWDSF){
+					w:(isTrace) !,"---Find couple WDSF."
+					
+					set participant = ##class(Dance.Data.ParticipantCoupleWDSF).Create(##class(Recorder).GetSystemRecorder(), competition, coupleWDSF.ConvertToProxyObject(), .st)
+					$$$THROWONERROR(st, st)
+				}
+				else{
+					w:(isTrace) !,"---Create prt couple Other."
+					// Create participantCoupleOther
+					set participant = ..CreateParticipantOtherFromImportedTicket(ticketImport, competition, $$$NO)
+				}
+			}
+			else{
+				// Athlete (Single, solo)
+				// Find WDSF person
+				set athlteWDSF = $SELECT(ticketImport.MaleLastName = "" : ..GetPersonWDSFFromImportedTicket(ticketImport, "Female"),
+																 $$$YES : ..GetPersonWDSFFromImportedTicket(ticketImport, "Male"))
 			
+				if $ISOBJECT(athlteWDSF){
+					w:(isTrace) !,"---Find person WDSF."
+					set participant = ##class(Dance.Data.ParticipantSingleWDSF).Create(##class(Recorder).GetSystemRecorder(), competition, athleteWDSF.ConvertToProxyObject(), .st)
+					$$$THROWONERROR(st, st)
+				}
+				else{
+					w:(isTrace) !,"---Create prt single Other."
+					// Create participantSingleOther
+					set participant = ..CreateParticipantOtherFromImportedTicket(ticketImport, competition, $$$YES)
+				}
+			}	
 		}
-		/*/ Find UDSR|WDSF persons
-		set man = ##class(Dance.Data.Person).GetByNumber(ticketImport.MaleNumber)
-		set woman = ##class(Dance.Data.Person).GetByNumber(ticketImport.FemaleNumber)
-			
-		set couple = ""		
-	
-		if $ISOBJECT(man) && $ISOBJECT(woman){
-			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is object, Woman is object. Man data = {id: '"_man.%Id()_"', lastName: '"_man.LastName.Value_"'} Woman data = {id: '"_woman.%Id()_"', lastName: '"_woman.LastName.Value_"'}")
-			set couple = ##class(Dance.Data.Couple).Create(man.%Id(), woman.%Id(), .st)
-			$$$THROWONERROR(st, st)
+		
+		if '$ISOBJECT(participant){
+			$$$THROWONERROR(st, ##class(Dance.Utils.Msg).GetErrorStatus("error_Ticket_ImportedParticipantNotCreated"))
 		}
-		elseif $ISOBJECT(man){
-			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is object, Woman is NULL. Man data = {id: '"_man.%Id()_"', lastName: '"_man.LastName.Value_"'}")
-			set couple = ##class(Dance.Data.Couple).Create(man.%Id(), man.%Id(), .st)
-			$$$THROWONERROR(st, st)
-		}
-		elseif $ISOBJECT(woman){
-			do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "Man is NULL, Woman is object. Woman data = {id: '"_woman.%Id()_"', lastName: '"_woman.LastName.Value_"'}")
-			set couple = ##class(Dance.Data.Couple).Create(woman.%Id(), woman.%Id(), .st)
-			$$$THROWONERROR(st, st)
-		}
-		else{
-			// Unknown couple|solo
-			set couple = ..CreateCoupleFromTicket(ticketImport, .st)
-			$$$THROWONERROR(st, st)
-		}
-			
+		
+		// Crate ticket
 		set ticketData = ##class(%ZEN.proxyObject).%New()
-		set ticketData.idInternal = ticketImport.IdInternal
+		set ticketData.participant = participant.ConvertToProxyObject()
+		set ticketData.number = ticketImport.IdInternal
 		set ticketData.amount = ticketImport.Amount
 		set ticketData.paymentCreated = ticketImport.PaymentCreated
 		set ticketData.codeOne = ticketImport.CodeOne
 		set ticketData.codeTwo = ticketImport.CodeTwo
-		set ticketData.description = ticketImport.Description
-		set ticketData.tStatus = ticketImport.TStatus
-			
-		set participant = ##class(Dance.Data.Participant).Create(competition.%Id(), couple.%Id(), .st)
-		$$$THROWONERROR(st, st)
-			
-		set ticketData.participantId = participant.%Id()
-		do ##class(Dance.Data.Ticket).Save(ticketData, .st)
+		set ticketData.title = ticketImport.Description
+		set ticketData.status = ##class(TicketStatus).CodeIdxOpen($CASE($ZCVT(ticketImport.TStatus, "L"), "pay" : "Paid", "cancel" : "Canceled", :"Not paid")).ConvertToProxyObject() 
+		
+		w:(isTrace) !,"Save ticket."
+		do ..Save(ticketData, .st)
 		$$$THROWONERROR(st, st)
 		
-		do ##class(Dance.Utils.Journal).Create("Log", "TaskTickets.CreateOneTicket(ticketImportId="_ticketImport.%Id()_")", "End")
-		*/	
+		do ##class(Dance.Utils.Journal).Create("Log", "TicketDanceplat.SaveOneFromImportTable(ticketImportId="_ticketImport.%Id()_")", "End")
+		
 		TCOMMIT
+		
+		w:(isTrace) " Success."
 	}
 	catch(ex){
 		TROLLBACK
@@ -229,6 +248,57 @@
 	set filter.age = $PROPERTY(ticketImport, propertyHead_"DOBOrAge")	
 	
 	quit ##class(Dance.Data.PersonUDSR).GetByFilter(filter)
+]]></Implementation>
+</Method>
+
+<Method name="GetPersonWDSFFromImportedTicket">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ticketImport:Dance.Data.Import.TicketDanceplat,gender:%String</FormalSpec>
+<ReturnType>Dance.Data.PersonUDSR</ReturnType>
+<Implementation><![CDATA[
+	set propertyHead = $CASE(gender, "Male" : "Male", : "Female")
+		
+	// Find by filter in the table
+	set filter = ##class(%ZEN.proxyObject).%New()
+	set filter.lastName = $PROPERTY(ticketImport, propertyHead_"LastName")
+	set filter.firstName = $PROPERTY(ticketImport, propertyHead_"FirstName")
+
+	#dim person As Dance.Data.PersonWDSF = ##class(Dance.Data.PersonWDSF).GetByFilter(filter)
+	quit:$ISOBJECT(person) person
+	
+	// Find in the controller
+	set ctrlData = ##class(Dance.Wdsf.ControllerAPI).GetPersonsByFullName(filter.lastName, filter.firstName, .st)
+	if $$$ISOK(st) && (ctrlData.persons.Count() '= 0){
+		set person = ##class(Dance.Data.PersonWDSF).SaveFromWDSF(ctrlData.persons.GetAt(1))
+	}
+	
+	quit person
+]]></Implementation>
+</Method>
+
+<Method name="GetCoupleWDSFFromImportedTicket">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ticketImport:Dance.Data.Import.TicketDanceplat</FormalSpec>
+<ReturnType>CoupleWDSF</ReturnType>
+<Implementation><![CDATA[
+	set filter = ##class(%ZEN.proxyObject).%New()
+	set filter.man = ##class(%ZEN.proxyObject).%New()
+	set filter.man.lastName = ticketImport.MaleLastName
+	set filter.man.firstName = ticketImport.MaleFirstName
+
+	set filter.woman = ##class(%ZEN.proxyObject).%New()
+	set filter.woman.lastName = ticketImport.FemaleLastName
+	set filter.woman.firstName = ticketImport.FemaleFirstName
+	
+	// Find in DB
+	set couple = ##class(CoupleWDSF).GetByFilter(filter)
+	quit:$ISOBJECT(couple) couple
+	
+	// Find in controller DB
+	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByName(ticketImport.MaleLastName_","_ticketImport.MaleFirstName, ticketImport.FemaleLastName_","_ticketImport.FemaleFirstName, .st)
+	quit:$$$ISERR(st) $$$NULLOREF
+	
+	quit ##class(CoupleWDSF).GetByNumbers(wdsfDatsa.man.id, wdsfDatsa.woman.id, .st)
 ]]></Implementation>
 </Method>
 
@@ -274,6 +344,90 @@ do ##class(Dance.Data.TicketDanceplat).Test()</Description>
 	}
 	
 	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="CreateParticipantOtherFromImportedTicket">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ticketImport:Dance.Data.Import.TicketDanceplat,competition:Competition,isSolo:%Boolean</FormalSpec>
+<ReturnType>Participant</ReturnType>
+<Implementation><![CDATA[
+	set data = ##class(%ZEN.proxyObject).%New()
+	set data.competitionId = competition.%Id()
+	set data.otherInfo = ##class(%ZEN.proxyObject).%New()
+	set data.otherInfo.club = ticketImport.Club
+	set data.otherInfo.city = ticketImport.City
+	set data.otherInfo.mainTrainer = $P(ticketImport.Trainers, ",", 1)
+	set data.otherInfo.otherTrainers = $P(ticketImport.Trainers, ",", 2, *)
+	
+	set prtClass = ""
+	if (isSolo){
+		if (ticketImport.FemaleLastName = ""){
+			set data.lastName = ticketImport.MaleLastName
+			set data.firstName = ticketImport.MaleFirstName
+			set data.dob = ..GetCorrectDOB(ticketImport.MaleDOBOrAge)
+		}
+		else{
+			set data.lastName = ticketImport.FemaleLastName
+			set data.firstName = ticketImport.FemaleFirstName
+			set data.dob = ..GetCorrectDOB(ticketImport.FemaleDOBOrAge)
+		}
+		
+		set prtClass = "Dance.Data.ParticipantSingleOther"
+	}
+	else{
+		set data.man = ##class(%ZEN.proxyObject).%New()
+		set data.man.lastName = ticketImport.MaleLastName
+		set data.man.firstName = ticketImport.MaleFirstName
+		set data.man.dob = ..GetCorrectDOB(ticketImport.MaleDOBOrAge)
+		
+		set data.woman = ##class(%ZEN.proxyObject).%New()
+		set data.woman.lastName = ticketImport.FemaleLastName
+		set data.woman.firstName = ticketImport.FemaleFirstName
+		set data.woman.dob = ..GetCorrectDOB(ticketImport.FemaleDOBOrAge)
+	
+		set prtClass = "Dance.Data.ParticipantCoupleOther"
+	}
+	
+	// Find for ticket competition in DB
+	set prt = $CLASSMETHOD(prtClass, "GetByFilter", data)
+	quit:$ISOBJECT(prt) prt
+	
+	set data.otherInfo.country = ##class(Country).GetByName("--Unknown--").ConvertToProxyObject()
+	
+	// Create
+	set prt = $CLASSMETHOD(prtClass, "Create", ##class(Recorder).GetSystemRecorder(), competition, data, .st)
+	quit prt
+]]></Implementation>
+</Method>
+
+<Method name="GetCorrectDOB">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>dob:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	if ($FIND(dob, "-") '= 0){
+		// date YYYY-MM-DD
+		return dob
+	}
+	if (+dob > 0) {
+		// Now year - Age
+		return ($P($ZD($H, 3), "-", 1) - dob)_"-01-01"
+	}
+	
+	// 1840-12-31
+	quit $ZD(0, 3)
+]]></Implementation>
+</Method>
+
+<Method name="TestUDSR">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set ticketImport = ##class(Dance.Data.Import.TicketDanceplat).%OpenId(id)
+	set competition = ##class(Dance.Data.Competition).IdInternalIdxOpen(ticketImport.GroupIdInternal)
+	do ..SaveOneFromImportTable(ticketImport, competition)
 ]]></Implementation>
 </Method>
 

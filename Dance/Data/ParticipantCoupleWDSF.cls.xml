@@ -79,10 +79,10 @@
 	set obj.Competition = competition 
 	set obj.ManDOB = $ZDH(couple.man.dob, 3)
 	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
-	set obj.City = $ZCVT(couple.otherInfo.city, "I", "UTF8")
-	set obj.Club = $ZCVT(couple.otherInfo.club, "I", "UTF8")
-	set obj.MainTrainer = $ZCVT(couple.otherInfo.mainTrainer, "I", "UTF8")
-	set obj.OtherTrainers = $ZCVT(couple.otherInfo.otherTrainers, "I", "UTF8")
+	set obj.City = couple.otherInfo.city
+	set obj.Club = couple.otherInfo.club
+	set obj.MainTrainer = couple.otherInfo.mainTrainer
+	set obj.OtherTrainers = couple.otherInfo.otherTrainers
 	
 	set st = obj.%Save()
 	quit obj

@@ -23,7 +23,7 @@ Registration UDSR participants in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8").Read(),,.data, 1))
 		
 		// Find recorder
 		#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash) 
@@ -117,7 +117,7 @@ Registration WDSF participants in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8").Read(),,.data, 1))
 	
 		// Find recorder
 		#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash) 
@@ -243,7 +243,7 @@ Registration OTHER participants in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content.Read(),,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8").Read(),,.data, 1))
 		
 		// Find recorder
 		#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash) 
@@ -366,7 +366,7 @@ Get all tournaments for grid</Description>
 	set st = $$$OK
 	
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
       	
       	set whereCondition = "IsActive = 1"
       	
@@ -534,7 +534,7 @@ Get one competition by id</Description>
 <FormalSpec>competitionId:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	do ..GetProxyObject("Dance.Data.Competition", competitionId).%ToJSON()
+	do ##class(Dance.Data.Competition).%OpenId(competitionId).ConvertToProxyObject($$$YES).%ToJSON()
 	quit $$$OK
 ]]></Implementation>
 </Method>
@@ -548,7 +548,7 @@ Get all tournament competitions for grid</Description>
 	set st = $$$OK
 	
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
       	
       	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
       	
@@ -613,7 +613,7 @@ Available participants competitions for grid</Description>
 	set st = $$$OK
 	
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
       	
       	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
       	set maleSTClass = ""
@@ -782,7 +782,7 @@ Get all participants for grid</Description>
 	set st = $$$OK
 	
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
  	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, "IsActive=1")
 		do result.%ToJSON()
@@ -804,7 +804,7 @@ Get all participants of the tournament for grid</Description>
 	set st = $$$OK
 	
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
  		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 "     	
  		
@@ -828,7 +828,7 @@ Get all participants of the competition for grid</Description>
 	set st = $$$OK
 	
 	try{
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.params, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
  		set whereCondition = "IsActive = 1 AND Competition = '"_..ParseParameter(params.other.competitionId)_"'"     	
  		
@@ -1191,13 +1191,13 @@ Feedback from users </Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(%request.Content,,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
       	
       	set fb = ##class(Dance.Data.FeedBack).%New()
-      	set fb.Author = $ZCVT(data.author, "I", "UTF8")
-      	set fb.Email = $ZCVT(data.email, "I", "UTF8")
-      	set fb.Subject = $ZCVT(data.subject, "I", "UTF8")
-      	set fb.Msg = $ZCVT(data.msg, "I", "UTF8")
+      	set fb.Author = data.author
+      	set fb.Email = data.email
+      	set fb.Subject = data.subject
+      	set fb.Msg = data.msg
       	
       	set st = fb.%Save()
       	

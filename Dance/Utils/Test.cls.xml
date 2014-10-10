@@ -593,5 +593,24 @@ do ##class(Dance.Utils.Test).InitTest()</Description>
 	}
 ]]></Implementation>
 </Method>
+
+<Method name="TestPerformance">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	w !,"Start time:"_$H
+	set whereCondition = "IsActive = 1 AND Tournament = '5'"
+    
+    set params = ##class(%ZEN.proxyObject).%New()
+    set params.first = 1
+    set params.last = 500
+    set params.searchText = ""
+    set params.sqlName = "StartDate"
+
+    set result = ##class(Dance.Web.JsonBase).GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, whereCondition)
+	w !,"result.children.itemsTotal=",result.children.itemsTotal
+	w !,"End time:"_$H
+]]></Implementation>
+</Method>
 </Class>
 </Export>

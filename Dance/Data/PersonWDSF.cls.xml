@@ -33,14 +33,14 @@ Create or save modified person</Description>
 <Implementation><![CDATA[
 	if (..NumberWDSFIdxExists(data.number)){
 		set person = ..NumberWDSFIdxOpen(data.number,, .st)
-		set person.LastName.Value = $ZCONVERT(data.lastName, "I", "UTF8")
-		set person.FirstName.Value = $ZCONVERT(data.firstName, "I", "UTF8")
+		set person.LastName.Value = data.lastName
+		set person.FirstName.Value = data.firstName
 	}
 	else{
 		set person = ..%New()
 		set person.Number = data.number
-		set person.LastName = ##class(Dance.Data.Localization.LText).Create($ZCONVERT(data.lastName, "I", "UTF8"))
-		set person.FirstName = ##class(Dance.Data.Localization.LText).Create($ZCONVERT(data.firstName, "I", "UTF8"))
+		set person.LastName = ##class(Dance.Data.Localization.LText).Create(data.lastName)
+		set person.FirstName = ##class(Dance.Data.Localization.LText).Create(data.firstName)
 	}
 	
 	set person.Gender = data.gender	
@@ -69,6 +69,27 @@ Create or save modified person</Description>
 	set proxy.otherInfo.country = ##class(Country).GetByName(data.country).ConvertToProxyObject()
 	
 	quit ..Save(proxy, .st)
+]]></Implementation>
+</Method>
+
+<Method name="GetByFilter">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filter:%RegisteredObject</FormalSpec>
+<ReturnType>PersonWDSF</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+
+	&sql(SELECT person.ID INTO :id
+		 FROM Dance_Data.PersonWDSF as person 
+		 	INNER JOIN 
+		 	Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
+		 	INNER JOIN 
+		 	Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
+		 WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
+		 	   AND 
+		 	   %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)))
+
+	quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
 
