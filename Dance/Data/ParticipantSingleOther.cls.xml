@@ -51,7 +51,6 @@
 
 <Property name="MainTrainer">
 <Type>%String</Type>
-<Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 

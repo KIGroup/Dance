@@ -113,7 +113,9 @@ Competition in the tournament, has participants</Description>
 	}
 	else {
 		set proxy.tournament = ##class(%ZEN.proxyObject).%New()
-		set proxy.tournament.id = ..Tournament.%Id()	
+		set proxy.tournament.id = ..Tournament.%Id()
+		set proxy.tournament.location = ##class(%ZEN.proxyObject).%New()
+		set proxy.tournament.location.cityName = ..Tournament.City.Value	
 	}
 	
 	set proxy.discipline = ..Discipline.ConvertToProxyObject()

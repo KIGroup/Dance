@@ -68,11 +68,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                 getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                                 }},
-                          {name:'ticketStatus.name', 
-                                                getCssClass: function(item){
-                                                    return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
-                                                },
-                                                cellStyle: {textAlign: 'center', verticalAlign: 'middle'}},                    
+                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}},                    
                           {name:'competitionsLink', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
                                                 getCssClass: function(item){ 
                                                     return 'cellLink';

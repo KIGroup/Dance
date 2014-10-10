@@ -11,21 +11,25 @@
 
 <Property name="ManDOB">
 <Type>%Date</Type>
+<Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
 <Property name="WomanDOB">
 <Type>%Date</Type>
+<Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
 <Property name="City">
 <Type>%String</Type>
+<Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="Club">
 <Type>%String</Type>
+<Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 

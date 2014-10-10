@@ -145,10 +145,21 @@ Create or update ticket</Description>
 	set newObj.City = $REPLACE(newObj.City, $C(10), "")
 	set newObj.Club = $REPLACE(newObj.Club, $C(10), "")
 	
-	if (..IdInternalIdxExists(newObj.IdInternal) = 0){
+	// Remove " " from field
+	set newObj.MaleLastName = $SELECT($L(newObj.MaleLastName) < 2 : "", $$$YES : newObj.MaleLastName)
+	set newObj.FemaleLastName = $SELECT($L(newObj.FemaleLastName) < 2 : "", $$$YES : newObj.FemaleLastName)
+	
+	if (newObj.MaleLastName = newObj.FemaleLastName) && (newObj.MaleFirstName = newObj.FemaleFirstName){
+		set newObj.FemaleLastName = ""
+		set newObj.FemaleFirstName = ""
+		set newObj.FemaleNumber = ""
+	}
+	
+	if (..IdInternalIdxExists(newObj.IdInternal) = $$$NO){
 		quit newObj.%Save()
 	}
 	
+	// If exists - update
 	set oldObj = ..IdInternalIdxOpen(newObj.IdInternal)
 	set oldObj.Amount = newObj.Amount
 	set oldObj.City = newObj.City

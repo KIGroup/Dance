@@ -29,7 +29,7 @@
 Create or save modified person</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
-<ReturnType>Dance.Data.Person</ReturnType>
+<ReturnType>Dance.Data.PersonWDSF</ReturnType>
 <Implementation><![CDATA[
 	if (..NumberWDSFIdxExists(data.number)){
 		set person = ..NumberWDSFIdxOpen(data.number,, .st)
@@ -48,6 +48,7 @@ Create or save modified person</Description>
 	set person.Country = ##class(Dance.Data.Country).%OpenId(data.otherInfo.country.id)
 	set person.Updated = $ZDT($ZTS, 3)
 	
+	set st = person.%Save()
 	quit person
 ]]></Implementation>
 </Method>

@@ -544,7 +544,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             return;
         }
 
-        $scope.tabOTHER.couple.key = ParticipantSrvc.getOtherCoupleKey($scope.tabOTHER.couple);
+        $scope.tabOTHER.couple.key = ParticipantSrvc.getOtherCoupleKey($scope.tabOTHER.couple).replace(/\//g, "SLASH");
         $scope.loadCountParticipantCompetitions('OTHER');
         
         $scope.tabOTHER.formCouple.disabled = true;

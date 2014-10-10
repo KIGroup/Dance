@@ -37,15 +37,33 @@
 	}
 	
 	set obj = ..%New()
-	set obj.Man = ##class(PersonUDSR).NumberUDSRIdxOpen(manNumber,,.st)	
-	if $$$ISERR(st) || (obj.Man.Gender '= "Male"){
+	set obj.Man = ##class(PersonUDSR).NumberUDSRIdxOpen(manNumber,,.stMan)	
+	set obj.Woman = ##class(PersonUDSR).NumberUDSRIdxOpen(womanNumber,,.stWoman)	
+	
+	if $$$ISERR(stMan){
 		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_PersonUDSRNotFound", " | Male "_manNumber)
 		quit $$$NULLOREF
 	}
 	
-	set obj.Woman = ##class(PersonUDSR).NumberUDSRIdxOpen(womanNumber,,.st)	
-	if $$$ISERR(st) || (obj.Woman.Gender '= "Female"){
+	if $$$ISERR(stWoman){
 		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_PersonUDSRNotFound", " | Female "_womanNumber)
+		quit $$$NULLOREF
+	}
+	
+	if (obj.Man.Gender = "Female") && (obj.Woman.Gender = "Male"){
+		set womanTmp = obj.Man
+		set obj.Man = obj.Woman
+		set obj.Woman = womanTmp
+		kill womanTmp
+	}
+	
+	if (obj.Man.Gender '= "Male"){
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_PersonUDSRNotFound", " | Male "_obj.Man.Number)
+		quit $$$NULLOREF
+	}
+	
+	if (obj.Woman.Gender '= "Female"){
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_PersonUDSRNotFound", " | Female "_obj.Woman.Number)
 		quit $$$NULLOREF
 	}
 	
