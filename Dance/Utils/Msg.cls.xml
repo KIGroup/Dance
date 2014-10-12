@@ -158,6 +158,11 @@ do ##class(Dance.Utils.Msg).Init()</Description>
 						"",
 						"")
 
+
+	do ..SetMsgForLangs("error_Recorder_AccessDenied",
+						"Регистратору запрещен доступ к турниру.",
+						"",
+						"")
 						
 	q $$$OK
 ]]></Implementation>

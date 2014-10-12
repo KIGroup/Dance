@@ -45,7 +45,11 @@ servicesModule.factory('TournamentSrvc', function(RESTSrvc) {
         },
         getAllYears: function(){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournamentyears'});
+        },
+        getRecordersHashes: function(trnId){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/recorder/tournament/' + trnId});
         }
+        
     }
 });
 ]]></CSP>

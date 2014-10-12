@@ -49,6 +49,33 @@ Age categories, Young, Adult etc. </Description>
 ]]></Implementation>
 </Method>
 
+<Method name="Save">
+<Description>
+Create or update age category</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
+<ReturnType>AgeCategory</ReturnType>
+<Implementation><![CDATA[
+   
+    if (data.id = ""){
+    	set obj = ..%New()
+      	set obj.Name = ##class(Dance.Data.Localization.LText).Create(data.name)
+    }
+    else{
+	    set obj = ..%OpenId(data.id)
+      	set obj.Name.Value = data.name
+    }
+    
+    set obj.Code = data.code
+    set obj.MaxAge = data.maxAge
+    set obj.MinAge = data.minAge
+    
+    set st = obj.%Save()
+    
+    quit obj
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.AgeCategoryD</DataLocation>

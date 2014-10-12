@@ -23,13 +23,7 @@ Registration UDSR participants in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8").Read(),,.data, 1))
-		
-		// Find recorder
-		#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash) 
-		if '$ISOBJECT(recorder) {
-			set recorder = ##class(Dance.Data.Recorder).GetSystemRecorder()
-		}
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
 		
 		set prt = ##class(%ZEN.proxyObject).%New()
 		set prtClass = ""
@@ -57,9 +51,19 @@ Registration UDSR participants in the tournament</Description>
 		    if (competition.Tournament.TStatus.Code '= "Registration") {
 			    set regResult.status = 0
 			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
+		    	do regResults.Insert(regResult)
 		    	continue
 		    }
 		    
+		    // Find recorder by access hash
+			#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByAccessHashForTournament(competition.Tournament, data.recorderHash) 
+			if '$ISOBJECT(recorder) {
+				set regResult.status = 0
+			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_Recorder_AccessDenied")
+		    	do regResults.Insert(regResult)
+		    	continue
+			}
+		
 		    set isCmpConflict = $$$NO
 		    for d=1:1:dancers.Count(){
 				set cmpListConflict = ##class(Dance.Data.Person).GetConflictCompetitions(dancers.GetAt(d).id, competition.%Id(), .st)
@@ -117,15 +121,9 @@ Registration WDSF participants in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8").Read(),,.data, 1))
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
 	
-		// Find recorder
-		#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash) 
-		if '$ISOBJECT(recorder) {
-			set recorder = ##class(Dance.Data.Recorder).GetSystemRecorder()
-		}
-				
-      	set prt = ##class(%ZEN.proxyObject).%New()
+	  	set prt = ##class(%ZEN.proxyObject).%New()
 		
 		// Data for sending to controller
 		set wcPostData = ##class(%ZEN.proxyObject).%New()
@@ -157,9 +155,19 @@ Registration WDSF participants in the tournament</Description>
 		    if (competition.Tournament.TStatus.Code '= "Registration"){
 			    set regResult.status = 0 
 			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
+			    do regResults.Insert(regResult)
 			    continue
 		    }
-		    
+	
+			// Find recorder by access hash
+			#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByAccessHashForTournament(competition.Tournament, data.recorderHash) 
+			if '$ISOBJECT(recorder) {
+				set regResult.status = 0
+			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_Recorder_AccessDenied")
+		    	do regResults.Insert(regResult)
+		    	continue
+			}
+				    
 		    #dim participant As Dance.Data.Participant = $CLASSMETHOD(prtClass, "Create", recorder, competition, prt, .st)
 			    
 		    if $$$ISERR(st){
@@ -243,14 +251,8 @@ Registration OTHER participants in the tournament</Description>
 	try{
 		TSTART
 		
-		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8").Read(),,.data, 1))
-		
-		// Find recorder
-		#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByLoginHash(data.recorderHash) 
-		if '$ISOBJECT(recorder) {
-			set recorder = ##class(Dance.Data.Recorder).GetSystemRecorder()
-		}
-		
+		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.data, 1))
+
 		set prt = ##class(%ZEN.proxyObject).%New()
 		set prtClass = ""
 		
@@ -274,9 +276,19 @@ Registration OTHER participants in the tournament</Description>
 		    if (competition.Tournament.TStatus.Code '= "Registration") {
 			   	set regResult.status = 0
 			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
+			 	do regResults.Insert(regResult)
 			    continue
 		    }
-		    	
+		    
+		   	// Find recorder by access hash
+			#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByAccessHashForTournament(competition.Tournament, data.recorderHash) 
+			if '$ISOBJECT(recorder) {
+				set regResult.status = 0
+			    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_Recorder_AccessDenied")
+		    	do regResults.Insert(regResult)
+		    	continue
+			}
+				
 		    set participant = $CLASSMETHOD(prtClass, "Create", recorder, competition, prt, .st)
 			if $$$ISERR(st) {
 				set regResult.status = 0
@@ -784,7 +796,7 @@ Get all participants for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
- 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, "IsActive=1")
+ 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, "IsActive=1 AND Competition->Tournament->IsActive = 1")
 		do result.%ToJSON()
 	}
 	catch ex {

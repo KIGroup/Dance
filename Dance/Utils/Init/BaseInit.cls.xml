@@ -23,8 +23,8 @@ do ##class(Dance.Utils.Init.BaseInit).Init()</Description>
 	do ##class(Dance.Utils.Init.TicketStatus).Import()
 	do ##class(Dance.Data.AgeCategoryWDSF).Import()
 	
-	set ^Settings("Dance", "LastSyncWDSFCompetitions") = "2014-01-01"
-	w ##class(Dance.Utils.TaskSyncWDSFController).SyncCompetitions()
+	//set ^Settings("Dance", "LastSyncWDSFCompetitions") = "2014-01-01"
+	//w ##class(Dance.Utils.TaskSyncWDSFController).SyncCompetitions()
 	
  	//do ..Settings()
  	//w ##class(Dance.Utils.Init.Person).ImportFromFile("e:\boys.csv", "M")

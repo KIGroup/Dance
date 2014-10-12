@@ -11,11 +11,13 @@ Registration
 controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $cookies, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
 	$scope.menu.pages.selected = {};
     $scope.menu.shortMenu = true;
-
-    if ($routeParams.recorderHash){
+	
+	if ($routeParams.recorderHash){
         $cookies.recorderHash = $routeParams.recorderHash;
     }
-
+    $cookies.recorderHash = $cookies.recorderHash || "none"; 
+    console.log('$cookies.recorderHash', $cookies.recorderHash);
+	
     $scope.pageStore.registration = $scope.pageStore.registration || {grid:{}};  
     
     $scope.tabUDSR = {
@@ -324,7 +326,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabUDSR.couple || null,
             athlete: $scope.tabUDSR.athlete || null,
-            recorderHash: $scope.recorderHash 
+            recorderHash: $cookies.recorderHash 
         };
 
         RegistrationSrvc.UDSR(postData).then(
@@ -480,7 +482,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabWDSF.couple || null,
             athlete: $scope.tabWDSF.athlete || null,
-            recorderHash: $scope.recorderHash  
+            recorderHash: $cookies.recorderHash  
         };
 
         $scope.tabWDSF.regProcessing = true;
@@ -601,7 +603,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabOTHER.couple || null,
             athlete: $scope.tabOTHER.athlete || null,
-            recorderHash: $scope.recorderHash  
+            recorderHash: $cookies.recorderHash  
         };
 
         RegistrationSrvc.OTHER(postData).then(

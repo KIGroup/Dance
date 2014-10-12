@@ -73,6 +73,45 @@
 ]]></Implementation>
 </Method>
 
+<Method name="GetAccessHashForTournament">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trn:Tournament,rec:Recorder</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit $REPLACE($REPLACE($SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.MD5Hash($ZCVT(rec.Login_trn.AccessCode, "L"))), "/", "SLASH"), "=", "EQL")
+]]></Implementation>
+</Method>
+
+<Method name="GetByAccessHashForTournament">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trn:Tournament,hash:%String</FormalSpec>
+<ReturnType>Recorder</ReturnType>
+<Implementation><![CDATA[
+	#dim recorder As Recorder = "" 
+	
+	&sql(DECLARE RecCur CURSOR FOR 
+		 SELECT ID
+		 FROM Dance_Data.Recorder)	
+		
+	&sql(OPEN RecCur)
+	for  
+	{	
+		&sql(FETCH RecCur INTO :id) 
+		quit:(SQLCODE '= 0)
+		
+		set recorder = ##class(Recorder).%OpenId(id)
+		if (hash = ..GetAccessHashForTournament(trn, recorder)){
+			quit
+		}
+		
+		set recorder = $$$NULLOREF	
+	}
+		
+	&sql(CLOSE RecCur)
+	
+	quit recorder
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.RecorderD</DataLocation>
@@ -96,6 +135,9 @@
 </Value>
 <Value name="5">
 <Value>IsInUse</Value>
+</Value>
+<Value name="6">
+<Value>Name</Value>
 </Value>
 </Data>
 </Storage>

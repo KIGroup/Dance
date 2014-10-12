@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//-dddd
+//-ddddc
 
 /*===========================================================================================
 
@@ -76,9 +76,24 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                     item.registration = $filter('localize')('Оформить »');
                                                 },
                                                 onClickCell: function(item){
-                                                    if (item.status.code=='Registration')
-                                                        $location.path("/tournament/" + item.id +"/registration"); 
-                                                }}];
+                                                    if (item.status.code != 'Registration')
+                                                        return;
+                                                    
+                                                    TournamentSrvc.getRecordersHashes(item.id).then(
+                                                        function(data){
+                                                            $scope.confirmDialog = {
+	                                                            tournament: item,
+                                                            	recorders: data.recorders
+                                                            }
+
+                                                            $('#ConfirmDialog').modal('show');
+                                                            $scope.confirmDialog.visible = true;
+                                                        },
+                                                        function(data){
+                                                            alert('Ошибка');
+                                                            console.log(data);
+                                                        });
+                                                }}]; 
 
         $scope.page.tournamentTable.pageSize = UtilsSrvc.getPropertyValue($scope.pageStore, 'tournaments.gridTournaments.pageSize', 10);
         $scope.page.tournamentTable.pageCurr = UtilsSrvc.getPropertyValue($scope.pageStore, 'tournaments.gridTournaments.pageCurr', 1);
@@ -87,8 +102,11 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
         $scope.page.tournamentTable.multiSelectMode = false;
         $scope.page.tournamentTable.forciblyUpdate = 0;
         $scope.page.tournamentTable.refresh();
-
- 
+        
+ 	 	$scope.$watch('menu.admin', function(){
+        	$scope.page.tournamentTable.columns[7].hidden = !$scope.menu.admin;   
+        });
+        
         // 
     	// Competition table
     	//
@@ -101,7 +119,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                           {name: 'Класс'            , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Цена'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}},
                           {name: 'Участники'        , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
-        
+         
         $scope.page.competitionTable.properties = [
         				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'startTime'},
@@ -145,7 +163,6 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
         }        
         
     };
-
 
     // 
     $scope.page.tournamentTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){

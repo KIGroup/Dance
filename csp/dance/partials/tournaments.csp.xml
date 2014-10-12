@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/partials/tournaments.csp" application="/csp/dance/" default="1"><![CDATA[
-<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для регистрации в турнире нажмите на ссылку (») в колонке "Регистрация".'|localize}}</p>
+<p ng-show="menu.admin">[ <font COLOR="RED"><b>!</b></font> ] {{'Для регистрации в турнире нажмите на ссылку (») в колонке "Регистрация".'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех групп турнира нажмите на ссылку (») в колонке "Группы" или выберите внизу вкладку "Группы(N)".'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех участников турнира нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
 
@@ -148,5 +148,19 @@
 
 
 <stcalert data="page.alert"/>
-]]></CSP>
+
+
+<div class="modal" id="ConfirmDialog" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" ng-show="confirmDialog.visible">
+ 	<div class="modal-header">
+ 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="confirmDialog.visible=false">×</button>
+		<h4 id="ConfirmLabel" ng-bind="confirmDialog.tournament.name"></h4>
+	</div>
+	<div class="modal-body">
+		<p ng-bind="'Выберите организатора для доступа к регистрации:'|localize"></p>
+		<p ng-repeat="rec in confirmDialog.recorders">
+			{{$index + 1}}. <a ng-href="{{'http://localhost:57772/csp/dance/dance/index.csp#/recorder/' + rec.hash + '/tournament/' + confirmDialog.tournament.id + '/registration'}}" target="reg" ng-bind="rec.name"></a> <span ng-bind="'(код - ' + rec.hash + ')'"></span>
+
+		</p>
+	</div>
+</div>]]></CSP>
 </Export>

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/ImportCompetitionsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//   d
+//   
  
 /*===========================================================================================
 Import competitions from XML to the tournament
@@ -69,7 +69,7 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
         TournamentSrvc.getById(id).then(
             function(data){
                 $scope.page.tournament = data;
-                $scope.page.competitionTable.firstLoad = true;
+                $scope.page.competitionTable.isFirstLoad = true;
                 $scope.page.loadLink(data.id);
                 $scope.page.competitionTable.refresh();
             },

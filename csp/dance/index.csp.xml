@@ -100,7 +100,7 @@
           <div ng-show="menu.shortMenu">
             <div class="container">
               <div class="nav">
-              	<li><a ng-hide="menu.pages.searchprt.id==menu.pages.selected.id" ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" title="{{'Писк регистрации участника по фамилии!'|localize}}" style="padding-left: 0;"></a></li>
+              	<li><a ng-hide="menu.pages.searchprt.id==menu.pages.selected.id" ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" title="{{'Поиск регистрации участника по фамилии!'|localize}}" style="padding-left: 0;"></a></li>
                 <li><a ng-show="menu.pages.searchprt.id==menu.pages.selected.id" href="" onclick="window.history.back()" style="padding-left: 0;"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
                
               	<li><a class="homeIcon" style="margin-left: 60px;" title="{{'На главную'|localize}}" href="#/tournaments"><i class="fa fa-home fa-lg"></i></a></li>

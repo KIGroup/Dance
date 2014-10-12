@@ -31,6 +31,8 @@
 <AgeCategory><Name>9E0168F9-6003-4EC7-AEB9-1CE52D688A35</Name><Code>Ю-2</Code><MinAge>14</MinAge><MaxAge>15</MaxAge></AgeCategory>
 <AgeCategory><Name>2FC2E1E9-8A68-40A1-B943-E940125F6182</Name><Code>С-1</Code><MinAge>35</MinAge><MaxAge>99</MaxAge></AgeCategory>
 <AgeCategory><Name>4AEB5D76-2F80-438F-A396-E16CE297BB1E</Name><Code>С-2</Code><MinAge>45</MinAge><MaxAge>99</MaxAge></AgeCategory>
+<AgeCategory><Name>2FC2E1E9-8A68-40A1-B943-E9401SENIOR3</Name><Code>С-3</Code><MinAge>55</MinAge><MaxAge>65</MaxAge></AgeCategory>
+<AgeCategory><Name>4AEB5D76-2F80-438F-A396-E16CESENIOR4</Name><Code>С-4</Code><MinAge>65</MinAge><MaxAge>99</MaxAge></AgeCategory>
 <AgeCategory><Name>FB43C02D-9611-458E-BB8F-C9D6F563F308</Name><Code>Взрослые+Молодежь</Code><MinAge>16</MinAge><MaxAge>99</MaxAge></AgeCategory>
 <AgeCategory><Name>A5976D0D-5049-4259-A85D-CFABAC535A61</Name><Code>Ю-2+Ю-1</Code><MinAge>12</MinAge><MaxAge>15</MaxAge></AgeCategory>
 <AgeCategory><Name>C3E499CF-300B-4D19-B5CF-2B497D8D2899</Name><Code>Д-2+Д-1</Code><MinAge>0</MinAge><MaxAge>11</MaxAge></AgeCategory>
@@ -60,6 +62,8 @@
 <LText><Guid>9E0168F9-6003-4EC7-AEB9-1CE52D688A35</Guid></LText>
 <LText><Guid>2FC2E1E9-8A68-40A1-B943-E940125F6182</Guid></LText>
 <LText><Guid>4AEB5D76-2F80-438F-A396-E16CE297BB1E</Guid></LText>
+<LText><Guid>2FC2E1E9-8A68-40A1-B943-E9401SENIOR3</Guid></LText>
+<LText><Guid>4AEB5D76-2F80-438F-A396-E16CESENIOR4</Guid></LText>
 <LText><Guid>FB43C02D-9611-458E-BB8F-C9D6F563F308</Guid></LText>
 <LText><Guid>A5976D0D-5049-4259-A85D-CFABAC535A61</Guid></LText>
 <LText><Guid>C3E499CF-300B-4D19-B5CF-2B497D8D2899</Guid></LText>
@@ -112,6 +116,14 @@
 <LTextValue><LText>4AEB5D76-2F80-438F-A396-E16CE297BB1E</LText><Value>Сеньоры-2</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>4AEB5D76-2F80-438F-A396-E16CE297BB1E</LText><Value>Senior-2</Value><Lang>en</Lang></LTextValue>
 <LTextValue><LText>4AEB5D76-2F80-438F-A396-E16CE297BB1E</LText><Value>Senior-2</Value><Lang>de</Lang></LTextValue>
+
+<LTextValue><LText>2FC2E1E9-8A68-40A1-B943-E9401SENIOR3</LText><Value>Сеньоры-3</Value><Lang>ru</Lang></LTextValue>
+<LTextValue><LText>2FC2E1E9-8A68-40A1-B943-E9401SENIOR3</LText><Value>Senior-3</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>2FC2E1E9-8A68-40A1-B943-E9401SENIOR3</LText><Value>Senior-3</Value><Lang>de</Lang></LTextValue>
+
+<LTextValue><LText>4AEB5D76-2F80-438F-A396-E16CESENIOR4</LText><Value>Сеньоры-4</Value><Lang>ru</Lang></LTextValue>
+<LTextValue><LText>4AEB5D76-2F80-438F-A396-E16CESENIOR4</LText><Value>Senior-4</Value><Lang>en</Lang></LTextValue>
+<LTextValue><LText>4AEB5D76-2F80-438F-A396-E16CESENIOR4</LText><Value>Senior-4</Value><Lang>de</Lang></LTextValue>
 
 <LTextValue><LText>FB43C02D-9611-458E-BB8F-C9D6F563F308</LText><Value>Взрослые + Молодежь</Value><Lang>ru</Lang></LTextValue>
 <LTextValue><LText>FB43C02D-9611-458E-BB8F-C9D6F563F308</LText><Value>Adults + Youth</Value><Lang>en</Lang></LTextValue>

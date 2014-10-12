@@ -10,8 +10,7 @@
 
 controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $window, OtherSrvc, UtilsSrvc){
     $scope.pageStore = {};
-    $scope.recorderHash = $cookies.recorderHash || "none"; 
-
+   
     $scope.getLocalString = function(word){
 		return $filter('localize')(word);
 	};

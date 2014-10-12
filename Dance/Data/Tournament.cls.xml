@@ -6,9 +6,10 @@ Tournaments</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63274,63417.76954</TimeCreated>
 
-<Parameter name="JsonClass">
-<Default>Dance.Web.JsonTournament</Default>
-</Parameter>
+<Property name="AccessCode">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
 
 <Property name="IdInternal">
 <Type>%String</Type>
@@ -196,14 +197,15 @@ Create or Update object</Description>
 	
 	set trn = ""
 	if (data.id = ""){
-		set trn = ##class(Dance.Data.Tournament).%New()
+		set trn = ..%New()
+		set tr.AccessCode = $SYSTEM.Util.CreateGUID()
       	set trn.Name = ##class(Dance.Data.Localization.LText).Create(data.name)
       	set trn.FullName = ##class(Dance.Data.Localization.LText).Create(data.fullName)
       	set trn.City = ##class(Dance.Data.Localization.LText).Create(data.location.cityName)
       	set trn.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create(data.organizer.info)
     }
     else{
-	    set trn = ##class(Dance.Data.Tournament).%OpenId(data.id)
+	    set trn = ..%OpenId(data.id)
       	set trn.Name.Value = data.name
       	set trn.FullName.Value = data.fullName
       	set trn.City.Value = data.location.cityName
@@ -364,28 +366,6 @@ Check update privilege</Description>
 ]]></Implementation>
 </Method>
 
-<UDLText name="T">
-<Content><![CDATA[
-/*
-ClassMethod GetPersonByFullNameFromTournament(trnId As %String, lastName As %String, firstName As %String) As Dance.Data.Person
-{
-	set id = ""
-	
-	&sql(SELECT DISTINCT person.ID INTO :id
-		 FROM Dance_Data.Person as person INNER JOIN 
-		 Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName INNER JOIN 
-		 Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName INNER JOIN
-		(SELECT prt.Couple->Man As Man, prt.Couple->Woman As Woman
- 		 FROM Dance_Data.Participant as prt
- 		 WHERE prt.Competition->Tournament = :trnId) as prtTab ON prtTab.Man = person.ID OR prtTab.Woman = person.ID
-		 WHERE ltvalLN.Value = :lastName AND ltvalFN.Value = :firstName)
-	
-	quit ##class(Dance.Data.Person).%OpenId(id)
-}
-*/
-]]></Content>
-</UDLText>
-
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.TournamentD</DataLocation>
@@ -463,6 +443,9 @@ ClassMethod GetPersonByFullNameFromTournament(trnId As %String, lastName As %Str
 </Value>
 <Value name="23">
 <Value>TabOtherAllowed</Value>
+</Value>
+<Value name="24">
+<Value>AccessCode</Value>
 </Value>
 </Data>
 </Storage>

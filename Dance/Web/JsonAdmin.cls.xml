@@ -293,29 +293,34 @@ Write objects to device, page by page for grid. </Description>
 ]]></Implementation>
 </Method>
 
-<Method name="GetRecorders">
+<Method name="GetRecordersHashesForTournament">
 <Description>
 Get recorders</Description>
 <ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	set trn = ##class(Dance.Data.Tournament).%OpenId(trnId)
+	
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.recorders = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE CRRec CURSOR FOR 
-		 	SELECT Name, LoginHash
+		 	SELECT ID
 		 	FROM Dance_Data.Recorder
 		 	ORDER BY Name)	
 		
 	&sql(OPEN CRRec)
 	for  
 	{	
-		&sql(FETCH CRRec INTO :name, :hash) 
+		&sql(FETCH CRRec INTO :id) 
 		quit:(SQLCODE '= 0)
 		
+		set recObj = ##class(Dance.Data.Recorder).%OpenId(id)
+		
 		set rec = ##class(%ZEN.proxyObject).%New()	
-		set rec.hash = hash
-		set rec.name = name
+		set rec.name = recObj.Name
+		set rec.hash = ##class(Dance.Data.Recorder).GetAccessHashForTournament(trn, recObj)
 		
 		do proxy.recorders.Insert(rec)	
 	}
