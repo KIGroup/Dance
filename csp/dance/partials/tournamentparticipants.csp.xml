@@ -16,11 +16,10 @@
 </div>
 <br>
 
-<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
-<p style="margin:0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'|localize}} <span class="noneCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие не оплачено.'|localize}} <span class="cancelCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие отменено.'|localize}}</p>
+<p style="margin:0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку в колонке '}}<span style="color: rgb(33, 84, 12);">{{'"Группы в турнире"'}}</span>{{' для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
 
 
-<span style="font-weight: bold;" ng-bind="('Участники турнира. Всего'|localize) + ' - '+ page.participantTable.itemsTotal + ', ' + ('уникальных'|localize) + ' - ' + page.tournament.participantsUniqueCount + '.'"></span>
+<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' Всего - ' + page.tournament.participantsCount + '.'"></span>
 <div class="row-fluid">
 	<stcgrid
     	grid="pageStore.participants.grid"
@@ -42,7 +41,7 @@
 	    multi-select-mode="page.participantTable.multiSelectMode"
 		on-select-cell="page.participantTable.onSelectCell(item,property)"	
 
-		action-column-visible="true"
+		action-column-visible="!menu.readOnlyMode && menu.admin"
 		action-column-icon="'fa fa-ellipsis-h'"
 	   	
 	   	first-row-action-icon="'fa fa-times'"

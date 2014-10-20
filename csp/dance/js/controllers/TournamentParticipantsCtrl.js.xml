@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//--ddd
+//--dddd
   
 /*===========================================================================================
 Tournament Participants 
@@ -24,12 +24,14 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                           {name: 'Клуб / Город', sqlName: '-', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
                           /*
                           {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
-                          
-                          {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           */
+                          {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
+                          /*
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
                           {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
-                          {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}
+                          */
+                          {name: 'Группы в турнире', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '170px'}}];
         
         $scope.page.participantTable.properties = [ 
         				  {name:'fullName', getCssClass: function(item){
@@ -40,7 +42,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                        
 
                                                         if (item.couple){
-                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' »';
+                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' (' + item.couple.competitionsCount + ') »';
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
 
@@ -49,7 +51,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
-                                                            item.competitionsLink = $filter('localize')('Группы участника') + ' »';
+                                                            item.competitionsLink = $filter('localize')('Группы участника') + ' (' + item.athlete.competitionsCount + ') »';
 
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
@@ -61,12 +63,12 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                           {name:'clubAndCity', getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                                 }}, 
-                          /*
+                          
                           {name:'countryName', cellStyle: {verticalAlign: 'middle'}, 
                           						getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                                 }},
-                          */  
+                          /*  
                           {name:'ticketStatus.name', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}},                    
                           {name:'competitionsLink', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
                           						getCssClass: function(item){ 
@@ -93,6 +95,24 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                 },  
                                                 onClickCell: function(item){
 	                                                $location.path("/competition/" + item.competition.id +"/participants"); 
+                                                }}*/
+                          {name:'competitionsLink', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
+                                                getCssClass: function(item){ 
+                                                    return 'cellLink';
+                                                },
+                                                onClickCell: function(item){
+                                                    if (item.couple && item.couple.id){
+                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/couple/' + item.couple.id + '/competitions');
+                                                    }    
+                                                    else if (item.athlete && item.athlete.id){
+                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/athlete/' + item.athlete.id + '/competitions');
+                                                    }
+                                                    else if (item.couple && item.couple.key){
+                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/other/couple/' + item.couple.key + '/competitions');
+                                                    }
+                                                    else if (item.athlete && item.athlete.key){
+                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/other/athlete/' + item.athlete.key + '/competitions');
+                                                    }                      
                                                 }}];
  
         $scope.page.participantTable.pageSize = 15;
@@ -175,7 +195,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     
     /// Load Tournament by ID
     $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
+        TournamentSrvc.getById(id, "?loadFullName=1&loadParticipantsCount=1&loadParticipantsUniqueCount=1").then(
             function(data){
                 $scope.page.tournament = data;
                 $scope.page.participantTable.refresh();

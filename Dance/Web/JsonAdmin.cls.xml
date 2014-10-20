@@ -231,7 +231,7 @@ Import                                                                          
     	  	
       	set whereCondition = ""
       	
-      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data_Import.TournamentDanceplat", "Dance.Data.Import.TournamentDanceplat", params, whereCondition).%ToJSON()
+      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data_Import.TournamentDanceplat", "Dance.Data.Import.TournamentDanceplat", params,"", whereCondition).%ToJSON()
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -264,7 +264,7 @@ Write objects to device, page by page for grid. </Description>
     	  	
       	set whereCondition = "TournamentIdExternal = "_tournament.IdExternal
       	
-      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data_Import.CompetitionDanceplat", "Dance.Data.Import.CompetitionDanceplat", params, whereCondition).%ToJSON()
+      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data_Import.CompetitionDanceplat", "Dance.Data.Import.CompetitionDanceplat", params, "", whereCondition).%ToJSON()
 	}
 	catch ex {
 		set st = ex.AsStatus()

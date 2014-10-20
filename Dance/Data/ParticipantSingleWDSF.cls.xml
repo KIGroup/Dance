@@ -43,9 +43,10 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super()
+	set proxy = ##super(params)
 	set proxy.athlete = ..Athlete.ConvertToProxyObject()
 	set proxy.athlete.otherInfo.city = ..City
 	set proxy.athlete.otherInfo.club = ..Club
@@ -77,7 +78,7 @@
 	set obj.Club = athlete.otherInfo.club
 	set obj.MainTrainer = athlete.otherInfo.mainTrainer
 	set obj.OtherTrainers = athlete.otherInfo.otherTrainers
-	
+	set obj.PType = "SingleWDSF"
 	set st = obj.%Save()
 	quit obj
 ]]></Implementation>

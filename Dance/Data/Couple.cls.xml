@@ -22,6 +22,7 @@ Couples</Description>
 </Index>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()

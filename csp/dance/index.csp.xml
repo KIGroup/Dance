@@ -12,12 +12,6 @@
 
 	<script language="javascript"  src="js/common.js"></script>
  	<script language="javascript">
-        var urlDataCookie = AppSettings.getCookie('urlDataCookie');
-    	if (urlDataCookie){
-	    	AppSettings.setCookie('urlDataCookie', '', {expires: 1});
-	    	window.location = urlDataCookie;
-	    }
-        
 		// Настройки приложения. Имена веб-приложений для REST, google календарь, язык
     	AppSettings.defaultName = '#($GET(^Settings("Dance", "WebApp")))#';
         AppSettings.admin = '#($GET(^Settings("Dance", "WebAppAdmin")))#';
@@ -76,6 +70,7 @@
                   </li>            
   
     	          <li ng-class="menu.pages.searchprt.id==menu.pages.selected.id ? 'active' : ''"><a ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" ng-click="menu.selectMenu(menu.pages.searchprt)"></a></li>
+  				  <li ng-show="!menu.readOnlyMode && menu.admin"><a ng-href="#($GET(^Settings("Dance", "WSDSFControllerLink")))#" ng-bind="'WDSF Controller'|localize" target="_blank"></a></li>
   
                 </ul>
               
@@ -136,7 +131,7 @@
          });
             
         $('#divContainer')
-  		    .delay(1000)
+  		    .delay(500)
   		    .queue( function(next){ 
     		   	$('#divLoader').hide();
     		    $(this).css('display','block'); 

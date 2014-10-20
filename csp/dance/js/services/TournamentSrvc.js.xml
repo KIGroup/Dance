@@ -10,11 +10,11 @@ Tournament service, access to REST API
 
 servicesModule.factory('TournamentSrvc', function(RESTSrvc) {    
     return {
-        getById: function(id){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id});
+        getById: function(id, params){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/' + id + (params ? params : '')});
         },
-        getByIdAdmin: function(id){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/tournament/' + id});
+        getByIdAdmin: function(id, params){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/tournament/' + id + (params ? params : '')});
         },
         removeById: function(id){
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/' + id});

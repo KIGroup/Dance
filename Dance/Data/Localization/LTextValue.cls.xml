@@ -59,6 +59,15 @@ Get value for language=lang for object with id=ltxt</Description>
 	set lang = $e(lang,1,2)
 	set value = "! no value for [ISO 639-1] lang="_lang
 	
+	set id = $O(^Dance.Data.LocaD180.LTextValueI("KeyIdx",ltxt,lang,""))
+	quit $LISTGET(^Dance.Data.LocaD180.LTextValueD(id), 4)
+	
+	
+	
+	// ISO 639-1
+	set lang = $e(lang,1,2)
+	set value = "! no value for [ISO 639-1] lang="_lang
+	
 	&sql(SELECT Value INTO :value 
 	     FROM Dance_Data_Localization.LTextValue 
 	     WHERE LText = :ltxt AND Lang = :lang)

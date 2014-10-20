@@ -133,7 +133,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
 
     /// Load Tournament by ID
     $scope.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
+        TournamentSrvc.getById(id, '?loadFullName=1').then(
             function(data){
                 $scope.tournament = data;
             },

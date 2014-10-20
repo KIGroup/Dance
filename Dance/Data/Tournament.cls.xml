@@ -136,6 +136,7 @@ Tournaments</Description>
 </Index>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
@@ -143,30 +144,53 @@ Tournaments</Description>
 	set proxy.id = ..%Id()
 	set proxy.idInternal = ..IdInternal
 	set proxy.idExternal = ..IdExternal
+	set proxy.startDate = $ZDATE(..StartDate, 3)
+	set proxy.endDate = $ZDATE(..EndDate, 3)
 		
 	if (##class(Dance.Data.Tournament).CheckUpdatePrivilege() = $$$OK){
 		set proxy.hash = ..Hash
 	}
-		
-	set proxy.name = ..Name.Value
-	set proxy.fullName = ..FullName.Value
-	set proxy.startDate = $ZDATE(..StartDate, 3)
-	set proxy.endDate = $ZDATE(..EndDate, 3)
-	set proxy.status = ..TStatus.ConvertToProxyObject()
-	set proxy.rank = ..TRank.ConvertToProxyObject()
-	set proxy.competitionsCount = ..CompetitionsCount
-	set proxy.participantsCount = ..ParticipantsCount
-	set proxy.participantsUniqueCount = ..ParticipantsUniqueCount
 	
-		
+	if (params.loadName){	
+		set proxy.name = ..Name.Value
+	}
+	
+	if (params.loadFullName){
+		set proxy.fullName = ..FullName.Value
+	}
+	
+	if (params.loadStatus){
+		set proxy.status = ..TStatus.ConvertToProxyObject()
+	}
+	
+	if (params.loadRank){
+		set proxy.rank = ..TRank.ConvertToProxyObject()
+	}
+	
+	if (params.loadCompetitionsCount){
+		set proxy.competitionsCount = ..CompetitionsCount
+	}
+	
+	if (params.loadParticipantsCount){
+		set proxy.participantsCount = ..ParticipantsCount
+	}
+
+	if (params.loadParticipantsUniqueCount){
+		set proxy.participantsUniqueCount = ..ParticipantsUniqueCount
+	}
+	
 	set proxy.location = ##class(%ZEN.proxyObject).%New()
-	set proxy.location.country = ..Country.ConvertToProxyObject()
-	set proxy.location.cityName = ..City.Value
-		
+	if (params.loadLocation){		
+		set proxy.location.country = ..Country.ConvertToProxyObject()
+		set proxy.location.cityName = ..City.Value
+	}
+	
 	set proxy.organizer = ##class(%ZEN.proxyObject).%New()
-	set proxy.organizer.info = ..OrganizerInfo.Value
-	set proxy.organizer.site = ..OrganizerSite
-		
+	if (params.loadOrganizer){	
+		set proxy.organizer.info = ..OrganizerInfo.Value
+		set proxy.organizer.site = ..OrganizerSite
+	}
+	
 	set proxy.tabUDSRAllowed = ..TabUDSRAllowed
 	set proxy.tabWDSFAllowed = ..TabWDSFAllowed
 	set proxy.tabOtherAllowed = ..TabOtherAllowed
@@ -198,7 +222,7 @@ Create or Update object</Description>
 	set trn = ""
 	if (data.id = ""){
 		set trn = ..%New()
-		set tr.AccessCode = $SYSTEM.Util.CreateGUID()
+		set trn.AccessCode = $SYSTEM.Util.CreateGUID()
       	set trn.Name = ##class(Dance.Data.Localization.LText).Create(data.name)
       	set trn.FullName = ##class(Dance.Data.Localization.LText).Create(data.fullName)
       	set trn.City = ##class(Dance.Data.Localization.LText).Create(data.location.cityName)
@@ -295,7 +319,7 @@ Check update privilege</Description>
 	set count = 0
 	&sql(SELECT COUNT(ID) INTO :count 
 		 FROM Dance_Data.Competition 
-		 WHERE Tournament = :tournamentId)
+		 WHERE Tournament = :tournamentId AND IsActive = 1)
 		 
 	quit count
 ]]></Implementation>
@@ -307,17 +331,20 @@ Check update privilege</Description>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
 	set count = 0
-	&sql(SELECT COUNT(ID) INTO :count
-		 FROM Dance_Data.Participant 
-		 WHERE Competition->Tournament = :tournamentId AND IsActive = 1 
-		 	   AND 
-		 	   ID NOT IN (SELECT ID 
-		 				  FROM Dance_Data.ParticipantCoupleOther
-		 				  WHERE TicketStatus = 'Not paid'
-		 				  UNION
-		 				  SELECT ID 
-		 				  FROM Dance_Data.ParticipantSingleOther
-		 				  WHERE TicketStatus = 'Not paid'))
+	set notTicketStatus = "Canceled"
+	
+	if (##class(Dance.Data.Tournament).CheckDeletePrivilege() = $$$OK){
+		set notTicketStatus = "-"
+	}
+	
+	&sql(SELECT TotalCount - OtherCount As Total INTO :count
+		 FROM(
+			SELECT COUNT(ID) As TotalCount, 
+				  (SELECT COUNT(ID) 
+				   FROM Dance_Data.Participant 
+				   WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND (PType = 'CoupleOther' OR PType = 'SingleOther') AND TicketStatus = 'Not paid') As OtherCount 
+		    FROM Dance_Data.Participant 
+		    WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND TicketStatus <> :notTicketStatus))
 	
 	quit count
 ]]></Implementation>
@@ -328,41 +355,79 @@ Check update privilege</Description>
 <FormalSpec>tournamentId:%String</FormalSpec>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
-	set (coupleCount, athleteCount) = 0
+	set prtCplAth = 0
+	set notTicketStatus = "Canceled"
 	
-	&sql(SELECT COUNT(Cpl) INTO :coupleCount 
-		 FROM
-		 (
-		 	SELECT DISTINCT Couple As Cpl
-		 	FROM Dance_Data.ParticipantCoupleUDSR 
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
-		 	UNION
-		 	SELECT DISTINCT Couple As Cpl
-		 	FROM Dance_Data.ParticipantCoupleWDSF 
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
-		 	UNION
-		 	SELECT DISTINCT CoupleKey As Cpl
-		 	FROM Dance_Data.ParticipantCoupleOther 
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND TicketStatus <> 'Not paid'
-		 ))
-		 
-	&sql(SELECT COUNT(Ath) INTO :athleteCount 
-		 FROM
-		 (
-		 	SELECT DISTINCT Athlete As Ath
-		 	FROM Dance_Data.ParticipantSingleUDSR 
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
-		 	UNION
-		 	SELECT DISTINCT Athlete As Ath
-		 	FROM Dance_Data.ParticipantSingleWDSF 
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1
-		 	UNION
-		 	SELECT DISTINCT AthleteKey As Ath
-		 	FROM Dance_Data.ParticipantSingleOther 
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND TicketStatus <> 'Not paid'
-		 ))
+	if (##class(Dance.Data.Tournament).CheckDeletePrivilege() = $$$OK){
+		set notTicketStatus = "-"
+	}
 	
-	quit coupleCount + athleteCount
+	&sql(DECLARE PrtUniqCrs CURSOR FOR 
+		 	SELECT ID, PType, Competition
+		 	FROM Dance_Data.Participant
+		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND TicketStatus <> :notTicketStatus)	
+		
+	&sql(OPEN PrtUniqCrs)
+	for  
+	{	
+		&sql(FETCH PrtUniqCrs INTO :id, :pType, :competitionId) 
+		quit:(SQLCODE '= 0)
+	
+		set (cplId,athId) = ""
+		set prtId = pType
+		
+		if (pType = "CoupleUDSR"){
+			&sql(SELECT Couple INTO :cplId
+				 FROM Dance_Data.ParticipantCoupleUDSR
+				 WHERE ID = :id)
+			
+			set prtId = prtId_";"_cplId
+		}
+		elseif (pType = "CoupleWDSF"){
+			&sql(SELECT Couple INTO :cplId
+				 FROM Dance_Data.ParticipantCoupleWDSF
+				 WHERE ID = :id)
+				 
+			set prtId = prtId_";"_cplId
+		}
+		elseif (pType = "SingleUDSR"){
+			&sql(SELECT Athlete INTO :athId
+				 FROM Dance_Data.ParticipantSingleUDSR
+				 WHERE ID = :id)
+			
+			set prtId = prtId_";"_athId
+		}
+		elseif (pType = "SingleWDSF"){
+			&sql(SELECT Athlete INTO :athId
+				 FROM Dance_Data.ParticipantSingleWDSF
+				 WHERE ID = :id)
+			
+			set prtId = prtId_";"_athId
+		}
+		elseif (pType = "CoupleOther"){
+			&sql(SELECT CoupleKey INTO :cplId
+				 FROM Dance_Data.ParticipantCoupleOther
+				 WHERE ID = :id AND TicketStatus <> 'Not paid')
+			
+			set prtId = prtId_";"_cplId
+		}
+		elseif (pType = "SingleOther"){
+			&sql(SELECT AthleteKey INTO :athId
+				 FROM Dance_Data.ParticipantSingleOther
+				 WHERE ID = :id AND TicketStatus <> 'Not paid')
+				 
+			set prtId = prtId_";"_athId
+		}
+		
+		if ($GET(prtCplAth(prtId)) = ""){
+			set prtCplAth = prtCplAth + 1
+			set prtCplAth(prtId) = "1"
+		}		
+	}
+	
+	&sql(CLOSE PrtUniqCrs)
+	
+	quit prtCplAth
 ]]></Implementation>
 </Method>
 

@@ -158,7 +158,7 @@
 	<div class="modal-body">
 		<p ng-bind="'Выберите организатора для доступа к регистрации:'|localize"></p>
 		<p ng-repeat="rec in confirmDialog.recorders">
-			{{$index + 1}}. <a ng-href="{{'http://localhost:57772/csp/dance/dance/index.csp#/recorder/' + rec.hash + '/tournament/' + confirmDialog.tournament.id + '/registration'}}" target="reg" ng-bind="rec.name"></a> <span ng-bind="'(код - ' + rec.hash + ')'"></span>
+			{{$index + 1}}. <a ng-href="{{'#/recorder/' + rec.hash + '/tournament/' + confirmDialog.tournament.id + '/registration'}}" target="reg" ng-bind="rec.name"></a> <span ng-bind="'(код - ' + rec.hash + ')'"></span>
 
 		</p>
 	</div>

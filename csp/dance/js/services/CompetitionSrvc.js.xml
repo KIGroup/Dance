@@ -9,8 +9,8 @@
 
 servicesModule.factory('CompetitionSrvc', function(RESTSrvc) {    
     return {
-        getById: function(competitionId){
-            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/competition/' + competitionId});
+        getById: function(competitionId, params){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.user + '/tournament/competition/' + competitionId + (params ? params : '')});
         },
         removeById: function(competitionId){
             return RESTSrvc.getPromise({method: 'DELETE', url: AppSettings.admin + '/tournament/competition/' + competitionId});

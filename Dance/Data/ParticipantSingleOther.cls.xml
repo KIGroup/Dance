@@ -60,9 +60,10 @@
 </Property>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super()
+	set proxy = ##super(params)
 	set proxy.athlete = ##class(%ZEN.proxyObject).%New()
 	set proxy.athlete.key = ..AthleteKey
 	set proxy.athlete.gender = ..Gender
@@ -103,6 +104,7 @@
 	set obj.OtherTrainers = athlete.otherInfo.otherTrainers
 	
 	set obj.AthleteKey = athlete.key
+	set obj.PType = "SingleOther"
 	set st = obj.%Save()
 	
 	quit obj

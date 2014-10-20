@@ -4,7 +4,7 @@
 <div class="row-fluid">
 	<div class="row-fluid">
 		<div class="span6">
-			<div class="control-group">
+			<div class="control-group" style="margin-bottom: 0px;">
 		        <label class="control-label" ng-bind="('Название'|localize) + '*'"></label>
 		        <div class="controls">
 		            <input class="span12" type="text" ng-model="tournament.name" required></input>
@@ -12,7 +12,7 @@
 		    </div>
 		</div>
 		<div class="span2">
-			<div class="control-group">
+			<div class="control-group" style="margin-bottom: 0px;">
 		        <label class="control-label" ng-bind="('Internal ID') + '*'"></label>
 		        <div class="controls">
 		            <input class="span12" type="text" ng-model="tournament.idInternal" required></input>
@@ -20,7 +20,7 @@
 		    </div>
 		</div>
 		<div class="span2">
-			<div class="control-group">
+			<div class="control-group" style="margin-bottom: 0px;">
 		        <label class="control-label" ng-bind="('External ID') + '*'"></label>
 		        <div class="controls">
 		            <input class="span12" type="text" ng-model="tournament.idExternal" required></input>
@@ -28,13 +28,16 @@
 		    </div>
 		</div>
 		<div class="span2">
-			<div class="control-group">
+			<div class="control-group" style="margin-bottom: 0px;">
 		        <label class="control-label" ng-bind="('Хеш') + '*'"></label>
 		        <div class="controls">
 		            <input class="span12" type="text" ng-model="tournament.hash"></input>
 		        </div>
 		    </div>
 		</div>
+	</div>
+	<div class="row-fluid">
+		<i class="pull-right" style="font-size: 0.8em;" ng-bind="'Измените или оставьте значения по умолчанию'|localize"></i>
 	</div>
 	<div class="row-fluid">
 		<div class="control-group">

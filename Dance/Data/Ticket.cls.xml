@@ -44,11 +44,6 @@ Tickets of the participants</Description>
 <Required>1</Required>
 </Property>
 
-<Index name="NumberIdx">
-<Properties>Number</Properties>
-<Unique>1</Unique>
-</Index>
-
 <Index name="ParticipantIdx">
 <Properties>Participant</Properties>
 <Unique>1</Unique>

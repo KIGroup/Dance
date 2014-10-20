@@ -9,7 +9,7 @@ Couple - participant of the competition</Description>
 <Property name="FullName">
 <Type>%String</Type>
 <Calculated>1</Calculated>
-<SqlComputeCode>set {FullName} = ##class({%%CLASSNAME}).GetFullName({%%ID})</SqlComputeCode>
+<SqlComputeCode>set {FullName} = ##class({%%CLASSNAME}).GetFullName({%%ID}, {PType})</SqlComputeCode>
 <SqlComputed>1</SqlComputed>
 </Property>
 
@@ -43,20 +43,34 @@ Couple - participant of the competition</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="PType">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Created">
 <Type>%TimeStamp</Type>
+<Required>1</Required>
 </Property>
 
 <Index name="CompetitionIdx">
 <Properties>Competition</Properties>
 </Index>
 
+<UDLText name="T">
+<Content><![CDATA[
+// Index PTypeIdx On PType;
+
+]]></Content>
+</UDLText>
+
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
 	set proxy = ##class(%ZEN.proxyObject).%New()
 	set proxy.id = ..%Id()
-	set proxy.competition = ..Competition.ConvertToProxyObject($$$NO)
+	set proxy.competition = ..Competition.ConvertToProxyObject(params.competitionParams)
 	set proxy.isActive = ..IsActive
 	set proxy.created = ..Created
 	set proxy.ticketStatus = ##class(TicketStatus).CodeIdxOpen(..TicketStatus).ConvertToProxyObject()
@@ -67,9 +81,49 @@ Couple - participant of the competition</Description>
 
 <Method name="GetFullName">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>prtId:%String</FormalSpec>
+<FormalSpec>prtId:%String,pType:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
+	set fullName = ""
+	
+	if (pType = "CoupleUDSR"){
+		&sql(SELECT Couple->Man->LastName->Value || ' ' || Couple->Man->FirstName->Value || ' - ' ||
+					Couple->Woman->LastName->Value || ' ' || Couple->Woman->FirstName->Value INTO :fullName
+			 FROM Dance_Data.ParticipantCoupleUDSR
+			 WHERE ID = :prtId)
+	}
+	elseif (pType = "CoupleWDSF"){
+		&sql(SELECT Couple->Man->LastName->Value || ' ' || Couple->Man->FirstName->Value || ' - ' ||
+					Couple->Woman->LastName->Value || ' ' || Couple->Woman->FirstName->Value INTO :fullName
+			 FROM Dance_Data.ParticipantCoupleWDSF
+			 WHERE ID = :prtId)
+	}
+	elseif (pType = "SingleUDSR"){
+		&sql(SELECT Athlete->LastName->Value || ' ' || Athlete->FirstName->Value INTO :fullName
+			 FROM Dance_Data.ParticipantSingleUDSR
+			 WHERE ID = :prtId)
+	}
+	elseif (pType = "SingleWDSF"){
+		&sql(SELECT Athlete->LastName->Value || ' ' || Athlete->FirstName->Value INTO :fullName
+			 FROM Dance_Data.ParticipantSingleWDSF
+			 WHERE ID = :prtId)
+	}
+	elseif (pType = "CoupleOther"){
+		&sql(SELECT ManLastName || ' ' || ManFirstName || ' - ' || WomanLastName || ' ' || WomanFirstName INTO :fullName
+			 FROM Dance_Data.ParticipantCoupleOther
+			 WHERE ID = :prtId)
+	}
+	elseif (pType = "SingleOther"){
+		&sql(SELECT LastName || ' ' || FirstName INTO :fullName
+			 FROM Dance_Data.ParticipantSingleOther
+			 WHERE ID = :prtId)
+	}
+	
+	
+	
+	quit fullName
+	
+	
 	set fullName = ""
 	set prt = ..%OpenId(prtId)
 	quit $CASE($CLASSNAME(prt), "Dance.Data.ParticipantCoupleUDSR"  : prt.Couple.GetFullName(),
@@ -181,22 +235,19 @@ ClassMethod GetCoupleCompetitionsCount(competitionId As %String, coupleId As %St
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>Couple</Value>
+<Value>Recorder</Value>
 </Value>
 <Value name="3">
-<Value>IsPaid</Value>
-</Value>
-<Value name="4">
 <Value>Competition</Value>
 </Value>
-<Value name="5">
-<Value>Created</Value>
-</Value>
-<Value name="6">
+<Value name="4">
 <Value>IsActive</Value>
 </Value>
-<Value name="7">
-<Value>Recorder</Value>
+<Value name="5">
+<Value>PType</Value>
+</Value>
+<Value name="6">
+<Value>Created</Value>
 </Value>
 </Data>
 </Storage>

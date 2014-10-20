@@ -167,7 +167,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     
     /// Load Competition by ID
     $scope.page.loadCompetition = function(competitionId){
-        CompetitionSrvc.getById(competitionId).then(
+        CompetitionSrvc.getById(competitionId, '?loadTournament=1&loadTournamentFullName=1').then(
             function(data){
                 $scope.page.competition = data;
                 $scope.page.participantTable.refresh();

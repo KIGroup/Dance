@@ -15,9 +15,10 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super()
+	set proxy = ##super(params)
 	set proxy.athlete = ..Athlete.ConvertToProxyObject()
 	
 	quit proxy
@@ -40,6 +41,7 @@
 	set obj.Recorder = recorder
 	set obj.Athlete = ##class(PersonUDSR).%OpenId(athlete.id)
 	set obj.Competition = competition 
+	set obj.PType = "SingleUDSR"
 	set st = obj.%Save()
 	quit obj
 ]]></Implementation>

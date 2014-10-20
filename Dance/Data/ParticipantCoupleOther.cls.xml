@@ -74,9 +74,10 @@
 </Property>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super()
+	set proxy = ##super(params)
 	set proxy.couple = ##class(%ZEN.proxyObject).%New()
 	set proxy.couple.key = ..CoupleKey
 	
@@ -128,6 +129,7 @@
 	set obj.OtherTrainers = couple.otherInfo.otherTrainers
 	
 	set obj.CoupleKey = couple.key	
+	set obj.PType = "CoupleOther"
 	set st = obj.%Save()
 	
 	quit obj

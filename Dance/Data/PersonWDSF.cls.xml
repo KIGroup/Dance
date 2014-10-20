@@ -15,9 +15,10 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<FormalSpec>params:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super()
+	set proxy = ##super(params)
 	set proxy.type = "WDSF"
 	set proxy.ageCategory = ..AgeCategory		
 	quit proxy

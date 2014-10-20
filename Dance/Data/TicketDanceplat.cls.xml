@@ -12,6 +12,11 @@
 <Type>%String</Type>
 </Property>
 
+<Index name="NumberDPIdx">
+<Properties>Number</Properties>
+<Unique>1</Unique>
+</Index>
+
 <Method name="Save">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[data:%RegisteredObject,&st]]></FormalSpec>
@@ -19,8 +24,8 @@
 <Implementation><![CDATA[
 	#dim obj As TicketDanceplat
 	
-	if (..NumberIdxExists(data.number)){
-		set obj = ..NumberIdxOpen(data.number,,.st)	
+	if (..NumberDPIdxExists(data.number)){
+		set obj = ..NumberDPIdxOpen(data.number,,.st)	
 	}
 	else{
 		set obj = ..%New()
@@ -58,8 +63,8 @@
 		 	 FROM Dance_Data_Import.TicketDanceplat as tic
 		 	 WHERE (SELECT cmp.Tournament->TStatus->Code 
 		 	 		FROM Dance_Data.Competition as cmp 
-		 	 		WHERE cmp.IdInternal = tic.GroupIdInternal) = 'Registration')	
-		
+		 	 		WHERE cmp.IdInternal = tic.GroupIdInternal) IN ('Registration','RegistrationClosed'))	
+		 	 		
 		&sql(OPEN TicketCurs)
 		for  
 		{	
@@ -80,6 +85,7 @@
 	}
 	catch(ex){
 		set st = ex.AsStatus()
+		do ##class(Dance.Utils.Journal).Create("Error", "Dance.Data.TicketDanceplat.TaskTickets.SaveAllFromImportTable()", $SYSTEM.Status.GetErrorText(st))
 	}
 	
 	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.TicketDanceplat.TaskTickets.SaveAllFromImportTable()", "End")

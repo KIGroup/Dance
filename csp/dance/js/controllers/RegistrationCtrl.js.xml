@@ -11,7 +11,7 @@ Registration
 controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $cookies, $location, $window, $routeParams, $filter, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, TournamentRankSrvc, TournamentStatusSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
 	$scope.menu.pages.selected = {};
     $scope.menu.shortMenu = true;
-	
+	 
 	if ($routeParams.recorderHash){
         $cookies.recorderHash = $routeParams.recorderHash;
     }
@@ -82,6 +82,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
                           {name:'discipline.name'},
                           {name:'ageCategory.fullName', 
                                 calculate: function(item){
+	                                if (!item.ageCategory) 
+	                                	return '';
                                     item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
                                 }},
                           {name:'dancerClassesString', 
@@ -195,9 +197,17 @@ controllersModule.controller('RegistrationCtrl', function($scope, $timeout, $coo
 
     /// Load Tournament by ID   
     $scope.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
+        TournamentSrvc.getById(id, "?loadFullName=1&loadStatus=1").then(
             function(data){
                 $scope.tournament = data;
+                if (data.status.code != 'Registration'){
+                    $scope.tabUDSR.visible = false;
+                    $scope.tabWDSF.visible = false;
+                    $scope.tabOTHER.visible = false;
+                    $scope.alert = UtilsSrvc.getAlert('Внимание!', 'Регистрация в турнир завершена.', 'error', true);
+                    return;
+                }
+
                 $scope.tabUDSR.visible = data.tabUDSRAllowed == 1;
                 $scope.tabWDSF.visible = data.tabWDSFAllowed == 1;
                 $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
