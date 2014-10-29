@@ -93,7 +93,7 @@
 			<div class="row-fluid">
 				<button type="button" style="margin-bottom: 15px; font-size: 1em; margin-right: 10px;" class="btn btn-mini btnRadio" ng-model="pageStore.tournaments.gridCompetitions.filterDate" btn-radio="''" ng-bind="'Все дни'|localize" ng-click="page.competitionTable.changeDateFilter('')"></button>
 				<div class="btn-group" style="margin-bottom: 15px;">
-					<button type="button" class="btn btn-mini btnRadio" ng-repeat="cdate in page.competitionTable.dates" ng-model="pageStore.tournaments.gridCompetitions.filterDate" btn-radio="cdate" ng-bind="cdate|convertCacheDate:('d MMMM y'|localize)" ng-click="page.competitionTable.changeDateFilter(cdate)"></button>
+					<button type="button" class="btn btn-mini btnRadio" ng-repeat="cdate in page.competitionTable.dates" ng-model="pageStore.tournaments.gridCompetitions.filterDate" btn-radio="cdate" ng-bind="cdate|convertCacheDate:('d MMMM'|localize)" ng-click="page.competitionTable.changeDateFilter(cdate)"></button>
 				</div>
 				<!--
 				<span class="pull-right" ng-bind="('Total prticipants count'|localize) + ' - ' + page.tournamentTable.participantsInfo.total + ', ' + ('unique'|localize) + ' - ' + page.tournamentTable.participantsInfo.unique"></span>

@@ -52,7 +52,7 @@
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super()
+	set proxy = ##super(params)
 	set proxy.couple = ..Couple.ConvertToProxyObject()
 	
 	set proxy.couple.man.dob = $ZD(..ManDOB, 3)
@@ -61,6 +61,13 @@
 	set proxy.couple.otherInfo.club = ..Club
 	set proxy.couple.otherInfo.mainTrainer = ..MainTrainer
 	set proxy.couple.otherInfo.otherTrainers = ..OtherTrainers
+
+	set proxy.couple.competitionsCount = "-"	
+	if (params.loadPrtObjCompetitionsCount) && $ISOBJECT(proxy.competition.tournament){
+		&sql(SELECT COUNT(Competition) INTO :proxy.couple.competitionsCount
+			 FROM Dance_Data.ParticipantCoupleWDSF 
+		     WHERE Competition->Tournament = :proxy.competition.tournament.id AND Couple = :proxy.couple.id)
+	}
 	
 	quit proxy
 ]]></Implementation>

@@ -48,7 +48,7 @@ Registration UDSR participants in the tournament</Description>
 		    set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i))
 		    
 		    set regResult = ##class(%ZEN.proxyObject).%New()
-		    set regResult.competition = competition.ConvertToProxyObject()
+		    set regResult.competition = competition.ConvertToProxyObject(##class(%ZEN.proxyObject).%New())
 		    set regResult.otherInfo = ##class(%ZEN.proxyObject).%New()
 		    	
 		    if (competition.Tournament.TStatus.Code '= "Registration") {
@@ -151,12 +151,15 @@ Registration WDSF participants in the tournament</Description>
 			set wcPostData.manNumber = prt.number
 		}
 		
+		set convertParams = ##class(%ZEN.proxyObject).%New()
+		set convertParams.loadWDSF = $$$YES
+		
 		// Registration in our system
 		for i=1:1:data.competitions.Count(){
 		    set competition = ##class(Dance.Data.Competition).%OpenId(data.competitions.GetAt(i))
 		
 			set regResult = ##class(%ZEN.proxyObject).%New()
-		    set regResult.competition = competition.ConvertToProxyObject()
+		    set regResult.competition = competition.ConvertToProxyObject(convertParams)
 			
 		    if (competition.Tournament.TStatus.Code '= "Registration"){
 			    set regResult.status = 0 
@@ -345,6 +348,7 @@ Get one tournament by Id</Description>
  	set convertParams.loadRank = $GET(%request.Data("loadRank", 1), $$$NO) = $$$YES
  	set convertParams.loadLocation = $GET(%request.Data("loadLocation", 1), $$$NO) = $$$YES
  	set convertParams.loadOrganizer = $GET(%request.Data("loadOrganizer", 1), $$$NO) = $$$YES
+ 	set convertParams.loadCompetitionsCount = $GET(%request.Data("loadCompetitionsCount", 1), $$$NO) = $$$YES
  	set convertParams.loadParticipantsCount = $GET(%request.Data("loadParticipantsCount", 1), $$$NO) = $$$YES
  	set convertParams.loadParticipantsUniqueCount = $GET(%request.Data("loadParticipantsUniqueCount", 1), $$$NO) = $$$YES
  	
@@ -577,9 +581,24 @@ Get one competition by id</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set convertParams = ##class(%ZEN.proxyObject).%New()
+ 	set convertParams.loadDiscipline = $GET(%request.Data("loadDiscipline", 1), $$$NO) = $$$YES
+ 	set convertParams.loadAgeCategory = $GET(%request.Data("loadAgeCategory", 1), $$$NO) = $$$YES
+ 	set convertParams.loadDancerClasses = $GET(%request.Data("loadDancerClasses", 1), $$$NO) = $$$YES
+ 	set convertParams.loadType = $GET(%request.Data("loadType", 1), $$$NO) = $$$YES
+ 	set convertParams.loadWDSF = $GET(%request.Data("loadWDSF", 1), $$$NO) = $$$YES
  	set convertParams.loadTournament = $GET(%request.Data("loadTournament", 1), $$$NO) = $$$YES
- 	set convertParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
- 	set convertParams.tournamentParams.loadFullName = $GET(%request.Data("loadTournamentFullName", 1), $$$NO) = $$$YES
+ 	if (convertParams.loadTournament){
+ 		set convertParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.tournamentParams.loadName = $GET(%request.Data("loadTournamentName", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadFullName = $GET(%request.Data("loadTournamentFullName", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadLocation = $GET(%request.Data("loadTournamentLocation", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadOrganizer = $GET(%request.Data("loadTournamentOrganizer", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadRank = $GET(%request.Data("loadTournamentRank", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadStatus = $GET(%request.Data("loadTournamentStatus", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadParticipantsCount = $GET(%request.Data("loadTournamentParticipantsCount", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadParticipantsUniqueCount = $GET(%request.Data("loadTournamentParticipantsUniqueCount", 1), $$$NO) = $$$YES
+ 		set convertParams.tournamentParams.loadCompetitionsCount = $GET(%request.Data("loadTournamentCompetitionsCount", 1), $$$NO) = $$$YES
+ 	}
  	
 	do ##class(Dance.Data.Competition).%OpenId(competitionId).ConvertToProxyObject(convertParams).%ToJSON()
 	quit $$$OK
@@ -606,11 +625,8 @@ Get all tournament competitions for grid</Description>
       	if (params.other.type = "WDSF"){
       		set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
       	}
-      	
-      	set convertParams = ##class(%ZEN.proxyObject).%New()
-      	set convertParams.loadParticipantsCount = $$$YES
-      	
-      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, convertParams, whereCondition).%ToJSON()
+      
+      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, params.other.convertParams, whereCondition).%ToJSON()
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -719,20 +735,18 @@ Available participants competitions for grid</Description>
 		
 		set proxyItems = ##class(%ListOfObjects).%New()			
 		
-		set convertParams = ##class(%ZEN.proxyObject).%New() 
-		
 		while (rs.%Next() '= 0){
 			set cmp = ##class(Dance.Data.Competition).%OpenId(rs.%GetData(1),,.st)
 			
 			if (maleSTClass = "") && (maleLAClass = ""){
-				do proxyItems.Insert(cmp.ConvertToProxyObject(convertParams))
+				do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
 			}
 			elseif (cmp.Discipline.Code = "Ст"){
 				set key = ""
 				for i=1:1:cmp.DancerClasses.Count(){
 					set key = cmp.DancerClasses.Next(key)
 					if (cmp.DancerClasses.GetAt(key).Code = maleSTClass){
-						do proxyItems.Insert(cmp.ConvertToProxyObject(convertParams))
+						do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
 						quit
 					}
 				}
@@ -742,7 +756,7 @@ Available participants competitions for grid</Description>
 				for i=1:1:cmp.DancerClasses.Count(){
 					set key = cmp.DancerClasses.Next(key)
 					if (cmp.DancerClasses.GetAt(key).Code = maleLAClass){
-						do proxyItems.Insert(cmp.ConvertToProxyObject(convertParams))
+						do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
 						quit
 					}
 				}
@@ -752,7 +766,7 @@ Available participants competitions for grid</Description>
 				for i=1:1:cmp.DancerClasses.Count(){
 					set key = cmp.DancerClasses.Next(key)
 					if (cmp.DancerClasses.GetAt(key).Code = maleLAClass) || (cmp.DancerClasses.GetAt(key).Code = maleSTClass){
-						do proxyItems.Insert(cmp.ConvertToProxyObject(convertParams))
+						do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
 						quit
 					}
 				}
@@ -838,6 +852,10 @@ Get all participants for grid</Description>
  		
  		set convertParams = ##class(%ZEN.proxyObject).%New()
  		set convertParams.competitionParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.competitionParams.loadTournament = $$$YES
+ 		set convertParams.competitionParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
+ 		set convertParams.competitionParams.tournamentParams.loadLocation = $$$YES
+ 		set convertParams.loadPrtObjCompetitionsCount = $$$YES
  		
  	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, "IsActive=1 AND Competition->Tournament->IsActive = 1")
 		do result.%ToJSON()
@@ -861,7 +879,7 @@ Get all participants of the tournament for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
- 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 AND TicketStatus <> 'Canceled' "_
+ 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 "_
  		" AND "_
  		" ID NOT IN (SELECT ID "_ 
 		 		     "FROM Dance_Data.ParticipantCoupleOther "_
@@ -912,7 +930,9 @@ Get all participants of the competition for grid</Description>
 		
 		set convertParams = ##class(%ZEN.proxyObject).%New()
  		set convertParams.competitionParams = ##class(%ZEN.proxyObject).%New()
- 	 			 
+ 		set convertParams.competitionParams.loadTournament = $$$YES
+ 		set convertParams.competitionParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
+ 	 	set convertParams.loadPrtObjCompetitionsCount = $$$YES		 
       	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, whereCondition).%ToJSON()
 	}
 	catch ex {
@@ -930,6 +950,7 @@ Get all participants of the competition for grid</Description>
 	set st = $$$OK
 
 	try{
+		set shortView = $GET(%request.Data("shortView", 1), 1)
 		set trnId = $GET(%request.Data("tournamentId", 1))
 		set cplId = $GET(%request.Data("coupleId", 1))
 		set athId = $GET(%request.Data("athleteId", 1))
@@ -938,6 +959,15 @@ Get all participants of the competition for grid</Description>
 		
 		set table = ""
 		set where = "Competition->Tournament = '"_..ParseParameter(trnId)_"' "
+		
+		set convertParams = ##class(%ZEN.proxyObject).%New()
+		set convertParams.competitionParams = ##class(%ZEN.proxyObject).%New()
+		if (shortView = $$$NO){
+			set convertParams.competitionParams.loadDiscipline = $$$YES
+			set convertParams.competitionParams.loadType = $$$YES
+			set convertParams.competitionParams.loadDancerClasses = $$$YES
+			set convertParams.competitionParams.loadAgeCategory = $$$YES	
+		}
 		
 		if (cplId '= ""){
 			if (##class(Dance.Data.CoupleWDSF).%ExistsId(cplId)) {
@@ -981,13 +1011,8 @@ Get all participants of the competition for grid</Description>
 		set proxy = ##class(%ZEN.proxyObject).%New()
 		set proxy.children = ##class(%ListOfObjects).%New()
 		
-		set convetParams = ##class(%ZEN.proxyObject).%New()
-		set convetParams.competitionParams = ##class(%ZEN.proxyObject).%New()
-		set convetParams.competitionParams.loadTournament = $$$YES
-		set convetParams.competitionParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
-		
 		while (rs.%Next() '= 0){
-			do proxy.children.Insert(##class(Dance.Data.Participant).%OpenId(rs.%GetData(1)).ConvertToProxyObject(convetParams))
+			do proxy.children.Insert(##class(Dance.Data.Participant).%OpenId(rs.%GetData(1)).ConvertToProxyObject(convertParams))
 		}
 		
 		do rs.%Close()						

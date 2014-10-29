@@ -8,15 +8,17 @@
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="#/tournament/{{page.competition.tournament.id}}/registration" class="trnMenu" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize"></a>
+	<a ng-href=""  ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.competition.tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.competition.tournament.id}}/competitions" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.competition.tournament.id + '/competitions', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.competition.tournament.id}}/participants" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Все участники »'|localize"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Все участники »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.competition.tournament.id + '/participants', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Участники группы •'|localize"></a>
 </div>
 <br>
+
+<p ng-hide="recorderHash">[ <font COLOR="RED"><b>!</b></font> ] <span  style="color:rgb(163, 0, 0);" ng-bind="'Код доступа не найден, переход на страницу для регистрации невозможен.'|localize"></span></p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'|localize}} <span class="noneCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие не оплачено.'|localize}} <span class="cancelCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие отменено.'|localize}}</p>
 
@@ -25,6 +27,7 @@
 </div>
 <div class="row-fluid">
 	<stcgrid
+		style="width: initial;"
     	grid="pageStore.participants.grid"
 	    table-class="table table-bordered table-hover"
 	    caption=""

@@ -100,7 +100,7 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
-	set isTrace = $$$YES
+	set isTrace = $$$NO
 	w:(isTrace) !,!,"Start 'SaveOneFromImportTable' ticketId="_ticketImport.%Id()
 	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.TicketDanceplat.SaveOneFromImportTable()", "Start for ticketId="_ticketImport.%Id())
 	
@@ -208,7 +208,8 @@
 		
 		// Create ticket
 		set ticketData = ##class(%ZEN.proxyObject).%New()
-		set ticketData.participant = participant.ConvertToProxyObject()
+		set ticketData.participant = ##class(%ZEN.proxyObject).%New()
+		set ticketData.participant.id = participant.%Id()
 		set ticketData.number = ticketImport.IdInternal
 		set ticketData.amount = ticketImport.Amount
 		set ticketData.paymentCreated = ticketImport.PaymentCreated

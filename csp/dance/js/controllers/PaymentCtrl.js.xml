@@ -2,16 +2,20 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//  
+// 
         
 /*===========================================================================================
 Payment
 ===========================================================================================*/
 
-controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $window, $location, $filter, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc, OtherSrvc){ 
-	$scope.menu.selected = {};
-    $scope.competitionTable = {};
+controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $window, $location, $filter, LocationSrvc, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc, OtherSrvc){ 
+	$scope.menu.pages.selected = {};
+		
+	$scope.competitionTable = {};
     $scope.competitionList = [];
+
+    $scope.recorderHash = $routeParams.recorderHash || null;
+    $scope.locationSrvc = LocationSrvc; 
 
  	if (!$scope.pageStore.tournamentPayment) 
         $scope.pageStore.tournamentPayment = {gridCompetitions:{}};
@@ -68,7 +72,9 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
     
     //  
     $scope.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
-        var filter = '?tournamentId=' + $routeParams.tournamentId;
+        var filter = '?shortView=' + ($scope.pageStore.tournamentPayment.gridCompetitions.tableShortView ? 1 : 0);
+          
+        filter += '&tournamentId=' + $routeParams.tournamentId;
 
         if ($routeParams.coupleId){
             filter += '&coupleId=' + $routeParams.coupleId;
@@ -82,7 +88,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
         else if ($routeParams.athleteKey){
             filter += '&athleteKey=' + $routeParams.athleteKey;
         }
-
+		
         ParticipantSrvc.getAllForDancer(filter).then(
             function(data){
 	            $scope.competitionTable.items = data.children;
@@ -117,6 +123,9 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
         for(var n=0; n < indexes.length; n++){
             $scope.competitionTable.columns[indexes[n]].hidden = value;     
         }
+        
+        $scope.pageStore.tournamentPayment.gridCompetitions.tableShortView = value;
+        $scope.competitionTable.refresh();
     };
 
     $scope.competitionTable.onSelect = function(item){

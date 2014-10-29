@@ -33,9 +33,9 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
         
         $scope.page.tournamentTable.properties = [
         				  {name:'nameShorted', calculate: function(item){
-	        				  						var maxLen = 30;
+	        				  						var maxLen = 25;
 	        				  						if (item.name.length > maxLen){
-	        				  				   			item.nameShorted = item.name.substring(0,30) + '...';
+	        				  				   			item.nameShorted = item.name.substring(0,25) + '...';
 	        				  						}
 	        				  						else{
 		        				  						item.nameShorted = item.name;
@@ -43,7 +43,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
 	        				  				   }}, 
                           {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'endDate'  , filter: 'date', filterParam: $filter('localize')('d MMMM y')},
-                          {name:'rank.name'},
+                          {name:'rank.shortName'},
                           {name:'status.name'},
                           {name:'competitionsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
                                                 calculate: function(item){
@@ -276,7 +276,23 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
 
     // 
     $scope.page.competitionTable.loadItems = function(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText){
-        CompetitionSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {date: $scope.pageStore.tournaments.gridCompetitions.filterDate, tournamentId: $scope.page.tournamentTable.selectedItems[0].id}).then(
+        if ($scope.page.tournamentTable.selectedItems.length == 0)
+        	return;
+        
+        var convertParams = {
+	        loadParticipantsCount: true
+	    };
+	    
+        if (!$scope.pageStore.tournaments.gridCompetitions.tableShortView){
+	        convertParams.loadTournament = true;
+	        convertParams.loadDiscipline = true;
+	        convertParams.loadAgeCategory = true;
+	        convertParams.loadType = true;
+	        convertParams.loadDancerClasses = true;
+	        convertParams.tournamentParams = {};
+        }
+       
+        CompetitionSrvc.getAllForGrid(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {date: $scope.pageStore.tournaments.gridCompetitions.filterDate, tournamentId: $scope.page.tournamentTable.selectedItems[0].id, convertParams: convertParams}).then(
             function(data){
 	            data = data.children;
                 $scope.page.competitionTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
@@ -311,6 +327,9 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
         for(var n=0; n < indexes.length; n++){
             $scope.page.competitionTable.columns[indexes[n]].hidden = value;     
         }
+        
+        $scope.pageStore.tournaments.gridCompetitions.tableShortView = value;
+        $scope.page.competitionTable.refresh();
     };
 
 

@@ -8,20 +8,22 @@
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="#/tournament/{{page.tournament.id}}/registration" class="cellLink" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize"></a>
+	<a ng-href="" ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{page.tournament.id}}/competitions" class="cellLink" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"  ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/competitions', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" class="trnMenuSelected" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Все участники •'|localize"></a>
 </div>
 <br>
 
-<p style="margin:0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку в колонке '}}<span style="color: rgb(33, 84, 12);">{{'"Группы в турнире"'}}</span>{{' для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
+<p ng-hide="recorderHash">[ <font COLOR="RED"><b>!</b></font> ] <span  style="color:rgb(163, 0, 0);" ng-bind="'Код доступа не найден, переход на страницу для регистрации невозможен.'|localize"></span></p>
+<p style="margin:0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
 
 
 <span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' Всего - ' + page.tournament.participantsCount + '.'"></span>
 <div class="row-fluid">
 	<stcgrid
+		style="width: initial;"
     	grid="pageStore.participants.grid"
 	    table-class="table table-bordered table-hover"
 	    caption=""
@@ -41,13 +43,7 @@
 	    multi-select-mode="page.participantTable.multiSelectMode"
 		on-select-cell="page.participantTable.onSelectCell(item,property)"	
 
-		action-column-visible="!menu.readOnlyMode && menu.admin"
-		action-column-icon="'fa fa-ellipsis-h'"
-	   	
-	   	first-row-action-icon="'fa fa-times'"
-		first-row-action-title="'Удалить'|localize"
-		first-row-action-method="page.participantTable.remove(item)"
-	    	
+		action-column-visible="false"
 		forcibly-update="page.participantTable.forciblyUpdate"
 	/>
 </div>

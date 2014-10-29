@@ -179,6 +179,7 @@ border: none!important;
 
 .cellLink,.cellCoupleLink,.trnMenu{
 	color: rgb(4, 97, 170)!important;
+	cursor: pointer;
 }
 
 .cellLink:hover{
@@ -436,5 +437,16 @@ form{
     width: 600px!important;
     /* must be half of the width, minus scrollbar on the left (30px) */
     margin-left: -300px!important;
-}]]></CSP>
+}
+
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+   color: rgb(144, 144, 144);
+   text-decoration: line-through;
+}
+
+
+
+]]></CSP>
 </Export>

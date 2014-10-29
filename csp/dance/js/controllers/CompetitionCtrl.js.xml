@@ -37,13 +37,29 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
 
     /// Clear form fields
     $scope.page.clear = function(){
-       $scope.page.competition = {startTime: '12:00', discipline:{}, ageCategory: {}, dancerClasses: []};
+	   var now = new Date();
+       $scope.page.competition = {idInternal: "I" + now.getTime().toString().substring(5,20),
+                                  idExternal: "E" + now.getTime().toString().substring(5,20),
+                                  startTime: '12:00', 
+                                  discipline:{}, 
+                                  ageCategory: {}, 
+                                  dancerClasses: []};
     };
 
 
     /// Load Tournament by ID
     $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id).then(
+    	var filter = '?' +
+	    	'loadName=1&' +
+	    	'loadLocation=1&' +
+	    	'loadOrganizer=1&' +
+	    	'loadRank=1&' +
+	    	'loadStatus=1&' +
+	    	'loadParticipantsCount=1&' +
+	    	'loadParticipantsUniqueCount=1&' +
+	    	'loadCompetitionsCount=1';
+	    	
+        TournamentSrvc.getById(id, filter).then(
             function(data){
                 $scope.page.tournament = data;
             },
@@ -54,7 +70,16 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
 
     /// Load Competition by ID
     $scope.page.loadCompetition = function(competitionId){
-        CompetitionSrvc.getById(competitionId).then(
+	    var filter = '?' +
+	    	'loadDiscipline=1&' +
+	    	'loadAgeCategory=1&' +
+	    	'loadDancerClasses=1&' +
+	    	'loadType=1&' +
+	    	'loadWDSF=1&' +
+	    	'loadTournament=1&' +
+	    	'loadTournamentLocation=1';
+	    	
+        CompetitionSrvc.getById(competitionId, filter).then(
             function(data){
                 $scope.page.competition = data;
                 $scope.page.competition.isInternational = $scope.page.competition.isInternational == 1;

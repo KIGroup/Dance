@@ -10,9 +10,9 @@
 <div class="row-fluid" style="text-align: center;">
 	<a ng-href="" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Регистрация •'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{tournament.id}}/competitions" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/competitions', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="#/tournament/{{tournament.id}}/participants" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Все участники »'|localize"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Все участники »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/participants', recorderHash)"></a>
 </div>
 
 <br>
@@ -24,7 +24,7 @@
 		<!-- ================================================================================================================================== -->
 		<!-- UDSR 														UDSR                                                               UDSR -->
 		<!-- ================================================================================================================================== -->
-		<tab heading="{{'Регистрация СТСР'|localize}}" ng-show="tabUDSR.visible" disabled="tabUDSR.disabled" select="tabUDSR.select()" title="{{tabUDSR.disabled ? ('Чтобы разблокировать вкладку нажмите ″Назад″'|localize) : ('Регистрация участников по СТСР номерам'|localize)}}">
+		<tab heading="{{'Регистрация СТСР'|localize}}" ng-show="tabUDSR.visible" active="tabUDSR.active" disabled="tabUDSR.disabled" select="tabUDSR.select()" title="{{tabUDSR.disabled ? ('Чтобы разблокировать вкладку нажмите ″Назад″'|localize) : ('Регистрация участников по СТСР номерам'|localize)}}">
 			<!-- ================== -->
 			<!-- Search form (UDSR) -->
 			<!-- ================== -->
@@ -61,8 +61,8 @@
 					<div ng-hide="resultTableVisible">
 						<button type="button" ng-show="tabUDSR.couple" style="margin-top: 25px;" class="btn btn-small" ng-click="tabUDSR.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 					    <button type="button" ng-show="tabUDSR.couple" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize) :''}}" style="margin-top: 25px;" class="btn btn-small" ng-click="confirmDialog.open('UDSR', tabUDSR.registration)" ng-disabled="competitionTable.selectedItems.length==0">
-					    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
-					    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
+					    	<i class="fa fa-check" style="color: green;" ng-hide="competitionTable.selectedItems.length==0"></i>
+					    	<i class="fa fa-ban" style="color: red;" ng-show="competitionTable.selectedItems.length==0"></i>
 					    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 					    </button>
 					</div>
@@ -106,8 +106,8 @@
 					<div ng-hide="resultTableVisible">
 						<button type="button" ng-show="tabUDSR.athlete" style="margin-top: 25px;" class="btn btn-small" ng-click="tabUDSR.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 					    <button type="button" ng-show="tabUDSR.athlete" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize) :''}}" style="margin-top: 25px;" class="btn btn-small" ng-click="confirmDialog.open('UDSR', tabUDSR.registration)" ng-disabled="competitionTable.selectedItems.length==0">
-					    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
-					    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
+					    	<i class="fa fa-check" style="color: green;" ng-hide="competitionTable.selectedItems.length==0"></i>
+					    	<i class="fa fa-ban" style="color: red;" ng-show="competitionTable.selectedItems.length==0"></i>
 					    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 					    </button>
 					</div>
@@ -137,7 +137,7 @@
 		<!-- ================================================================================================================================== -->
 		<!-- WDSF 											            WDSF	                                                           WDSF -->
 		<!-- ================================================================================================================================== -->
-		<tab heading="{{'Регистрация WDSF'|localize}}" ng-show="tabWDSF.visible" disabled="tabWDSF.disabled" select="tabWDSF.select()" title="{{tabWDSF.disabled ? ('Чтобы разблокировать вкладку нажмите ″Назад″'|localize) : ('Регистрация участников по WDSF номерам'|localize)}}">
+		<tab heading="{{'Регистрация WDSF'|localize}}" ng-show="tabWDSF.visible" active="tabWDSF.active" disabled="tabWDSF.disabled" select="tabWDSF.select()" title="{{tabWDSF.disabled ? ('Чтобы разблокировать вкладку нажмите ″Назад″'|localize) : ('Регистрация участников по WDSF номерам'|localize)}}">
 			<!-- ================== -->
 			<!-- Search form (WDSF) -->
 			<!-- ================== -->
@@ -183,8 +183,8 @@
 							<button type="button" ng-show="tabWDSF.formCouple.btnBackVisible" class="btn btn-small" ng-click="tabWDSF.formCouple.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 						    <button type="button" ng-show="tabWDSF.formCouple.btnNextVisible" class="btn btn-small" ng-click="tabWDSF.formCouple.next()" ng-disabled="!form_wdsfCoupleData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
 						    <button type="button" ng-show="tabWDSF.formCouple.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0 || tabWDSF.regProcessing">
-						    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
-						    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
+						    	<i class="fa fa-check" style="color: green;" ng-hide="competitionTable.selectedItems.length==0"></i>
+						    	<i class="fa fa-ban" style="color: red;" ng-show="competitionTable.selectedItems.length==0"></i>
 						    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 						    </button>
 						    <img ng-show="tabWDSF.regProcessing" style="padding: 5px;" src="img/loader2.gif"/>
@@ -271,8 +271,8 @@
 							<button type="button" ng-show="tabWDSF.formSingle.btnBackVisible" class="btn btn-small" ng-click="tabWDSF.formSingle.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 						    <button type="button" ng-show="tabWDSF.formSingle.btnNextVisible" class="btn btn-small" ng-click="tabWDSF.formSingle.next()" ng-disabled="!form_wdsfAthleteData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
 						    <button type="button" ng-show="tabWDSF.formSingle.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('WDSF', tabWDSF.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0 || tabWDSF.regProcessing">
-						    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
-						    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
+						    	<i class="fa fa-check" style="color: green;" ng-hide="competitionTable.selectedItems.length==0"></i>
+						    	<i class="fa fa-ban" style="color: red;" ng-show="competitionTable.selectedItems.length==0"></i>
 						    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 						    </button>
 						    <img ng-show="tabWDSF.regProcessing" style="padding: 5px;" src="img/loader2.gif"/>
@@ -332,7 +332,7 @@
 		<!-- ================================================================================================================================== -->
 		<!-- OTHER 													    OTHER			                                                  OTHER -->
 		<!-- ================================================================================================================================== -->
-		<tab heading="{{'Регистрация других участников'|localize}}" ng-show="tabOTHER.visible" disabled="tabOTHER.disabled" select="tabOTHER.select()" title="{{tabOTHER.isabled ? ('Чтобы разблокировать вкладку нажмите ″Назад″'|localize) : ('Регистрация других участников'|localize)}}">
+		<tab heading="{{'Регистрация других участников'|localize}}" ng-show="tabOTHER.visible" active="tabOTHER.active" disabled="tabOTHER.disabled" select="tabOTHER.select()" title="{{tabOTHER.isabled ? ('Чтобы разблокировать вкладку нажмите ″Назад″'|localize) : ('Регистрация других участников'|localize)}}">
 			<!-- =================== -->
 			<!-- Couple data (OTHER) -->
 			<!-- =================== -->
@@ -373,8 +373,8 @@
 							        <button type="button" ng-show="tabOTHER.formCouple.btnBackVisible" class="btn btn-small" ng-click="tabOTHER.formCouple.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 								    <button type="button" ng-show="tabOTHER.formCouple.btnNextVisible" class="btn btn-small" ng-click="tabOTHER.formCouple.next()" ng-disabled="!form_otherCoupleData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
 								    <button type="button" ng-show="tabOTHER.formCouple.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('OTHER', tabOTHER.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0">
-								    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
-								    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
+								    	<i class="fa fa-check" style="color: green;" ng-hide="competitionTable.selectedItems.length==0"></i>
+								    	<i class="fa fa-ban" style="color: red;" ng-show="competitionTable.selectedItems.length==0"></i>
 								    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 								    </button>
 								    <label class="checkbox" style="width: 50px;display: inline-block;margin: 0 0 2px 27px;vertical-align: bottom;" >
@@ -510,8 +510,8 @@
 							        <button type="button" ng-show="tabOTHER.formSingle.btnBackVisible" class="btn btn-small" ng-click="tabOTHER.formSingle.back()"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;{{'Назад'|localize}}</button>
 								    <button type="button" ng-show="tabOTHER.formSingle.btnNextVisible" class="btn btn-small" ng-click="tabOTHER.formSingle.next()" ng-disabled="!form_otherSingleData.$valid">{{'Далее'|localize}}&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></button>
 								    <button type="button" ng-show="tabOTHER.formSingle.btnRegistrationVisible" class="btn btn-small" ng-click="confirmDialog.open('OTHER', tabOTHER.registration)" title="{{competitionTable.selectedItems.length==0 ? ('Выберите группы!'|localize):''}}" ng-disabled="competitionTable.selectedItems.length==0">
-								    	<i class="fa fa-check" ng-hide="competitionTable.selectedItems.length==0"></i>
-								    	<i class="fa fa-ban" ng-show="competitionTable.selectedItems.length==0"></i>
+								    	<i class="fa fa-check" style="color: green;" ng-hide="competitionTable.selectedItems.length==0"></i>
+								    	<i class="fa fa-ban" style="color: red;" ng-show="competitionTable.selectedItems.length==0"></i>
 								    	&nbsp;&nbsp;{{'Регистрация'|localize}}
 								    </button>
 								    <label class="checkbox" style="width: 50px;display: inline-block;margin: 0 0 2px 27px;vertical-align: bottom;" >
@@ -586,23 +586,22 @@
 
 <!-- Competitions -->
 <div class="row-fluid" ng-hide="resultTableVisible || (tabUDSR.visible==false && tabWDSF.visible==false && tabOTHER.visible==false)" style="padding-top: 10px;">
-	<div class="row-fluid">
+	<div id="divTableCmpButtons" class="row-fluid">
 		<div class="span8">
 			<strong><span ng-bind="competitionTable.caption"></span></strong>
 		</div>
 		<div class="span4">
-			<!--
-			<div class="btn-group pull-right">
+			<div id="divTypeOfView" class="btn-group pull-right">
 				<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.registration.grid.tableShortView" btn-radio="true" ng-bind="'Коротко'|localize" title="{{'Скрывать дополнительные столбцы'|localize}}" ng-click="competitionTable.setHiddenCoulumns(true)"></button>
 				<button type="button" class="btn btn-mini btnRadio" ng-model="pageStore.registration.grid.tableShortView" btn-radio="false" ng-bind="'Детально'|localize" title="{{'Отображать дополнительные столбцы'|localize}}" ng-click="competitionTable.setHiddenCoulumns(false)"></button>
 			</div>
-			-->
 		</div> 
 	</div>
 
 	<div class="row-fluid">
 		<stcgrid
-			style="width: initial;"
+			id="tableCmp"
+			ng-style="pageStore.registration.gridStyle"
 			grid="pageStore.registration.grid"
 		    table-class="table table-bordered table-hover"
 		    caption=""
@@ -633,7 +632,7 @@
 		/>
 	</div>
 
-	<div class="row-fluid" style="text-align: center;" ng-show="competitionTable.itemsStatus != ''">
+	<div id="divTableCmpStatus" class="row-fluid" style="text-align: center; width: 300px;" ng-show="competitionTable.itemsStatus != ''">
 		<i ng-bind="competitionTable.itemsStatus"></i>
 	</div>
 </div>
@@ -669,7 +668,7 @@
 
 <div class="row-fluid" ng-hide="menu.devModeIsRelease">
 	<div class="span6">
-		<pre>
+		<pre ng-show="tabUDSR.active">
 				СТСР
 				man		woman
 				2864	75367 <a href="" ng-click="tabUDSR.searchForm.manNumber='2864'; tabUDSR.searchForm.womanNumber='75367';">select</a>
@@ -684,17 +683,25 @@
 		</pre>
 	</div>
 	<div class="span6">
-		<pre>
-				WDSF
-				man		woman
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10085531'; tabWDSF.searchForm.womanNumber='10072137';">10085531 10072137. Retired. SENIOR I</a>
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10073546'; tabWDSF.searchForm.womanNumber='10073691';">10073546 10073691. Active. YOUTH</a>
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10064937'; tabWDSF.searchForm.womanNumber='10064930';">10064937 10064930. Active. JUNIOR I</a>
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10086246'; tabWDSF.searchForm.womanNumber='10086247';">10086246 10086247. Active. JUNIOR I</a>
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10076712'; tabWDSF.searchForm.womanNumber='10076219';">10076712 10076219. Active. YOUTH</a>
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10069138'; tabWDSF.searchForm.womanNumber='10069139';">10069138 10069139. Active. SENIOR I</a>
-				<a href="" ng-click="tabWDSF.searchForm.manNumber='10050619'; tabWDSF.searchForm.womanNumber='10050620';">10050619 10050620. Active. MASTER CLASS II</a>
-		</pre>
+		<pre  ng-show="tabWDSF.active">
+WDSF
+man		woman
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10000877'; tabWDSF.searchForm.womanNumber='10000878';">10000877 10000878 | ADULT</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10028966'; tabWDSF.searchForm.womanNumber='10028967';">10028966 10028967 | ADULT</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10000519'; tabWDSF.searchForm.womanNumber='10000520';">10000519 10000520 | SENIOR I</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10003765'; tabWDSF.searchForm.womanNumber='10003766';">10003765 10003766 | SENIOR II</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10003823'; tabWDSF.searchForm.womanNumber='10003824';">10003823 10003824 | SENIOR III</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10003555'; tabWDSF.searchForm.womanNumber='10003556';">10003555 10003556 | SENIOR IV</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10083787'; tabWDSF.searchForm.womanNumber='10083786';">10083787 10083786 | YOUTH</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10056518'; tabWDSF.searchForm.womanNumber='10056519';">10056518 10056519 | YOUTH</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10072488'; tabWDSF.searchForm.womanNumber='10072489';">10072488 10072489 | JUVENILE I</a>
+
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10073546'; tabWDSF.searchForm.womanNumber='10073691';">10073546 10073691 | YOUTH</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10064937'; tabWDSF.searchForm.womanNumber='10064930';">10064937 10064930 | JUNIOR I</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10086246'; tabWDSF.searchForm.womanNumber='10086247';">10086246 10086247 | JUNIOR I</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10076712'; tabWDSF.searchForm.womanNumber='10076219';">10076712 10076219 | YOUTH</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10069138'; tabWDSF.searchForm.womanNumber='10069139';">10069138 10069139 | SENIOR I</a>
+<a href="" ng-click="tabWDSF.searchForm.manNumber='10050619'; tabWDSF.searchForm.womanNumber='10050620';">10050619 10050620 | MASTER CLASS II</a>		</pre>
 	</div>
 </div>
 
@@ -775,33 +782,5 @@
 	</div>
 </div>
 
-<!--
-<div>
-	<danceplat-other-pay 
-		id="danceplatOtherPay"
-		
-		ng-show="false"
-
-		trn-id="page.tournament.idInternal"
-
-		male-age="(page.newCouple.soloGender!='F') ? page.newCouple.man.dob : ''"
-		male-last-name="(page.newCouple.soloGender!='F') ? page.newCouple.man.lastName : ''"
-		male-first-name="(page.newCouple.soloGender!='F') ? page.newCouple.man.firstName : ''"
-
-		female-age="(page.newCouple.soloGender=='F') ? page.newCouple.man.dob : page.newCouple.woman.dob"
-		female-last-name="(page.newCouple.soloGender=='F') ? page.newCouple.man.lastName : page.newCouple.woman.lastName"
-		female-first-name="(page.newCouple.soloGender=='F') ? page.newCouple.man.firstName : page.newCouple.woman.firstName"
-
-		country="page.newCouple.otherInfo.country.name"
-		city="page.newCouple.otherInfo.city"
-		club="page.newCouple.otherInfo.club"
-		trainer="page.newCouple.otherInfo.mainTrainer"
-
-		competitions="page.competitionTable.selectedItems"
-		hide-all="false"
-		btn-name="'Оплатить на danceplat.ru'|localize"/>
-</div>
-
--->
 ]]></CSP>
 </Export>

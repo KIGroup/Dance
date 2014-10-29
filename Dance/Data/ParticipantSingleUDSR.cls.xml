@@ -21,6 +21,13 @@
 	set proxy = ##super(params)
 	set proxy.athlete = ..Athlete.ConvertToProxyObject()
 	
+	set proxy.athlete.competitionsCount = "-"
+	if (params.loadPrtObjCompetitionsCount) && $ISOBJECT(proxy.competition.tournament){
+		&sql(SELECT COUNT(Competition) INTO :proxy.couple.competitionsCount
+			 FROM Dance_Data.ParticipantSingleUDSR 
+		     WHERE Competition->Tournament = :proxy.competition.tournament.id AND Athlete = :proxy.athlete.id)
+	}
+	
 	quit proxy
 ]]></Implementation>
 </Method>

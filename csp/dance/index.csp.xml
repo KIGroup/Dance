@@ -26,6 +26,7 @@
     <script language="javascript"  src="lib/jquery-1.11.0.min.js"></script>
     <script language="javascript"  src="lib/bootstrap.min.js"></script>
     <script language="javascript"  src="lib/angular/angular.min.js"></script>
+    <script language="javascript"  src="lib/angular/angular-animate.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-route.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-cookies.min.js"></script>
 
@@ -94,7 +95,7 @@
 
           <div ng-show="menu.shortMenu">
             <div class="container">
-              <div class="nav">
+              <div class="nav" ng-hide="menu.pages.feedback.id==menu.pages.selected.id">
               	<li><a ng-hide="menu.pages.searchprt.id==menu.pages.selected.id" ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" title="{{'Поиск регистрации участника по фамилии!'|localize}}" style="padding-left: 0;"></a></li>
                 <li><a ng-show="menu.pages.searchprt.id==menu.pages.selected.id" href="" onclick="window.history.back()" style="padding-left: 0;"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
                
@@ -103,8 +104,8 @@
             	
               <div class="nav-responsive-collapse">   
                 <ul class="nav pull-right">
-                  <li><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
-                  <li><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" onclick="window.history.back()"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
+                  <li ng-hide="menu.pages.searchprt.id==menu.pages.selected.id"><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
+                  <li ng-hide="menu.pages.searchprt.id==menu.pages.selected.id"><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" onclick="window.history.back()"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
                   <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span><img style="margin-bottom: 2px" ng-src="{{menu.lang.flagUrl}}"/> {{menu.lang.name + ' '}}</span><b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -119,8 +120,9 @@
           </div>
 
         </div>
-      <div ng-view>
+      <div ng-view style="padding-bottom: 300px;">
       </div>
+   
     </div>
     
     <script language="javascript">
@@ -131,7 +133,7 @@
          });
             
         $('#divContainer')
-  		    .delay(500)
+  		    .delay(400)
   		    .queue( function(next){ 
     		   	$('#divLoader').hide();
     		    $(this).css('display','block'); 
@@ -176,6 +178,7 @@
     <script language="javascript" src="js/services/OtherSrvc.js"></script>
     <script language="javascript" src="js/services/ImportSrvc.js"></script>
     <script language="javascript" src="js/services/FeedBackSrvc.js"></script>
+    <script language="javascript" src="js/services/LocationSrvc.js"></script>
     <script language="javascript" src="js/services/RegistrationSrvc.js"></script>
     <script language="javascript" src="js/services/UtilsSrvc.js"></script>
 

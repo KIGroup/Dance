@@ -2,17 +2,20 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+// 
   
 /*===========================================================================================
 Competition Participants 
 ===========================================================================================*/
 
-controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $location, $routeParams, $filter, UtilsSrvc, CompetitionSrvc, ParticipantSrvc){
-  $scope.menu.pages.selected = {};
-	
-  $scope.page = {};
-  $scope.page.participantTable = {};
+controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $location, $routeParams, $filter, LocationSrvc, UtilsSrvc, CompetitionSrvc, ParticipantSrvc){
+    $scope.menu.pages.selected = {};
+
+    $scope.recorderHash = $routeParams.recorderHash || null;
+    $scope.locationSrvc = LocationSrvc;     
+      	
+    $scope.page = {};
+    $scope.page.participantTable = {};
 
  	if (!$scope.pageStore.participants) $scope.pageStore.participants = {grid:{}};
 
@@ -29,7 +32,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                           */
                           {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}}];
+                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '170px'}}];
         
         $scope.page.participantTable.properties = [ 
                           {name:'fullName', getCssClass: function(item){
@@ -37,7 +40,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                             },
                                             calculate: function(item){
                                                         if (item.couple){
-                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' »';
+                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' (' + item.couple.competitionsCount +') »';
 
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
@@ -47,7 +50,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
-	                                                        item.competitionsLink = $filter('localize')('Группы участника') + ' »';
+	                                                        item.competitionsLink = $filter('localize')('Группы участника') + ' (' + item.athlete.competitionsCount +') »';
 
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
@@ -75,16 +78,16 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                 },
                                                 onClickCell: function(item){
                                                     if (item.couple && item.couple.id){
-                                                        $location.path('/tournament/' + $scope.page.competition.tournament.id + '/couple/' + item.couple.id + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + $scope.page.competition.tournament.id + '/couple/' + item.couple.id + '/competitions', $scope.recorderHash);
                                                     }    
                                                     else if (item.athlete && item.athlete.id){
-                                                        $location.path('/tournament/' + $scope.page.competition.tournament.id + '/athlete/' + item.athlete.id + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + $scope.page.competition.tournament.id + '/athlete/' + item.athlete.id + '/competitions', $scope.recorderHash);
                                                     }
                                                     else if (item.couple && item.couple.key){
-                                                        $location.path('/tournament/' + $scope.page.competition.tournament.id + '/other/couple/' + item.couple.key + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + $scope.page.competition.tournament.id + '/other/couple/' + item.couple.key + '/competitions', $scope.recorderHash);
                                                     }
                                                     else if (item.athlete && item.athlete.key){
-                                                        $location.path('/tournament/' + $scope.page.competition.tournament.id + '/other/athlete/' + item.athlete.key + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + $scope.page.competition.tournament.id + '/other/athlete/' + item.athlete.key + '/competitions', $scope.recorderHash);
                                                     } 
                                                 }}];
 

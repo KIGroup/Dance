@@ -8,8 +8,11 @@
 Search Participants 
 ===========================================================================================*/
 
-controllersModule.controller('SearchParticipantsCtrl', function($scope, $routeParams, $location, $filter, UtilsSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
+controllersModule.controller('SearchParticipantsCtrl', function($scope, $routeParams, $location, $filter, LocationSrvc, UtilsSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
 	$scope.menu.pages.selected = $scope.menu.pages.searchprt;
+
+    $scope.recorderHash = $routeParams.recorderHash || null;
+    $scope.locationSrvc = LocationSrvc; 
 	
   	$scope.participantTable = {};
  	if (!$scope.pageStore.searchParticipants){
@@ -36,7 +39,7 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
                                                                                     item.competition.tournament.location.cityName + '. ' + $filter('convertCacheDate')(item.competition.startDate, $filter('localize')('d MMMM y')) + ' »';
                                                        
                                                         if (item.couple){
-	                                                        item.competitionsLink = $filter('localize')('Группы пары') + ' »';
+	                                                        item.competitionsLink = $filter('localize')('Группы пары') + ' (' + item.couple.competitionsCount + ') »';
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
 
@@ -45,7 +48,7 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
-                                                            item.competitionsLink = $filter('localize')('Группы участника') + ' »';
+                                                            item.competitionsLink = $filter('localize')('Группы участника') + ' (' + item.athlete.competitionsCount + ') »';
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
                                                             item.clubAndCity = item.athlete.otherInfo.club + '\n' + item.athlete.otherInfo.city;
@@ -68,16 +71,16 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
                                                 onClickCell: function(item){
 	                                                console.log(item)
 	                                                if (item.couple && item.couple.id){
-                                                        $location.path('/tournament/' + item.competition.tournament.id + '/couple/' + item.couple.id + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + item.competition.tournament.id + '/couple/' + item.couple.id + '/competitions', $scope.recorderHash);
                                                     }    
                                                     else if (item.athlete && item.athlete.id){
-                                                        $location.path('/tournament/' + item.competition.tournament.id + '/athlete/' + item.athlete.id + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + item.competition.tournament.id + '/athlete/' + item.athlete.id + '/competitions', $scope.recorderHash);
                                                     }
                                                     else if (item.couple && item.couple.key){
-                                                        $location.path('/tournament/' + item.competition.tournament.id + '/other/couple/' + item.couple.key + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + item.competition.tournament.id + '/other/couple/' + item.couple.key + '/competitions', $scope.recorderHash);
                                                     }
                                                     else if (item.athlete && item.athlete.key){
-                                                        $location.path('/tournament/' + item.competition.tournament.id + '/other/athlete/' + item.athlete.key + '/competitions');
+                                                        LocationSrvc.goTo(':recorderHash/tournament/' + item.competition.tournament.id + '/other/athlete/' + item.athlete.key + '/competitions', $scope.recorderHash);
                                                     }
                                                 }}, 
                           {name:'competition.fullName', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
@@ -85,7 +88,7 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
                                                     return 'cellLink';
                                                 },  
                                                 onClickCell: function(item){
-	                                                $location.path("/competition/" + item.competition.id +"/participants"); 
+	                                                LocationSrvc.goTo(":recorderHash/competition/" + item.competition.id +"/participants", $scope.recorderHash); 
                                                 }}];
  
         $scope.participantTable.pageSize = 15;

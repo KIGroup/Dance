@@ -53,6 +53,13 @@
 	set proxy.athlete.otherInfo.mainTrainer = ..MainTrainer
 	set proxy.athlete.otherInfo.otherTrainers = ..OtherTrainers
 	
+	set proxy.athlete.competitionsCount = "-"
+	if (params.loadPrtObjCompetitionsCount) && $ISOBJECT(proxy.competition.tournament){
+		&sql(SELECT COUNT(Competition) INTO :proxy.couple.competitionsCount
+			 FROM Dance_Data.ParticipantSingleWDSF 
+		     WHERE Competition->Tournament = :proxy.competition.tournament.id AND Athlete = :proxy.athlete.id)
+	}
+	
 	quit proxy
 ]]></Implementation>
 </Method>
