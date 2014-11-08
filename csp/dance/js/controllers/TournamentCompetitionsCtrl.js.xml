@@ -34,8 +34,8 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                           {name: 'Возр. группа' , sqlName: 'AgeCategory'             , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Класс'             , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Цена'              , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}},
-                          {name: 'Оплачено'          , sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
-                          {name: 'Участники'         , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
+                          {name: 'Участники'         , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
+                          {name: 'Оплачено'          , sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
         
         $scope.page.competitionTable.properties = [
         				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
@@ -59,7 +59,6 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                                                             item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
                                                     }},
                           {name:'price', cellStyle: {textAlign: 'right'}},
-                          {name:'paymentsCount', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Количество оплативших участников')},
                           {name:'participantsCountString', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список участников группы'),  
                                                     calculate: function(item){
                                                         item.participantsCountString = item.participantsCount + ' »';
@@ -69,7 +68,8 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                                                     },
                                                     onClickCell: function(id){
                                                         LocationSrvc.goTo(":recorderHash/competition/" + id +"/participants", $scope.recorderHash); 
-                                                    }}];  
+                                                    }},
+                          {name:'paymentsCount', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Количество оплативших участников')}];  
 
         $scope.page.competitionTable.pageSize = 500;
         $scope.page.competitionTable.pageCurr = 1;
@@ -220,7 +220,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
 
     /// Load Tournament by ID
     $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id, "?loadFullName=1").then(
+        TournamentSrvc.getById(id, "?loadFullName=1&loadParticipantsCount=1&loadParticipantsUniqueCount=1&loadPaymentsCount=1").then(
             function(data){
                 $scope.page.tournament = data;
             },

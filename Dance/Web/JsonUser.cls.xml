@@ -351,6 +351,7 @@ Get one tournament by Id</Description>
  	set convertParams.loadCompetitionsCount = $GET(%request.Data("loadCompetitionsCount", 1), $$$NO) = $$$YES
  	set convertParams.loadParticipantsCount = $GET(%request.Data("loadParticipantsCount", 1), $$$NO) = $$$YES
  	set convertParams.loadParticipantsUniqueCount = $GET(%request.Data("loadParticipantsUniqueCount", 1), $$$NO) = $$$YES
+ 	set convertParams.loadPaymentsCount = $GET(%request.Data("loadPaymentsCount", 1), $$$NO) = $$$YES
  	
 	quit ..GetProxyObject("Dance.Data.Tournament", id, convertParams).%ToJSON()
 ]]></Implementation>
@@ -879,7 +880,7 @@ Get all participants of the tournament for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
- 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 "_
+ 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND Competition->IsActive = 1 AND IsActive = 1 "_
  		" AND "_
  		" ID NOT IN (SELECT ID "_ 
 		 		     "FROM Dance_Data.ParticipantCoupleOther "_
@@ -895,6 +896,7 @@ Get all participants of the tournament for grid</Description>
  		set convertParams.competitionParams.loadTournament = $$$YES
  		set convertParams.competitionParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
  		set convertParams.loadPrtObjCompetitionsCount = $$$YES
+ 		set convertParams.loadPrtObjPaymentsCount = $$$YES
  		
  	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, whereCondition, "GROUP BY FullName")
 		do result.%ToJSON()
@@ -918,7 +920,7 @@ Get all participants of the competition for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
- 		set whereCondition = "IsActive = 1 AND Competition = '"_..ParseParameter(params.other.competitionId)_"' "_
+ 		set whereCondition = "IsActive = 1 AND Competition = '"_..ParseParameter(params.other.competitionId)_"' AND Competition->IsActive = 1 "_
  		 		" AND "_
  		" ID NOT IN (SELECT ID "_ 
 		 		     "FROM Dance_Data.ParticipantCoupleOther "_

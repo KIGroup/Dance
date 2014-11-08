@@ -131,6 +131,9 @@ Public REST URLs</Description>
 <Route Method="GET" Url="/count/participant/competition" Call="Dance.Web.JsonUser:GetCountParticipantCompetitions"/>
 	
 	
+	
+<Route Method="GET" Url="/report/:lang/tournament/:trnId/participant" Call="Dance.Web.Report:TournamentParticipants"/>
+	
 </Routes>
 ]]></Data>
 </XData>

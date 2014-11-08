@@ -19,6 +19,11 @@ Date of birth</Description>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
+<Property name="RegionNumber">
+<Type>%Integer</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
+
 <Property name="City">
 <Type>%String</Type>
 <Parameter name="MAXLEN" value="1000"/>
@@ -67,6 +72,7 @@ Date of birth</Description>
 	set proxy.otherInfo.club = ..Club
 	set proxy.otherInfo.mainTrainer = ..MainTrainer
 	set proxy.otherInfo.otherTrainers = ..OtherTrainers
+	set proxy.otherInfo.regionNumber = ..RegionNumber
 			
 	quit proxy
 ]]></Implementation>
@@ -131,7 +137,12 @@ Date of birth</Description>
 		else{
 			set person.OtherTrainers = $LIST(propList, 15)
 		}
-							
+		
+		//17 Номер региона
+		if ($LIST(propList, 17) '= ""){
+			set person.RegionNumber = $LIST(propList, 17)
+		}
+		
 		set person.Country = ##class(Dance.Data.Country).WDSFNameIdxOpen("Russian Federation")
 			
 		set person.Updated = $ZDT($ZTS,3)
@@ -203,6 +214,9 @@ Date of birth</Description>
 </Value>
 <Value name="7">
 <Value>OtherTrainers</Value>
+</Value>
+<Value name="8">
+<Value>RegionNumber</Value>
 </Value>
 </Data>
 </Storage>

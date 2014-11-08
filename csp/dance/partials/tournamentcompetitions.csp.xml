@@ -10,9 +10,9 @@
 <div class="row-fluid" style="text-align: center;">
 	<a href="" ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="" class="trnMenuSelected" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы •'|localize"></a>
+	<a href="" class="trnMenuSelected" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Группы •'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="" class="trnMenu" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Все участники »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/participants', recorderHash)"></a>
+	<a href="" class="trnMenu" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Участники »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/participants', recorderHash)"></a>
 </div>
 <br>
 
@@ -21,7 +21,7 @@
 
 <div class="row-fluid">
 	<div class="row-fluid" style="margin-bottom: 12px;">
-		<span style="font-weight: bold;" ng-bind="'Группы турнира'|localize"></span>
+		<span style="font-weight: bold;">{{'Группы турнира.' + ' ' + 'Всего участников - ' + page.tournament.participantsCount + ', ' + 'уникальных - ' + page.tournament.participantsUniqueCount + '. ' + 'Оплачено - ' + page.tournament.paymentsCount + '.'}}</span>
 	</div>
 	<div class="row-fluid" id="divTableCmpButtons" onresize="console.log('onresize div')">
 		<button type="button" style="margin-bottom: 15px; font-size: 1em; margin-right: 10px;" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentDetails.gridCompetitions.filterDate" btn-radio="''" ng-bind="'Все дни'|localize" ng-click="page.competitionTable.changeDateFilter('')"></button>

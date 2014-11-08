@@ -2,13 +2,13 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//--dddd
+//--ddddd
   
 /*===========================================================================================
 Tournament Participants 
 ===========================================================================================*/
 
-controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $cookies, $location, $filter, UtilsSrvc, LocationSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
+controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $cookies, $location, $filter, ReportSrvc, UtilsSrvc, LocationSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
 	$scope.menu.pages.selected = {};
 	
 	$scope.page = {};
@@ -34,7 +34,8 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                           {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
                           {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}
                           */
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '170px'}}];
+                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}},
+                          {name: 'Оплачены', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}}];
         
         $scope.page.participantTable.properties = [ 
         				  {name:'fullName', /*cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
@@ -49,7 +50,8 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                        
 
                                                         if (item.couple){
-                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' (' + item.couple.competitionsCount + ') »';
+                                                            item.competitionsLink = item.couple.competitionsCount + ' »';
+                                                            item.paymentsCount = item.couple.paymentsCount;
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
 
@@ -58,8 +60,8 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
-                                                            item.competitionsLink = $filter('localize')('Группы участника') + ' (' + item.athlete.competitionsCount + ') »';
-
+                                                            item.competitionsLink = item.athlete.competitionsCount + ' »';
+															item.paymentsCount = item.athlete.paymentsCount;
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
                                                             item.clubAndCity = item.athlete.otherInfo.club + '\n' + item.athlete.otherInfo.city;
@@ -104,9 +106,10 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                 },
                                                 onClickCell: function(item){
                                                     $scope.openPrtCompetitions(item);                   
-                                                }}];
+                                                }},
+                          {name:'paymentsCount', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellTitle: $filter('localize')('Количество оплаченых групп')}];
  
-        $scope.page.participantTable.pageSize = 15;
+        $scope.page.participantTable.pageSize = 50;
         $scope.page.participantTable.pageCurr = 1;
         $scope.page.participantTable.itemsTotal = 0;
         $scope.page.participantTable.selectedItems = [];
@@ -209,6 +212,10 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                 $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
+    
+    $scope.export = function(){
+		ReportSrvc.tournamentParticipants($scope.page.tournament.id);
+	};
 
  	$scope.page.init();
     $scope.page.loadTournament($routeParams.tournamentId);

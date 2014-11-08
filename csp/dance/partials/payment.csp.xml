@@ -10,9 +10,9 @@
 <div class="row-fluid" style="text-align: center;">
 	<a ng-href="" ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/competitions', recorderHash)"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Группы »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/competitions', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Все участники »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/participants', recorderHash)"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех уникальных участников турнира'|localize}}" ng-bind="'Участники »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/participants', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" ng-show="athlete" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Группы участника •'|localize"></a>
 	<a ng-href="" ng-show="couple" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Группы пары •'|localize"></a>

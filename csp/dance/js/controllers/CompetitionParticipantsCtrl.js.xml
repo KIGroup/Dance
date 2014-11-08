@@ -32,7 +32,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                           */
                           {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '170px'}}];
+                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '130px'}}];
         
         $scope.page.participantTable.properties = [ 
                           {name:'fullName', getCssClass: function(item){
@@ -40,7 +40,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                             },
                                             calculate: function(item){
                                                         if (item.couple){
-                                                            item.competitionsLink = $filter('localize')('Группы пары') + ' (' + item.couple.competitionsCount +') »';
+                                                            item.competitionsLink = item.couple.competitionsCount +' »';
 
                                                             item.fullName = item.couple.man.lastName + ' ' + item.couple.man.firstName;
                                                             item.fullName += '\n' + item.couple.woman.lastName + ' ' + item.couple.woman.firstName;
@@ -50,7 +50,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                         }
                                                         else if (item.athlete){
-	                                                        item.competitionsLink = $filter('localize')('Группы участника') + ' (' + item.athlete.competitionsCount +') »';
+	                                                        item.competitionsLink = item.athlete.competitionsCount +' »';
 
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
@@ -91,7 +91,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                     } 
                                                 }}];
 
-        $scope.page.participantTable.pageSize = 30;
+        $scope.page.participantTable.pageSize = 50;
         $scope.page.participantTable.pageCurr = 1;
         $scope.page.participantTable.itemsTotal = 0;
         $scope.page.participantTable.selectedItems = [];

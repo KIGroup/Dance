@@ -10,9 +10,9 @@
 <div class="row-fluid" style="text-align: center;">
 	<a ng-href="" ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Все группы »'|localize"  ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/competitions', recorderHash)"></a>
+	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Группы »'|localize"  ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/competitions', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a ng-href="" class="trnMenuSelected" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Все участники •'|localize"></a>
+	<a ng-href="" class="trnMenuSelected" title="{{'Список всех участников турнира'|localize}}" ng-bind="'Участники •'|localize"></a>
 </div>
 <br>
 
@@ -20,7 +20,25 @@
 <p style="margin:0 0 20px;">[ <font COLOR="RED"><b>!</b></font> ] {{'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).'|localize}}</p>
 
 
-<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' Всего - ' + page.tournament.participantsCount + '.'"></span>
+<div class="row-fluid">
+	<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' Всего - ' + page.tournament.participantsCount + '.'"></span>
+	&nbsp;
+	<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize"  ng-click="export()"></a>
+	
+	<!--
+	<div class="btn-group">
+        <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">{{'Экспорт'|localize}} <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="#" ng-bind="'Участники СТСР'|localize"></a></li>
+          <li><a href="#" ng-bind="'Участники WDSF'|localize"></a></li>
+          <li><a href="#" ng-bind="'Другие участники'|localize"></a></li>
+          <li class="divider"></li>
+          <li><a href="#" ng-bind="'Все участники'|localize"></a></li>
+        </ul>
+	</div>
+	-->
+</div>
+
 <div class="row-fluid">
 	<stcgrid
 		style="width: initial;"

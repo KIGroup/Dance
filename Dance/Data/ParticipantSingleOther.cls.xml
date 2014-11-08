@@ -79,10 +79,19 @@
 	set proxy.athlete.otherInfo.otherTrainers = ..OtherTrainers
 	
 	set proxy.athlete.competitionsCount = "-"
-	if (params.loadPrtObjCompetitionsCount) && $ISOBJECT(proxy.competition.tournament){
-		&sql(SELECT COUNT(Competition) INTO :proxy.athlete.competitionsCount
-			 FROM Dance_Data.ParticipantSingleOther 
-		     WHERE Competition->Tournament = :proxy.competition.tournament.id AND AthleteKey = :proxy.athlete.key)
+	set proxy.athlete.paymentsCount = "-"
+	if $ISOBJECT(proxy.competition.tournament){
+		if (params.loadPrtObjCompetitionsCount){
+			&sql(SELECT COUNT(Competition) INTO :proxy.athlete.competitionsCount
+				 FROM Dance_Data.ParticipantSingleOther 
+			     WHERE Competition->Tournament = :proxy.competition.tournament.id AND AthleteKey = :proxy.athlete.key)
+		}
+		
+		if (params.loadPrtObjPaymentsCount){
+			&sql(SELECT COUNT(ID) INTO :proxy.athlete.paymentsCount
+				 FROM Dance_Data.ParticipantSingleOther 
+			     WHERE Competition->Tournament = :proxy.competition.tournament.id AND AthleteKey = :proxy.athlete.key AND TicketStatus = 'Paid')
+		}
 	}
 	
 	quit proxy

@@ -97,6 +97,13 @@ Tournaments</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
+<Property name="PaymentsCount">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {PaymentsCount} = ##class({%%CLASSNAME}).GetPaymentsCount({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
 <Property name="Competitions">
 <Type>Dance.Data.Competition</Type>
 <Cardinality>many</Cardinality>
@@ -177,6 +184,10 @@ Tournaments</Description>
 
 	if (params.loadParticipantsUniqueCount){
 		set proxy.participantsUniqueCount = ..ParticipantsUniqueCount
+	}
+	
+	if (params.loadPaymentsCount){
+		set proxy.paymentsCount = ..PaymentsCount
 	}
 	
 	set proxy.location = ##class(%ZEN.proxyObject).%New()
@@ -337,9 +348,9 @@ Check update privilege</Description>
 			SELECT COUNT(ID) As TotalCount, 
 				  (SELECT COUNT(ID) 
 				   FROM Dance_Data.Participant 
-				   WHERE Competition->Tournament = :tournamentId AND IsActive = 1 AND (PType = 'CoupleOther' OR PType = 'SingleOther') AND TicketStatus = 'Not paid') As OtherCount 
+				   WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND IsActive = 1 AND (PType = 'CoupleOther' OR PType = 'SingleOther') AND TicketStatus = 'Not paid') As OtherCount 
 		    FROM Dance_Data.Participant 
-		    WHERE Competition->Tournament = :tournamentId AND IsActive = 1))
+		    WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND IsActive = 1))
 	
 	quit count
 ]]></Implementation>
@@ -355,7 +366,7 @@ Check update privilege</Description>
 	&sql(DECLARE PrtUniqCrs CURSOR FOR 
 		 	SELECT ID, PType, Competition
 		 	FROM Dance_Data.Participant
-		 	WHERE Competition->Tournament = :tournamentId AND IsActive = 1)	
+		 	WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND IsActive = 1)	
 		
 	&sql(OPEN PrtUniqCrs)
 	for  
@@ -418,6 +429,21 @@ Check update privilege</Description>
 	&sql(CLOSE PrtUniqCrs)
 	
 	quit prtCplAth
+]]></Implementation>
+</Method>
+
+<Method name="GetPaymentsCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set count = 0
+	
+	&sql(SELECT COUNT(ID) INTO :count
+		 FROM Dance_Data.Participant
+		 WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND TicketStatus = 'Paid')
+	
+	quit count
 ]]></Implementation>
 </Method>
 

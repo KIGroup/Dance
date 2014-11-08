@@ -29,10 +29,19 @@
 	set proxy.couple = ..Couple.ConvertToProxyObject()
 	
 	set proxy.couple.competitionsCount = "-"
-	if (params.loadPrtObjCompetitionsCount) && $ISOBJECT(proxy.competition.tournament){
-		&sql(SELECT COUNT(Competition) INTO :proxy.couple.competitionsCount
-			 FROM Dance_Data.ParticipantCoupleUDSR 
-		     WHERE Competition->Tournament = :proxy.competition.tournament.id AND Couple = :proxy.couple.id)
+	set proxy.couple.paymentsCount = "-"
+	if $ISOBJECT(proxy.competition.tournament){
+		if (params.loadPrtObjCompetitionsCount){
+			&sql(SELECT COUNT(Competition) INTO :proxy.couple.competitionsCount
+				 FROM Dance_Data.ParticipantCoupleUDSR 
+		    	 WHERE Competition->Tournament = :proxy.competition.tournament.id AND Couple = :proxy.couple.id)
+		}
+		
+		if (params.loadPrtObjPaymentsCount){
+			&sql(SELECT COUNT(ID) INTO :proxy.couple.paymentsCount
+				 FROM Dance_Data.ParticipantCoupleUDSR 
+		    	 WHERE Competition->Tournament = :proxy.competition.tournament.id AND Couple = :proxy.couple.id AND TicketStatus = 'Paid')
+		}
 	}
 	
 	quit proxy
