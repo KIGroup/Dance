@@ -459,7 +459,16 @@ a.disabled {
    text-decoration: line-through;
 }
 
+.trnAdditionInfoUrl {
+	border-bottom: 1px dashed darkred;
+	color: rgb(39, 0, 0)!important;
+}
 
+.trnAdditionInfoUrl:hover{
+	text-decoration: none !important;
+	color: darkred!important;
+	border-bottom: 1px solid darkred;
+}
 
 ]]></CSP>
 </Export>

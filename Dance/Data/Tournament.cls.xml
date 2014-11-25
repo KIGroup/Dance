@@ -132,6 +132,11 @@ Tournaments</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="AnnouncementUrl">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="500"/>
+</Property>
+
 <Index name="IdInternalIdx">
 <Properties>IdInternal</Properties>
 <Unique>1</Unique>
@@ -196,6 +201,8 @@ Tournaments</Description>
 		set proxy.location.cityName = ..City.Value
 	}
 	
+	set proxy.annUrl = ..AnnouncementUrl
+	
 	set proxy.organizer = ##class(%ZEN.proxyObject).%New()
 	set proxy.organizer.site = ..OrganizerSite
 	
@@ -251,7 +258,8 @@ Create or Update object</Description>
     set trn.IdInternal = data.idInternal
     set trn.IdExternal = data.idExternal
     set trn.Hash = data.hash
-      	
+    
+    set trn.AnnouncementUrl = data.annUrl  	
     set trn.OrganizerSite = data.organizer.site
     
    	set trn.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
@@ -528,6 +536,9 @@ Check update privilege</Description>
 </Value>
 <Value name="24">
 <Value>AccessCode</Value>
+</Value>
+<Value name="25">
+<Value>AnnouncementUrl</Value>
 </Value>
 </Data>
 </Storage>
