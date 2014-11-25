@@ -303,7 +303,7 @@ Participants count in the competition</Description>
 	     FROM (SELECT COUNT(ID) As TotalCount,
 			         (SELECT COUNT(ID) 
 		              FROM Dance_Data.Participant 
-		              WHERE Competition = :competitionId AND IsActive = 1 AND (PType='CoupleOther' OR PType='SingleOther') AND TicketStatus <> 'Not paid') As OtherCount
+		              WHERE Competition = :competitionId AND IsActive = 1 AND (PType='CoupleOther' OR PType='SingleOther') AND TicketStatus = 'Not paid') As OtherCount
 		       FROM Dance_Data.Participant 
 		       WHERE Competition = :competitionId AND IsActive = 1))
 	

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
 'use strict';
-//
+// dfdfdfddddddd
  
 /*===========================================================================================
 Registration          
@@ -75,8 +75,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                                 calculate: function(item){
                                     item.fullName = item.name;
                                     if (item.wdsf){
-                                        item.fullName += ' [WDSF' + (item.wdsf.status != 'Registering' ? ', ' + item.wdsf.status : '') +']';
-                                    }
+                                        item.fullName += ' ' + (item.wdsf.status != 'Registering' ? 'WDSF STATUS = ' + item.wdsf.status : '');
+                                    } 
                                 }},
                           {name:'discipline.name'},
                           {name:'ageCategory.fullName', 
@@ -131,7 +131,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 	        	loadWDSF: true
 	        }
         };
-		
+		    
 			
 		if ($scope.pageStore.registration.grid.tableShortView){
 	        $('#divTypeOfView').hide();
@@ -207,7 +207,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         }
         
         if (value){
-        	$scope.pageStore.registration.gridStyle = {width: 'initial'};
+        	$scope.pageStore.registration.gridStyle = {width: 'auto', minWidth: '526px'};
         }
         else{
 	        $scope.pageStore.registration.gridStyle = {width: '100%'};
@@ -229,10 +229,15 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.competitionTable.forciblyUpdate++; 
     };
 
-    $scope.competitionTable.getSelectedIdArray = function(){ 
+    $scope.competitionTable.getSelectedIdArray = function(type){ 
         var idArray = [];
         for (var i=0; i < $scope.competitionTable.selectedItems.length; i++){
-            idArray.push($scope.competitionTable.selectedItems[i].id);
+            if (type == 'UDSR' && !$scope.competitionTable.selectedItems[i].wdsf)
+                idArray.push($scope.competitionTable.selectedItems[i].id);
+            else if (type == 'WDSF' && $scope.competitionTable.selectedItems[i].wdsf)
+                idArray.push($scope.competitionTable.selectedItems[i].id);
+            else if (type == 'OTHER')
+                idArray.push($scope.competitionTable.selectedItems[i].id);
         } 
 
         return idArray;
@@ -372,6 +377,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.tabUDSR.searchForm.womanNumber = '';
         $scope.tabUDSR.couple = null;
         $scope.tabUDSR.athlete = null; 
+        $scope.tabUDSR.alert = {};
     };
 
     $scope.tabUDSR.back = function(){
@@ -385,6 +391,88 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.tabUDSR.registration = function(){
+        if ($scope.tabUDSR.couple && $scope.tabUDSR.couple.idWDSF){
+            var postUDSRData = {
+                competitions: $scope.competitionTable.getSelectedIdArray('UDSR'),
+                couple: $scope.tabUDSR.couple || null,
+                athlete: null,
+                recorderHash: $scope.recorderHash 
+            };
+
+            RegistrationSrvc.UDSR(postUDSRData).then(
+                function(data){
+                    $scope.regResponse = data;
+                    $scope.resultTableVisible = true;
+                    $scope.loadCountParticipantCompetitions('UDSR');
+                    console.log('udsr > reg success', data);
+
+                    var wdsfCompetitions = $scope.competitionTable.getSelectedIdArray('WDSF');
+                    if (wdsfCompetitions.length == 0)
+                        return;
+                    
+                    var postWDSFData = {
+                        competitions: wdsfCompetitions,
+                        couple: {
+                            id: $scope.tabUDSR.couple.idWDSF,
+                            man: {
+                                id: $scope.tabUDSR.couple.man.idWDSF,
+                                dob: $scope.tabUDSR.couple.man.dob,
+                                number: $scope.tabUDSR.couple.man.numberWDSF
+                            },
+                            woman: {
+                                id : $scope.tabUDSR.couple.woman.idWDSF,
+                                dob: $scope.tabUDSR.couple.woman.dob,
+                                number: $scope.tabUDSR.couple.woman.numberWDSF
+                            },
+                            otherInfo: $scope.tabUDSR.couple.otherInfo
+                        },
+                        athlete: null,
+                        recorderHash: $scope.recorderHash 
+                    }; 
+
+                    RegistrationSrvc.WDSF(postWDSFData).then(
+                        function(data){
+                            $scope.regResponse.results = $scope.regResponse.results.concat(data.results);
+                            console.log('udsr > wdsf reg success', data);
+                        },
+                        function(data){
+                            $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
+                            console.log('udsr > wdsf reg error', data);
+                        }); 
+                },
+                function(data){
+                    $scope.regResponse = data;
+                    $scope.resultTableVisible = true;
+                    $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
+                    console.log('udsrwdsf reg error', data);
+                });
+        }
+        else{
+            var postData = {
+                competitions: $scope.competitionTable.getSelectedIdArray('UDSR'),
+                couple: $scope.tabUDSR.couple || null,
+                athlete: $scope.tabUDSR.athlete || null,
+                recorderHash: $scope.recorderHash 
+            };
+
+            RegistrationSrvc.UDSR(postData).then(
+                function(data){
+                    $scope.regResponse = data;
+                    $scope.resultTableVisible = true;
+                    $scope.loadCountParticipantCompetitions('UDSR');
+                    console.log('udsr reg success', data);
+                },
+                function(data){
+                    $scope.regResponse = data;
+                    $scope.resultTableVisible = true;
+                    $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
+                    console.log('udsr reg error', data);
+                });
+        }
+
+
+
+        /*
         var postData = {
             competitions: $scope.competitionTable.getSelectedIdArray(),
             couple: $scope.tabUDSR.couple || null,
@@ -404,7 +492,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 $scope.resultTableVisible = true;
                 $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
                 console.log('reg error', data);
-            });  
+            }); 
+        */     
     };
 
 
@@ -463,7 +552,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.tabWDSF.searchForm.manNumber = '';
         $scope.tabWDSF.searchForm.womanNumber = '';
         $scope.tabWDSF.couple = null;
-        $scope.tabWDSF.athlete = null; 
+        $scope.tabWDSF.athlete = null;
+        $scope.tabWDSF.alert = {};  
     };
 
     $scope.tabWDSF.formCouple.back = function(){
@@ -543,7 +633,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 
     $scope.tabWDSF.registration = function(){
         var postData = {
-            competitions: $scope.competitionTable.getSelectedIdArray(),
+            competitions: $scope.competitionTable.getSelectedIdArray('WDSF'),
             couple: $scope.tabWDSF.couple || null,
             athlete: $scope.tabWDSF.athlete || null,
             recorderHash: $scope.recorderHash  
@@ -621,7 +711,10 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         
         $scope.competitionTable.selectable = true; 
         $scope.competitionTable.avialableMode = true;
-        $scope.competitionTable.refresh();  
+        $scope.competitionTable.refresh(); 
+
+        $scope.tabUDSR.disabled = true;
+        $scope.tabWDSF.disabled = true; 
     };
 
     $scope.tabOTHER.formSingle.back = function(){
@@ -665,7 +758,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 
     $scope.tabOTHER.registration = function(){
         var postData = {
-            competitions: $scope.competitionTable.getSelectedIdArray(),
+            competitions: $scope.competitionTable.getSelectedIdArray('OTHER'),
             couple: $scope.tabOTHER.couple || null,
             athlete: $scope.tabOTHER.athlete || null,
             recorderHash: $scope.recorderHash  
@@ -735,7 +828,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         row += $filter('localize')('Ошибка!') + ' ' + $filter('localize')('Регистрация не выполнена.') + '\n' +
                $filter('localize')('Группа') + ': ' + res.competition.name + '. ' + $filter('convertCacheDate')(res.competition.startDate, $filter('localize')('d MMMM y')) + '.\n';
         
-        if ($scope.selectedTab == 'WDSF'){
+        if (res.competition.wdsf){
             // wdsf controller response
             var wcResponse = res.otherInfo;
 

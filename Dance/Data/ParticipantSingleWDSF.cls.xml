@@ -99,31 +99,5 @@
 	quit obj
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DefaultData>ParticipantSingleWDSFDefaultData</DefaultData>
-<Data name="ParticipantSingleWDSFDefaultData">
-<Subscript>"ParticipantSingleWDSF"</Subscript>
-<Value name="1">
-<Value>Athlete</Value>
-</Value>
-<Value name="2">
-<Value>DOB</Value>
-</Value>
-<Value name="3">
-<Value>City</Value>
-</Value>
-<Value name="4">
-<Value>Club</Value>
-</Value>
-<Value name="5">
-<Value>MainTrainer</Value>
-</Value>
-<Value name="6">
-<Value>OtherTrainers</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

@@ -197,9 +197,7 @@ localizationModule.constant('DanceDictionary', {
 		'Часть данных получена от WDSF.' : 'Part of data received from WDSF.',
 		'Оплачено': 'Paid',
 		'Черный цвет - участие в группе оплачено.' : 'Black color - participation in the competition has been paid.',
-		'Серый цвет' : 'Gray color',
 		'Уникальные участники турнира, всего ':'Unique participants in the tournament, total count ',
-		'Оплатить на danceplat.ru':'Pay at danceplat.ru',
 		'Регистрация прошла успешно, на данной странице отображены все группы пары/участника в турнире.': 'Registration was successfully completed. This page displays couple/participant competitions in the tournament.',
 		'Загрузить' : 'Upload',
 		'Обзор' : 'Browse',
@@ -248,7 +246,35 @@ localizationModule.constant('DanceDictionary', {
 		'Возр. гр.' : 'Age group',
 		'Выберите дату для активации переключателя' : 'Select date for activate switcher',
 		'Дисциплина' : 'Discipline',
-		'Соответствующая группа WDSF' : 'Competition WDSF'
+		'Соответствующая группа WDSF' : 'Competition WDSF',
+		
+		' - участие не оплачено.' : ' - participation is not paid.',
+		' - участие отменено.' : ' - participation is canceled.',
+		'Оплачены' : 'Paid',
+		'd MMMM' : 'd MMMM',
+		'WDSF Controller' : 'WDSF Controller',
+		'Возр. группа' : 'Age group',
+		'Выберите организатора для доступа к регистрации:' : 'Select an organizer for access to registration:',
+		'Группы »' : 'Competitions »',
+		'Группы •' : 'Competitions •',
+		'Код доступа не найден, переход на страницу для регистрации невозможен.' : 'The access code is not found, a transition to the page for registration is impossible.',
+		'Количество оплативших участников' : 'Number of paid participants',
+		'Количество оплаченных групп' : 'Number of paid competitions',
+		'Нет данных.' : 'No data.',
+		'Поиск регистрации участника по фамилии!' : 'Searching registration of athlete by surname',
+		'Список всех участников турнира' : 'List of participants of the tournament',
+		'Уникальные участники турнира' : 'Unique participants of the tournament',
+		'Участники »' : 'Participants »',
+		'Участники •' : 'Participants •',
+		'Экспорт участников »' : 'Export participants',
+		'Всего участников':'Number of participants',
+		'уникальных':'unique',
+		'Всего': 'Total count',
+		
+		'Задать вопрос' : 'Ask a question',
+		'Инструкция к регистрации' : 'Instructions for registration',
+		'Информация о турнире' : 'Tournament info',
+		'Информация »' : 'Information »'
  
 
   },
@@ -454,9 +480,11 @@ localizationModule.constant('DanceDictionary', {
 		'Язык системы' : 'System sprache',
 		'Ярким цветом выделены турниры, которые уже есть базе данных. Сравнение идет по IdInternal. Для сохранения турнира заполните все дополнительные поля в диалоговом окне импорта.' : 'Helle farbe zuordnet turnieren, die bereits eine datenbank ist. Der vergleich ist auf IdInternal. Um das turnier zu füllen sie alle zusätzlichen felder in der importdialog zu speichern.',
 		
-		'Доступен СТСР':'Verfügbare UDSR',
-		'Доступен WDSF':'Verfügbare WDSF',
-		'Доступен другим':'Anderen zur verfügung',
+		'Задать вопрос' : 'Frage stellen',
+		'Инструкция к регистрации' : 'Hinweise für die registrierung',
+		'Информация о турнире' : 'Turnier-info',
+		'Информация »' : 'Information »',
+		
 		
 		/* 11 oct*/
 		'Поиск регистрации' : 'Search registration',
@@ -492,13 +520,34 @@ localizationModule.constant('DanceDictionary', {
 		'Возр. гр.' : 'Age group',
 		'Выберите дату для активации переключателя' : 'Select date for activate switcher',
 		'Дисциплина' : 'Discipline',
-		'Соответствующая группа WDSF' : 'Competition WDSF'
+		'Соответствующая группа WDSF' : 'Competition WDSF',
+		
+		' - участие не оплачено.' : ' - participation is not paid.',
+		' - участие отменено.' : ' - participation is canceled.',
+		'Оплачены' : 'Paid',
+		'd MMMM' : 'd MMMM',
+		'WDSF Controller' : 'WDSF Controller',
+		'Возр. группа' : 'Age group',
+		'Выберите организатора для доступа к регистрации:' : 'Select an organizer for access to registration:',
+		'Группы »' : 'Competitions »',
+		'Группы •' : 'Competitions •',
+		'Код доступа не найден, переход на страницу для регистрации невозможен.' : 'The access code is not found, a transition to the page for registration is impossible.',
+		'Количество оплативших участников' : 'Number of paid participants',
+		'Количество оплаченных групп' : 'Number of paid competitions',
+		'Нет данных.' : 'No data.',
+		'Поиск регистрации участника по фамилии!' : 'Searching registration of athlete by surname',
+		'Список всех участников турнира' : 'List of participants of the tournament',
+		'Уникальные участники турнира' : 'Unique participants of the tournament',
+		'Участники »' : 'Participants »',
+		'Участники •' : 'Participants •',
+		'Экспорт участников »' : 'Export participants'
+		
 		
 
   },
   getTranslate: function(word, toLanguage){
 	var def = function(key){
-		//console.log("'" + key + "' : '',");
+		console.log("'" + key + "' : '',");
 		
 		return key;	
 	};  

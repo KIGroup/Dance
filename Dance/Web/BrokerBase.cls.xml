@@ -4,10 +4,12 @@
 <Super>%CSP.REST</Super>
 <TimeCreated>63289,63449.225817</TimeCreated>
 
-<Parameter name="UseSession">
-<Type>Integer</Type>
-<Default>1</Default>
-</Parameter>
+<UDLText name="T">
+<Content><![CDATA[
+// Parameter UseSession As Integer = 1;
+
+]]></Content>
+</UDLText>
 
 <Method name="DispatchRequest">
 <Description>

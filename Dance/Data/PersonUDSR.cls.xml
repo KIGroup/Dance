@@ -143,6 +143,15 @@ Date of birth</Description>
 			set person.RegionNumber = $LIST(propList, 17)
 		}
 		
+		//19 Номер партнера
+		//w !,"POST 8"
+		if (person.Gender = "Male"){
+			set partnerNumber = $LIST(propList, 19)
+			if (partnerNumber'="") {
+				set ^Dance.Data.ManPartnersUDSR(person.Number) = partnerNumber
+			}
+		}	
+		
 		set person.Country = ##class(Dance.Data.Country).WDSFNameIdxOpen("Russian Federation")
 			
 		set person.Updated = $ZDT($ZTS,3)
@@ -184,6 +193,27 @@ Date of birth</Description>
 		 	   	%UPPER(person.City) = %UPPER(TRIM(BOTH ' ' FROM :filter.city))
 		 	   	OR
 		 	   	%UPPER(person.Club) = %UPPER(TRIM(BOTH ' ' FROM :filter.club))))
+
+	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetByFullName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filter:%RegisteredObject</FormalSpec>
+<ReturnType>PersonUDSR</ReturnType>
+<Implementation><![CDATA[
+	set id = ""
+
+	&sql(SELECT person.ID INTO :id
+		 FROM Dance_Data.PersonUDSR as person 
+		 	INNER JOIN 
+		 	Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
+		 	INNER JOIN 
+		 	Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
+		 WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
+		 	   AND 
+		 	   %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)))
 
 	quit ..%OpenId(id)
 ]]></Implementation>

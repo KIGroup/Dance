@@ -107,7 +107,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                 onClickCell: function(item){
                                                     $scope.openPrtCompetitions(item);                   
                                                 }},
-                          {name:'paymentsCount', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellTitle: $filter('localize')('Количество оплаченых групп')}];
+                          {name:'paymentsCount', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellTitle: $filter('localize')('Количество оплаченных групп')}];
  
         $scope.page.participantTable.pageSize = 50;
         $scope.page.participantTable.pageCurr = 1;

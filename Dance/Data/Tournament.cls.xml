@@ -197,9 +197,10 @@ Tournaments</Description>
 	}
 	
 	set proxy.organizer = ##class(%ZEN.proxyObject).%New()
+	set proxy.organizer.site = ..OrganizerSite
+	
 	if (params.loadOrganizer){	
 		set proxy.organizer.info = ..OrganizerInfo.Value
-		set proxy.organizer.site = ..OrganizerSite
 	}
 	
 	set proxy.tabUDSRAllowed = ..TabUDSRAllowed

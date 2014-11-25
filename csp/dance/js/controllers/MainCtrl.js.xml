@@ -33,7 +33,7 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
                                                   tickets     : {id: 'import-tickets'     , url: '#/import/tickets'     , parentId: 'import', name: $filter('localize')('Tickets')},
                                                   persons     : {id: 'import-persons'     , url: '#/import/persons'     , parentId: 'import', name: $filter('localize')('Участники СТСР')}}},
                          searchprt: {id: 'searchprt', url: '#/search/participants', name: $filter('localize')('Поиск регистрации')},
-                         feedback: {id: 'feedback', url: '#/feedback', name: $filter('localize')('Обратная связь')}
+                         feedback: {id: 'feedback', url: '#/feedback', name: $filter('localize')('Задать вопрос')}
                         }; 
   
     $scope.menu.selectMenu = function(menuItem){

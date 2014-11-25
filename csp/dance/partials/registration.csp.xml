@@ -8,6 +8,8 @@
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
+	<a ng-href="{{tournament.organizer.site}}" target="_blank" class="trnMenu" title="{{'Информация о турнире'|localize}}" ng-bind="'Информация »'|localize"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" class="trnMenuSelected" title="{{'Сейчас Вы на этой странице'|localize}}" ng-bind="'Регистрация •'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Группы »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/competitions', recorderHash)"></a>
@@ -53,7 +55,11 @@
 					<div class="row-fluid" style="margin-bottom: 5px;">
 						<label ng-bind="'Партнер'|localize"  style="font-weight: bold;"></label>
 					</div>
-					<p><span class="spnTitle" ng-bind="'Номер СТСР'|localize"></span>: <span ng-bind="tabUDSR.couple.man.number"></span></p>
+					<p>
+						<span class="spnTitle" ng-bind="'Номер СТСР'|localize"></span>: <span ng-bind="tabUDSR.couple.man.number"></span>
+						&nbsp;
+						<span ng-show="tabUDSR.couple.man.numberWDSF" class="spnTitle" ng-bind="('Номер WDSF'|localize) + ':'"></span>&nbsp;<span ng-bind="tabUDSR.couple.man.numberWDSF"></span>
+					</p>
 					<p><span class="spnTitle" ng-bind="'Фамилия, Имя'|localize"></span>: <span ng-bind="tabUDSR.couple.man.lastName + ' ' + tabUDSR.couple.man.firstName"></span></p>
 					<p><span class="spnTitle" ng-bind="'Дата рождения'|localize"></span>: <span ng-bind="tabUDSR.couple.man.dob|convertCacheDate:('d MMMM y'|localize)"></span></p>
 					<p><span class="spnTitle" ng-bind="'Класс'|localize"></span>: <span ng-show="tabUDSR.couple.man.stClass.name" ng-bind="('Ст: '|localize) + tabUDSR.couple.man.stClass.name"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span ng-show="tabUDSR.couple.man.laClass.name" ng-bind="('Ла: '|localize) + tabUDSR.couple.man.laClass.name"></span></p>
@@ -72,7 +78,10 @@
 					<div class="row-fluid" style="margin-bottom: 5px;">
 						<label ng-bind="'Партнерша'|localize" style="font-weight: bold;"></label>
 					</div>
-					<p><span class="spnTitle" ng-bind="'Номер СТСР'|localize"  ></span>: <span ng-bind="tabUDSR.couple.woman.number"></span></p>
+					<p>
+						<span class="spnTitle" ng-bind="'Номер СТСР'|localize"  ></span>: <span ng-bind="tabUDSR.couple.woman.number"></span>&nbsp;
+						<span ng-show="tabUDSR.couple.woman.numberWDSF" class="spnTitle" ng-bind="('Номер WDSF'|localize) + ':'"></span>&nbsp;<span ng-bind="tabUDSR.couple.woman.numberWDSF"></span>
+					</p>
 					<p><span class="spnTitle" ng-bind="'Фамилия, Имя'|localize"></span>: <span ng-bind="tabUDSR.couple.woman.lastName + ' ' + tabUDSR.couple.woman.firstName"></span></p>
 					<p><span class="spnTitle" ng-bind="'Дата рождения'|localize"></span>: <span ng-bind="tabUDSR.couple.woman.dob|convertCacheDate:('d MMMM y'|localize)"></span></p>
 					<p><span class="spnTitle" ng-bind="'Класс'|localize"        ></span>: <span ng-show="tabUDSR.couple.woman.stClass.name" ng-bind="('Ст: '|localize) + tabUDSR.couple.woman.stClass.name"></span>&nbsp;&nbsp;&nbsp;<span ng-show="tabUDSR.couple.woman.laClass.name" ng-bind="'Ла: ' + tabUDSR.couple.woman.laClass.name"></span></p>
@@ -153,7 +162,7 @@
 					<img ng-show="tabWDSF.searchForm.processing" style="padding: 5px 5px 13px 5px;" src="img/loader2.gif"/>
 				</div>
 				<div class="row-fluid" style="padding-top: 12px; padding-bottom: 2px;">
-					<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Регистрация осуществляется по WDSF номерам. Поиск участников идет по базе данных "World DanceSport Federation".'|localize}}</p>
+					<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".'|localize}}</p>
 					<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для регистрации в \"соло\" заполните только одно поле.'|localize}}</p> 
 				</div>
 			</form>
@@ -680,6 +689,11 @@
 				2978	44604 <a href="" ng-click="tabUDSR.searchForm.manNumber='2978'; tabUDSR.searchForm.womanNumber='44604';">select</a>
 				3071	3092 <a href="" ng-click="tabUDSR.searchForm.manNumber='3071'; tabUDSR.searchForm.womanNumber='3092';">select</a>
 				3072	3104 <a href="" ng-click="tabUDSR.searchForm.manNumber='3072'; tabUDSR.searchForm.womanNumber='3104';">select</a>
+				
+				63156   92779 <a href="" ng-click="tabUDSR.searchForm.manNumber='63156'; tabUDSR.searchForm.womanNumber='92779';">select</a>
+				62743   80619 <a href="" ng-click="tabUDSR.searchForm.manNumber='62743'; tabUDSR.searchForm.womanNumber='80619';">select</a>
+				24069   45633 <a href="" ng-click="tabUDSR.searchForm.manNumber='24069'; tabUDSR.searchForm.womanNumber='45633';">select</a>
+				
 		</pre>
 	</div>
 	<div class="span6">

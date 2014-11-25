@@ -623,7 +623,10 @@ Get all tournament competitions for grid</Description>
       		set whereCondition = whereCondition_" AND StartDate = "_$ZDATEH(params.other.date,15)
       	}
       	
-      	if (params.other.type = "WDSF"){
+      	if (params.other.type = "UDSR"){
+	      	set whereCondition = whereCondition_" AND WDSF IS NULL "
+      	}
+      	elseif (params.other.type = "WDSF"){
       		set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
       	}
       
@@ -686,9 +689,12 @@ Available participants competitions for grid</Description>
       	set maleSTClass = ""
       	set maleLAClass = ""
       	set man = ""
+      	set woman = ""
       	
       	if $ISOBJECT(params.other.couple){
       		set man = params.other.couple.man
+      		set woman = params.other.couple.woman
+      		
       		set whereCondition = whereCondition_" AND Type->Code = 'Couples' "
       		
       		if (params.other.type = "OTHER"){																  
@@ -696,12 +702,30 @@ Available participants competitions for grid</Description>
       		}
       		else{
 	      		// WDSF or UDSR... couple
-	      		set tableName = $CASE(params.other.type, "WDSF" : "Dance_Data.ParticipantCoupleWDSF", "UDSR" : "Dance_Data.ParticipantCoupleUDSR")
-      			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM "_tableName_" as prtc WHERE prtc.IsActive = 1 AND prtc.Couple="_params.other.couple.id_") "
+	      		
+	      		// Да простит меня господь за этот говнокод...
+      			if (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(params.other.couple.id)) || ((##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(params.other.couple.id))){
+      				set match = $CASE(params.other.type, "WDSF" : ##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(params.other.couple.id), "UDSR" : ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(params.other.couple.id)) 
+      				set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition "_ 
+      																		"FROM Dance_Data.ParticipantCoupleUDSR as prtc "_
+      																		"WHERE prtc.IsActive = 1 AND prtc.Couple="_match.UDSR.%Id()_" "_
+      																		"UNION "_
+      																		"SELECT DISTINCT prtc.Competition "_ 
+      																		"FROM Dance_Data.ParticipantCoupleWDSF as prtc "_
+      																		"WHERE prtc.IsActive = 1 AND prtc.Couple="_match.WDSF.%Id()_") "	
+      				
+					
+      			}
+      			else{
+	      			set tableName = $CASE(params.other.type, "WDSF" : "Dance_Data.ParticipantCoupleWDSF", "UDSR" : "Dance_Data.ParticipantCoupleUDSR")
+      				set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM "_tableName_" as prtc WHERE prtc.IsActive = 1 AND prtc.Couple="_params.other.couple.id_") "
+      			}
       		}
       	}
       	elseif $ISOBJECT(params.other.athlete){
 			set man = params.other.athlete
+			set woman = params.other.athlete
+			
 	      	set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
 	      	
 	      	if (params.other.type = "OTHER"){
@@ -714,16 +738,24 @@ Available participants competitions for grid</Description>
       		}
 	   	}
       	
-      	// current year - year of birth
+        // current year - year of birth
       	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
-      	set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maleAge_" AND "_maleAge_" <= AgeCategory->MaxAge "
+      	set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P(woman.dob, "-", 1)
+      	set maxAge = maleAge
+      	if (femaleAge > maxAge) set maxAge = femaleAge
       	
+      	set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge "
+      		
       	if (params.other.type = "UDSR"){
 	      	set maleSTClass = man.stClass.code
-      		set maleLAClass = man.laClass.code     	   	
+      		set maleLAClass = man.laClass.code
+      		
+      		if $ISOBJECT(params.other.couple) && (params.other.couple.man.numberWDSF = ""){
+	      		set whereCondition = whereCondition_" AND WDSF IS NULL "
+      		}
       	}
       	elseif (params.other.type = "WDSF"){
-	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL"
+	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
       	}
       	     	
 		set sql = "SELECT ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
@@ -1006,6 +1038,21 @@ Get all participants of the competition for grid</Description>
 				  "ORDER BY Created"
 		
 		
+		// Костыль
+		if (cplId '= ""){ 
+			if (##class(Dance.Data.CoupleUDSR).%ExistsId(cplId)) && (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(cplId)){
+				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "_
+						  " UNION "_
+						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(cplId).WDSF.%Id()_"' AND IsActive=1"			
+			}
+			elseif (##class(Dance.Data.CoupleWDSF).%ExistsId(cplId)) && (##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(cplId)){
+				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(cplId).UDSR.%Id()_"' AND IsActive=1 "_
+						  " UNION "_
+						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "
+						  			
+			}
+		}
+		
 		set statement = ##class(%SQL.Statement).%New()	
 		$$$THROWONERROR(st, statement.%Prepare(sql))		
 		set rs = statement.%Execute()
@@ -1057,9 +1104,15 @@ Get couple UDSR by numbers</Description>
 	set st = $$$OK
 	
 	try{
-		set couple = ##class(Dance.Data.CoupleUDSR).GetByNumbers(manNumber, womanNumber, .st)
+		if ($DATA(^Dance.Data.ManPartnersUDSR(+manNumber)) '= 1) || ($GET(^Dance.Data.ManPartnersUDSR(+manNumber)) '= +womanNumber){
+			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_CoupleUDSRNotFoundByNumbers", " | Man - "_+manNumber_", Woman - "_+womanNumber))
+		}
+		
+		set couple = ##class(Dance.Data.CoupleUDSR).GetByNumbers(+manNumber, +womanNumber, .st)
 		$$$THROWONERROR(st, st)
 		
+		do ##class(Dance.Data.MatchingCoupleUDSRWDSF).CreateByUDSR(couple, .stWDSF)
+			
 		do couple.ConvertToProxyObject().%ToJSON()
 	}
 	catch(ex){
@@ -1085,8 +1138,22 @@ Get couple UDSR by numbers</Description>
 		set couple = ##class(Dance.Data.CoupleWDSF).GetByNumbers(manNumber, womanNumber, .st)
 		$$$THROWONERROR(st, st)
 		
-		do couple.ConvertToProxyObject().%ToJSON()
-	
+		set match = ##class(Dance.Data.MatchingCoupleUDSRWDSF).CreateByWDSF(couple, .stUDSR)
+		
+		set proxyCouple = couple.ConvertToProxyObject()
+		
+		if $ISOBJECT(match){
+			set coupleUDSRProxy = match.UDSR.ConvertToProxyObject()
+			set proxyCouple.man.dob = coupleUDSRProxy.man.dob
+			set proxyCouple.woman.dob = coupleUDSRProxy.woman.dob
+			set proxyCouple.otherInfo.city = coupleUDSRProxy.otherInfo.city
+			set proxyCouple.otherInfo.club = coupleUDSRProxy.otherInfo.club
+			set proxyCouple.otherInfo.mainTrainer = coupleUDSRProxy.otherInfo.mainTrainer
+			set proxyCouple.otherInfo.otherTrainers = coupleUDSRProxy.otherInfo.otherTrainers
+		}
+		
+		do proxyCouple.%ToJSON()
+		
 		TCOMMIT
 	}
 	catch(ex){
@@ -1375,11 +1442,30 @@ Feedback from users </Description>
 		if (cplId '= ""){
 			// WDSF or UDSR
 			set couple = ##class(Dance.Data.Couple).%OpenId(cplId)
-			if ($CLASSNAME(couple) = "Dance.Data.CoupleUDSR") {
-				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleUDSR WHERE Couple = :cplId AND Competition->Tournament = :trnId AND IsActive = 1)
+
+			if (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(couple.%Id())) || (##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(couple.%Id())){
+				set match = $CASE($CLASSNAME(couple), "Dance.Data.CoupleWDSF" : ##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(couple.%Id()), "Dance.Data.CoupleUDSR" : ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(couple.%Id())) 		
+				set udsrCplId = match.UDSR.%Id()
+				set wdsfCplId = match.WDSF.%Id()
+				set udsrCount = 0
+				set wdsfCount = 0
+				&sql(SELECT COUNT(ID) INTO :udsrCount 
+					 FROM Dance_Data.ParticipantCoupleUDSR 
+					 WHERE Couple = :udsrCplId AND Competition->Tournament = :trnId AND IsActive = 1)
+				
+				&sql(SELECT COUNT(ID) INTO :wdsfCount 
+					 FROM Dance_Data.ParticipantCoupleWDSF 
+					 WHERE Couple = :wdsfCplId AND Competition->Tournament = :trnId AND IsActive = 1)
+					 
+				set proxy.count = udsrCount + wdsfCount
 			}
-			else {
-				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleWDSF WHERE Couple = :cplId AND Competition->Tournament = :trnId AND IsActive = 1)
+			else{
+				if ($CLASSNAME(couple) = "Dance.Data.CoupleUDSR") {
+					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleUDSR WHERE Couple = :cplId AND Competition->Tournament = :trnId AND IsActive = 1)
+				}
+				else {
+					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleWDSF WHERE Couple = :cplId AND Competition->Tournament = :trnId AND IsActive = 1)
+				}
 			}
 		}
 		elseif (athId '= ""){

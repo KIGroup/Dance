@@ -65,6 +65,19 @@ background-color: #C4E3F3;
 	
 }
 
+.langSelected{
+	color: #333!important;
+}
+
+.langFlag{
+	margin-bottom: 2px;
+	opacity: 0.4;
+}
+
+.langSelected > .langFlag,.langFlag:hover{
+	opacity: 1;
+}
+
 .collapse {
     position: inherit!important;
  }

@@ -62,16 +62,5 @@
 	quit obj
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DefaultData>ParticipantSingleUDSRDefaultData</DefaultData>
-<Data name="ParticipantSingleUDSRDefaultData">
-<Subscript>"ParticipantSingleUDSR"</Subscript>
-<Value name="1">
-<Value>Athlete</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

@@ -12,6 +12,16 @@
 	set proxy.type = "UDSR"
 	set proxy.otherInfo = proxy.man.otherInfo
 	
+		
+	if (##class(MatchingCoupleUDSRWDSF).UDSRIdxExists(..%Id())){
+		set coupleWDSF = ##class(MatchingCoupleUDSRWDSF).UDSRIdxOpen(..%Id()).WDSF
+		set proxy.idWDSF = coupleWDSF.%Id()
+		set proxy.man.idWDSF = coupleWDSF.Man.%Id()
+		set proxy.man.numberWDSF = coupleWDSF.Man.Number
+		set proxy.woman.idWDSF = coupleWDSF.Woman.%Id()
+		set proxy.woman.numberWDSF = coupleWDSF.Woman.Number
+	}
+	
 	if (proxy.otherInfo.club = "") {
 		set proxy.otherInfo.club = proxy.woman.otherInfo.club 
 	}
@@ -69,9 +79,28 @@
 		quit $$$NULLOREF
 	}
 	
+
+	
 	set st = obj.%Save()
 	
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="GetByFilter">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filter:%RegisteredObject</FormalSpec>
+<ReturnType>PersonWDSF</ReturnType>
+<Implementation><![CDATA[
+	do filter.%ToJSON()
+	
+	set man = ##class(PersonUDSR).GetByFullName(filter.man)
+	quit:'$ISOBJECT(man) $$$NULLOREF
+	
+	set woman = ##class(PersonUDSR).GetByFullName(filter.woman)
+	quit:'$ISOBJECT(woman) $$$NULLOREF
+
+	quit ..GetByNumbers(man.Number, woman.Number, .st)
 ]]></Implementation>
 </Method>
 

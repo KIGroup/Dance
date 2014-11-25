@@ -12,6 +12,12 @@
 
 	<script language="javascript"  src="js/common.js"></script>
  	<script language="javascript">
+ 		// На случай технических работ
+ 		if (window.location.host != "146.185.160.138:57772" && window.location.host != "localhost:57772"){
+ 			window.location = "tech.csp";
+ 		}
+ 	
+ 	
 		// Настройки приложения. Имена веб-приложений для REST, google календарь, язык
     	AppSettings.defaultName = '#($GET(^Settings("Dance", "WebApp")))#';
         AppSettings.admin = '#($GET(^Settings("Dance", "WebAppAdmin")))#';
@@ -26,7 +32,6 @@
     <script language="javascript"  src="lib/jquery-1.11.0.min.js"></script>
     <script language="javascript"  src="lib/bootstrap.min.js"></script>
     <script language="javascript"  src="lib/angular/angular.min.js"></script>
-    <script language="javascript"  src="lib/angular/angular-animate.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-route.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-cookies.min.js"></script>
 
@@ -34,8 +39,10 @@
       
     <script language="javascript">
     document.write('<script language="javascript" src="js/localization/locale_' + AppSettings.lang + '.js"><\/script>'); 
-   </script>
-   <script language="javascript"  src="js/app.js"></script>    
+   </script>  
+   
+   	<script language="javascript"  src="js/app.js"></script>  
+    
   </head>
 
   <body id="bodyDiv">
@@ -95,17 +102,22 @@
 
           <div ng-show="menu.shortMenu">
             <div class="container">
-              <div class="nav" ng-hide="menu.pages.feedback.id==menu.pages.selected.id">
-              	<li><a ng-hide="menu.pages.searchprt.id==menu.pages.selected.id" ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" title="{{'Поиск регистрации участника по фамилии!'|localize}}" style="padding-left: 0;"></a></li>
-                <li><a ng-show="menu.pages.searchprt.id==menu.pages.selected.id" href="" onclick="window.history.back()" style="padding-left: 0;"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
-               
-              	<li><a class="homeIcon" style="margin-left: 60px;" title="{{'На главную'|localize}}" href="#/tournaments"><i class="fa fa-home fa-lg"></i></a></li>
+              <div class="nav">
+               <!--
+              	<li><a ng-hide="menu.pages.searchprt.id==menu.pages.selected.id || menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.searchprt.url}}" ng-bind="menu.pages.searchprt.name" title="{{'Поиск регистрации участника по фамилии!'|localize}}" style="padding-left: 0;"></a></li>
+                <li><a ng-show="menu.pages.searchprt.id==menu.pages.selected.id && menu.pages.feedback.id!=menu.pages.selected.id" href="" onclick="window.history.back()" style="padding-left: 0;"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
+               -->	
+               	<li><a style="padding-left: 0;" target="_blank" href="https://docs.google.com/document/d/10dD-UfcgOTz5U3PyCscx98zlwHfPMo3pDtsGx9Tw9cA/pub#id.4m1w34n6ya88" ng-bind="'Инструкция к регистрации'|localize"></a></li>
+                <li ng-hide="menu.pages.searchprt.id==menu.pages.selected.id"><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
+                <li ng-hide="menu.pages.searchprt.id==menu.pages.selected.id"><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" onclick="window.history.back()"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
+                  
+              	<!--<li><a class="homeIcon" style="margin-left: 60px;" title="{{'На главную'|localize}}" href="#/tournaments"><i class="fa fa-home fa-lg"></i></a></li>
+              	-->
               </div>
             	
               <div class="nav-responsive-collapse">   
                 <ul class="nav pull-right">
-                  <li ng-hide="menu.pages.searchprt.id==menu.pages.selected.id"><a ng-hide="menu.pages.feedback.id==menu.pages.selected.id" ng-href="{{menu.pages.feedback.url}}" ng-bind="menu.pages.feedback.name" title="{{'Оставьте свои отзывы, предложения, замечания!'|localize}}"></a></li>
-                  <li ng-hide="menu.pages.searchprt.id==menu.pages.selected.id"><a ng-show="menu.pages.feedback.id==menu.pages.selected.id" href="" onclick="window.history.back()"><i class="fa fa-reply"></i> {{'Вернуться назад'|localize}}</a></li>
+                  <!--
                   <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" title="{{'Язык системы'|localize}} " href=""><span><img style="margin-bottom: 2px" ng-src="{{menu.lang.flagUrl}}"/> {{menu.lang.name + ' '}}</span><b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -113,7 +125,12 @@
                         <a ng-class="{aSelected: menu.lang==lang}" ng-click="menu.switchLang(lang)" href=""><img style="margin-bottom: 2px" ng-src="{{lang.flagUrl}}"/> {{lang.name}}</a>	
                       </li>
                     </ul>
-                  </li>   
+                  </li>
+                  -->
+                  
+                  <li ng-repeat="lang in menu.languages|orderBy:'code':true">
+                  	<a ng-class="{langSelected: menu.lang==lang}" style="padding: 10px 5px 10px 5px;" ng-click="menu.switchLang(lang)" href=""><img class="langFlag" ng-src="{{lang.flagUrl}}"/> {{lang.name}}</a>	
+                  </li>
                 </ul> 
               </div>
             </div>
@@ -140,8 +157,11 @@
    			    next(); 
   		  });  
    </script>
-   
-    <script language="javascript" src="js/controllers/MainCtrl.js"></script>
+
+   <script language="javascript"  src="js/combine.js"></script>  
+
+   <!--
+   	<script language="javascript" src="js/controllers/MainCtrl.js"></script>
     
     <script language="javascript" src="js/controllers/TournamentCtrl.js"></script>
     <script language="javascript" src="js/controllers/TournamentsCtrl.js"></script>
@@ -195,7 +215,7 @@
     
     <script language="javascript" src="js/filters/cacheDate.js"></script>
 
-
+-->
   </body>
   
 </html>

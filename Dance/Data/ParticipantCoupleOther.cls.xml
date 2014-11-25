@@ -180,52 +180,5 @@
 	quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DefaultData>ParticipantCoupleOtherDefaultData</DefaultData>
-<Data name="ParticipantCoupleOtherDefaultData">
-<Subscript>"ParticipantCoupleOther"</Subscript>
-<Value name="1">
-<Value>ManLastName</Value>
-</Value>
-<Value name="2">
-<Value>ManFirstName</Value>
-</Value>
-<Value name="3">
-<Value>ManDOB</Value>
-</Value>
-<Value name="4">
-<Value>WomanLastName</Value>
-</Value>
-<Value name="5">
-<Value>WomanFirstName</Value>
-</Value>
-<Value name="6">
-<Value>WomanDOB</Value>
-</Value>
-<Value name="7">
-<Value>Country</Value>
-</Value>
-<Value name="8">
-<Value>City</Value>
-</Value>
-<Value name="9">
-<Value>Club</Value>
-</Value>
-<Value name="10">
-<Value>MainTrainer</Value>
-</Value>
-<Value name="11">
-<Value>OtherTrainers</Value>
-</Value>
-<Value name="12">
-<Value>CoupleHash</Value>
-</Value>
-<Value name="13">
-<Value>CoupleKey</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

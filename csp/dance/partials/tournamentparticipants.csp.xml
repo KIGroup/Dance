@@ -8,6 +8,8 @@
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
+	<a ng-href="{{page.tournament.organizer.site}}" target="_blank" class="trnMenu" title="{{'Информация о турнире'|localize}}" ng-bind="'Информация »'|localize"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" class="trnMenu" title="{{'Список всех групп турнира'|localize}}" ng-bind="'Группы »'|localize"  ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.tournament.id + '/competitions', recorderHash)"></a>
@@ -21,9 +23,9 @@
 
 
 <div class="row-fluid">
-	<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' Всего - ' + page.tournament.participantsCount + '.'"></span>
+	<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' ' + ('Всего'|localize) + ' - ' + page.tournament.participantsCount + '.'"></span>
 	&nbsp;
-	<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize"  ng-click="export()"></a>
+	<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize"  ng-click="export()" ng-show="menu.admin"></a>
 	
 	<!--
 	<div class="btn-group">

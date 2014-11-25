@@ -43,9 +43,6 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                           {name:'fullName', 
                             calculate: function(item){
                                 item.fullName = item.name;
-                                if (item.wdsf){
-                                    item.fullName += ' [WDSF' + (item.wdsf.status != 'Registering' ? ', ' + item.wdsf.status : '') +']';
-                                }
                             }},   
                           {name:'discipline.name'},
                           {name:'ageCategory.name'},

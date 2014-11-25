@@ -100,7 +100,7 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	set st = $$$OK
-	set isTrace = $$$NO
+	set isTrace = $$$YES
 	w:(isTrace) !,!,"Start 'SaveOneFromImportTable' ticketId="_ticketImport.%Id()
 	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.TicketDanceplat.SaveOneFromImportTable()", "Start for ticketId="_ticketImport.%Id())
 	
@@ -133,6 +133,13 @@
 				set prtObject = ##class(Dance.Data.CoupleUDSR).GetByNumbers(manUDSR.Number, womanUDSR.Number,.st)	
 				set prtClassName = "Dance.Data.ParticipantCoupleUDSR"
 				$$$THROWONERROR(st, st)
+				
+				// Костыль на тот случай, если оплачивали межд. соревнования по данным стср, но оказывается есть межд. версия пары стср, вот её и надо взять. Капец :(
+				if $ISOBJECT(competition.WDSF) && ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(prtObject.%Id()){
+					set prtObject = ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(prtObject.%Id(),,.st).WDSF	
+					set prtClassName = "Dance.Data.ParticipantCoupleWDSF"
+					$$$THROWONERROR(st, st)
+				}
 			}
 			elseif $ISOBJECT(manUDSR){
 				w:(isTrace) !,"--Find man UDSR."
@@ -307,6 +314,7 @@
 	set filter.woman.firstName = ticketImport.FemaleFirstName
 	
 	// Find in DB
+	w !, "Searching in PersonWDSF table"
 	set couple = ##class(CoupleWDSF).GetByFilter(filter)
 	quit:$ISOBJECT(couple) couple
 	
@@ -315,6 +323,7 @@
 	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByName(ticketImport.MaleLastName_","_ticketImport.MaleFirstName, ticketImport.FemaleLastName_","_ticketImport.FemaleFirstName, .st)
 	quit:$$$ISERR(st) $$$NULLOREF
 	
+	w !, "Searching completed ",wdsfData.man.id,"-", wdsfData.woman.id
 	quit ##class(CoupleWDSF).GetByNumbers(wdsfData.man.id, wdsfData.woman.id, .st)
 ]]></Implementation>
 </Method>
