@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/directives/stcgrid.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/directives/stcgrid.js" application="/csp/dancereg/" default="1"><![CDATA[
 'use strict';
 //ddd
    
@@ -275,13 +275,11 @@ directivesModule.directive('stcgrid', function(){
                 for(var i=0; i < columns.length; i++)
                     if (!columns[i].hidden)
                         visibleCount++;
-                        
                 
-                if ($scope.grid || $scope.grid.hideNumbersColumn){
-                	console.log('minus');
+                if ($scope.grid && $scope.grid.hideNumbersColumn){
                 	visibleCount--;
                 }
-				
+                	
                 return visibleCount;
             };
             

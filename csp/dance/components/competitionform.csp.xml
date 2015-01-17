@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/components/competitionform.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/components/competitionform.csp" application="/csp/dancereg/" default="1"><![CDATA[
 <div class="row-fluid">
 	<div class="control-group">
         <div class="row-fluid">
@@ -84,23 +84,37 @@
 	</div>
 	<div class="control-group">
 		<div class="row-fluid">
-			<div class="span7">	
+			<div class="span6">	
 				<label class="control-label" ng-bind="('Классы'|localize) + '*'"></label>
 				<div class="btn-group" style="margin-bottom: 15px;">
-					<button type="button" class="btn btn-mini btnCheckBox" style="padding: 0 15px 0 15px;" ng-repeat="class in competition.dancerClasses"  ng-model="class.selected" ng-bind="class.name|localize"  btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0"></button>
+					<button type="button" class="btn btn-mini btnCheckBox" style="padding: 0 12px 0 12px;" ng-repeat="class in competition.dancerClasses"  ng-model="class.selected" ng-bind="class.name|localize"  btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0"></button>
 				</div>
 			</div>
-			<div class="span5">
-				 <label class="checkbox" style="padding-top: 27px;" >
-			    	<input type="checkbox" ng-model="competition.isInternational" ng-disabled="!competition.startDate" title="{{'Выберите дату для активации переключателя'|localize}}">{{'Международный'|localize}}
-			    </label>
+			<div class="span6">
+				<div class="row-fluid">
+				    <div class="span2" title="{{'Регистрация в группу закрыта'|localize}}">
+					     <label class="checkbox" style="padding-top: 27px;" >
+					    	<input type="checkbox" ng-model="competition.isClosed">&nbsp;<i class="fa fa-lock"></i>
+					    </label>
+				    </div>
+					<div class="span3">
+						 <label class="checkbox" style="padding-top: 27px;" >
+					    	<input type="checkbox" ng-model="competition.isWDSF" ng-disabled="!competition.startDate" title="{{'Выберите дату для активации переключателя'|localize}}">{{'WDSF'|localize}}
+					    </label>
+				    </div>
+				    <div class="span7">
+					     <label class="checkbox" style="padding-top: 27px;" >
+					    	<input type="checkbox" ng-model="competition.isInternational">{{'Международный'|localize}}
+					    </label>
+				    </div>
+			    </div>
 			</div>
 		</div>
 	</div>
-	<div class="control-group" ng-show="competition.isInternational">
+	<div class="control-group" ng-show="competition.isWDSF">
 		<label class="control-label" ng-bind="('Соответствующая группа WDSF'|localize) + '*'"></label>
     	<div class="controls">
-        	<select class="span12" ng-model="competition.wdsf.id" style="margin:0;" ng-options="cmp.id as (cmp.date|convertCacheDate:('d MMMM y'|localize)) + ' • ' + cmp.location + ' • ' + cmp.type + ' • ' + cmp.discipline + ' • ' + cmp.ageCategory.name + ' • ' + cmp.status for cmp in competitionsWDSF" ng-required="competition.isInternational">
+        	<select class="span12" ng-model="competition.wdsf.id" style="margin:0;" ng-options="cmp.id as (cmp.date|convertCacheDate:('d MMMM y'|localize)) + ' • ' + cmp.location + ' • ' + cmp.type + ' • ' + cmp.discipline + ' • ' + cmp.ageCategory.name + ' • ' + cmp.status for cmp in competitionsWDSF" ng-required="competition.isWDSF">
    				<option></option>
    			</select>
    			<i style="font-size: 0.9em; margin-bottom: 10px;">Date • Location • Type • Discipline • Age group • Status</i>

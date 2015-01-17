@@ -353,16 +353,26 @@ Check update privilege</Description>
 <Implementation><![CDATA[
 	set count = 0
 	
-	&sql(SELECT TotalCount - OtherCount As Total INTO :count
-		 FROM(
-			SELECT COUNT(ID) As TotalCount, 
-				  (SELECT COUNT(ID) 
-				   FROM Dance_Data.Participant 
-				   WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND IsActive = 1 AND (PType = 'CoupleOther' OR PType = 'SingleOther') AND TicketStatus = 'Not paid') As OtherCount 
-		    FROM Dance_Data.Participant 
-		    WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND IsActive = 1))
+	&sql(SELECT COUNT(totalP.ID) As TotalCount INTO :count
+		    FROM Dance_Data.Participant as totalP 
+		    WHERE totalP.Competition->Tournament = :tournamentId AND totalP.Competition->IsActive = 1 AND totalP.IsActive = 1)
 	
 	quit count
+
+	/*
+	set count = 0
+	
+	&sql(SELECT TotalCount - OtherCount As Total INTO :count
+		 FROM(
+			SELECT COUNT(totalP.ID) As TotalCount, 
+				  (SELECT COUNT(pOther.ID) 
+				   FROM Dance_Data.Participant as pOther 
+				   WHERE pOther.Competition->Tournament = :tournamentId AND pOther.Competition->IsActive = 1 AND pOther.IsActive = 1 AND (pOther.PType = 'CoupleOther' OR pOther.PType = 'SingleOther') AND pOther.TicketStatus = 'Not paid') As OtherCount 
+		    FROM Dance_Data.Participant as totalP 
+		    WHERE totalP.Competition->Tournament = :tournamentId AND totalP.Competition->IsActive = 1 AND totalP.IsActive = 1))
+	
+	quit count
+	*/
 ]]></Implementation>
 </Method>
 
@@ -371,7 +381,38 @@ Check update privilege</Description>
 <FormalSpec>tournamentId:%String</FormalSpec>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
+	set count = 0
+	
+	&sql(SELECT COUNT(DISTINCT totalP.FullName) As TotalCount INTO :count
+		 FROM Dance_Data.Participant as totalP 
+		 WHERE totalP.Competition->Tournament = :tournamentId AND totalP.Competition->IsActive = 1 AND totalP.IsActive = 1)
+	
+	quit count
+
+
+
+
+
+
+	set count = 0
+	
+	&sql(SELECT TotalCount - OtherCount As Total INTO :count
+		 FROM(
+			SELECT COUNT(DISTINCT totalP.FullName) As TotalCount, 
+				  (SELECT COUNT(DISTINCT pOther.FullName) 
+				   FROM Dance_Data.Participant as pOther 
+				   WHERE pOther.Competition->Tournament = :tournamentId AND pOther.Competition->IsActive = 1 AND pOther.IsActive = 1 AND (pOther.PType = 'CoupleOther' OR pOther.PType = 'SingleOther') AND pOther.TicketStatus = 'Not paid') As OtherCount 
+		    FROM Dance_Data.Participant as totalP 
+		    WHERE totalP.Competition->Tournament = :tournamentId AND totalP.Competition->IsActive = 1 AND totalP.IsActive = 1))
+	
+	quit count
+	
+	
+	
+	
+	
 	set prtCplAth = 0
+	
 	
 	&sql(DECLARE PrtUniqCrs CURSOR FOR 
 		 	SELECT ID, PType, Competition
@@ -390,42 +431,42 @@ Check update privilege</Description>
 		if (pType = "CoupleUDSR"){
 			&sql(SELECT Couple INTO :cplId
 				 FROM Dance_Data.ParticipantCoupleUDSR
-				 WHERE ID = :id)
+				 WHERE ID = :id AND IsActive = 1)
 			
 			set prtId = prtId_";"_cplId
 		}
 		elseif (pType = "CoupleWDSF"){
 			&sql(SELECT Couple INTO :cplId
 				 FROM Dance_Data.ParticipantCoupleWDSF
-				 WHERE ID = :id)
+				 WHERE ID = :id AND IsActive = 1)
 				 
 			set prtId = prtId_";"_cplId
 		}
 		elseif (pType = "SingleUDSR"){
 			&sql(SELECT Athlete INTO :athId
 				 FROM Dance_Data.ParticipantSingleUDSR
-				 WHERE ID = :id)
+				 WHERE ID = :id AND IsActive = 1)
 			
 			set prtId = prtId_";"_athId
 		}
 		elseif (pType = "SingleWDSF"){
 			&sql(SELECT Athlete INTO :athId
 				 FROM Dance_Data.ParticipantSingleWDSF
-				 WHERE ID = :id)
+				 WHERE ID = :id AND IsActive = 1)
 			
 			set prtId = prtId_";"_athId
 		}
 		elseif (pType = "CoupleOther"){
 			&sql(SELECT CoupleKey INTO :cplId
 				 FROM Dance_Data.ParticipantCoupleOther
-				 WHERE ID = :id AND TicketStatus <> 'Not paid')
+				 WHERE ID = :id  AND IsActive = 1 AND TicketStatus = 'Paid')
 			
 			set prtId = prtId_";"_cplId
 		}
 		elseif (pType = "SingleOther"){
 			&sql(SELECT AthleteKey INTO :athId
 				 FROM Dance_Data.ParticipantSingleOther
-				 WHERE ID = :id AND TicketStatus <> 'Not paid')
+				 WHERE ID = :id  AND IsActive = 1 AND TicketStatus = 'Paid')
 				 
 			set prtId = prtId_";"_athId
 		}

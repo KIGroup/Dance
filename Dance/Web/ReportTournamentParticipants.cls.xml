@@ -67,8 +67,8 @@
 		#dim otherCouples As %ListOfObjects = ..GetReportDataCoupleOther(trnId)
 		#dim otherSingles As %ListOfObjects = ..GetReportDataSingleOther(trnId)
 		
-		set rowFormat = "%ManNumber;%ManLastName;%ManFirstName;%ManStClass;%ManLaClass;%ManDob;%WomanNumber;%WomanLastName;%WomanFirstName;%WomanStClass;%WomanLaClass;%WomanDob;%Competitions;%Club;%City;%Region;%Trainer1LastName;%Trainer1FirstName;%Trainer2LastName;%Trainer2FirstName"
-		w "Книжка партнера;Фамилия партнера;Имя партнера;Класс партнера СТ;Класс партнера ЛА;Дата рождения партнера;Книжка партнерши;Фамилия партнерши;Имя партнерши;Класс партнерши СТ;Класс партнерши ЛА;Дата рождения партнерши;Группы;Клуб;Город;Регион;Тренер1 Фамилия;Тренер1 Имя;Тренер2 Фамилия;Тренер2 Имя",!
+		set rowFormat = "%Created;%ManNumber;%ManLastName;%ManFirstName;%ManStClass;%ManLaClass;%ManDob;%WomanNumber;%WomanLastName;%WomanFirstName;%WomanStClass;%WomanLaClass;%WomanDob;%Competitions;%Club;%City;%Region;%Trainer1LastName;%Trainer1FirstName;%Trainer2LastName;%Trainer2FirstName"
+		w "Дата регистрации;Книжка партнера;Фамилия партнера;Имя партнера;Класс партнера СТ;Класс партнера ЛА;Дата рождения партнера;Книжка партнерши;Фамилия партнерши;Имя партнерши;Класс партнерши СТ;Класс партнерши ЛА;Дата рождения партнерши;Группы;Клуб;Город;Регион;Тренер1 Фамилия;Тренер1 Имя;Тренер2 Фамилия;Тренер2 Имя",!
 		
 		do ..WriteToDeviceFromAnyCoupleList(udsrCouples, rowFormat)
 		do ..WriteToDeviceFromAnyAthleteList(udsrSingles, rowFormat)
@@ -129,6 +129,8 @@
 		set row = $REPLACE(row, "%Trainer1FirstName", $P(couple.otherInfo.mainTrainer, " ", 2))
 		set row = $REPLACE(row, "%Trainer2LastName", $P($P(couple.otherInfo.otherTrainers, ",", 1), " ", *-1))
 		set row = $REPLACE(row, "%Trainer2FirstName",$P($P(couple.otherInfo.otherTrainers, ",", 1), " ", *))
+		set row = $REPLACE(row, "%Created", "["_couple.otherInfo.created_"]")
+		
 		w row,!			
 	}
 ]]></Implementation>
@@ -180,6 +182,7 @@
 		set row = $REPLACE(row, "%Trainer1FirstName", $P(athlete.otherInfo.mainTrainer, " ", 2))
 		set row = $REPLACE(row, "%Trainer2LastName", $P($P(athlete.otherInfo.otherTrainers, ",", 1), " ", *-1))
 		set row = $REPLACE(row, "%Trainer2FirstName",$P($P(athlete.otherInfo.otherTrainers, ",", 1), " ", *))
+		set row = $REPLACE(row, "%Created", "["_athlete.otherInfo.created_"]")
 		w row,!			
 	}
 ]]></Implementation>
@@ -207,35 +210,38 @@
 		set proxy.couple = ##class(Dance.Data.CoupleUDSR).%OpenId(coupleId).ConvertToProxyObject()
 		set proxy.competitions = ""
 		
+		
 		&sql(DECLARE Cur1Level1sub1 CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal
+	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantCoupleUDSR
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleId 
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN Cur1Level1sub1)
 		for  
 		{	
-			&sql(FETCH Cur1Level1sub1 INTO :cmpId) 
+			&sql(FETCH Cur1Level1sub1 INTO :cmpId, :created) 
 			quit:(SQLCODE '= 0)
 			
 			set proxy.competitions = proxy.competitions_","_cmpId
+			set proxy.couple.otherInfo.created = created
 		}
 		&sql(CLOSE Cur1Level1sub1)
 		
 		if (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(coupleId) = $$$YES){
 			set coupleWDSFId = ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(coupleId).WDSF.%Id()
 			&sql(DECLARE Cur1Level1sub2 CURSOR FOR 
-		 	 	 SELECT Competition->IdExternal
+		 	 	 SELECT Competition->IdExternal, Created
 		 	 	 FROM Dance_Data.ParticipantCoupleWDSF
 		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleWDSFId 
 		 	 	 ORDER BY Competition->StartDate)	
 			&sql(OPEN Cur1Level1sub2)
 			for  
 			{	
-				&sql(FETCH Cur1Level1sub2 INTO :cmpId) 
+				&sql(FETCH Cur1Level1sub2 INTO :cmpId, :created) 
 				quit:(SQLCODE '= 0)
 				
 				set proxy.competitions = proxy.competitions_","_cmpId
+				set proxy.couple.otherInfo.created = created
 			}
 			&sql(CLOSE Cur1Level1sub2)
 		}
@@ -326,7 +332,9 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 		quit:(SQLCODE '= 0)
 		
 		set proxy = ##class(%ZEN.proxyObject).%New()
-		set proxy.couple = ##class(Dance.Data.ParticipantCoupleWDSF).%OpenId(prtId).ConvertToProxyObject(params).couple
+		set prtProxy = ##class(Dance.Data.ParticipantCoupleWDSF).%OpenId(prtId).ConvertToProxyObject(params)
+		set proxy.couple = prtProxy.couple
+		set proxy.couple.otherInfo.created = prtProxy.created
 		set proxy.couple.man.number = ""
 		set proxy.couple.woman.number = ""
 		set proxy.competitions = ""
@@ -370,7 +378,7 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 		&sql(DECLARE PrtOtherCoupleCur CURSOR FOR 
 		 	 SELECT ID
 		 	 FROM Dance_Data.ParticipantCoupleOther
-		 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND TicketStatus <> 'Not paid'
+		 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
 		 	 GROUP BY CoupleKey
 		 	 ORDER BY FullName)	
 		
@@ -385,17 +393,18 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 			set proxy.competitions = ""
 			
 			&sql(DECLARE CmpCplOtherCur CURSOR FOR 
-		 	 	 SELECT Competition->IdExternal
+		 	 	 SELECT Competition->IdExternal, Created
 		 	 	 FROM Dance_Data.ParticipantCoupleOther
 		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND CoupleKey = :proxy.couple.key 
 		 	 	 ORDER BY Competition->StartDate)	
 			&sql(OPEN CmpCplOtherCur)
 			for  
 			{	
-				&sql(FETCH CmpCplOtherCur INTO :cmpId) 
+				&sql(FETCH CmpCplOtherCur INTO :cmpId, :created) 
 				quit:(SQLCODE '= 0)
 				
 				set proxy.competitions = proxy.competitions_","_cmpId
+				set proxy.couple.otherInfo.created = created
 			}
 			&sql(CLOSE CmpCplOtherCur)
 			
@@ -437,17 +446,18 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthUDSRCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal
+	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleUDSR
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :athId 
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpAthUDSRCur)
 		for  
 		{	
-			&sql(FETCH CmpAthUDSRCur INTO :cmpId) 
+			&sql(FETCH CmpAthUDSRCur INTO :cmpId, :created) 
 			quit:(SQLCODE '= 0)
 			
 			set proxy.competitions = proxy.competitions_","_cmpId
+			set proxy.athlete.otherInfo.created = created
 		}
 		&sql(CLOSE CmpAthUDSRCur)
 		
@@ -489,17 +499,18 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthWDSFCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal
+	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleWDSF
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :proxy.athlete.id 
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpAthWDSFCur)
 		for  
 		{	
-			&sql(FETCH CmpAthWDSFCur INTO :cmpId) 
+			&sql(FETCH CmpAthWDSFCur INTO :cmpId, :created) 
 			quit:(SQLCODE '= 0)
 			
 			set proxy.competitions = proxy.competitions_","_cmpId
+			set proxy.athlete.otherInfo.created = created
 		}
 		&sql(CLOSE CmpAthWDSFCur)
 		
@@ -525,7 +536,7 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 	&sql(DECLARE PrtOtherAthleteCur CURSOR FOR 
 	 	 SELECT ID
 	 	 FROM Dance_Data.ParticipantSingleOther
-	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND TicketStatus <> 'Not paid'
+	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
 	 	 GROUP BY AthleteKey
 	 	 ORDER BY FullName)	
 	
@@ -540,17 +551,18 @@ ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthOtherCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal
+	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleOther
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND AthleteKey = :proxy.athlete.key
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpAthOtherCur)
 		for  
 		{	
-			&sql(FETCH CmpAthOtherCur INTO :cmpId) 
+			&sql(FETCH CmpAthOtherCur INTO :cmpId, :created) 
 			quit:(SQLCODE '= 0)
 			
 			set proxy.competitions = proxy.competitions_","_cmpId
+			set proxy.athlete.otherInfo.created = created
 		}
 		&sql(CLOSE CmpAthOtherCur)
 		

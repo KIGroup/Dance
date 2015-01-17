@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
 'use strict';
 // dfdfdfddddddd
  
@@ -17,7 +17,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 
 	var intervalForTable = null;
 	
-    $scope.pageStore.registration = $scope.pageStore.registration || {grid:{hideNumbersColumn: true}, gridStyle:{}};  
+    $scope.pageStore.registration = $scope.pageStore.registration || {grid:{hideNumbersColumn: true}, gridStyle:{}};    
     
     $scope.tabUDSR = {
         searchForm: {}
@@ -67,7 +67,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                           {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
-                          {name: 'Цена', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
+                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
         
         $scope.competitionTable.properties = [
                           {name:'idExternal'},
@@ -334,6 +334,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.tabUDSR.searchForm.search = function(manNumber, womanNumber){
+	    manNumber = manNumber || "";
+        womanNumber = womanNumber || "";
+        
         if (manNumber == '' && womanNumber == '')
             return;
 

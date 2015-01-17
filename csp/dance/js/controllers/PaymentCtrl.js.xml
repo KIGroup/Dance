@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/PaymentCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
 'use strict';
 // 
         
@@ -33,7 +33,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                           {name: 'Возрастная группа' , sqlName: 'Competition->AgeCategory'             , isSorted: false, isSortable: true,  isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Класс'             , sqlName: ''                                     , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Тип'               , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
-                          {name: 'Цена'              , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}},
+                          {name: 'Цена, р.'              , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}},
                           {name: 'Статус'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}}];
         
         $scope.competitionTable.properties = [

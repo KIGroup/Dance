@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
 'use strict';
 //-ddddc
 
@@ -117,7 +117,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                           {name: 'Программа'        , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Возрастная группа', sqlName: 'AgeCategory'             , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Класс'            , sqlName: ''                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Цена'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}},
+                          {name: 'Цена, р.'             , sqlName: 'Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}},
                           {name: 'Участники'        , sqlName: 'ParticipantsCount'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
          
         $scope.page.competitionTable.properties = [

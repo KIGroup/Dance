@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/localization/dict.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/localization/dict.js" application="/csp/dancereg/" default="1"><![CDATA[
 //---
 
 localizationModule.constant('DanceDictionary', {
@@ -150,7 +150,7 @@ localizationModule.constant('DanceDictionary', {
 		'Фильтр: Ранг турнира' : 'Filter: Rank of tournament',
 		'Фильтр: Статус турнира' : 'Filter: Status of tournament',
 		'Форма обратной связи' : 'Feedback form',
-		'Цена' : 'Price',
+		'Цена, р.' : 'Price, r.',
 		'Щелчком мыши выберите группы, в которые необходимо зарегистрировать пару.' : 'Click to select the competitions to which you must register coulpe.',
 		'Щелчком мыши выберите необходимые группы для передачи данных в платежную систему.' : 'Click to select the desired competitions for data transmission to the payment system.',
 		'Язык' : 'Lang',
@@ -469,7 +469,7 @@ localizationModule.constant('DanceDictionary', {
 		'Фильтр: Статус турнира' : 'Filter: Wettbewerbsstatus',
 		'Форма обратной связи' : 'Feedback-formular',
 		'Хеш' : 'Hasch',
-		'Цена' : 'Preis',
+		'Цена, р.' : 'Preis, r.',
 		'Часть данных получена от WDSF.' : 'Ein teil der von der WDSF erhaltenen daten.',
 		'Черный цвет - участие в группе оплачено.' : 'Schwarz - die teilnahme an der gruppe bezahlt.',
 		'Чтобы разблокировать вкладку нажмите ″Назад″' : 'Um die registerkarte entsperren, klicken sie auf "Zurück"',

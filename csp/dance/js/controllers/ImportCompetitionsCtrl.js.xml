@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/ImportCompetitionsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/ImportCompetitionsCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
 'use strict';
 //   
  
@@ -25,7 +25,7 @@ controllersModule.controller('ImportCompetitionsCtrl', function($scope, $window,
                           {name: 'Id/IdExt'   , sqlName: 'IdInternal', isSorted: true, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
                           {name: 'Название'   , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
                           {name: 'Дата'       , sqlName: ''         , isSorted: false, isSortable: false , isDown: true ,  isSearched: false, isSearchable: false, filter: 'date'},
-                          {name: 'Цена'       , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'right'}},
+                          {name: 'Цена, р.'       , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false, captionStyle: {textAlign: 'right'}},
                           {name: 'Программа' , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
                           {name: 'Возр. гр.'  , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},
                           {name: 'Класс'      , sqlName: ''         , isSorted: false, isSortable: false,  isDown: true ,  isSearched: false, isSearchable: false},

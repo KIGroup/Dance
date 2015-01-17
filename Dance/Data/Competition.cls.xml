@@ -115,6 +115,16 @@ Competition in the tournament, has participants</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
+<Property name="IsInternational">
+<Type>%Boolean</Type>
+</Property>
+
+<Property name="IsClosed">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+<Required>1</Required>
+</Property>
+
 <Method name="CalcTestConvert">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>id</FormalSpec>
@@ -138,6 +148,7 @@ Competition in the tournament, has participants</Description>
 	set proxy.id = ..%Id()
 	set proxy.idInternal = ..IdInternal
 	set proxy.idExternal = ..IdExternal 
+	set proxy.isClosed = ..IsClosed = $$$YES
 	
 	set proxy.name = ..Name.Value
 	set proxy.startDate = $ZDATE(..StartDate, 3)
@@ -163,8 +174,10 @@ Competition in the tournament, has participants</Description>
 	
 	if (params.loadWDSF) && $ISOBJECT(..WDSF){
 		set proxy.wdsf = ..WDSF.ConvertToProxyObject()
-		set proxy.isInternational = $$$YES
+		set proxy.isWDSF = $$$YES
 	}
+	
+	set proxy.isInternational = ..IsInternational = $$$YES
 	
 	// DancerClasses array
 	set proxy.dancerClasses = ##class(%ListOfObjects).%New()
@@ -233,13 +246,15 @@ Create or update competition</Description>
       	set cmp.Name.Value = data.name
     }
     
-    if (data.isInternational = 1) && $ISOBJECT(data.wdsf){
+    if (data.isWDSF = 1) && $ISOBJECT(data.wdsf){
     	set cmp.WDSF = ##class(CompetitionWDSF).%OpenId(data.wdsf.id)
     }
     else{
 	    set cmp.WDSF = $$$NULLOREF
     }
     
+    set cmp.IsInternational = data.isInternational
+    set cmp.IsClosed = data.isClosed = 1
       	
     set cmp.Discipline = ##class(Dance.Data.Discipline).%OpenId(data.discipline.id)
     set cmp.AgeCategory = ##class(Dance.Data.AgeCategory).%OpenId(data.ageCategory.id)
@@ -297,6 +312,16 @@ Participants count in the competition</Description>
 <FormalSpec>competitionId:%String</FormalSpec>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
+	set count = 0
+	
+	&sql(SELECT COUNT(ID) As TotalCount INTO :count
+	 	 FROM Dance_Data.Participant 
+		 WHERE Competition = :competitionId AND IsActive = 1)
+	
+	quit count
+	
+	
+	
 	set count = 0
 	
 	&sql(SELECT TotalCount - OtherCount As Total INTO :count
@@ -404,6 +429,9 @@ Payments</Description>
 </Value>
 <Value name="21">
 <Value>WDSF</Value>
+</Value>
+<Value name="22">
+<Value>IsClosed</Value>
 </Value>
 </Data>
 <Data name="DancerClasses">
