@@ -13,7 +13,7 @@ servicesModule.factory('ReportSrvc', function($cookies, $window) {
 	return {
 		tournamentParticipants: function(trnId){
     		var lang = $cookies.lang ? $cookies.lang.substring(0,2) : 'ru';
-            $window.open(AppSettings.user + '/report/' + lang + '/tournament/' + trnId  + '/participant','_blank');
+            $window.open(AppSettings.admin + '/report/' + lang + '/tournament/' + trnId  + '/participant','_blank');
     	}
     }
 });

@@ -617,20 +617,25 @@ Get all tournament competitions for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
       	
-      	set whereCondition = "IsActive = 1 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
+      	set whereCondition = "cmpT.IsActive = 1 AND cmpT.Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
       	
       	if (params.other.date '= ""){
-      		set whereCondition = whereCondition_" AND StartDate = "_$ZDATEH(params.other.date,15)
+      		set whereCondition = whereCondition_" AND cmpT.StartDate = "_$ZDATEH(params.other.date,15)
       	}
       	
       	if (params.other.type = "UDSR"){
-	      	set whereCondition = whereCondition_" AND WDSF IS NULL "
+	      	set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL "
       	}
       	elseif (params.other.type = "WDSF"){
-      		set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
+      		set whereCondition = whereCondition_" AND cmpT.WDSF IS NOT NULL "
+      	}
+      	elseif (params.other.type = "OTHER"){
+      		set totalCountOfDancerClasses = 0
+			&sql(SELECT COUNT(ID) INTO :totalCountOfDancerClasses FROM Dance_Data.DancerClass)
+      		set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL AND (SELECT COUNT(cd.ID) FROM Dance_Data.Competition_DancerClasses as cd WHERE cd.Competition=cmpT.ID) = "_totalCountOfDancerClasses_" "
       	}
       
-      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Competition", "Dance.Data.Competition", params, params.other.convertParams, whereCondition).%ToJSON()
+      	do ..GetProxyObjectsForGrid("SELECT cmpT.ID FROM Dance_Data.Competition as cmpT ", "Dance.Data.Competition", params, params.other.convertParams, whereCondition).%ToJSON()
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -757,6 +762,9 @@ Available participants competitions for grid</Description>
       	elseif (params.other.type = "WDSF"){
 	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
       	}
+      	elseif (params.other.type = "OTHER"){
+	      	set whereCondition = whereCondition_" AND WDSF IS NULL "
+      	}
       	     	
 		set sql = "SELECT ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
 		set ^tt = sql
@@ -772,7 +780,18 @@ Available participants competitions for grid</Description>
 			set cmp = ##class(Dance.Data.Competition).%OpenId(rs.%GetData(1),,.st)
 			
 			if (maleSTClass = "") && (maleLAClass = ""){
-				do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
+				if (params.other.type = "OTHER"){
+					 // Другим разрешены группы со всеми классами, т.е. без ограничений
+					 set totalCountOfDancerClasses = 0
+					 &sql(SELECT COUNT(ID) INTO :totalCountOfDancerClasses FROM Dance_Data.DancerClass)
+					 
+					 if (cmp.DancerClasses.Count() = totalCountOfDancerClasses){
+						 do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
+					 }
+				}
+				else{
+					do proxyItems.Insert(cmp.ConvertToProxyObject(params.other.convertParams))
+				}
 			}
 			elseif (cmp.Discipline.Code = "Ст"){
 				set key = ""

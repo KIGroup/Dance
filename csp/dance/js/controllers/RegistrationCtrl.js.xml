@@ -17,7 +17,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 
 	var intervalForTable = null;
 	
-    $scope.pageStore.registration = $scope.pageStore.registration || {grid:{}, gridStyle:{}};  
+    $scope.pageStore.registration = $scope.pageStore.registration || {grid:{hideNumbersColumn: true}, gridStyle:{}};  
     
     $scope.tabUDSR = {
         searchForm: {}
@@ -59,7 +59,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         // Competition table
         //
         $scope.competitionTable.columns = [
-                          {name: 'Дата', sqlName: 'StartDate', isSorted: true , isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '20px'}},
+                          {name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
@@ -69,6 +70,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                           {name: 'Цена', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
         
         $scope.competitionTable.properties = [
+                          {name:'idExternal'},
                           {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'startTime'},
                           {name:'fullName',
@@ -201,7 +203,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.competitionTable.setHiddenCoulumns = function(value){
-        var indexes = [1,3,4,5,6];
+        var indexes = [2,4,5,6,7];
         for(var n=0; n < indexes.length; n++){
             $scope.competitionTable.columns[indexes[n]].hidden = value;     
         }

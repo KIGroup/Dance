@@ -275,6 +275,12 @@ directivesModule.directive('stcgrid', function(){
                 for(var i=0; i < columns.length; i++)
                     if (!columns[i].hidden)
                         visibleCount++;
+                        
+                
+                if ($scope.grid || $scope.grid.hideNumbersColumn){
+                	console.log('minus');
+                	visibleCount--;
+                }
 				
                 return visibleCount;
             };

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Web.Report">
+<Class name="Dance.Web.ReportTournamentParticipants">
 <Abstract>1</Abstract>
-<TimeCreated>63497,79011.63075</TimeCreated>
+<TimeCreated>63520,63887.252488</TimeCreated>
 
 <Parameter name="ContentType">
 <Default>plain/text</Default>
@@ -12,11 +12,35 @@
 <Default>windows-1251</Default>
 </Parameter>
 
-<Method name="TournamentParticipants">
+<Method name="GetReportLink">
+<Description><![CDATA[
+<Route Method="GET" Url="/report/:lang/tournament/:trnId/code/:code/participant" Call="Dance.Web.ReportTournamentParticipants:GetFileByAccessCode"/>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%Status</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set link = "http://"_$GET(^Settings("Dance", "ServerAddress"), "localhost")_":"_$GET(^Settings("Dance","ServerPort"), 57772)_$GET(^Settings("Dance","WebAppUser"))_
+	"/report/ru/tournament/"_trnId_"/code/"_..GetAccessHashForTournament(##class(Dance.Data.Tournament).%OpenId(trnId))_"/participant"
+	
+	quit link
+]]></Implementation>
+</Method>
+
+<Method name="GetAccessHashForTournament">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trn:Dance.Data.Tournament</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	quit $REPLACE($REPLACE($SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.MD5Hash($ZCVT($P(trn.AccessCode, "-", 3)_trn.%Id()_trn.Hash, "L"))), "/", "SLASH"), "=", "EQL")
+]]></Implementation>
+</Method>
+
+<Method name="GetFile">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>lang:%String,trnId:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	set trn = ##class(Dance.Data.Tournament).%OpenId(trnId)
+	
 	do ##class(%MessageDictionary).SetSessionLanguage(lang)
 	set %session.Language = lang
 	
@@ -26,9 +50,7 @@
 	set status = $$$OK
 	
 	try{
-		set trn = ##class(Dance.Data.Tournament).%OpenId(trnId)
-		
-		set fileName = trn.Name.Value_".csv"
+		set fileName = trn.Name.Value_" [от "_$ZD($ZTS, 3)_"].csv"
 
 		if ($FIND(%request.UserAgent, "Firefox") '= 0) {
 			set fileName = $REPLACE(fileName, " ", "_")
@@ -62,6 +84,20 @@
 	}
 	
 	q status
+]]></Implementation>
+</Method>
+
+<Method name="GetFileByAccessCode">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>lang:%String,trnId:%String,accessCode:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set trn = ##class(Dance.Data.Tournament).%OpenId(trnId)
+	if (..GetAccessHashForTournament(trn) '= accessCode) {
+		quit ##class(Dance.Utils.Msg).GetErrorStatus("Wrong access code for tournament")
+	}
+	
+	q ..GetFile(lang, trnId)
 ]]></Implementation>
 </Method>
 
@@ -149,61 +185,78 @@
 ]]></Implementation>
 </Method>
 
-<UDLText name="T">
-<Content><![CDATA[
-/*
-ClassMethod GetReportDataCoupleUDSRWDSF(trnId As %String) As %ListOfObjects
-{
+<Method name="GetReportDataCoupleUDSR">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String</FormalSpec>
+<ReturnType>%ListOfObjects</ReturnType>
+<Implementation><![CDATA[
 	set list = ##class(%ListOfObjects).%New()
 	
-	&sql(DECLARE PrtUDSRCur CURSOR FOR 
-	 	 SELECT DISTINCT Couple
-	 	 FROM Dance_Data.ParticipantCoupleUDSR
-	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND 1 = (SELECT COUNT(ID) FROM Dance_Data.MatchingCoupleUDSRWDSF WHERE UDSR = ID) 
-	 	 ORDER BY FullName)	
+	&sql(DECLARE Cur1Top CURSOR FOR 
+	 	 SELECT ID
+		 FROM Dance_Data.CoupleUDSR
+		 ORDER BY Man->LastName->Value)	
 	
-	&sql(OPEN PrtUDSRCur)
+	&sql(OPEN Cur1Top)
 	for  
 	{	
-		&sql(FETCH PrtUDSRCur INTO :coupleId) 
+		&sql(FETCH Cur1Top INTO :coupleId) 
 		quit:(SQLCODE '= 0)
 		
 		set proxy = ##class(%ZEN.proxyObject).%New()
 		set proxy.couple = ##class(Dance.Data.CoupleUDSR).%OpenId(coupleId).ConvertToProxyObject()
 		set proxy.competitions = ""
 		
-		&sql(DECLARE CmpCplUDSRCur CURSOR FOR 
+		&sql(DECLARE Cur1Level1sub1 CURSOR FOR 
 	 	 	 SELECT Competition->IdExternal
-	 	 	 FROM Dance_Data.ParticipantCoupleUDSR as pcUDSR, Dance_Data.ParticipantCoupleWDSF as pcWDSF
-	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Couple = :coupleId 
+	 	 	 FROM Dance_Data.ParticipantCoupleUDSR
+	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleId 
 	 	 	 ORDER BY Competition->StartDate)	
-		&sql(OPEN CmpCplUDSRCur)
+		&sql(OPEN Cur1Level1sub1)
 		for  
 		{	
-			&sql(FETCH CmpCplUDSRCur INTO :cmpId) 
+			&sql(FETCH Cur1Level1sub1 INTO :cmpId) 
 			quit:(SQLCODE '= 0)
 			
 			set proxy.competitions = proxy.competitions_","_cmpId
 		}
-		&sql(CLOSE CmpCplUDSRCur)
+		&sql(CLOSE Cur1Level1sub1)
 		
-		set proxy.competitions = $E(proxy.competitions, 2, *)
-		do list.Insert(proxy)
+		if (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(coupleId) = $$$YES){
+			set coupleWDSFId = ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(coupleId).WDSF.%Id()
+			&sql(DECLARE Cur1Level1sub2 CURSOR FOR 
+		 	 	 SELECT Competition->IdExternal
+		 	 	 FROM Dance_Data.ParticipantCoupleWDSF
+		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleWDSFId 
+		 	 	 ORDER BY Competition->StartDate)	
+			&sql(OPEN Cur1Level1sub2)
+			for  
+			{	
+				&sql(FETCH Cur1Level1sub2 INTO :cmpId) 
+				quit:(SQLCODE '= 0)
+				
+				set proxy.competitions = proxy.competitions_","_cmpId
+			}
+			&sql(CLOSE Cur1Level1sub2)
+		}
+		
+		if (proxy.competitions '= ""){
+			set proxy.competitions = $E(proxy.competitions, 2, *)
+			do list.Insert(proxy)
+		}
 	}
 	
-	&sql(CLOSE PrtUDSRCur)
+	&sql(CLOSE Cur1Top)
 	
 	quit list
-}
-*/
-]]></Content>
-</UDLText>
+]]></Implementation>
+</Method>
 
-<Method name="GetReportDataCoupleUDSR">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>trnId:%String</FormalSpec>
-<ReturnType>%ListOfObjects</ReturnType>
-<Implementation><![CDATA[
+<UDLText name="T">
+<Content><![CDATA[
+/* old
+ClassMethod GetReportDataCoupleUDSR(trnId As %String) As %ListOfObjects
+{
 	set list = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE PrtUDSRCur CURSOR FOR 
@@ -244,8 +297,10 @@ ClassMethod GetReportDataCoupleUDSRWDSF(trnId As %String) As %ListOfObjects
 	&sql(CLOSE PrtUDSRCur)
 	
 	quit list
-]]></Implementation>
-</Method>
+}
+*/
+]]></Content>
+</UDLText>
 
 <Method name="GetReportDataCoupleWDSF">
 <ClassMethod>1</ClassMethod>
@@ -258,10 +313,10 @@ ClassMethod GetReportDataCoupleUDSRWDSF(trnId As %String) As %ListOfObjects
 	set params.competitionParams = ##class(%ZEN.proxyObject).%New()
 			
 	&sql(DECLARE PrtWDSFCoupleCur CURSOR FOR 
-	 	 SELECT ID
-	 	 FROM Dance_Data.ParticipantCoupleWDSF
-	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
-	 	 GROUP BY Couple
+	 	 SELECT pW.ID
+	 	 FROM Dance_Data.ParticipantCoupleWDSF as pW
+	 	 WHERE pW.Competition->Tournament = :trnId AND pW.Competition->IsActive = 1 AND pW.IsActive = 1 AND 0 = (SELECT COUNT(mt.ID) FROM Dance_Data.MatchingCoupleUDSRWDSF as mt WHERE mt.WDSF = pW.Couple)
+	 	 GROUP BY pW.Couple
 	 	 ORDER BY FullName)	
 	
 	&sql(OPEN PrtWDSFCoupleCur)
@@ -272,6 +327,8 @@ ClassMethod GetReportDataCoupleUDSRWDSF(trnId As %String) As %ListOfObjects
 		
 		set proxy = ##class(%ZEN.proxyObject).%New()
 		set proxy.couple = ##class(Dance.Data.ParticipantCoupleWDSF).%OpenId(prtId).ConvertToProxyObject(params).couple
+		set proxy.couple.man.number = ""
+		set proxy.couple.woman.number = ""
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpCplWDSFCur CURSOR FOR 
@@ -428,6 +485,7 @@ ClassMethod GetReportDataCoupleUDSRWDSF(trnId As %String) As %ListOfObjects
 		
 		set proxy = ##class(%ZEN.proxyObject).%New()
 		set proxy.athlete = ##class(Dance.Data.ParticipantSingleWDSF).%OpenId(prtId).ConvertToProxyObject(params).athlete
+		set proxy.athlete.number = ""
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthWDSFCur CURSOR FOR 

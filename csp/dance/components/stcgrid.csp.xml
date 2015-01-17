@@ -6,7 +6,7 @@
     <caption class="text-left" style="padding-bottom: 10px;" ng-show="caption != ''"><b ng-bind="caption|localize"></b></caption>
     <thead>
         <tr>
-            <th class="tableNumber">#</th>
+            <th class="tableNumber" ng-hide="grid.hideNumbersColumn">#</th>
             <th ng-repeat="column in columns" ng-hide="column.hidden" ng-style="column.captionStyle" ng-click="sort(column, column.isDown)" ng-class="{selectableMode:column.isSortable}">
                 <span ng-bind="column.name|localize"></span>
                 <i class="fa fa-sort-down fa-lg pull-right" ng-show="column.isDown && column.isSorted"  style="margin-top: 0px;"></i>
@@ -56,7 +56,7 @@
     </tfoot>
     <tbody ng-class="{selectableMode: selectable==true}">
         <tr ng-repeat="item in items" ng-class="getRowClass(item.rowClass)">
-            <td class="tableNumber" ng-bind="$index + pageSize*(pageCurr - 1) + 1" ng-click="select(item, {cellSelectable: false})"></td>
+            <td class="tableNumber" ng-bind="$index + pageSize*(pageCurr - 1) + 1" ng-click="select(item, {cellSelectable: false})" ng-hide="grid.hideNumbersColumn"></td>
             <td ng-repeat="property in properties" ng-hide="columns[$index].hidden" ng-click="select(item, property)" ng-style="property.cellStyle">
                 <pre ng-class="property.getCssClass(item)" title="{{property.cellTitle}}" ng-bind="getPropertyValue(item, property)" ng-click="selectCell(item, property)"></pre>
             </td>

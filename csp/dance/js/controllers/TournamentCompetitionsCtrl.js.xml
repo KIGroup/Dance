@@ -18,7 +18,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     $scope.locationSrvc = LocationSrvc; 
     
     if (!$scope.pageStore.tournamentDetails) 
-    	$scope.pageStore.tournamentDetails = {gridCompetitions:{filterDate: ''}};
+    	$scope.pageStore.tournamentDetails = {gridCompetitions:{filterDate: '', hideNumbersColumn: true}};
 
 	var intervalForTable = null;
  
@@ -27,7 +27,8 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-                          {name: 'Дата'              , sqlName: 'StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+        				  {name: '#'                 , sqlName: '%EXACT(idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '20px'}},
+                          {name: 'Дата'              , sqlName: 'StartDate'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время'             , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Название'          , sqlName: 'Name->Value'             , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Программа'         , sqlName: 'Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
@@ -38,7 +39,8 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                           {name: 'Оплачено'          , sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}}];
         
         $scope.page.competitionTable.properties = [
-        				  {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
+        				  {name:'idExternal'},
+                          {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'startTime'},
                           {name:'fullName', 
                             calculate: function(item){
@@ -148,7 +150,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     };
 
     $scope.page.competitionTable.setHiddenCoulumns = function(value){
-        var indexes = [1,3,4,5,6];
+        var indexes = [2,4,5,6,7];
         for(var n=0; n < indexes.length; n++){
             $scope.page.competitionTable.columns[indexes[n]].hidden = value;     
         }

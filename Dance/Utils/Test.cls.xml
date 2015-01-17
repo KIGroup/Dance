@@ -4,6 +4,38 @@
 <Abstract>1</Abstract>
 <TimeCreated>63339,74275.849932</TimeCreated>
 
+<Method name="CoupleFix">
+<Description>
+do ##class(Dance.Utils.Test).CoupleFix()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set couple = ##class(Dance.Data.CoupleWDSF).%OpenId(481)
+	#dim man As Dance.Data.PersonWDSF = couple.Man
+	#dim woman As Dance.Data.PersonWDSF = couple.Woman
+	
+	d man.LastName.SetValueByLang("Копытов", "ru")
+	d man.FirstName.SetValueByLang("Дмитрий", "ru")
+	w man.%Save()
+	
+	d woman.LastName.SetValueByLang("Ваняшкина", "ru")
+	d woman.FirstName.SetValueByLang("Анна", "ru")
+	w woman.%Save()
+	
+	
+	set couple = ##class(Dance.Data.CoupleWDSF).%OpenId(470)
+	set man  = couple.Man
+	set woman = couple.Woman
+	
+	d man.LastName.SetValueByLang("Олейников", "ru")
+	d man.FirstName.SetValueByLang("Дмитрий", "ru")
+	w man.%Save()
+	
+	d woman.LastName.SetValueByLang("Орловская", "ru")
+	d woman.FirstName.SetValueByLang("Анастасия", "ru")
+	w woman.%Save()
+]]></Implementation>
+</Method>
+
 <Method name="Langs">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[

@@ -28,8 +28,7 @@
 <div class="row-fluid">
 	<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' ' + ('Всего'|localize) + ' - ' + page.tournament.participantsCount + '.'"></span>
 	&nbsp;
-	<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize"  ng-click="export()" ng-show="menu.admin"></a>
-	
+	<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize" ng-show="menu.admin"  ng-click="export()"></a>
 	<!--
 	<div class="btn-group">
         <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">{{'Экспорт'|localize}} <span class="caret"></span></button>

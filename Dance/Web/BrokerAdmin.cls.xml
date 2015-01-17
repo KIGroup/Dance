@@ -65,6 +65,12 @@ Protected REST URLs</Description>
 <Route Method="GET" Url="/checkAdmin/:isLogin" Call="Dance.Web.JsonAdmin:CheckAdmin"/>
 
 <Route Method="GET" Url="/recorder/tournament/:id" Call="Dance.Web.JsonAdmin:GetRecordersHashesForTournament"/>
+
+
+
+<Route Method="GET" Url="/report/:lang/tournament/:trnId/participant" Call="Dance.Web.ReportTournamentParticipants:GetFile"/>
+
+
 </Routes>
 ]]></Data>
 </XData>

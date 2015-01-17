@@ -161,6 +161,7 @@ Tournaments</Description>
 		
 	if (##class(Dance.Data.Tournament).CheckUpdatePrivilege() = $$$OK){
 		set proxy.hash = ..Hash
+		set proxy.prtsUrl = ##class(Dance.Web.ReportTournamentParticipants).GetReportLink(..%Id())
 	}
 	
 	if (params.loadName){	
