@@ -97,6 +97,8 @@
 		set udsrManNumber = ""
 		set udsrWomanNumber = ""
 		
+		do ##class(Dance.Utils.Journal).Create("Log", "Matching couple", "manLN="_manLastName_"; manFN="_manFirstName_"; womanLN="_womanLastName_"; womanFN="_womanFirstName)
+		
 		&sql(DECLARE ManCur CURSOR FOR 
 			 SELECT person.Number
 		 	 FROM Dance_Data.PersonUDSR as person 
@@ -113,6 +115,8 @@
 			&sql(FETCH ManCur INTO :udsrManNumber) 
 			quit:(SQLCODE '= 0)
 			
+			do ##class(Dance.Utils.Journal).Create("Log", "Matching couple", "udsrManNumber="_udsrManNumber)
+
 			set womanUDSR = ##class(PersonUDSR).NumberUDSRIdxOpen($GET(^Dance.Data.ManPartnersUDSR(udsrManNumber)))
 			if $ISOBJECT(womanUDSR) && (womanUDSR.LastName.GetValueByLang("en") = womanLastName) && (womanUDSR.FirstName.GetValueByLang("en") = womanFirstName){
 				set udsrWomanNumber = womanUDSR.Number
@@ -120,13 +124,14 @@
 			}
 		}
 		&sql(CLOSE ManCur)
-	
+		
 	
 		set coupleUDSR = ##class(CoupleUDSR).GetByNumbers(udsrManNumber, udsrWomanNumber)
 		if '$ISOBJECT(coupleUDSR){
 			$$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_CoupleUDSRNotFoundByCoupleWDSFFullName"))
 		}
 		
+		do ##class(Dance.Utils.Journal).Create("Log", "Matching couple", "coupleUDSR="_coupleUDSR.%Id())
 		$$$THROWONERROR(st, coupleWDSF.Man.LastName.SetValueByLang(coupleUDSR.Man.LastName.GetValueByLang("ru"), "ru"))
 		$$$THROWONERROR(st, coupleWDSF.Man.FirstName.SetValueByLang(coupleUDSR.Man.FirstName.GetValueByLang("ru"), "ru"))
 		$$$THROWONERROR(st, coupleWDSF.Woman.LastName.SetValueByLang(coupleUDSR.Woman.LastName.GetValueByLang("ru"), "ru"))
@@ -142,9 +147,52 @@
 	catch(ex){
 		TROLLBACK 1
 		set st = ex.AsStatus()
+		do ##class(Dance.Utils.Journal).Create("Log", "Matching couple", $SYSTEM.Status.GetErrorText(ex.AsStatus()))
 	}
 	
+	do ..FixLocalization()
+	
 	quit match
+]]></Implementation>
+</Method>
+
+<Method name="FixLocalization">
+<Description>
+do ##class(Dance.Data.MatchingCoupleUDSRWDSF).FixLocalization()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	try
+	{
+		TSTART
+		
+		&sql(DECLARE MtCur CURSOR FOR 
+			 SELECT UDSR, WDSF
+		 	 FROM Dance_Data.MatchingCoupleUDSRWDSF
+		 	 WHERE UDSR->Man->LastName->Value <> WDSF->Man->LastName->Value)	
+		&sql(OPEN MtCur)
+		for  
+		{	
+			&sql(FETCH MtCur INTO :udsrId, :wdsfId) 
+			quit:(SQLCODE '= 0)
+			
+			do ##class(Dance.Utils.Journal).Create("Log", "Matching. FixLocalization", "Poblem match. UDSR="_udsrId_"; WDSF="_wdsfId)
+			
+			set coupleUDSR = ##class(Dance.Data.CoupleUDSR).%OpenId(udsrId)
+			set coupleWDSF = ##class(Dance.Data.CoupleWDSF).%OpenId(wdsfId)
+
+			$$$THROWONERROR(st, coupleWDSF.Man.LastName.SetValueByLang(coupleUDSR.Man.LastName.GetValueByLang("ru"), "ru"))
+			$$$THROWONERROR(st, coupleWDSF.Man.FirstName.SetValueByLang(coupleUDSR.Man.FirstName.GetValueByLang("ru"), "ru"))
+			$$$THROWONERROR(st, coupleWDSF.Woman.LastName.SetValueByLang(coupleUDSR.Woman.LastName.GetValueByLang("ru"), "ru"))
+			$$$THROWONERROR(st, coupleWDSF.Woman.FirstName.SetValueByLang(coupleUDSR.Woman.FirstName.GetValueByLang("ru"), "ru"))
+		}
+		&sql(CLOSE MtCur)
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK 1
+		do ##class(Dance.Utils.Journal).Create("Log", "Matching. FixLocalization", $SYSTEM.Status.GetErrorText(ex.AsStatus()))
+	}
 ]]></Implementation>
 </Method>
 

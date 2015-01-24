@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/registration.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/registration.csp" application="/csp/dancereg/" default="1"><![CDATA[
 
 <div class="row-fluid">
 	<pre ng-bind="tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;"></pre>
@@ -35,7 +35,7 @@
 			<!-- ================== -->
 			<form name="form_udsrSearch" ng-hide="tabUDSR.couple || tabUDSR.athlete">
 				<div class="row-fluid" style="margin-bottom: 5px;">
-					<label ng-bind="'Номера классификационных книжек СТСР'|localize" style="font-weight: bold;"></label>
+					<label ng-bind="'Введите номера классификационных книжек СТСР'|localize" style="font-weight: bold;"></label>
 				</div>
 				<div class="row-fluid">
 					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Номер партнера'|localize}}" ng-model="tabUDSR.searchForm.manNumber"/>
@@ -155,7 +155,7 @@
 			<!-- ================== -->
 			<form name="form_wdsfSearch" ng-hide="tabWDSF.couple || tabWDSF.athlete">
 				<div class="row-fluid" style="margin-bottom: 5px;">
-					<label ng-bind="'Номера классификационных книжек WDSF'|localize" style="font-weight: bold;"></label>
+					<label ng-bind="'Введите номера классификационных книжек WDSF'|localize" style="font-weight: bold;"></label>
 				</div>
 				<div class="row-fluid">
 					<input type="text" style="height: 16px!important;line-height: 16px!important; width: 150px;" placeholder="{{'Номер партнера'|localize}}" ng-model="tabWDSF.searchForm.manNumber"/>

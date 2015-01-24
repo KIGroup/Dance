@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/searchparticipants.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/searchparticipants.csp" application="/csp/dancereg/" default="1"><![CDATA[
 
 <form name="form_search" ng-submit="participantTable.refresh()">
 	<div class="row-fluid">

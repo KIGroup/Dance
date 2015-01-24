@@ -82,15 +82,11 @@
 	set proxy.athlete.paymentsCount = "-"
 	if $ISOBJECT(proxy.competition.tournament){
 		if (params.loadPrtObjCompetitionsCount){
-			&sql(SELECT COUNT(Competition) INTO :proxy.athlete.competitionsCount
-				 FROM Dance_Data.ParticipantSingleOther 
-			     WHERE Competition->Tournament = :proxy.competition.tournament.id AND AthleteKey = :proxy.athlete.key)
+			set proxy.athlete.competitionsCount = ..PrtObjCompetitionsCount
 		}
 		
 		if (params.loadPrtObjPaymentsCount){
-			&sql(SELECT COUNT(ID) INTO :proxy.athlete.paymentsCount
-				 FROM Dance_Data.ParticipantSingleOther 
-			     WHERE Competition->Tournament = :proxy.competition.tournament.id AND AthleteKey = :proxy.athlete.key AND TicketStatus = 'Paid')
+			set proxy.athlete.paymentsCount = ..PrtObjPaymentsCount	
 		}
 	}
 	
@@ -151,5 +147,43 @@
 	quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>ParticipantSingleOtherDefaultData</DefaultData>
+<Data name="ParticipantSingleOtherDefaultData">
+<Subscript>"ParticipantSingleOther"</Subscript>
+<Value name="1">
+<Value>AthleteKey</Value>
+</Value>
+<Value name="2">
+<Value>Gender</Value>
+</Value>
+<Value name="3">
+<Value>LastName</Value>
+</Value>
+<Value name="4">
+<Value>FirstName</Value>
+</Value>
+<Value name="5">
+<Value>DOB</Value>
+</Value>
+<Value name="6">
+<Value>Country</Value>
+</Value>
+<Value name="7">
+<Value>City</Value>
+</Value>
+<Value name="8">
+<Value>Club</Value>
+</Value>
+<Value name="9">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="10">
+<Value>OtherTrainers</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

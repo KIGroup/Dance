@@ -25,15 +25,11 @@
 	set proxy.athlete.paymentsCount = "-"
 	if $ISOBJECT(proxy.competition.tournament){
 		if (params.loadPrtObjCompetitionsCount){
-			&sql(SELECT COUNT(Competition) INTO :proxy.couple.competitionsCount
-				 FROM Dance_Data.ParticipantSingleUDSR 
-			     WHERE Competition->Tournament = :proxy.competition.tournament.id AND Athlete = :proxy.athlete.id)
+			set proxy.athlete.competitionsCount = ..PrtObjCompetitionsCount
 		}
 		
 		if (params.loadPrtObjPaymentsCount){
-			&sql(SELECT COUNT(ID) INTO :proxy.couple.paymentsCount
-				 FROM Dance_Data.ParticipantSingleUDSR 
-			     WHERE Competition->Tournament = :proxy.competition.tournament.id AND Athlete = :proxy.athlete.id AND TicketStatus = 'Paid')
+			set proxy.athlete.paymentsCount = ..PrtObjPaymentsCount
 		}
 	}
 	
@@ -62,5 +58,16 @@
 	quit obj
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>ParticipantSingleUDSRDefaultData</DefaultData>
+<Data name="ParticipantSingleUDSRDefaultData">
+<Subscript>"ParticipantSingleUDSR"</Subscript>
+<Value name="1">
+<Value>Athlete</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>
