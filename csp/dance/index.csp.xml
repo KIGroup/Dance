@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/index.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/index.csp" application="/csp/testdance/" default="1"><![CDATA[
 <!doctype html>
 
 <html ng-app="mainModule" ng-controller="MainCtrl">
@@ -17,7 +17,7 @@
  			window.location = "tech.csp";
  		}
  	
- 	
+ 	 
 		// Настройки приложения. Имена веб-приложений для REST, google календарь, язык
     	AppSettings.defaultName = '#($GET(^Settings("Dance", "WebApp")))#';
         AppSettings.admin = '#($GET(^Settings("Dance", "WebAppAdmin")))#';

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/combine.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/combine.js" application="/csp/testdance/" default="1"><![CDATA[
 // --- file[combineControllers.js] --- 
-// --- file[MainCtrl.js] ---
+// --- file[MainCtrl.js] --
 
 'use strict'; 
 //c
