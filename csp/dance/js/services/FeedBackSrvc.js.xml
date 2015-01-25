@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/services/FeedBackSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/services/FeedBackSrvc.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //ddkjh
 
@@ -11,8 +11,10 @@
 servicesModule.factory('FeedBackSrvc', function(RESTSrvc) {    
     return {
         create: function(fb){
-	        return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/feedback', {data: fb}});
+	        return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/feedback', data: fb});
         }
+    }
+	}
  );
 ]]></CSP>
 </Export>
