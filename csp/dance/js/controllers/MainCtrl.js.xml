@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/MainCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
-//
+//c
 
 /*===========================================================================================
 Главный контроллер, работа с языком и меню

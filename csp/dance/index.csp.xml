@@ -12,12 +12,12 @@
 
 	<script language="javascript"  src="js/common.js"></script>
  	<script language="javascript">
- 		// На случай технических работ
+ 		/*/ На случай технических работ n
  		if (window.location.host != "146.185.160.138:57772" && window.location.host != "localhost:57772"){
  			window.location = "tech.csp";
- 		}
+ 		}*/
  	
- 	 
+ 	
 		// Настройки приложения. Имена веб-приложений для REST, google календарь, язык
     	AppSettings.defaultName = '#($GET(^Settings("Dance", "WebApp")))#';
         AppSettings.admin = '#($GET(^Settings("Dance", "WebAppAdmin")))#';

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 // dfdfdfddddddd
  

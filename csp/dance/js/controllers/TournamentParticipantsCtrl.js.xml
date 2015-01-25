@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //--ddddd
   
@@ -24,18 +24,18 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     	//  
         $scope.page.participantTable.columns = [ 
                           {name: 'Партнер / Партнерша', sqlName: 'FullName', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
-                          {name: 'Клуб / Город', sqlName: '-', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Клуб / Город', sqlName: 'PrtObjCity', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
                           /*
                           {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           */
-                          {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Страна', sqlName: 'PrtObjCountry', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           /*
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
                           {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
                           {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}
                           */
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}},
-                          {name: 'Оплачены', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}}];
+                          {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}},
+                          {name: 'Оплачены', sqlName: 'PrtObjPaymentsCount', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}}];
         
         $scope.page.participantTable.properties = [ 
         				  {name:'fullName', /*cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
