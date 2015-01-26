@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Dance.Web.ReportTournamentParticipants">
+<Class name="Dance.Web.ReportTournamentPayers">
 <Abstract>1</Abstract>
-<TimeCreated>63520,63887.252488</TimeCreated>
+<TimeCreated>63578,74712.386624</TimeCreated>
 
 <Parameter name="ContentType">
 <Default>plain/text</Default>
@@ -20,7 +20,7 @@
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
 	set link = "http://"_$GET(^Settings("Dance", "ServerAddress"), "localhost")_":"_$GET(^Settings("Dance","ServerPort"), 57772)_$GET(^Settings("Dance","WebAppUser"))_
-	"/report/ru/tournament/"_trnId_"/code/"_..GetAccessHashForTournament(##class(Dance.Data.Tournament).%OpenId(trnId))_"/participant"
+	"/report/ru/tournament/"_trnId_"/code/"_..GetAccessHashForTournament(##class(Dance.Data.Tournament).%OpenId(trnId))_"/payer"
 	
 	quit link
 ]]></Implementation>
@@ -214,7 +214,7 @@
 		&sql(DECLARE Cur1Level1sub1 CURSOR FOR 
 	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantCoupleUDSR
-	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleId 
+	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleId AND TicketStatus = 'Paid' 
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN Cur1Level1sub1)
 		for  
@@ -232,7 +232,7 @@
 			&sql(DECLARE Cur1Level1sub2 CURSOR FOR 
 		 	 	 SELECT Competition->IdExternal, Created
 		 	 	 FROM Dance_Data.ParticipantCoupleWDSF
-		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleWDSFId 
+		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleWDSFId  AND TicketStatus = 'Paid'
 		 	 	 ORDER BY Competition->StartDate)	
 			&sql(OPEN Cur1Level1sub2)
 			for  
@@ -271,7 +271,7 @@
 	&sql(DECLARE PrtWDSFCoupleCur CURSOR FOR 
 	 	 SELECT pW.ID
 	 	 FROM Dance_Data.ParticipantCoupleWDSF as pW
-	 	 WHERE pW.Competition->Tournament = :trnId AND pW.Competition->IsActive = 1 AND pW.IsActive = 1 AND 0 = (SELECT COUNT(mt.ID) FROM Dance_Data.MatchingCoupleUDSRWDSF as mt WHERE mt.WDSF = pW.Couple)
+	 	 WHERE pW.Competition->Tournament = :trnId AND pW.Competition->IsActive = 1 AND pW.IsActive = 1 AND pW.TicketStatus = 'Paid' AND 0 = (SELECT COUNT(mt.ID) FROM Dance_Data.MatchingCoupleUDSRWDSF as mt WHERE mt.WDSF = pW.Couple)
 	 	 GROUP BY pW.Couple
 	 	 ORDER BY FullName)	
 	
@@ -292,7 +292,7 @@
 		&sql(DECLARE CmpCplWDSFCur CURSOR FOR 
 	 	 	 SELECT Competition->IdExternal
 	 	 	 FROM Dance_Data.ParticipantCoupleWDSF
-	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Couple = :proxy.couple.id 
+	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Couple = :proxy.couple.id  AND TicketStatus = 'Paid' 
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpCplWDSFCur)
 		for  
@@ -328,7 +328,7 @@
 		&sql(DECLARE PrtOtherCoupleCur CURSOR FOR 
 		 	 SELECT ID
 		 	 FROM Dance_Data.ParticipantCoupleOther
-		 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
+		 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND TicketStatus = 'Paid'
 		 	 GROUP BY CoupleKey
 		 	 ORDER BY FullName)	
 		
@@ -345,7 +345,7 @@
 			&sql(DECLARE CmpCplOtherCur CURSOR FOR 
 		 	 	 SELECT Competition->IdExternal, Created
 		 	 	 FROM Dance_Data.ParticipantCoupleOther
-		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND CoupleKey = :proxy.couple.key 
+		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND CoupleKey = :proxy.couple.key AND TicketStatus = 'Paid' 
 		 	 	 ORDER BY Competition->StartDate)	
 			&sql(OPEN CmpCplOtherCur)
 			for  
@@ -382,7 +382,7 @@
 	&sql(DECLARE PrtSingleUDSRCur CURSOR FOR 
 	 	 SELECT DISTINCT Athlete
 	 	 FROM Dance_Data.ParticipantSingleUDSR
-	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
+	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1  AND TicketStatus = 'Paid'
 	 	 ORDER BY FullName)	
 	
 	&sql(OPEN PrtSingleUDSRCur)
@@ -398,7 +398,7 @@
 		&sql(DECLARE CmpAthUDSRCur CURSOR FOR 
 	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleUDSR
-	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :athId 
+	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :athId AND TicketStatus = 'Paid'
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpAthUDSRCur)
 		for  
@@ -433,7 +433,7 @@
 	&sql(DECLARE PrtSingleWDSFCur CURSOR FOR 
 	 	 SELECT ID
 	 	 FROM Dance_Data.ParticipantSingleWDSF
-	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
+	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND TicketStatus = 'Paid'
 	 	 GROUP BY Athlete
 	 	 ORDER BY FullName)	
 	
@@ -451,7 +451,7 @@
 		&sql(DECLARE CmpAthWDSFCur CURSOR FOR 
 	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleWDSF
-	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :proxy.athlete.id 
+	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :proxy.athlete.id  AND TicketStatus = 'Paid'
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpAthWDSFCur)
 		for  
@@ -486,7 +486,7 @@
 	&sql(DECLARE PrtOtherAthleteCur CURSOR FOR 
 	 	 SELECT ID
 	 	 FROM Dance_Data.ParticipantSingleOther
-	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
+	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1  AND TicketStatus = 'Paid'
 	 	 GROUP BY AthleteKey
 	 	 ORDER BY FullName)	
 	
@@ -503,7 +503,7 @@
 		&sql(DECLARE CmpAthOtherCur CURSOR FOR 
 	 	 	 SELECT Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleOther
-	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND AthleteKey = :proxy.athlete.key
+	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND AthleteKey = :proxy.athlete.key  AND TicketStatus = 'Paid'
 	 	 	 ORDER BY Competition->StartDate)	
 		&sql(OPEN CmpAthOtherCur)
 		for  

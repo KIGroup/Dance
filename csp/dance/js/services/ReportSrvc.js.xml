@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/services/ReportSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/services/ReportSrvc.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //ddвddddвd
 
@@ -14,6 +14,10 @@ servicesModule.factory('ReportSrvc', function($cookies, $window) {
 		tournamentParticipants: function(trnId){
     		var lang = $cookies.lang ? $cookies.lang.substring(0,2) : 'ru';
             $window.open(AppSettings.admin + '/report/' + lang + '/tournament/' + trnId  + '/participant','_blank');
+    	},
+    	tournamentPayers: function(trnId){
+    		var lang = $cookies.lang ? $cookies.lang.substring(0,2) : 'ru';
+            $window.open(AppSettings.admin + '/report/' + lang + '/tournament/' + trnId  + '/payer','_blank');
     	}
     }
 });

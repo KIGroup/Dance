@@ -69,6 +69,7 @@ Protected REST URLs</Description>
 
 
 <Route Method="GET" Url="/report/:lang/tournament/:trnId/participant" Call="Dance.Web.ReportTournamentParticipants:GetFile"/>
+<Route Method="GET" Url="/report/:lang/tournament/:trnId/payer" Call="Dance.Web.ReportTournamentPayers:GetFile"/>
 
 
 </Routes>

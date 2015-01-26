@@ -213,8 +213,12 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
             });
     };
     
-    $scope.export = function(){
+    $scope.exportParticipants = function(){
 		ReportSrvc.tournamentParticipants($scope.page.tournament.id);
+	};
+	
+	$scope.exportPayers = function(){
+		ReportSrvc.tournamentPayers($scope.page.tournament.id);
 	};
 
  	$scope.page.init();

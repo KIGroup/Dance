@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/tournamentparticipants.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/tournamentparticipants.csp" application="/csp/testdance/" default="1"><![CDATA[
 <div class="row-fluid">
 	<pre ng-bind="page.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
@@ -28,7 +28,8 @@
 <div class="row-fluid">
 	<span style="font-weight: bold;" ng-bind="('Уникальные участники турнира'|localize) + ' - '+ page.tournament.participantsUniqueCount + '. ' + ' ' + ('Всего'|localize) + ' - ' + page.tournament.participantsCount + '.'"></span>
 	&nbsp;
-	<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize" ng-show="menu.admin"  ng-click="export()"></a>
+	<span ng-show="menu.admin">{{'Экспорт' + ':'}} <a ng-href="" class="trnMenu" ng-bind="'все участники'" ng-click="exportParticipants()"></a>, <a ng-href="" class="trnMenu" ng-bind="'только оплатившие'" ng-click="exportPayers()"></a>.</span>
+	<!--<a ng-href="" class="trnMenu" ng-bind="'Экспорт участников »'|localize" ng-show="menu.admin"  ng-click="export()"></a>-->
 	<!--
 	<div class="btn-group">
         <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">{{'Экспорт'|localize}} <span class="caret"></span></button>
