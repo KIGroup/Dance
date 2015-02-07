@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/components/tournamentform.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/components/tournamentform.csp" application="/csp/testdance/" default="1"><![CDATA[
 <div class="row-fluid">
 	<div class="row-fluid">
 		<div class="span6">
@@ -116,10 +116,11 @@
             <input class="span12" type="text" ng-model="tournament.annUrl"></input>
         </div>
     </div>
-    <div class="control-group" ng-show="tournament.prtsUrl">
-        <label class="control-label" ng-bind="('Доступ к экспорту участников'|localize)"></label>
+    <div class="control-group" ng-show="tournament.prtsUrl" ng-init="showPrtUrl=true;">
+        <label class="control-label">{{('Доступ к экспорту'|localize) + ':'}} <a ng-href="" class="trnMenu" ng-bind="'все участники'" ng-click="showPrtUrl=true;showPayUrl=false;" style="color: darkblue!important;" title="{{('Сформировать ссылку'|localize)}}"></a>, <a ng-href="" class="trnMenu" ng-bind="'только оптлатившие'" ng-click="showPrtUrl=false;showPayUrl=true;" title="{{('Сформировать ссылку'|localize)}}" style="color: darkgreen!important;"></a></label>
         <div class="controls">
-            <input class="span12" type="text" ng-model="tournament.prtsUrl" ng-readonly="true"></input>
+            <input class="span12" ng-show="showPrtUrl" style="color: darkblue;" type="text" ng-model="tournament.prtsUrl" ng-readonly="true" title="{{('Список всех участников'|localize)}}"></input>
+            <input class="span12" ng-show="showPayUrl" style="color: darkgreen;" type="text" ng-model="tournament.payersUrl" ng-readonly="true" title="{{('Только оплатившие участники'|localize)}}"></input>
         </div>
     </div>
     <div class="row-fluid" style="display: flex; padding-bottom: 10px;">

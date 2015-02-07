@@ -30,7 +30,7 @@
 <ClassMethod>1</ClassMethod>
 <FormalSpec>trn:Dance.Data.Tournament</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	quit $REPLACE($REPLACE($SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.MD5Hash($ZCVT($P(trn.AccessCode, "-", 3)_trn.%Id()_trn.Hash, "L"))), "/", "SLASH"), "=", "EQL")
+<Implementation><![CDATA[	quit $REPLACE($REPLACE($SYSTEM.Encryption.Base64Encode($SYSTEM.Encryption.MD5Hash("Payers"_$ZCVT($P(trn.AccessCode, "-", 3)_trn.%Id()_trn.Hash, "L"))), "/", "SLASH"), "=", "EQL")
 ]]></Implementation>
 </Method>
 
@@ -50,7 +50,7 @@
 	set status = $$$OK
 	
 	try{
-		set fileName = trn.Name.Value_" [от "_$ZD($ZTS, 3)_"].csv"
+		set fileName = trn.Name.Value_" (оплатившие)[от "_$ZD($ZTS, 3)_"].csv"
 
 		if ($FIND(%request.UserAgent, "Firefox") '= 0) {
 			set fileName = $REPLACE(fileName, " ", "_")

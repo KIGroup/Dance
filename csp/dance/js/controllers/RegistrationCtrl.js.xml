@@ -350,6 +350,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             $scope.competitionTable.selectable = true; 
             $scope.competitionTable.refresh();
             $scope.loadCountParticipantCompetitions('UDSR');  
+            if ($scope.tabUDSR.couple.man.otherInfo.club.toLowerCase() != $scope.tabUDSR.couple.woman.otherInfo.club.toLowerCase()){
+            	$scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', "Регистраця в СТСР группы запрещена. Партнер и партнерша должны быть из одного клуба! " + $scope.tabUDSR.couple.man.number + " - " + $scope.tabUDSR.couple.man.otherInfo.club + "; " + $scope.tabUDSR.couple.woman.number + " - " + $scope.tabUDSR.couple.woman.otherInfo.club + ".", 'error', true);
+            }
         };
 
         if (manNumber != '' && womanNumber != ''){

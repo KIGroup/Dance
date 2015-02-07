@@ -32,6 +32,7 @@ Registration UDSR participants in the tournament</Description>
 		set prtClass = ""
 		
 		set dancers = ##class(%ListOfObjects).%New()
+		 
 		if $ISOBJECT(data.couple){
 			set prt = data.couple
 		    set prtClass = "Dance.Data.ParticipantCoupleUDSR"
@@ -57,6 +58,7 @@ Registration UDSR participants in the tournament</Description>
 		    	do regResults.Insert(regResult)
 		    	continue
 		    }
+		    
 		    
 		    // Find recorder by access hash
 			#dim recorder As Dance.Data.Recorder = ##class(Dance.Data.Recorder).GetByAccessHashForTournament(competition.Tournament, data.recorderHash) 
@@ -1079,7 +1081,12 @@ Get one couple by Id</Description>
 <FormalSpec>id:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	do ..GetProxyObject("Dance.Data.Couple", id)
+	set couple = ##class(Dance.Data.Couple).%OpenId(id)
+	
+	if $ISOBJECT(couple) {
+		do couple.ConvertToProxyObject().%ToJSON()
+	}
+	
 	quit $$$OK
 ]]></Implementation>
 </Method>

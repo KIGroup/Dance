@@ -31,6 +31,18 @@
 		set obj = ..%New()
 		set obj.Number = data.number	
 		set obj.Participant = ##class(Dance.Data.Participant).%OpenId(data.participant.id)
+				
+		// If another ticket already exists for this participant 
+		if (..ParticipantIdxExists(data.participant.id)){
+			set oldTiket = ..ParticipantIdxOpen(data.participant.id)
+			if (oldTiket.TStatus.Code = "Canceled") && (##class(TicketStatus).%OpenId(data.status.id).Code = "Paid"){
+				if ($System.SQL.DATEDIFF("ss", oldTiket.Created, data.paymentCreated) > 0){
+					do ##class(Dance.Utils.Journal).Create("Log", "Save TicketDanceplat", "Remove ticket #"_oldTiket.Number_" for participant "_obj.Participant.FullName_" becouse exists more new ticket #"_data.number)
+					set st = ..%DeleteId(oldTiket.%Id())
+					$$$THROWONERROR(st, st)
+				}
+			}
+		}
 	}
 	
 	set obj.Amount = data.amount
@@ -224,6 +236,7 @@
 		set ticketData.codeTwo = ticketImport.CodeTwo
 		set ticketData.title = ticketImport.Description
 		set ticketData.status = ##class(TicketStatus).CodeIdxOpen($CASE($ZCVT(ticketImport.TStatus, "L"), "pay" : "Paid", "cancel" : "Canceled", :"Not paid")).ConvertToProxyObject() 
+
 		
 		w:(isTrace) !,"Save ticket."
 		do ..Save(ticketData, .st)

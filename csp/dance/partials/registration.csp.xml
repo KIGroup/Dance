@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/registration.csp" application="/csp/dancereg/" default="1"><![CDATA[
+<CSP name="dance/partials/registration.csp" application="/csp/testdance/" default="1"><![CDATA[
 
 <div class="row-fluid">
 	<pre ng-bind="tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;"></pre>
@@ -96,7 +96,7 @@
 					</div>
 					<p><span class="spnTitle" ng-bind="'Страна'|localize"></span>: <span ng-bind="tabUDSR.couple.otherInfo.country.name"></span></p>
 					<p><span class="spnTitle" ng-bind="'Город'|localize"></span>: <span ng-bind="tabUDSR.couple.otherInfo.city"></span></p>
-					<p><span class="spnTitle" ng-bind="'Класс'|localize"></span>: <span ng-bind="tabUDSR.couple.otherInfo.club"></span></p>
+					<p><span class="spnTitle" ng-bind="'Клуб'|localize"></span>: <span ng-bind="tabUDSR.couple.otherInfo.club"></span></p>
 					<p><span class="spnTitle" ng-bind="'Главный тренер'|localize"></span>: <span ng-bind="tabUDSR.couple.otherInfo.mainTrainer"></span></p>
 					<p><span class="spnTitle" ng-bind="'Другие тренеры'|localize"></span>: <span ng-bind="tabUDSR.couple.otherInfo.otherTrainers"></span></p>
 				</div>

@@ -61,6 +61,14 @@ do ##class(Dance.Utils.Msg).Init()</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	
+	do ..SetMsgForLangs("error_CoupleDifferentClubs",
+						"Партнер и партнерша должны быть из одного клуба!",
+						"Male partner and female partner must be from the same club!",
+						"Male partner and female partner must be from the same club!")
+						
+						
+	
 	do ..SetMsgForLangs("error_RegistrationClosed",
 						"Добавление участника невозможно. Регистрация в турнир уже завершена.",
 						"",

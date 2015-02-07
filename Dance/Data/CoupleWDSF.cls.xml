@@ -30,6 +30,16 @@
 <Implementation><![CDATA[
 	set proxy = ##super()
 	set proxy.type = "WDSF"
+	
+	if (##class(MatchingCoupleUDSRWDSF).WDSFIdxExists(..%Id())){
+		set coupleUDSR = ##class(MatchingCoupleUDSRWDSF).WDSFIdxOpen(..%Id()).UDSR
+		set proxy.idUDSR = coupleUDSR.%Id()
+		set proxy.man.idUDSR = coupleUDSR.Man.%Id()
+		set proxy.man.numberUDSR = coupleUDSR.Man.Number
+		set proxy.woman.idUDSR = coupleUDSR.Woman.%Id()
+		set proxy.woman.numberUDSR = coupleUDSR.Woman.Number
+	}
+	
 	set proxy.otherInfo = ##class(%ZEN.proxyObject).%New()
 	set proxy.otherInfo.country = ..Man.Country.ConvertToProxyObject()
 	set proxy.otherInfo.ageCategory = ..AgeCategory

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/payment.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/payment.csp" application="/csp/testdance/" default="1"><![CDATA[
 <div class="row-fluid">
 	<pre ng-bind="tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
@@ -49,7 +49,7 @@
 <div class="row-fluid">
 	<stcgrid
 		style="width: initial;"
-    	grid="pageStore.tournamentDetails.gridCompetitions"
+    	grid="pageStore.tournamentPayment.gridCompetitions"
 	    table-class="table table-bordered table-hover"
 	    caption="''"
 	    columns="competitionTable.columns"
