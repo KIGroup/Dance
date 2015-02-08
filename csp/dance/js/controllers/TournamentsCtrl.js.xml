@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/TournamentsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //-ddddc
 
@@ -83,7 +83,16 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                         function(data){
                                                             $scope.confirmDialog = {
 	                                                            tournament: item,
-                                                            	recorders: data.recorders
+                                                            	recorders: data.recorders,
+                                                            	getLink: function(rec){
+	                                                            	var url = '#/recorder/' + rec.hash + '/tournament/' + this.tournament.id + '/registration';
+	                                                            	if (this.defaultType)
+	                                                            		url += '/type/' + this.defaultType;
+	                                                            	if (this.defaultLang)
+	                                                            		url += '/lang/' + this.defaultLang; 
+	                                                            	
+	                                                            	return url;
+	                                                            }
                                                             }
 
                                                             $('#ConfirmDialog').modal('show');

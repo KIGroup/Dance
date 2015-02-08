@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/services/RESTSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/services/RESTSrvc.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //dddxdddddвd
 
@@ -11,6 +11,8 @@ Access to REST API
 servicesModule.factory('RESTSrvc', function($http, $q) {	
 	return {
 		getPromise: function(config){
+			$http.defaults.headers.common['Accept-Language'] = AppSettings.lang;
+			
             var deferred = $q.defer();
 			//$('#divLoader').show();
             $http(config).

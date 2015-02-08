@@ -252,6 +252,12 @@
 			    	</div>
 				</div>
 			</div>
+			<!-- Competitions -->
+			<p style="margin: 0 0 2px;"><span style="font-weight: bold;" ng-bind="('Группы'|localize) + ':'"></span></p>
+			<p style="margin: 0 0 2px;" ng-repeat="cmp in competitionTable.selectedItems">
+				<span ng-bind="($index+1) + '. ' + (cmp.competition.startDate|convertCacheDate:('d MMMM y'|localize)) + '. ' + cmp.competition.name + ', ' + cmp.competition.price + ' ' + ('руб.'|localize)"></span>
+			</p>
+			<br>
 			<!-- Other Info -->
 			<p><span style="font-weight: bold;" ng-bind="('Дополнительная информация'|localize) + ':'"></span></p>
 			<div class="row-fluid">
@@ -266,9 +272,9 @@
 				</div>
 				<div class="span6">
 			        <div class="control-group">
-			        	<label class="control-label" ng-bind="('Город'|localize) + '*'"></label>
+			        	<label class="control-label" ng-bind="('Город'|localize) + ''"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.city" required></input>
+			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.city"></input>
 	                	</div>
 			    	</div>
 				</div>
@@ -276,26 +282,21 @@
 			<div class="row-fluid">
 				<div class="span6">
 			        <div class="control-group">
-			        	<label class="control-label" ng-bind="('Клуб'|localize) + '*'"></label>
+			        	<label class="control-label" ng-bind="('Клуб'|localize) + ''"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.club" required></input>
+			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.club"></input>
 	                	</div>
 			    	</div>
 				</div>
 				<div class="span6">
 			        <div class="control-group">
-			        	<label class="control-label" ng-bind="('Главный тренер'|localize) + '*'"></label>
+			        	<label class="control-label" ng-bind="('Главный тренер'|localize) + ''"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.mainTrainer" required></input>
+			    			<input class="span12" type="text" ng-model="confirmData.otherInfo.mainTrainer"></input>
 	                	</div>
 			    	</div>
 				</div>
 			</div>
-		
-			<p style="margin: 0 0 2px;"><span style="font-weight: bold;" ng-bind="('Группы'|localize) + ':'"></span></p>
-			<p style="margin: 0 0 2px;" ng-repeat="cmp in competitionTable.selectedItems">
-				<span ng-bind="($index+1) + '. ' + (cmp.competition.startDate|convertCacheDate:('d MMMM y'|localize)) + '. ' + cmp.competition.name + ', ' + cmp.competition.price + ' ' + ('руб.'|localize)"></span>
-			</p>
 		</div>
 		<br>
 		<div class="control-group" style="padding: 0 15px;">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/tournaments.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/tournaments.csp" application="/csp/testdance/" default="1"><![CDATA[
 <p ng-show="menu.admin">[ <font COLOR="RED"><b>!</b></font> ] {{'Для регистрации в турнире нажмите на ссылку (») в колонке "Регистрация".'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех групп турнира нажмите на ссылку (») в колонке "Группы" или выберите внизу вкладку "Группы(N)".'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех участников турнира нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
@@ -158,9 +158,29 @@
 	<div class="modal-body">
 		<p ng-bind="'Выберите организатора для доступа к регистрации:'|localize"></p>
 		<p ng-repeat="rec in confirmDialog.recorders">
-			{{$index + 1}}. <a ng-href="{{'#/recorder/' + rec.hash + '/tournament/' + confirmDialog.tournament.id + '/registration'}}" target="reg" ng-bind="rec.name"></a> <span ng-bind="'(код - ' + rec.hash + ')'"></span>
-
+			<!--{{$index + 1}}. <a ng-href="{{'#/recorder/' + rec.hash + '/tournament/' + confirmDialog.tournament.id + '/registration'}}" target="reg" ng-bind="rec.name"></a> <span ng-bind="'(код - ' + rec.hash + ')'"></span>-->
+			{{$index + 1}}. <a ng-href="{{confirmDialog.getLink(rec)}}" target="reg" ng-bind="rec.name"></a> <span ng-bind="'(код - ' + rec.hash + ')'"></span>
 		</p>
+		
+		<div class="row-fluid">
+			<div class="span6">
+		    	<div class="controls">
+		        	<select class="span12" ng-model="confirmDialog.defaultType" style="margin:0;">
+		        		<option value="">{{('-- Вкладка по умолчанию --'|localize)}}</option>
+		        		<option value="udsr">{{'СТСР'|localize}}</option>
+		        		<option value="wdsf">WDSF</option>
+		        		<option value="other">{{'Другие'|localize}}</option>
+		   			</select>
+		    	</div>
+			</div>
+			<div class="span6">
+				<div class="controls">
+		        	<select class="span12" ng-model="confirmDialog.defaultLang" style="margin:0;" ng-options="lang.code as lang.name for lang in menu.languages|orderBy:'code':true">
+		   				<option value="">{{('-- Язык по умолчанию --'|localize)}}</option>
+		   			</select>
+		    	</div>
+	    	</div>
+    	</div>
 	</div>
 </div>]]></CSP>
 </Export>

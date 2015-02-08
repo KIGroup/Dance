@@ -52,7 +52,7 @@
 <Implementation><![CDATA[
 	set coupleDB = ##class(Dance.Data.CoupleUDSR).%OpenId(couple.id,,.st)
 	if $$$ISOK(st){
-		if ($ZCVT(coupleDB.Man.Club, "L") '= $ZCVT(coupleDB.Woman.Club, "L")){
+		if (coupleDB.Man.Club '= "" ) && (coupleDB.Woman.Club '= "" ) && ($ZCVT(coupleDB.Man.Club, "L") '= $ZCVT(coupleDB.Woman.Club, "L")){
 			set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_CoupleDifferentClubs", " "_coupleDB.Man.Number_" - "_coupleDB.Man.Club_"; "_coupleDB.Woman.Number_" - "_coupleDB.Woman.Club_".")
 			quit $$$NULLOREF
 		}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/js/combine.js" application="/csp/testdance/" default="1"><![CDATA[
-//
+ 
 // ===============================================================================================================================
 // File: 1. controllers/MainCtrl.js    
 // ===============================================================================================================================
@@ -12,7 +12,12 @@
 Главный контроллер, работа с языком и меню
 ===========================================================================================*/
 
-controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $window, OtherSrvc, UtilsSrvc){
+controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $window, OtherSrvc, UtilsSrvc, tmhDynamicLocale){
+    if ($cookies.lang)
+    	tmhDynamicLocale.set($cookies.lang);
+    else
+    	tmhDynamicLocale.set("ru");
+    
     $scope.pageStore = {};
    
     $scope.getLocalString = function(word){
@@ -61,10 +66,23 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
 
     $scope.menu.switchLang = function(lang){
         if ($cookies.lang == lang.code)
-            return;
-            
+            return;    
+        
+        var oldUrlParam = '';
+        if ($window.location.href.indexOf('/lang/' + $cookies.lang) > 0){
+	        var oldUrlParam = '/lang/' + $cookies.lang;
+        }
+        
         $cookies['lang'] = lang.code;
-        $window.location.reload();
+        AppSettings.lang = lang.code;
+        tmhDynamicLocale.set(lang.code);
+        $scope.menu.loadLanguages();
+        
+        if (oldUrlParam != '')
+        	$window.location.replace($window.location.href.replace(oldUrlParam, '/lang/' + lang.code));
+        else{
+	        $window.location.reload(); 
+	    }
     };
 
     // Вход - выход
@@ -278,7 +296,16 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
                                                         function(data){
                                                             $scope.confirmDialog = {
 	                                                            tournament: item,
-                                                            	recorders: data.recorders
+                                                            	recorders: data.recorders,
+                                                            	getLink: function(rec){
+	                                                            	var url = '#/recorder/' + rec.hash + '/tournament/' + this.tournament.id + '/registration';
+	                                                            	if (this.defaultType)
+	                                                            		url += '/type/' + this.defaultType;
+	                                                            	if (this.defaultLang)
+	                                                            		url += '/lang/' + this.defaultLang; 
+	                                                            	
+	                                                            	return url;
+	                                                            }
                                                             }
 
                                                             $('#ConfirmDialog').modal('show');
@@ -632,7 +659,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-        				  {name: '#'                 , sqlName: '%EXACT(idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '20px'}},
+        				  {name: '#'                 , sqlName: '%EXACT(idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
                           {name: 'Дата'              , sqlName: 'StartDate'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время'             , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Название'          , sqlName: 'Name->Value'             , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
@@ -881,18 +908,18 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     	//  
         $scope.page.participantTable.columns = [ 
                           {name: 'Партнер / Партнерша', sqlName: 'FullName', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
-                          {name: 'Клуб / Город', sqlName: '-', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Клуб / Город', sqlName: 'PrtObjCity', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
                           /*
                           {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           */
-                          {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Страна', sqlName: 'PrtObjCountry', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           /*
                           {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
                           {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
                           {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}
                           */
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}},
-                          {name: 'Оплачены', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}}];
+                          {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}},
+                          {name: 'Оплачены', sqlName: 'PrtObjPaymentsCount', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}}];
         
         $scope.page.participantTable.properties = [ 
         				  {name:'fullName', /*cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
@@ -1070,8 +1097,12 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
             });
     };
     
-    $scope.export = function(){
+    $scope.exportParticipants = function(){
 		ReportSrvc.tournamentParticipants($scope.page.tournament.id);
+	};
+	
+	$scope.exportPayers = function(){
+		ReportSrvc.tournamentPayers($scope.page.tournament.id);
 	};
 
  	$scope.page.init();
@@ -1236,7 +1267,7 @@ controllersModule.controller('SearchParticipantsCtrl', function($scope, $routePa
 // File: 7. controllers/RegistrationCtrl.js
 // ===============================================================================================================================
 'use strict';
-// dfdfdfddddddd
+// dfdfdfdddddddddddddddd
  
 /*===========================================================================================
 Registration          
@@ -1293,7 +1324,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         // Competition table
         //
         $scope.competitionTable.columns = [
-                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '20px'}},
+                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
                           {name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
@@ -1301,7 +1332,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                           {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
-                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
+                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}}];
         
         $scope.competitionTable.properties = [
                           {name:'idExternal'},
@@ -1496,15 +1527,24 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 $scope.tabWDSF.visible = data.tabWDSFAllowed == 1;
                 $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
                 
-                
-                if (data.tabUDSRAllowed){	
-					$scope.tabUDSR.select();
-				}
-				else if (data.tabWDSFAllowed){
-				    $scope.tabWDSF.select();
+                if ($routeParams.typeCode){
+                	if ($routeParams.typeCode == 'wdsf'){
+	                	$scope.tabWDSF.select();
+                	}
+                	else if ($routeParams.typeCode == 'other'){
+	                	$scope.tabOTHER.select();
+                	}
                 }
-				else if (data.tabOtherAllowed){
-					$scope.tabOTHER.select();
+                else{	             
+	                if (data.tabUDSRAllowed){	
+						$scope.tabUDSR.select();
+					}
+					else if (data.tabWDSFAllowed){
+					    $scope.tabWDSF.select();
+	                }
+					else if (data.tabOtherAllowed){
+						$scope.tabOTHER.select();
+	                }
                 }
             },
             function(data, status, headers, config){
@@ -1558,6 +1598,50 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             });
     };
 
+
+
+    // Clear current tab for new registration
+    $scope.clearAllForms = function(){
+        $scope.tabUDSR.disabled = false;
+        $scope.tabWDSF.disabled = false;
+        $scope.tabOTHER.disabled = false;
+        
+        $scope.tabWDSF.formCouple.disabled = false;
+        $scope.tabWDSF.formSingle.disabled = false;
+        
+        $scope.tabOTHER.formCouple.disabled = false;
+        $scope.tabOTHER.formSingle.disabled = false;
+        
+        $scope.tabUDSR.alert.visible = false;
+        $scope.tabWDSF.alert.visible = false;
+        $scope.tabOTHER.alert.visible = false;
+
+        $scope.tabUDSR.searchForm.clear();
+        $scope.tabWDSF.searchForm.clear();
+        
+        $scope.tabOTHER.formCouple.btnBackVisible = false;
+        $scope.tabOTHER.formCouple.btnNextVisible = true;
+
+        $scope.form_otherSingleData.$setPristine();
+        $scope.form_otherCoupleData.$setPristine();
+        $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
+        $scope.tabOTHER.formSingle.btnRegistrationVisible = false;
+        $scope.tabOTHER.couple = {};
+        $scope.tabOTHER.athlete = null;
+        $scope.tabOTHER.formSingle.btnBackVisible = false;
+        $scope.tabOTHER.formSingle.btnNextVisible = true;
+
+        $scope.regCompetitionsCount = 0;
+        
+        $scope.resultTableVisible = false;
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+
+
     // ===========================================================================================================================================
     // Tab UDSR                                                                                                                           Tab UDSR
     // ===========================================================================================================================================
@@ -1584,6 +1668,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             $scope.competitionTable.selectable = true; 
             $scope.competitionTable.refresh();
             $scope.loadCountParticipantCompetitions('UDSR');  
+            if ($scope.tabUDSR.couple.man.otherInfo.club.toLowerCase() != $scope.tabUDSR.couple.woman.otherInfo.club.toLowerCase()){
+            	$scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', "Регистраця в СТСР группы запрещена. Партнер и партнерша должны быть из одного клуба! " + $scope.tabUDSR.couple.man.number + " - " + $scope.tabUDSR.couple.man.otherInfo.club + "; " + $scope.tabUDSR.couple.woman.number + " - " + $scope.tabUDSR.couple.woman.otherInfo.club + ".", 'error', true);
+            }
         };
 
         if (manNumber != '' && womanNumber != ''){
@@ -1709,30 +1796,6 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 });
         }
 
-
-
-        /*
-        var postData = {
-            competitions: $scope.competitionTable.getSelectedIdArray(),
-            couple: $scope.tabUDSR.couple || null,
-            athlete: $scope.tabUDSR.athlete || null,
-            recorderHash: $scope.recorderHash 
-        };
-
-        RegistrationSrvc.UDSR(postData).then(
-            function(data){
-                $scope.regResponse = data;
-                $scope.resultTableVisible = true;
-                $scope.loadCountParticipantCompetitions('UDSR');
-                console.log('reg success', data);
-            },
-            function(data){
-                $scope.regResponse = data;
-                $scope.resultTableVisible = true;
-                $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
-                console.log('reg error', data);
-            }); 
-        */     
     };
 
 
@@ -1793,13 +1856,19 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.tabWDSF.couple = null;
         $scope.tabWDSF.athlete = null;
         $scope.tabWDSF.alert = {};  
+        $scope.regCompetitionsCount = 0;
+        $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
+        $scope.tabWDSF.formSingle.btnRegistrationVisible = false;
+        $scope.tabWDSF.formCouple.btnNextVisible = true;
+        $scope.tabWDSF.formSingle.btnNextVisible = true;
+        $scope.tabWDSF.formCouple.btnBackVisible = true;
+        $scope.tabWDSF.formSingle.btnBackVisible = true;
     };
 
     $scope.tabWDSF.formCouple.back = function(){
         if ($scope.tabWDSF.formCouple.btnRegistrationVisible){
             $scope.tabWDSF.formCouple.btnNextVisible = true;
             $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
-            $scope.regCompetitionsCount = 0;
         }
         else{
             $scope.tabWDSF.searchForm.clear();
@@ -1831,6 +1900,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.competitionTable.avialableMode = true;
         $scope.competitionTable.refresh();  
     };
+
 
     $scope.tabWDSF.formSingle.back = function(){
         if ($scope.tabWDSF.formSingle.btnRegistrationVisible){
@@ -1919,12 +1989,12 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             $scope.tabOTHER.formCouple.btnNextVisible = true;
             $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
             $scope.tabOTHER.formCouple.disabled = false;
-            $scope.regCompetitionsCount = 0;
             $scope.tabOTHER.formCouple.btnBackVisible = false;
         }
         else{
             $scope.tabUDSR.disabled = false;
             $scope.tabWDSF.disabled = false;
+            $scope.regCompetitionsCount = 0;
         }
 
         $scope.competitionTable.avialableMode = false;
@@ -2115,8 +2185,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     $scope.init();  
     $scope.loadTournament($routeParams.tournamentId);
     $scope.loadCountries();
-    
-    
+    	
    $scope.$on('$destroy', function() {
       	// Make sure that the interval is destroyed too
       	$interval.cancel(intervalForTable);
@@ -2143,7 +2212,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
     $scope.locationSrvc = LocationSrvc; 
 
  	if (!$scope.pageStore.tournamentPayment) 
-        $scope.pageStore.tournamentPayment = {gridCompetitions:{}};
+        $scope.pageStore.tournamentPayment = {gridCompetitions:{ hideNumbersColumn: true}};
 
     
     $scope.init = function(){
@@ -2151,7 +2220,8 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
     	// Competition table
     	// 
         $scope.competitionTable.columns = [
-                          {name: 'Дата'              , sqlName: 'Competition->StartDate'               , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {name: '#'                 , sqlName: '%EXACT(Competition->idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '25px'}},
+                          {name: 'Дата'              , sqlName: 'Competition->StartDate'               , isSorted: false , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время'             , sqlName: 'Competition->StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '60px'}},
                           {name: 'Название'          , sqlName: 'Competition->Name'                    , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Программа'         , sqlName: 'Competition->Discipline->Name->Value' , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
@@ -2162,6 +2232,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                           {name: 'Статус'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}}];
         
         $scope.competitionTable.properties = [
+        				  {name:'competition.idExternal'},
         				  {name:'competition.startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'competition.startTime'},
                           {name:'competition.name'},
@@ -2223,6 +2294,24 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                     $scope.athlete = angular.copy($scope.competitionTable.items[0].athlete);
                     $scope.type = $scope.couple ? $scope.couple.type : $scope.athlete.type;
                     
+                    try{
+                    	if ($scope.type == "WDSF" && $scope.couple && $scope.couple.idUDSR) {
+							CoupleSrvc.getById($scope.couple.idUDSR).then(
+					            function(data){
+						            console.log('UDSR Couple is loaded');
+					                $scope.couple = data;
+					                $scope.type = "UDSR";
+					                $scope.typeName = $filter('localize')('СТСР') + ' ';
+					            },
+					            function(data, status, headers, config){
+					                console.log('UDSR Couple is not loaded ', data);
+					            });
+                    	}
+                    }
+                    catch(ex){
+	                    console.log('Error', ex);
+                    }
+                    
                     switch($scope.type){
                         case 'WDSF':
                             $scope.typeName = 'WDSF' + ' ';
@@ -2244,7 +2333,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
     
 
     $scope.competitionTable.setHiddenCoulumns = function(value){
-        var indexes = [1,3,4,5,6];
+        var indexes = [2,4,5,6,7];
         for(var n=0; n < indexes.length; n++){
             $scope.competitionTable.columns[indexes[n]].hidden = value;     
         }
@@ -2537,13 +2626,13 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
     	//   
         $scope.page.participantTable.columns = [ 
                           {name: 'Партнер / Партнерша', sqlName: 'FullName', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
-                          {name: 'Клуб / Город', sqlName: '-', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Клуб / Город', sqlName: 'PrtObjCountry', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
                           /*
                           {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           */
-                          {name: 'Страна', sqlName: '-', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '130px'}}];
+                          {name: 'Страна', sqlName: 'PrtObjCountry', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
+                          {name: 'Статус', sqlName: 'TicketStatus', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
+                          {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '130px'}}];
         
         $scope.page.participantTable.properties = [ 
                           {name:'fullName', getCssClass: function(item){
@@ -3126,6 +3215,8 @@ Access to REST API
 servicesModule.factory('RESTSrvc', function($http, $q) {	
 	return {
 		getPromise: function(config){
+			$http.defaults.headers.common['Accept-Language'] = AppSettings.lang;
+			
             var deferred = $q.defer();
 			//$('#divLoader').show();
             $http(config).
@@ -3599,8 +3690,10 @@ servicesModule.factory('ImportSrvc', function(RESTSrvc) {
 servicesModule.factory('FeedBackSrvc', function(RESTSrvc) {    
     return {
         create: function(fb){
-	        return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/feedback', {data: fb}});
+	        return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/feedback', data: fb});
         }
+    }
+	}
  );
 
 // ===============================================================================================================================
@@ -3671,6 +3764,10 @@ servicesModule.factory('ReportSrvc', function($cookies, $window) {
 		tournamentParticipants: function(trnId){
     		var lang = $cookies.lang ? $cookies.lang.substring(0,2) : 'ru';
             $window.open(AppSettings.admin + '/report/' + lang + '/tournament/' + trnId  + '/participant','_blank');
+    	},
+    	tournamentPayers: function(trnId){
+    		var lang = $cookies.lang ? $cookies.lang.substring(0,2) : 'ru';
+            $window.open(AppSettings.admin + '/report/' + lang + '/tournament/' + trnId  + '/payer','_blank');
     	}
     }
 });
@@ -4593,7 +4690,14 @@ localizationModule.constant('DanceDictionary', {
 		'Задать вопрос' : 'Ask a question',
 		'Инструкция к регистрации' : 'Instructions for registration',
 		'Информация о турнире' : 'Tournament info',
-		'Информация »' : 'Information »'
+		'Информация »' : 'Information »',
+		'Перейдите по ссылке для получения подробной информации' : 'Click here for more information',
+		'Важное объявление' : 'Important announcement',
+		'Зарегистрировать ещё участников »' : 'Register more participants »',
+		'Введите номера классификационных книжек СТСР' : 'Enter the number of UDSR classification books',
+		'Введите номера классификационных книжек WDSF' : 'Enter the number of WDSF classification books',
+		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Registration is performed by MIN numbers WDSF. Search participants in the database of "World DanceSport Federation".',
+		'Тренер. Фамилия, Имя' : 'Trainer. Full name'
  
 
   },
@@ -4859,14 +4963,21 @@ localizationModule.constant('DanceDictionary', {
 		'Уникальные участники турнира' : 'Unique participants of the tournament',
 		'Участники »' : 'Participants »',
 		'Участники •' : 'Participants •',
-		'Экспорт участников »' : 'Export participants'
+		'Экспорт участников »' : 'Export participants',
+		'Перейдите по ссылке для получения подробной информации' : 'Klicken Sie hier für weitere Informationen',
+		'Важное объявление' : 'Wichtige mitteilung',
+		'Зарегистрировать ещё участников »' : 'Registrieren Sie sich mehr Teilnehmer »',
+		'Введите номера классификационных книжек СТСР' : 'Geben Sie die Nummer Einstufung Bücher UDSR',
+		'Введите номера классификационных книжек WDSF' : 'Geben Sie die Nummer Einstufung Bücher WDSF',
+		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Die Anmeldung erfolgt durch MIN Zahlen WDSF getan. Suche Mitglieder ist die Datenbank "World Dance Sport Federation"',
+		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname'
 		
 		
 
   },
   getTranslate: function(word, toLanguage){
 	var def = function(key){
-		console.log("'" + key + "' : '',");
+		//console.log("'" + key + "' : '',");
 		
 		return key;	
 	};  
@@ -4901,11 +5012,12 @@ localizationModule.filter('localize', function(DanceDictionary) {
 });
 
 
-
+/*
 servicesModule.config(['$httpProvider', function ($httpProvider) {
 	$httpProvider.defaults.headers.common['Accept-Language'] = AppSettings.lang;
 }]);
 
+*/
 
 // ===============================================================================================================================
 // File: 42. filters/cacheDate.js

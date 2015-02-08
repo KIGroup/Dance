@@ -8,7 +8,12 @@
 Главный контроллер, работа с языком и меню
 ===========================================================================================*/
 
-controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $window, OtherSrvc, UtilsSrvc){
+controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $window, OtherSrvc, UtilsSrvc, tmhDynamicLocale){
+    if ($cookies.lang)
+    	tmhDynamicLocale.set($cookies.lang);
+    else
+    	tmhDynamicLocale.set("ru");
+    
     $scope.pageStore = {};
    
     $scope.getLocalString = function(word){
@@ -57,10 +62,23 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
 
     $scope.menu.switchLang = function(lang){
         if ($cookies.lang == lang.code)
-            return;
-            
+            return;    
+        
+        var oldUrlParam = '';
+        if ($window.location.href.indexOf('/lang/' + $cookies.lang) > 0){
+	        var oldUrlParam = '/lang/' + $cookies.lang;
+        }
+        
         $cookies['lang'] = lang.code;
-        $window.location.reload();
+        AppSettings.lang = lang.code;
+        tmhDynamicLocale.set(lang.code);
+        $scope.menu.loadLanguages();
+        
+        if (oldUrlParam != '')
+        	$window.location.replace($window.location.href.replace(oldUrlParam, '/lang/' + lang.code));
+        else{
+	        $window.location.reload(); 
+	    }
     };
 
     // Вход - выход

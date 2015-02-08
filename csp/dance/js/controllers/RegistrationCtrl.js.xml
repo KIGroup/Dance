@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
-// dfdfdfddddddd
+// dfdfdfdddddddddddddddd
  
 /*===========================================================================================
 Registration          
@@ -59,7 +59,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         // Competition table
         //
         $scope.competitionTable.columns = [
-                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '20px'}},
+                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
                           {name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
@@ -67,7 +67,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                           {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
-                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '50px'}}];
+                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}}];
         
         $scope.competitionTable.properties = [
                           {name:'idExternal'},
@@ -262,15 +262,24 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 $scope.tabWDSF.visible = data.tabWDSFAllowed == 1;
                 $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
                 
-                
-                if (data.tabUDSRAllowed){	
-					$scope.tabUDSR.select();
-				}
-				else if (data.tabWDSFAllowed){
-				    $scope.tabWDSF.select();
+                if ($routeParams.typeCode){
+                	if ($routeParams.typeCode == 'wdsf'){
+	                	$scope.tabWDSF.select();
+                	}
+                	else if ($routeParams.typeCode == 'other'){
+	                	$scope.tabOTHER.select();
+                	}
                 }
-				else if (data.tabOtherAllowed){
-					$scope.tabOTHER.select();
+                else{	             
+	                if (data.tabUDSRAllowed){	
+						$scope.tabUDSR.select();
+					}
+					else if (data.tabWDSFAllowed){
+					    $scope.tabWDSF.select();
+	                }
+					else if (data.tabOtherAllowed){
+						$scope.tabOTHER.select();
+	                }
                 }
             },
             function(data, status, headers, config){
@@ -323,6 +332,50 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
     };
+
+
+
+    // Clear current tab for new registration
+    $scope.clearAllForms = function(){
+        $scope.tabUDSR.disabled = false;
+        $scope.tabWDSF.disabled = false;
+        $scope.tabOTHER.disabled = false;
+        
+        $scope.tabWDSF.formCouple.disabled = false;
+        $scope.tabWDSF.formSingle.disabled = false;
+        
+        $scope.tabOTHER.formCouple.disabled = false;
+        $scope.tabOTHER.formSingle.disabled = false;
+        
+        $scope.tabUDSR.alert.visible = false;
+        $scope.tabWDSF.alert.visible = false;
+        $scope.tabOTHER.alert.visible = false;
+
+        $scope.tabUDSR.searchForm.clear();
+        $scope.tabWDSF.searchForm.clear();
+        
+        $scope.tabOTHER.formCouple.btnBackVisible = false;
+        $scope.tabOTHER.formCouple.btnNextVisible = true;
+
+        $scope.form_otherSingleData.$setPristine();
+        $scope.form_otherCoupleData.$setPristine();
+        $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
+        $scope.tabOTHER.formSingle.btnRegistrationVisible = false;
+        $scope.tabOTHER.couple = {};
+        $scope.tabOTHER.athlete = null;
+        $scope.tabOTHER.formSingle.btnBackVisible = false;
+        $scope.tabOTHER.formSingle.btnNextVisible = true;
+
+        $scope.regCompetitionsCount = 0;
+        
+        $scope.resultTableVisible = false;
+
+        $scope.competitionTable.avialableMode = false;
+        $scope.competitionTable.selectable = false;
+        $scope.competitionTable.refresh();  
+    };
+
+
 
     // ===========================================================================================================================================
     // Tab UDSR                                                                                                                           Tab UDSR
@@ -478,30 +531,6 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 });
         }
 
-
-
-        /*
-        var postData = {
-            competitions: $scope.competitionTable.getSelectedIdArray(),
-            couple: $scope.tabUDSR.couple || null,
-            athlete: $scope.tabUDSR.athlete || null,
-            recorderHash: $scope.recorderHash 
-        };
-
-        RegistrationSrvc.UDSR(postData).then(
-            function(data){
-                $scope.regResponse = data;
-                $scope.resultTableVisible = true;
-                $scope.loadCountParticipantCompetitions('UDSR');
-                console.log('reg success', data);
-            },
-            function(data){
-                $scope.regResponse = data;
-                $scope.resultTableVisible = true;
-                $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', data.message, 'error', true);
-                console.log('reg error', data);
-            }); 
-        */     
     };
 
 
@@ -562,13 +591,19 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.tabWDSF.couple = null;
         $scope.tabWDSF.athlete = null;
         $scope.tabWDSF.alert = {};  
+        $scope.regCompetitionsCount = 0;
+        $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
+        $scope.tabWDSF.formSingle.btnRegistrationVisible = false;
+        $scope.tabWDSF.formCouple.btnNextVisible = true;
+        $scope.tabWDSF.formSingle.btnNextVisible = true;
+        $scope.tabWDSF.formCouple.btnBackVisible = true;
+        $scope.tabWDSF.formSingle.btnBackVisible = true;
     };
 
     $scope.tabWDSF.formCouple.back = function(){
         if ($scope.tabWDSF.formCouple.btnRegistrationVisible){
             $scope.tabWDSF.formCouple.btnNextVisible = true;
             $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
-            $scope.regCompetitionsCount = 0;
         }
         else{
             $scope.tabWDSF.searchForm.clear();
@@ -600,6 +635,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.competitionTable.avialableMode = true;
         $scope.competitionTable.refresh();  
     };
+
 
     $scope.tabWDSF.formSingle.back = function(){
         if ($scope.tabWDSF.formSingle.btnRegistrationVisible){
@@ -688,12 +724,12 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             $scope.tabOTHER.formCouple.btnNextVisible = true;
             $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
             $scope.tabOTHER.formCouple.disabled = false;
-            $scope.regCompetitionsCount = 0;
             $scope.tabOTHER.formCouple.btnBackVisible = false;
         }
         else{
             $scope.tabUDSR.disabled = false;
             $scope.tabWDSF.disabled = false;
+            $scope.regCompetitionsCount = 0;
         }
 
         $scope.competitionTable.avialableMode = false;
@@ -884,8 +920,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     $scope.init();  
     $scope.loadTournament($routeParams.tournamentId);
     $scope.loadCountries();
-    
-    
+    	
    $scope.$on('$destroy', function() {
       	// Make sure that the interval is destroyed too
       	$interval.cancel(intervalForTable);

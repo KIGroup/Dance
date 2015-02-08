@@ -46,7 +46,7 @@ do ##class(Dance.Wdsf.ControllerAPI).Call("GET", "/couple", .sc)</Description>
   		//w !,pUrl,!
   		$$$TOE(st, req.Send($zconvert(pMethod, "U"), pUrl))
 		
-		set json = $ZCVT(req.HttpResponse.Data.Read(1000000000), "I", "UTF8")
+		set json = req.HttpResponse.Data.Read(1000000000)
  		set ^temp("json") = json
  		
  		$$$TOE(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(json,,.pResponse))

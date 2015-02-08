@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/TournamentCompetitionsCtrl.js" application="/csp/dancereg/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/TournamentCompetitionsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //ddc вdd d
 
@@ -27,7 +27,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     	// Competition table
     	//
         $scope.page.competitionTable.columns = [
-        				  {name: '#'                 , sqlName: '%EXACT(idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '20px'}},
+        				  {name: '#'                 , sqlName: '%EXACT(idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
                           {name: 'Дата'              , sqlName: 'StartDate'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           {name: 'Время'             , sqlName: 'StartTime'               , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Название'          , sqlName: 'Name->Value'             , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},

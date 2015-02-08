@@ -8,6 +8,8 @@
     <title ng-bind="'Система регистрации'|localize"></title>
     <link rel="shortcut icon" href="img/icon.png" type="image/x-icon">
     <meta charset="utf-8">
+    <meta name="keywords" content="Регистрация участников WDSF, СТСР."/>
+	<meta name="description" content="Регистрация участников WDSF, СТСР."/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 	<script language="javascript"  src="js/common.js"></script>
@@ -17,7 +19,14 @@
  			window.location = "tech.csp";
  		}*/
  	
- 	
+ 		var langIdx = window.location.href.indexOf('/lang/');
+ 	 	if (langIdx > 0)
+    	{
+	    	var lang = window.location.href.substring(langIdx + 6, langIdx + 8);
+	    	AppSettings.setCookie('lang', lang, null);
+    	}
+    
+ 		
 		// Настройки приложения. Имена веб-приложений для REST, google календарь, язык
     	AppSettings.defaultName = '#($GET(^Settings("Dance", "WebApp")))#';
         AppSettings.admin = '#($GET(^Settings("Dance", "WebAppAdmin")))#';
@@ -34,11 +43,15 @@
     <script language="javascript"  src="lib/angular/angular.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-route.min.js"></script>
     <script language="javascript"  src="lib/angular/angular-cookies.min.js"></script>
+	
+	<script language="javascript"  src="js/localization/tmhDynamicLocale.js"></script>
 
 	<script language="javascript" src="lib/ui-bootstrap-tpls-0.5.0.js"></script>
+    
       
     <script language="javascript">
-    document.write('<script language="javascript" src="js/localization/locale_' + AppSettings.lang + '.js"><\/script>'); 
+    //document.write('<script language="javascript" src="js/localization/locale_en.js"><\/script>'); 
+    //document.write('<script language="javascript" src="js/localization/locale_' + AppSettings.lang + '.js"><\/script>'); 
    </script>  
    
    	<script language="javascript"  src="js/app.js"></script>  
@@ -127,7 +140,6 @@
                     </ul>
                   </li>
                   -->
-                  
                   <li ng-repeat="lang in menu.languages|orderBy:'code':true">
                   	<a ng-class="{langSelected: menu.lang==lang}" style="padding: 10px 5px 10px 5px;" ng-click="menu.switchLang(lang)" href=""><img class="langFlag" ng-src="{{lang.flagUrl}}"/> {{lang.name}}</a>	
                   </li>
@@ -157,9 +169,10 @@
    			    next(); 
   		  });  
    </script>
-<!--
+
+	<!-- Все JS исходники в одном файле -->
    <script language="javascript"  src="js/combine.js"></script>  
--->
+<!--
    
    	<script language="javascript" src="js/controllers/MainCtrl.js"></script>
     
@@ -215,7 +228,7 @@
     
     <script language="javascript" src="js/filters/cacheDate.js"></script>
 
-
+-->
   </body>
   
 </html>

@@ -227,33 +227,34 @@
 						<div class="row-fluid">
 							<div class="span6">
 								<div class="control-group">
-			            			<label class="control-label">{{('Город'|localize)}}<i class="requiredStar" ng-style="{color: (form_wdsfCoupleData.city.$error.required ? 'red' : 'green')}">*</i></label>
+			            			<label class="control-label">{{('Город'|localize)}}</label>
 			            			<div class="controls">
-			            				<input name="city" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.city" ng-disabled="tabWDSF.formCouple.disabled" required></input>
+			            				<input name="city" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.city" ng-disabled="tabWDSF.formCouple.disabled"></input>
 			            			</div>
 			        			</div>
 			        		</div>
 			        		<div class="span6">
 								<div class="control-group">
-			            			<label class="control-label">{{('Клуб'|localize)}}<i class="requiredStar" ng-style="{color: (form_wdsfCoupleData.club.$error.required ? 'red' : 'green')}">*</i></label>
+			            			<label class="control-label">{{('Клуб'|localize)}}</label>
 			            			<div class="controls">
-			            				<input name="club" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.club" ng-disabled="tabWDSF.formCouple.disabled" required></input>
+			            				<input name="club" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.club" ng-disabled="tabWDSF.formCouple.disabled"></input>
 			            			</div>
 			        			</div>
 			        		</div>
 			        	</div>
 				    	<div class="control-group">
-				        	<label class="control-label">{{('Тренер #1. Фамилия, Имя'|localize)}}<i class="requiredStar" ng-style="{color: (form_wdsfCoupleData.mainTrainer.$error.required ? 'red' : 'green')}">*</i></label>
+				        	<label class="control-label">{{('Тренер. Фамилия, Имя'|localize)}}</label>
 				        	<div class="controls">
-				    			<input name="mainTrainer" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.mainTrainer" ng-disabled="tabWDSF.formCouple.disabled" required></input>
+				    			<input name="mainTrainer" class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.mainTrainer" ng-disabled="tabWDSF.formCouple.disabled"></input>
 		                	</div>
 				    	</div>
+				    	<!--
 				    	<div class="control-group">
 				        	<label class="control-label" ng-bind="('Тренер #2. Фамилия, Имя'|localize) + ''"></label>
 				        	<div class="controls">
 				    			<input class="span12" type="text" ng-model="tabWDSF.couple.otherInfo.otherTrainers" ng-disabled="tabWDSF.formCouple.disabled"></input>
 		                	</div>
-				    	</div>
+				    	</div>-->
 					</div>
 				</form>
 			</div>
@@ -299,33 +300,34 @@
 						<div class="row-fluid">
 							<div class="span6">
 								<div class="control-group">
-			            			<label class="control-label">{{('Город'|localize)}}<i class="requiredStar" ng-style="{color: (form_wdsfAthleteData.city.$error.required ? 'red' : 'green')}">*</i></label>
+			            			<label class="control-label">{{('Город'|localize)}}</label>
 			            			<div class="controls">
-			            				<input name="city" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.city" ng-disabled="tabWDSF.formSingle.disabled" required></input>
+			            				<input name="city" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.city" ng-disabled="tabWDSF.formSingle.disabled"></input>
 			            			</div>
 			        			</div>
 			        		</div>
 			        		<div class="span6">
 								<div class="control-group">
-			            			<label class="control-label">{{'Клуб'|localize}}<i class="requiredStar" ng-style="{color: (form_wdsfAthleteData.club.$error.required ? 'red' : 'green')}">*</i></label>
+			            			<label class="control-label">{{'Клуб'|localize}}</label>
 			            			<div class="controls">
-			            				<input name="club" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.club" ng-disabled="tabWDSF.formSingle.disabled" required></input>
+			            				<input name="club" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.club" ng-disabled="tabWDSF.formSingle.disabled"></input>
 			            			</div>
 			        			</div>
 			        		</div>
 			        	</div>
 				    	<div class="control-group">
-				        	<label class="control-label">{{'Тренер #1. Фамилия, Имя'|localize}}<i class="requiredStar" ng-style="{color: (form_wdsfAthleteData.mainTrainer.$error.required ? 'red' : 'green')}">*</i></label>
+				        	<label class="control-label">{{'Тренер. Фамилия, Имя'|localize}}</label>
 				        	<div class="controls">
-				    			<input name="mainTrainer" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.mainTrainer" ng-disabled="tabWDSF.formSingle.disabled" required></input>
+				    			<input name="mainTrainer" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.mainTrainer" ng-disabled="tabWDSF.formSingle.disabled"></input>
 		                	</div>
 				    	</div>
+				    	<!--
 				    	<div class="control-group">
 				        	<label class="control-label">{{'Тренер #2. Фамилия, Имя'|localize}}</label>
 				        	<div class="controls">
 				    			<input name="otherTrainers" class="span12" type="text" ng-model="tabWDSF.athlete.otherInfo.otherTrainers" ng-disabled="tabWDSF.formSingle.disabled"></input>
 		                	</div>
-				    	</div>
+				    	</div>-->
 					</div>
 					<div class="span4">
 					</div>	
@@ -656,6 +658,8 @@
 	<div class="row-fluid" style="margin-top: 15px;">
 		<strong><span ng-bind="'Результаты регистрации'|localize"></span></strong>&nbsp;&nbsp;
 		<a ng-init="regCompetitionsCount=0" ng-show="regCompetitionsCount > 0" href="" ng-click="openParticipantCompetitions(selectedTab)" class="cellLink" ng-bind="('Перейти к списку групп пары / участника для оплаты ('|localize) + regCompetitionsCount + ') »'"></a>
+		&nbsp;&nbsp;
+		<a href="" class="cellLink" ng-click="clearAllForms()">{{'Зарегистрировать ещё участников »'|localize}}</a>	    
 	</div>
 	<table class="table table-bordered table-hover" style="margin-top: 15px;">
 	    <thead>
@@ -798,6 +802,5 @@ man		woman
 		<pre>{{tabOTHER.athlete|json}}</pre>	
 	</div>
 </div>
-
 ]]></CSP>
 </Export>

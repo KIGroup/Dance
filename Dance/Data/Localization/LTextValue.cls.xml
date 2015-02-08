@@ -63,7 +63,7 @@ Get value for language=lang for object with id=ltxt</Description>
 	quit $LISTGET(^Dance.Data.LocaD180.LTextValueD(id), 4)
 	
 	
-	
+	/*
 	// ISO 639-1
 	set lang = $e(lang,1,2)
 	set value = "! no value for [ISO 639-1] lang="_lang
@@ -72,7 +72,7 @@ Get value for language=lang for object with id=ltxt</Description>
 	     FROM Dance_Data_Localization.LTextValue 
 	     WHERE LText = :ltxt AND Lang = :lang)
 	
-	quit value
+	quit value*/
 ]]></Implementation>
 </Method>
 
@@ -83,23 +83,31 @@ Set value for language=lang for object with id=ltxt</Description>
 <FormalSpec>value,ltxt,lang</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	set st = $$$OK
+	
 	&sql(UPDATE Dance_Data_Localization.LTextValue (Value) VALUES (:value) 
 	     WHERE LText = :ltxt AND Lang = :lang)
 	
-	do ##class(Dance.Utils.Journal).Create("Log", "Dance.Data.Localization.LTextValue", "SQLCODE="_SQLCODE_"; value="_value_"; ltxt="_ltxt_"; lang="_lang)
 	if (SQLCODE = 100){
 		set lv = ..%New()
 		set lv.Lang = ##class(LTextLanguage).%OpenId(lang)
 		set lv.LText = ##class(LText).%OpenId(ltxt)
 		set lv.Value = value
 		set sc = lv.%Save()
-		if $$$ISERR(sc) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| "_sc)
+		
+		if $$$ISERR(sc){
+			set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| "_sc)
+		}
 	}
 	elseif (SQLCODE '= 0) {
-		quit ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| SQLCODE="_SQLCODE)
+		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| SQLCODE="_SQLCODE)
 	}
 
-	quit $$$OK
+	if $$$ISERR(st) {
+		do ##class(Dance.Utils.Journal).Create("Log", "Localization.LTextValue. SetValue", "st="_$SYSTEM.Status.GetErrorText(st))
+	}
+	
+	quit st
 ]]></Implementation>
 </Method>
 

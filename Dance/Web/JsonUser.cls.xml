@@ -194,6 +194,11 @@ Registration WDSF participants in the tournament</Description>
 		    do regResults.Insert(regResult)
 		}
 		
+		if (wcPostData.competitions.Count() = 0){
+			set proxy.results = regResults
+			$$$ThrowStatus(##class(Dance.Utils.Msg).GetMsg("FFFFF"))
+		}
+		
       	// Not removed! This is string fix a bug! Bug - empty response.
       	w ""
       	

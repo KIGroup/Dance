@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/localization/filter.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/localization/filter.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
 //
 /*===========================================================================================
@@ -16,10 +16,10 @@ localizationModule.filter('localize', function(DanceDictionary) {
 });
 
 
-
+/*
 servicesModule.config(['$httpProvider', function ($httpProvider) {
 	$httpProvider.defaults.headers.common['Accept-Language'] = AppSettings.lang;
 }]);
 
-]]></CSP>
+*/]]></CSP>
 </Export>
