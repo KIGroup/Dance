@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/tech.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/tech.csp" application="/csp/testdance/" default="1"><![CDATA[
 <!doctype html>
 
 <html>
@@ -14,10 +14,10 @@
 
   <body style="text-align: center;">
     <br>
-    <h4>Проводятся технические работы до 3:00(UTC+3) 23-11-2014. Система временно недоступна. Приносим извинения за доставленные неудобства.</h4>
+    <h4>Проводятся технические работы до 21:00 (Московское время) 08-02-2015. Система временно недоступна. Приносим извинения за доставленные неудобства.</h4>
     <br>
     <br>
-	<h4>Under maintenance until 3:00(UTC+3) 23-11-2014. The system is temporarily unavailable. We apologize for the inconvenience.</h4>
+	<h4>Under maintenance until 21:00 (Moscow time) 08-02-2015. The system is temporarily unavailable. We apologize for the inconvenience.</h4>
   </body>
   
 </html>

@@ -104,6 +104,13 @@ Tournaments</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
+<Property name="PaymentsUniqueCount">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {PaymentsUniqueCount} = ##class({%%CLASSNAME}).GetPaymentsUniqueCount({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
 <Property name="Competitions">
 <Type>Dance.Data.Competition</Type>
 <Cardinality>many</Cardinality>
@@ -195,6 +202,7 @@ Tournaments</Description>
 	
 	if (params.loadPaymentsCount){
 		set proxy.paymentsCount = ..PaymentsCount
+		set proxy.paymentsUniqueCount = ..PaymentsUniqueCount
 	}
 	
 	set proxy.location = ##class(%ZEN.proxyObject).%New()
@@ -494,6 +502,24 @@ Check update privilege</Description>
 	&sql(SELECT COUNT(ID) INTO :count
 		 FROM Dance_Data.Participant
 		 WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND TicketStatus = 'Paid')
+	
+	quit count
+]]></Implementation>
+</Method>
+
+<Method name="GetPaymentsUniqueCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tournamentId:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set count = 0
+	
+	&sql(SELECT COUNT (ID) INTO :count
+		 FROM (
+			SELECT ID
+			FROM Dance_Data.Participant
+			WHERE Competition->Tournament = :tournamentId AND Competition->IsActive = 1 AND TicketStatus = 'Paid'
+			GROUP BY FullName))
 	
 	quit count
 ]]></Implementation>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/tournamentcompetitions.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/tournamentcompetitions.csp" application="/csp/testdance/" default="1"><![CDATA[
 <div class="row-fluid">
 	<pre ng-bind="page.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
@@ -26,7 +26,7 @@
 
 <div class="row-fluid">
 	<div class="row-fluid" style="margin-bottom: 12px;">
-		<span style="font-weight: bold;">{{('Группы турнира'|localize) + '. ' + ('Всего участников'|localize) + ' - ' + page.tournament.participantsCount + ', ' + ('уникальных'|localize) + ' - ' + page.tournament.participantsUniqueCount + '. ' + ('Оплачено'|localize) + ' - ' + page.tournament.paymentsCount + '.'}}</span>
+		<span style="font-weight: bold;">{{('Группы турнира'|localize) + '. ' + ('Всего участников'|localize) + ' - ' + page.tournament.participantsCount + ', ' + ('уникальных'|localize) + ' - ' + page.tournament.participantsUniqueCount + '. ' + ('Оплачено участников'|localize) + ' - ' + page.tournament.paymentsCount + ', ' + 'уникальных' + ' - ' + page.tournament.paymentsUniqueCount + '.'}}</span>
 	</div>
 	<div class="row-fluid" id="divTableCmpButtons" onresize="console.log('onresize div')">
 		<button type="button" style="margin-bottom: 15px; font-size: 1em; margin-right: 10px;" class="btn btn-mini btnRadio" ng-model="pageStore.tournamentDetails.gridCompetitions.filterDate" btn-radio="''" ng-bind="'Все дни'|localize" ng-click="page.competitionTable.changeDateFilter('')"></button>

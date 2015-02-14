@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/components/competitionform.csp" application="/csp/dancereg/" default="1"><![CDATA[
+<CSP name="dance/components/competitionform.csp" application="/csp/testdance/" default="1"><![CDATA[
 <div class="row-fluid">
 	<div class="control-group">
         <div class="row-fluid">
@@ -55,7 +55,7 @@
 			<div class="span6">	
 	 			<label class="control-label" ng-bind="('Возрастная группа'|localize) + '*'"></label>
 	        	<div class="controls">
-	            	<select class="span12" ng-model="competition.ageCategory.id" ng-options="age.id as (age.name + ' ('+ age.minAge + ' - ' + age.maxAge +')') for age in ageCategories" required>
+	            	<select class="span12" ng-model="competition.ageCategory.id" ng-options="age.id as (age.name + ' ('+ age.titleAge +')') for age in ageCategories" required>
            				<option></option>
            			</select>
 	        	</div>

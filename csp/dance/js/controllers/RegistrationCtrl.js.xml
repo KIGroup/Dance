@@ -85,7 +85,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                                 calculate: function(item){
 	                                if (!item.ageCategory) 
 	                                	return '';
-                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
+                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.titleAge + ')';
                                 }},
                           {name:'dancerClassesString', 
                                 calculate: function(item){

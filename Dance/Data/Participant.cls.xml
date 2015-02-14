@@ -95,7 +95,7 @@ Couple - participant of the competition</Description>
 	set proxy.isActive = ..IsActive
 	set proxy.created = ..Created
 	set proxy.ticketStatus = ##class(TicketStatus).CodeIdxOpen(..TicketStatus).ConvertToProxyObject()
-	
+		
 	quit proxy
 ]]></Implementation>
 </Method>
@@ -405,6 +405,12 @@ Change IsActive property to 0</Description>
 </Value>
 <Value name="6">
 <Value>Created</Value>
+</Value>
+<Value name="7">
+<Value>PrtObjIDClassName</Value>
+</Value>
+<Value name="8">
+<Value>Tournament</Value>
 </Value>
 </Data>
 </Storage>

@@ -76,7 +76,11 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
         $cookies['lang'] = lang.code;
         AppSettings.lang = lang.code;
         tmhDynamicLocale.set(lang.code);
-        $scope.menu.loadLanguages();
+                for(var i = 0; i < $scope.menu.languages.length; i++)
+        	if ($scope.menu.languages[i].code == lang.code){
+        		$scope.menu.lang = $scope.menu.languages[i];
+        		break
+        	}
         
         if (oldUrlParam != '')
         	$window.location.replace($window.location.href.replace(oldUrlParam, '/lang/' + lang.code));
@@ -1350,7 +1354,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                                 calculate: function(item){
 	                                if (!item.ageCategory) 
 	                                	return '';
-                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.minAge + ' - ' + item.ageCategory.maxAge + ')';
+                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.titleAge + ')'; 
                                 }},
                           {name:'dancerClassesString', 
                                 calculate: function(item){

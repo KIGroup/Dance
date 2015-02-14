@@ -695,18 +695,49 @@ Available participants competitions for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
       	
-      	set whereCondition = "IsActive = 1 AND IsClosed = 0 AND Tournament = '"_..ParseParameter(params.other.tournamentId)_"' "
+      	set whereCondition = " Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 AND IsClosed = 0 "
       	set maleSTClass = ""
       	set maleLAClass = ""
       	set man = ""
       	set woman = ""
       	
       	if $ISOBJECT(params.other.couple){
-      		set man = params.other.couple.man
+	      	set man = params.other.couple.man
       		set woman = params.other.couple.woman
-      		
       		set whereCondition = whereCondition_" AND Type->Code = 'Couples' "
+      	}
+      	elseif $ISOBJECT(params.other.athlete){
+			set man = params.other.athlete
+			set woman = params.other.athlete
+			set whereCondition = whereCondition_" AND Type->Code = 'Solo' "
+      	}
+      	
+      	// Age filter
+      	// current year - year of birth
+      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
+      	set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P(woman.dob, "-", 1)
+      	set whereCondition = whereCondition_" AND AgeCategory IN ("_$LISTTOSTRING(##class(Dance.Data.AgeCategory).GetAllAvailableList(maleAge, femaleAge), ",")_") "
+      	
+      	
+      	
+      	if (params.other.type = "UDSR"){
+	      	set maleSTClass = man.stClass.code
+      		set maleLAClass = man.laClass.code
       		
+      		if $ISOBJECT(params.other.couple) && (params.other.couple.man.numberWDSF = ""){
+	      		set whereCondition = whereCondition_" AND WDSF IS NULL "
+      		}
+      	}
+      	elseif (params.other.type = "WDSF"){
+	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
+      	}
+      	elseif (params.other.type = "OTHER"){
+	      	set whereCondition = whereCondition_" AND WDSF IS NULL AND IsInternational = 1 "
+      	}	
+      	
+      	
+     	
+      	if $ISOBJECT(params.other.couple){
       		if (params.other.type = "OTHER"){																  
       			set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantCoupleOther as prtc WHERE prtc.IsActive = 1 AND prtc.CoupleKey = '"_..ParseParameter(params.other.couple.key)_"')"
       		}
@@ -733,11 +764,7 @@ Available participants competitions for grid</Description>
       		}
       	}
       	elseif $ISOBJECT(params.other.athlete){
-			set man = params.other.athlete
-			set woman = params.other.athlete
-			
-	      	set whereCondition = whereCondition_" AND Type->Code = 'Solo'"
-	      	
+		
 	      	if (params.other.type = "OTHER"){
 	      		set whereCondition = whereCondition_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantSingleOther as prtc WHERE prtc.IsActive = 1 AND prtc.AthleteKey = '"_..ParseParameter(params.other.athlete.key)_"') "	
 	      	}
@@ -748,29 +775,8 @@ Available participants competitions for grid</Description>
       		}
 	   	}
       	
-        // current year - year of birth
-      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
-      	set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P(woman.dob, "-", 1)
-      	set maxAge = maleAge
-      	if (femaleAge > maxAge) set maxAge = femaleAge
-      	
-      	set whereCondition = whereCondition_" AND AgeCategory->MinAge <= "_maxAge_" AND "_maxAge_" <= AgeCategory->MaxAge "
-      		
-      	if (params.other.type = "UDSR"){
-	      	set maleSTClass = man.stClass.code
-      		set maleLAClass = man.laClass.code
-      		
-      		if $ISOBJECT(params.other.couple) && (params.other.couple.man.numberWDSF = ""){
-	      		set whereCondition = whereCondition_" AND WDSF IS NULL "
-      		}
-      	}
-      	elseif (params.other.type = "WDSF"){
-	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
-      	}
-      	elseif (params.other.type = "OTHER"){
-	      	set whereCondition = whereCondition_" AND WDSF IS NULL AND IsInternational = 1 "
-      	}
-      	     	
+       
+     	     	
 		set sql = "SELECT ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
 		set ^tt = sql
 		

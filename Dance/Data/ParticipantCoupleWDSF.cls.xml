@@ -46,6 +46,10 @@
 <Unique>1</Unique>
 </Index>
 
+<Index name="CoupleWDSFIdx">
+<Properties>Couple</Properties>
+</Index>
+
 <Method name="ConvertToProxyObject">
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
