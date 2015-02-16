@@ -463,12 +463,6 @@ a.disabled {
 	border-bottom: 1px dashed darkred;
 	color: rgb(203, 0, 0)!important;
 	font-size: 18px;
-	
-    -webkit-animation: myfirst 1s; /* Chrome, Safari, Opera */
-    animation: myfirst 1s;
-    
- 	-webkit-animation-iteration-count: 300; /* Chrome, Safari, Opera */
-    animation-iteration-count: 300;
 }
 
 .trnAdditionInfoUrl:hover{
@@ -477,16 +471,5 @@ a.disabled {
 	border-bottom: 1px solid darkred;
 }
 
-
-/* Chrome, Safari, Opera */
-@-webkit-keyframes myfirst {
-    from {color: black; opacity: 0.9;}
-    to {color: rgb(203, 0, 0);opacity: 1;}
-}
-
-/* Standard syntax */
-@keyframes myfirst {
-    from {color: black; opacity: 0.9;}
-    to {color: rgb(203, 0, 0); opacity: 1;}
-}]]></CSP>
+]]></CSP>
 </Export>

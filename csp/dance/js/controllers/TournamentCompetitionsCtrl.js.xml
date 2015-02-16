@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentCompetitionsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
-//ddc вdd d
+//ddc вdd dddd
 
 /*===========================================================================================
 Tournament Competitions
@@ -19,6 +19,11 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     
     if (!$scope.pageStore.tournamentDetails) 
     	$scope.pageStore.tournamentDetails = {gridCompetitions:{filterDate: '', hideNumbersColumn: true}};
+
+
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.id)){
+        $scope.page.tournament = $scope.pageStore.registration.tournament;
+    }
 
 	var intervalForTable = null;
  

@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
-// 
+// d
   
 /*===========================================================================================
 Competition Participants 
@@ -20,6 +20,11 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
  	if (!$scope.pageStore.participants) $scope.pageStore.participants = {grid:{}};
 
     
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament){
+        $scope.page.competition = { tournament : $scope.pageStore.registration.tournament};
+    }
+
+
     $scope.page.init = function(){
         //    
     	// Participant table

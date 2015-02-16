@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/TournamentParticipantsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
 'use strict';
-//--ddddd
+//--dddddd
   
 /*===========================================================================================
 Tournament Participants 
@@ -18,6 +18,11 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     $scope.recorderHash = $routeParams.recorderHash || null;
     $scope.locationSrvc = LocationSrvc; 
      
+
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.tournamentId)){
+        $scope.page.tournament = $scope.pageStore.registration.tournament;
+    }
+
     $scope.page.init = function(){
         //    
     	// Participant table

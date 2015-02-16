@@ -19,6 +19,10 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 	
     $scope.pageStore.registration = $scope.pageStore.registration || {grid:{hideNumbersColumn: true}, gridStyle:{}};    
     
+    if ($scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.tournamentId)){
+        $scope.tournament = $scope.pageStore.registration.tournament;
+    }
+
     $scope.tabUDSR = {
         searchForm: {}
     };
@@ -281,6 +285,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 						$scope.tabOTHER.select();
 	                }
                 }
+
+
+                $scope.pageStore.registration.tournament = $scope.tournament;
             },
             function(data, status, headers, config){
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);

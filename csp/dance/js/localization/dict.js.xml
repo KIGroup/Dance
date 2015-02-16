@@ -276,12 +276,15 @@ localizationModule.constant('DanceDictionary', {
 		'Информация о турнире' : 'Tournament info',
 		'Информация »' : 'Information »',
 		'Перейдите по ссылке для получения подробной информации' : 'Click here for more information',
-		'Важное объявление' : 'Important announcement',
+		'ВАЖНОЕ ОБЪЯВЛЕНИЕ' : 'Important announcement',
 		'Зарегистрировать ещё участников »' : 'Register more participants »',
 		'Введите номера классификационных книжек СТСР' : 'Enter the number of UDSR classification books',
 		'Введите номера классификационных книжек WDSF' : 'Enter the number of WDSF classification books',
 		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Registration is performed by MIN numbers WDSF. Search participants in the database of "World DanceSport Federation".',
-		'Тренер. Фамилия, Имя' : 'Trainer. Full name'
+		'Тренер. Фамилия, Имя' : 'Trainer. Full name',
+		'Оплачено участников' : 'Paid participants',
+		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.'
+
  
 
   },
@@ -549,12 +552,15 @@ localizationModule.constant('DanceDictionary', {
 		'Участники •' : 'Participants •',
 		'Экспорт участников »' : 'Export participants',
 		'Перейдите по ссылке для получения подробной информации' : 'Klicken Sie hier für weitere Informationen',
-		'Важное объявление' : 'Wichtige mitteilung',
+		'ВАЖНОЕ ОБЪЯВЛЕНИЕ' : 'Wichtige mitteilung',
 		'Зарегистрировать ещё участников »' : 'Registrieren Sie sich mehr Teilnehmer »',
 		'Введите номера классификационных книжек СТСР' : 'Geben Sie die Nummer Einstufung Bücher UDSR',
 		'Введите номера классификационных книжек WDSF' : 'Geben Sie die Nummer Einstufung Bücher WDSF',
 		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Die Anmeldung erfolgt durch MIN Zahlen WDSF getan. Suche Mitglieder ist die Datenbank "World Dance Sport Federation"',
-		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname'
+		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname',
+		'Оплачено участников' : 'Paid participants',
+		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.'
+
 		
 		
 

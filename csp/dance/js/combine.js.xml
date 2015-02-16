@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <CSP name="dance/js/combine.js" application="/csp/testdance/" default="1"><![CDATA[
- 
+
 // ===============================================================================================================================
 // File: 1. controllers/MainCtrl.js    
 // ===============================================================================================================================
@@ -76,7 +76,7 @@ controllersModule.controller('MainCtrl', function($scope, $cookies, $filter, $wi
         $cookies['lang'] = lang.code;
         AppSettings.lang = lang.code;
         tmhDynamicLocale.set(lang.code);
-                for(var i = 0; i < $scope.menu.languages.length; i++)
+        for(var i = 0; i < $scope.menu.languages.length; i++)
         	if ($scope.menu.languages[i].code == lang.code){
         		$scope.menu.lang = $scope.menu.languages[i];
         		break
@@ -638,7 +638,7 @@ controllersModule.controller('TournamentsCtrl', function($scope, $location, $fil
 // File: 4. controllers/TournamentCompetitionsCtrl.js
 // ===============================================================================================================================
 'use strict';
-//ddc вdd d
+//ddc вdd dddd
 
 /*===========================================================================================
 Tournament Competitions
@@ -655,6 +655,11 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     
     if (!$scope.pageStore.tournamentDetails) 
     	$scope.pageStore.tournamentDetails = {gridCompetitions:{filterDate: '', hideNumbersColumn: true}};
+
+
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.id)){
+        $scope.page.tournament = $scope.pageStore.registration.tournament;
+    }
 
 	var intervalForTable = null;
  
@@ -890,7 +895,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
 // File: 5. controllers/TournamentParticipantsCtrl.js
 // ===============================================================================================================================
 'use strict';
-//--ddddd
+//--dddddd
   
 /*===========================================================================================
 Tournament Participants 
@@ -906,6 +911,11 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     $scope.recorderHash = $routeParams.recorderHash || null;
     $scope.locationSrvc = LocationSrvc; 
      
+
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.tournamentId)){
+        $scope.page.tournament = $scope.pageStore.registration.tournament;
+    }
+
     $scope.page.init = function(){
         //    
     	// Participant table
@@ -1288,6 +1298,10 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 	
     $scope.pageStore.registration = $scope.pageStore.registration || {grid:{hideNumbersColumn: true}, gridStyle:{}};    
     
+    if ($scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.tournamentId)){
+        $scope.tournament = $scope.pageStore.registration.tournament;
+    }
+
     $scope.tabUDSR = {
         searchForm: {}
     };
@@ -1354,7 +1368,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                                 calculate: function(item){
 	                                if (!item.ageCategory) 
 	                                	return '';
-                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.titleAge + ')'; 
+                                    item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.titleAge + ')';
                                 }},
                           {name:'dancerClassesString', 
                                 calculate: function(item){
@@ -1550,6 +1564,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 						$scope.tabOTHER.select();
 	                }
                 }
+
+
+                $scope.pageStore.registration.tournament = $scope.tournament;
             },
             function(data, status, headers, config){
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
@@ -2200,7 +2217,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 // File: 8. controllers/PaymentCtrl.js
 // ===============================================================================================================================
 'use strict';
-// 
+// c
         
 /*===========================================================================================
 Payment
@@ -2218,7 +2235,11 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
  	if (!$scope.pageStore.tournamentPayment) 
         $scope.pageStore.tournamentPayment = {gridCompetitions:{ hideNumbersColumn: true}};
 
-    
+
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.tournamentId)){
+        $scope.tournament = $scope.pageStore.registration.tournament;
+    }
+
     $scope.init = function(){
         //   
     	// Competition table
@@ -2360,9 +2381,14 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
 
     /// Load Tournament by ID
     $scope.loadTournament = function(id){
-        TournamentSrvc.getById(id, '?loadFullName=1').then(
+        TournamentSrvc.getById(id, '?loadFullName=1&loadStatus=1').then(
             function(data){
                 $scope.tournament = data;
+                if (data.status.code != 'Registration'){
+	                
+                    $scope.alert = UtilsSrvc.getAlert('Внимание!', 'Регистрация в турнир завершена. Все платежи запрещены.', 'error', true);
+                    return;
+                }  
             },
             function(data, status, headers, config){
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
@@ -2606,7 +2632,7 @@ controllersModule.controller('CompetitionCtrl', function($scope, $window, $route
 // File: 10. controllers/CompetitionParticipantsCtrl.js
 // ===============================================================================================================================
 'use strict';
-// 
+// d
   
 /*===========================================================================================
 Competition Participants 
@@ -2624,6 +2650,11 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
  	if (!$scope.pageStore.participants) $scope.pageStore.participants = {grid:{}};
 
     
+    if ($scope.pageStore.registration && $scope.pageStore.registration.tournament){
+        $scope.page.competition = { tournament : $scope.pageStore.registration.tournament};
+    }
+
+
     $scope.page.init = function(){
         //    
     	// Participant table
@@ -3713,7 +3744,7 @@ servicesModule.factory('FeedBackSrvc', function(RESTSrvc) {
 servicesModule.factory('LocationSrvc', function($location) {	
 	return {
 		goTo: function(url, recorderHash){
-			console.log(url, recorderHash);
+			//console.log(url, recorderHash);
             
             if (recorderHash && url.indexOf(":recorderHash") >= 0){
                 url = url.replace(/:recorderHash/, '/recorder/' + recorderHash);
@@ -3722,7 +3753,7 @@ servicesModule.factory('LocationSrvc', function($location) {
 	            url = url.replace(/:recorderHash/, '');
             }
 			
-			console.log(url, recorderHash);
+			//console.log(url, recorderHash);
             $location.path(url);
     	}
     }
@@ -4690,18 +4721,21 @@ localizationModule.constant('DanceDictionary', {
 		'Всего участников':'Number of participants',
 		'уникальных':'unique',
 		'Всего': 'Total count',
-		
+		 
 		'Задать вопрос' : 'Ask a question',
 		'Инструкция к регистрации' : 'Instructions for registration',
 		'Информация о турнире' : 'Tournament info',
 		'Информация »' : 'Information »',
 		'Перейдите по ссылке для получения подробной информации' : 'Click here for more information',
-		'Важное объявление' : 'Important announcement',
+		'ВАЖНОЕ ОБЪЯВЛЕНИЕ' : 'Important announcement',
 		'Зарегистрировать ещё участников »' : 'Register more participants »',
 		'Введите номера классификационных книжек СТСР' : 'Enter the number of UDSR classification books',
 		'Введите номера классификационных книжек WDSF' : 'Enter the number of WDSF classification books',
 		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Registration is performed by MIN numbers WDSF. Search participants in the database of "World DanceSport Federation".',
-		'Тренер. Фамилия, Имя' : 'Trainer. Full name'
+		'Тренер. Фамилия, Имя' : 'Trainer. Full name',
+		'Оплачено участников' : 'Paid participants',
+		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.'
+
  
 
   },
@@ -4969,12 +5003,15 @@ localizationModule.constant('DanceDictionary', {
 		'Участники •' : 'Participants •',
 		'Экспорт участников »' : 'Export participants',
 		'Перейдите по ссылке для получения подробной информации' : 'Klicken Sie hier für weitere Informationen',
-		'Важное объявление' : 'Wichtige mitteilung',
+		'ВАЖНОЕ ОБЪЯВЛЕНИЕ' : 'Wichtige mitteilung',
 		'Зарегистрировать ещё участников »' : 'Registrieren Sie sich mehr Teilnehmer »',
 		'Введите номера классификационных книжек СТСР' : 'Geben Sie die Nummer Einstufung Bücher UDSR',
 		'Введите номера классификационных книжек WDSF' : 'Geben Sie die Nummer Einstufung Bücher WDSF',
 		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Die Anmeldung erfolgt durch MIN Zahlen WDSF getan. Suche Mitglieder ist die Datenbank "World Dance Sport Federation"',
-		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname'
+		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname',
+		'Оплачено участников' : 'Paid participants',
+		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.'
+
 		
 		
 
