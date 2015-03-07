@@ -59,6 +59,10 @@
 <Parameter name="MAXLEN" value="2000"/>
 </Property>
 
+<Index name="AthleteKeyIdx">
+<Properties>AthleteKey</Properties>
+</Index>
+
 <Method name="ConvertToProxyObject">
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
@@ -117,6 +121,7 @@
 	
 	set obj.AthleteKey = athlete.key
 	set obj.PType = "SingleOther"
+	set obj.PrtObjKey = ..%ClassName(1)_"@"_athlete.key
 	set st = obj.%Save()
 	
 	quit obj
@@ -145,6 +150,15 @@
 		 	   ))
 		 	   
 	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetFullNameForLang">
+<Description>
+Имя участника для выбранного языка</Description>
+<FormalSpec>lang:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit ..LastName_" "_..FirstName
 ]]></Implementation>
 </Method>
 

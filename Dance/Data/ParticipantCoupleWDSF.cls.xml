@@ -104,8 +104,18 @@
 	set obj.MainTrainer = couple.otherInfo.mainTrainer
 	set obj.OtherTrainers = couple.otherInfo.otherTrainers
 	set obj.PType = "CoupleWDSF"
+	set obj.PrtObjKey = obj.Couple.%ClassName(1)_"@"_obj.Couple.%Id()
 	set st = obj.%Save()
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="GetFullNameForLang">
+<Description>
+Имя участника для выбранного языка</Description>
+<FormalSpec>lang:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit ..Couple.Man.LastName.GetValueByLang(lang)_" "_..Couple.Man.FirstName.GetValueByLang(lang)_" - "_..Couple.Woman.LastName.GetValueByLang(lang)_" "_..Couple.Woman.FirstName.GetValueByLang(lang)
 ]]></Implementation>
 </Method>
 

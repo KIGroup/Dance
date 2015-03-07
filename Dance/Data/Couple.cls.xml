@@ -16,6 +16,16 @@ Couples</Description>
 <Required>1</Required>
 </Property>
 
+<Index name="ManIdx">
+<Data>Man</Data>
+<Properties>Man</Properties>
+</Index>
+
+<Index name="WomanIdx">
+<Data>Woman</Data>
+<Properties>Woman</Properties>
+</Index>
+
 <Index name="CommonIdx">
 <Properties>Man,Woman</Properties>
 <Unique>1</Unique>

@@ -283,7 +283,8 @@ localizationModule.constant('DanceDictionary', {
 		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Registration is performed by MIN numbers WDSF. Search participants in the database of "World DanceSport Federation".',
 		'Тренер. Фамилия, Имя' : 'Trainer. Full name',
 		'Оплачено участников' : 'Paid participants',
-		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.'
+		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.',
+		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.'
 
  
 
@@ -559,7 +560,8 @@ localizationModule.constant('DanceDictionary', {
 		'Регистрация осуществляется по MIN номерам WDSF. Поиск участников идет по базе данных "World DanceSport Federation".' : 'Die Anmeldung erfolgt durch MIN Zahlen WDSF getan. Suche Mitglieder ist die Datenbank "World Dance Sport Federation"',
 		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname',
 		'Оплачено участников' : 'Paid participants',
-		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.'
+		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.',
+		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.'
 
 		
 		

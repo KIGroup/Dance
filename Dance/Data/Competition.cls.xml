@@ -125,6 +125,10 @@ Competition in the tournament, has participants</Description>
 <Required>1</Required>
 </Property>
 
+<Index name="IsActiveIndex">
+<Properties>IsActive</Properties>
+</Index>
+
 <Method name="CalcTestConvert">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>id</FormalSpec>

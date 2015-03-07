@@ -30,6 +30,8 @@
 </Index>
 
 <Method name="CreateByUDSR">
+<Description>
+Создать</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[coupleUDSR:CoupleUDSR,&st:%Status]]></FormalSpec>
 <ReturnType>MatchingCoupleUDSRWDSF</ReturnType>
@@ -193,6 +195,28 @@ do ##class(Dance.Data.MatchingCoupleUDSRWDSF).FixLocalization()</Description>
 		TROLLBACK 1
 		do ##class(Dance.Utils.Journal).Create("Log", "Matching. FixLocalization", $SYSTEM.Status.GetErrorText(ex.AsStatus()))
 	}
+]]></Implementation>
+</Method>
+
+<Method name="GetWDSFCoupleIDByUDSR">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>coupleUDSRId:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set coupleId = ""
+	&sql(SELECT WDSF INTO :coupleId FROM Dance_Data.MatchingCoupleUDSRWDSF WHERE UDSR = :coupleUDSRId)
+	quit coupleId
+]]></Implementation>
+</Method>
+
+<Method name="GetUDSRCoupleIDByWDSF">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>coupleWDSFId:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set coupleId = ""
+	&sql(SELECT UDSR INTO :coupleId FROM Dance_Data.MatchingCoupleUDSRWDSF WHERE WDSF = :coupleWDSFId)
+	quit coupleId
 ]]></Implementation>
 </Method>
 

@@ -71,6 +71,10 @@
 <Parameter name="MAXLEN" value="2000"/>
 </Property>
 
+<Index name="CoupleKeyIdx">
+<Properties>CoupleKey</Properties>
+</Index>
+
 <Method name="ConvertToProxyObject">
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
@@ -140,6 +144,7 @@
 	
 	set obj.CoupleKey = couple.key	
 	set obj.PType = "CoupleOther"
+	set obj.PrtObjKey = ..%ClassName(1)_"@"_couple.key
 	set st = obj.%Save()
 	
 	quit obj
@@ -172,6 +177,15 @@
 		 	   ))
 		 	   
 	quit ..%OpenId(id)
+]]></Implementation>
+</Method>
+
+<Method name="GetFullNameForLang">
+<Description>
+Имя участника для выбранного языка</Description>
+<FormalSpec>lang:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit ..ManLastName_" "_..ManFirstName_" - "_..WomanLastName_" "_..WomanFirstName
 ]]></Implementation>
 </Method>
 

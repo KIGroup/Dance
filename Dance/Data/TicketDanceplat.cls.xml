@@ -45,6 +45,7 @@
 		}
 	}
 	
+	set obj.PrtObjKey = ##class(Participant).GetPrtObjKey(obj.Participant.%Id())
 	set obj.Amount = data.amount
 	set obj.TStatus = ##class(TicketStatus).%OpenId(data.status.id)
 	set obj.Title = data.title
@@ -335,6 +336,12 @@
 	// Find in controller DB
 	set wdsfData = ##class(Dance.Wdsf.ControllerAPI).GetCoupleByName(ticketImport.MaleLastName_","_ticketImport.MaleFirstName, ticketImport.FemaleLastName_","_ticketImport.FemaleFirstName, .st)
 	quit:$$$ISERR(st) $$$NULLOREF
+	
+	// Проверка на то, что если ничего не вернулось или вернулось, но сказало: Ахтунг! Я не нашел такой пары в WDSF базе!!!!! Ищите где-нибудь в другом месте
+	if ($ISOBJECT(wdsfData) = $$$NO) || (wdsfData.code = 2045){
+		w !, wdsfData.message
+		q $$$NULLOREF
+	}
 	
 	w !, "Searching completed ",wdsfData.man.id,"-", wdsfData.woman.id
 	quit ##class(CoupleWDSF).GetByNumbers(wdsfData.man.id, wdsfData.woman.id, .st)
@@ -631,6 +638,44 @@ do ##class(Dance.Data.TicketDanceplat).TestFakeTickets()</Description>
 		
 	for i=1:1:tickets.Count(){
 		do ..SaveOneFromImportTable(tickets.GetAt(i), competition)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="UpdatePrtKey">
+<Description>
+do ##class(Dance.Data.TicketDanceplat).UpdatePrtKey()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set st = $$$OK
+	try{
+		TSTART
+		
+		&sql(DECLARE TicketUPDDCurs CURSOR FOR 
+		 	 SELECT ID
+		 	 FROM Dance_Data.Ticket)	
+		 	 		
+		&sql(OPEN TicketUPDDCurs)
+		for  
+		{	
+			&sql(FETCH TicketUPDDCurs INTO :id) 
+			quit:(SQLCODE '= 0)
+			
+			set ticket = ..%OpenId(id)
+			set ticket.PrtObjKey = ##class(Participant).GetPrtObjKey(ticket.Participant.%Id())
+			set ticket.Tournament = ticket.Participant.Competition.Tournament
+			$$$THROWONERROR(st, ticket.%Save())
+		}
+		
+		&sql(CLOSE TicketUPDDCurs)
+		
+		TCOMMIT	
+	}
+	catch(ex){
+		TROLLBACK
+		
+		set st = ex.AsStatus()
+		w $SYSTEM.Status.GetErrorText(st)
 	}
 ]]></Implementation>
 </Method>

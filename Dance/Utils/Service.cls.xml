@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Dance.Utils.Service">
+<Abstract>1</Abstract>
+<TimeCreated>63612,51804.121086</TimeCreated>
+
+<Method name="BuildAllIndices">
+<Description>
+do ##class(Dance.Utils.Service).BuildAllIndices()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LText).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LTextLanguage).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LTextValue).%BuildIndices())
+	
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Tournament).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.AgeCategory).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.AgeCategoryWDSF).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Competition).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CompetitionType).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CompetitionWDSF).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Country).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Couple).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CoupleUDSR).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CoupleWDSF).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.DancerClass).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Discipline).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.FeedBack).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Participant).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleOther).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleUDSR).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleWDSF).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleOther).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleUDSR).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleWDSF).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Person).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Ticket).%BuildIndices())
+	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.TicketDanceplat).%BuildIndices())
+]]></Implementation>
+</Method>
+</Class>
+</Export>

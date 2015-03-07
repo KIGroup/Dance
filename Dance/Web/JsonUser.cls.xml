@@ -1062,7 +1062,7 @@ Get all participants of the competition for grid</Description>
 
 		set proxy = ##class(%ZEN.proxyObject).%New()
 		set proxy.children = ##class(%ListOfObjects).%New()
-		
+		set ^temp("sql") = sql
 		while (rs.%Next() '= 0){
 			do proxy.children.Insert(##class(Dance.Data.Participant).%OpenId(rs.%GetData(1)).ConvertToProxyObject(convertParams))
 		}

@@ -154,6 +154,11 @@ Tournaments</Description>
 <Unique>1</Unique>
 </Index>
 
+<Index name="IsActiveIdx">
+<Properties>IsActive</Properties>
+<Unique>1</Unique>
+</Index>
+
 <Method name="ConvertToProxyObject">
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>

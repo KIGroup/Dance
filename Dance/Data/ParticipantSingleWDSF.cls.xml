@@ -91,8 +91,18 @@
 	set obj.MainTrainer = athlete.otherInfo.mainTrainer
 	set obj.OtherTrainers = athlete.otherInfo.otherTrainers
 	set obj.PType = "SingleWDSF"
+	set obj.PrtObjKey = obj.Athlet.%ClassName(1)_"@"_obj.Athlet.%Id()
 	set st = obj.%Save()
 	quit obj
+]]></Implementation>
+</Method>
+
+<Method name="GetFullNameForLang">
+<Description>
+Имя участника для выбранного языка</Description>
+<FormalSpec>lang:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	quit ..Athlete.LastName.GetValueByLang(lang)_" "_..Athlete.FirstName.GetValueByLang(lang)
 ]]></Implementation>
 </Method>
 
