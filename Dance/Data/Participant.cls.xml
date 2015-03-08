@@ -67,24 +67,6 @@ Couple - participant of the competition</Description>
 <Required>1</Required>
 </Property>
 
-<Property name="PrtObjCity">
-<Description>
-Город участника</Description>
-<Type>%String</Type>
-<Calculated>1</Calculated>
-<SqlComputeCode>set {PrtObjCity} = ##class({%%CLASSNAME}).GetPrtObjCity({%%ID})</SqlComputeCode>
-<SqlComputed>1</SqlComputed>
-</Property>
-
-<Property name="PrtObjCountry">
-<Description>
-Страна участника</Description>
-<Type>%String</Type>
-<Calculated>1</Calculated>
-<SqlComputeCode>set {PrtObjCountry} = ##class({%%CLASSNAME}).GetPrtObjCountry({%%ID})</SqlComputeCode>
-<SqlComputed>1</SqlComputed>
-</Property>
-
 <Property name="PrtObjPaymentsCount">
 <Description>
 Количество оплаченных билетов участника во всем турнире</Description>
@@ -110,15 +92,30 @@ Couple - participant of the competition</Description>
 <Parameter name="MAXLEN" value="2000"/>
 </Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Турнир
-
-]]></Content>
-</UDLText>
-
 <Property name="Tournament">
+<Description>
+Турнир</Description>
 <Type>Tournament</Type>
+</Property>
+
+<Property name="Country">
+<Description>
+Страна участника</Description>
+<Type>Country</Type>
+</Property>
+
+<Property name="City">
+<Description>
+Город участника</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Description>
+Клуб участника</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Index name="CompetitionIdx">
@@ -159,6 +156,18 @@ Couple - participant of the competition</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="%OnNew">
+<Description>
+Обработка при создании</Description>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	set ..Created = $ZDT($ZTS, 3)	
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
 <Method name="GetFullNameForLang">
 <Description>
 Имя участника для выбранного языка</Description>
@@ -188,8 +197,6 @@ Couple - participant of the competition</Description>
 		for{
 			&sql(FETCH PrtFullNameCur INTO :prtId) 
 			quit:(SQLCODE '= 0)
-			
-			w !,!, "PrtId = "_prtId
 			
 			set prt = ..%OpenId(prtId,,.st)
 			$$$THROWONERROR(st, st)
@@ -260,42 +267,85 @@ Couple - participant of the competition</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="GetFullName">
+<Method name="UpdateAllParticipantsLocation">
+<Description>
+Обновить город и страну для всех участников (актуальное значение присвоить) w ##class(Dance.Data.Participant).UpdateAllParticipantsLocation()</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>prtId:%String,prtObjKey:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
+<ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	set fullName = ""
+	set st = $$$OK
 	
-	// ID - объекта участника
-	set prtObjId = $P(prtObjKey, "@", 2)
-	
-	// Класс объекта участника
-	set prtObjClassName = $P(prtObjKey, "@", 1)
-	
-	if (prtObjClassName = ##class(CoupleUDSR).%ClassName(1)) || (prtObjClassName = ##class(CoupleWDSF).%ClassName(1)){
-		&sql(SELECT Man->LastName->Value || ' ' || Man->FirstName->Value || ' - ' ||
-					Woman->LastName->Value || ' ' || Woman->FirstName->Value INTO :fullName
-			 FROM Dance_Data.Couple
-			 WHERE ID = :prtObjId)
+	try{
+		&sql(DECLARE PrtLocationCur CURSOR FOR
+			 SELECT ID 
+			 FROM Dance_Data.Participant
+			 WHERE Tournament->IsActive = 1 AND Competition->IsActive = 1 AND IsActive = 1)
+		
+		&sql(OPEN PrtLocationCur)
+		for{
+			&sql(FETCH PrtLocationCur INTO :prtId) 
+			quit:(SQLCODE '= 0)
+			
+			set prt = ..%OpenId(prtId,,.st)
+			$$$THROWONERROR(st, st)
+			
+			$$$THROWONERROR(st, ..UpdateParticipantLocation(prt))	
+			kill prt
+		}
+		
+		&sql(CLOSE PrtLocationCur)
+		
 	}
-	elseif (prtObjClassName = ##class(PersonUDSR).%ClassName(1)) || (prtObjClassName = ##class(PersonWDSF).%ClassName(1)){
-		&sql(SELECT LastName->Value || ' ' || FirstName->Value INTO :fullName
-			 FROM Dance_Data.Person
-			 WHERE ID = :prtObjId)
-	}
-	elseif (prtObjClassName = ##class(ParticipantCoupleOther).%ClassName(1)){
-		&sql(SELECT ManLastName || ' ' || ManFirstName || ' - ' || WomanLastName || ' ' || WomanFirstName INTO :fullName
-			 FROM Dance_Data.ParticipantCoupleOther
-			 WHERE ID = :prtId)
-	}
-	elseif (prtObjClassName = ##class(ParticipantSingleOther).%ClassName(1)){
-		&sql(SELECT LastName || ' ' || FirstName INTO :fullName
-			 FROM Dance_Data.ParticipantSingleOther
-			 WHERE ID = :prtId)
+	catch(ex){
+		set st = ex.AsStatus()
 	}
 	
-	quit fullName
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="UpdateParticipantLocation">
+<Description>
+Обновить город и страну одного участника (актуальное значение присвоить) </Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>prt:Participant</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{
+		TSTART
+		
+		if (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
+			#dim prtUDSR As ParticipantCoupleUDSR = prt
+			set prtUDSR.Country = prtUDSR.Couple.Man.Country
+			set prtUDSR.City = prtUDSR.City
+		}
+		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleWDSF).%ClassName(1)){
+			#dim prtWDSF As ParticipantCoupleWDSF = prt
+			set prtUDSR.Country = prtUDSR.Couple.Man.Country
+			set prtUDSR.City = prtUDSR.City
+		}
+		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
+		}
+		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
+		}
+		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
+		}
+		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
+		}
+		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
+		}
+		
+		TCOMMIT
+	}
+	catch(ex){
+		TROLLBACK 1
+		
+		set st = ex.AsStatus()
+	}
+	
+	quit st
 ]]></Implementation>
 </Method>
 
@@ -312,16 +362,6 @@ Change IsActive property to 0</Description>
 	set obj.IsActive = 0
 	
 	quit obj.%Save()
-]]></Implementation>
-</Method>
-
-<Method name="%OnNew">
-<Private>1</Private>
-<ReturnType>%Status</ReturnType>
-<ServerOnly>1</ServerOnly>
-<Implementation><![CDATA[
-	set ..Created = $ZDT($ZTS, 3)	
-	Quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -585,6 +625,12 @@ do ##class(Dance.Data.Participant).UpdatePrtKey()</Description>
 </Value>
 <Value name="10">
 <Value>FullName</Value>
+</Value>
+<Value name="11">
+<Value>Country</Value>
+</Value>
+<Value name="12">
+<Value>City</Value>
 </Value>
 </Data>
 </Storage>
