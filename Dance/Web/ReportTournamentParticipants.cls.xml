@@ -273,7 +273,7 @@
 	 	 FROM Dance_Data.ParticipantCoupleWDSF as pW
 	 	 WHERE pW.Competition->Tournament = :trnId AND pW.Competition->IsActive = 1 AND pW.IsActive = 1 AND 0 = (SELECT COUNT(mt.ID) FROM Dance_Data.MatchingCoupleUDSRWDSF as mt WHERE mt.WDSF = pW.Couple)
 	 	 GROUP BY pW.Couple
-	 	 ORDER BY FullName)	
+	 	 ORDER BY FullName->Value)	
 	
 	&sql(OPEN PrtWDSFCoupleCur)
 	for  
@@ -330,7 +330,7 @@
 		 	 FROM Dance_Data.ParticipantCoupleOther
 		 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
 		 	 GROUP BY CoupleKey
-		 	 ORDER BY FullName)	
+		 	 ORDER BY FullName->Value)	
 		
 		&sql(OPEN PrtOtherCoupleCur)
 		for  
@@ -383,7 +383,7 @@
 	 	 SELECT DISTINCT Athlete
 	 	 FROM Dance_Data.ParticipantSingleUDSR
 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
-	 	 ORDER BY FullName)	
+	 	 ORDER BY FullName->Value)	
 	
 	&sql(OPEN PrtSingleUDSRCur)
 	for  
@@ -435,7 +435,7 @@
 	 	 FROM Dance_Data.ParticipantSingleWDSF
 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
 	 	 GROUP BY Athlete
-	 	 ORDER BY FullName)	
+	 	 ORDER BY FullName->Value)	
 	
 	&sql(OPEN PrtSingleWDSFCur)
 	for  
@@ -488,7 +488,7 @@
 	 	 FROM Dance_Data.ParticipantSingleOther
 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1
 	 	 GROUP BY AthleteKey
-	 	 ORDER BY FullName)	
+	 	 ORDER BY FullName->Value)	
 	
 	&sql(OPEN PrtOtherAthleteCur)
 	for  

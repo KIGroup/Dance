@@ -910,7 +910,7 @@ Get all participants for grid</Description>
  		set convertParams.competitionParams.tournamentParams.loadLocation = $$$YES
  		set convertParams.loadPrtObjCompetitionsCount = $$$YES
  		
- 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, "IsActive=1 AND Competition->Tournament->IsActive = 1")
+ 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, "IsActive=1 AND Tournament->IsActive = 1")
 		do result.%ToJSON()
 	}
 	catch ex {
@@ -932,7 +932,7 @@ Get all participants of the tournament for grid</Description>
 	try{
 		$$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
  		
- 		set whereCondition = "Competition->Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND Competition->IsActive = 1 AND IsActive = 1 "
+ 		set whereCondition = "Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND Competition->IsActive = 1 AND IsActive = 1 "
  		
  		set convertParams = ##class(%ZEN.proxyObject).%New()
  		set convertParams.competitionParams = ##class(%ZEN.proxyObject).%New()
@@ -941,7 +941,7 @@ Get all participants of the tournament for grid</Description>
  		set convertParams.loadPrtObjCompetitionsCount = $$$YES
  		set convertParams.loadPrtObjPaymentsCount = $$$YES
  		
- 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, whereCondition, "GROUP BY FullName")
+ 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, whereCondition, "GROUP BY FullName->Value")
 		do result.%ToJSON()
 	}
 	catch ex {
@@ -1044,14 +1044,14 @@ Get all participants of the competition for grid</Description>
 		// Костыль
 		if (cplId '= ""){ 
 			if (##class(Dance.Data.CoupleUDSR).%ExistsId(cplId)) && (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(cplId)){
-				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "_
+				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "_
 						  " UNION "_
-						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(cplId).WDSF.%Id()_"' AND IsActive=1"			
+						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(cplId).WDSF.%Id()_"' AND IsActive=1"			
 			}
 			elseif (##class(Dance.Data.CoupleWDSF).%ExistsId(cplId)) && (##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(cplId)){
-				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(cplId).UDSR.%Id()_"' AND IsActive=1 "_
+				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(cplId).UDSR.%Id()_"' AND IsActive=1 "_
 						  " UNION "_
-						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Competition->Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "
+						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "
 						  			
 			}
 		}
@@ -1468,20 +1468,20 @@ Feedback from users </Description>
 				set wdsfCount = 0
 				&sql(SELECT COUNT(ID) INTO :udsrCount 
 					 FROM Dance_Data.ParticipantCoupleUDSR 
-					 WHERE Couple = :udsrCplId AND Competition->Tournament = :trnId AND IsActive = 1)
+					 WHERE Couple = :udsrCplId AND Tournament = :trnId AND IsActive = 1)
 				
 				&sql(SELECT COUNT(ID) INTO :wdsfCount 
 					 FROM Dance_Data.ParticipantCoupleWDSF 
-					 WHERE Couple = :wdsfCplId AND Competition->Tournament = :trnId AND IsActive = 1)
+					 WHERE Couple = :wdsfCplId AND Tournament = :trnId AND IsActive = 1)
 					 
 				set proxy.count = udsrCount + wdsfCount
 			}
 			else{
 				if ($CLASSNAME(couple) = "Dance.Data.CoupleUDSR") {
-					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleUDSR WHERE Couple = :cplId AND Competition->Tournament = :trnId AND IsActive = 1)
+					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleUDSR WHERE Couple = :cplId AND Tournament = :trnId AND IsActive = 1)
 				}
 				else {
-					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleWDSF WHERE Couple = :cplId AND Competition->Tournament = :trnId AND IsActive = 1)
+					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleWDSF WHERE Couple = :cplId AND Tournament = :trnId AND IsActive = 1)
 				}
 			}
 		}
@@ -1489,19 +1489,19 @@ Feedback from users </Description>
 			// WDSF or UDSR
 			set athlete = ##class(Dance.Data.Person).%OpenId(athId)
 			if ($CLASSNAME(athlete) = "Dance.Data.PersonUDSR") {
-				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleUDSR WHERE Athlete = :athId AND Competition->Tournament = :trnId AND IsActive = 1)
+				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleUDSR WHERE Athlete = :athId AND Tournament = :trnId AND IsActive = 1)
 			}
 			else {
-				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleWDSF WHERE Athlete = :athId AND Competition->Tournament = :trnId AND IsActive = 1)
+				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleWDSF WHERE Athlete = :athId AND Tournament = :trnId AND IsActive = 1)
 			}
 		}
 		elseif (cplKey '= ""){
 			// Other couple
-			&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleOther WHERE CoupleKey = :cplKey AND Competition->Tournament = :trnId AND IsActive = 1)
+			&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleOther WHERE CoupleKey = :cplKey AND Tournament = :trnId AND IsActive = 1)
 		}
 		elseif (athKey '= ""){
 			// Other athlete
-			&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleOther WHERE AthleteKey = :athKey AND Competition->Tournament = :trnId AND IsActive = 1)
+			&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleOther WHERE AthleteKey = :athKey AND Tournament = :trnId AND IsActive = 1)
 		}		
 	}
 	catch(ex){
