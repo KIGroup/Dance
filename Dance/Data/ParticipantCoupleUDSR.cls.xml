@@ -72,11 +72,29 @@
 	}
 	
 	set obj = ..%New()
-	set obj.Recorder = recorder
+	
+	// Свойства класса
 	set obj.Couple = coupleDB
+	
+	// Свойства базового класса
+	set obj.Recorder = recorder
 	set obj.Competition = competition
+	set obj.Tournament = competition.Tournament
+	
+	set obj.FullName = ##class(Dance.Data.Localization.LText).Create("")
+	set st = ..UpdateParticipantFullName(obj)
+	quit:$$$ISERR(st) $$$NULLOREF
+	
+	set obj.Country = coupleDB.Man.Country	
+	set obj.City = coupleDB.Man.City
+	set obj.Club = coupleDB.Man.Club
+	set obj.MainTrainer = coupleDB.Man.MainTrainer
+	set obj.OtherTrainers = coupleDB.Man.OtherTrainers
+	
 	set obj.PrtObjKey = coupleDB.%ClassName(1)_"@"_coupleDB.%Id()
+	
 	set st = obj.%Save()
+	
 	quit obj
 ]]></Implementation>
 </Method>

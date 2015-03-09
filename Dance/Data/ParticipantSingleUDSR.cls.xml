@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.ParticipantSingleUDSR">
+<Description>
+Участник - СТСР - одиночка</Description>
 <Super>Participant</Super>
 <TimeCreated>63440,4273.857207</TimeCreated>
 
 <Property name="Athlete">
+<Description>
+Спортсмен СТСР</Description>
 <Type>PersonUDSR</Type>
 <Required>1</Required>
 </Property>
@@ -15,6 +19,8 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<Description>
+Конвертация в JSON</Description>
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -38,6 +44,8 @@
 </Method>
 
 <Method name="Create">
+<Description>
+Создание записи</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[recorder:Recorder,competition:Competition,athlete:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
@@ -48,14 +56,31 @@
 		set st = obj.%Save()
 		quit obj
 	}
-	
+
 	set obj = ..%New()
-	set obj.Recorder = recorder
+	
+	// Свойства класса
 	set obj.Athlete = ##class(PersonUDSR).%OpenId(athlete.id)
+	
+	// Свойства базового класса	
+	set obj.Recorder = recorder
 	set obj.Competition = competition 
-	set obj.PType = "SingleUDSR"
-	set obj.PrtObjKey = obj.Athlet.%ClassName(1)_"@"_obj.Athlet.%Id()
+	set obj.Tournament = competition.Tournament 
+	
+	set obj.FullName = ##class(Dance.Data.Localization.LText).Create("")
+	set st = ..UpdateParticipantFullName(obj)
+	quit:$$$ISERR(st) $$$NULLOREF
+
+	set obj.Country = obj.Athlete.Country
+	set obj.City = obj.Athlete.City
+	set obj.Club = obj.Athlete.Club
+	set obj.MainTrainer = obj.Athlete.MainTrainer
+	set obj.OtherTrainers = obj.Athlete.OtherTrainers
+	
+	set obj.PrtObjKey = obj.Athlete.%ClassName(1)_"@"_obj.Athlete.%Id()
+	
 	set st = obj.%Save()
+	
 	quit obj
 ]]></Implementation>
 </Method>

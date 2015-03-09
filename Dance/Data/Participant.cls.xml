@@ -2,14 +2,14 @@
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.Participant">
 <Description>
-Couple - participant of the competition</Description>
+Участник турнира</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63295,5554.902115</TimeCreated>
 
-<Property name="FullName">
+<Property name="Created">
 <Description>
-Полное имя пары/соло участника </Description>
-<Type>Dance.Data.Localization.LText</Type>
+Дата создания записи</Description>
+<Type>%TimeStamp</Type>
 <Required>1</Required>
 </Property>
 
@@ -20,10 +20,67 @@ Couple - participant of the competition</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="Tournament">
+<Description>
+Турнир</Description>
+<Type>Tournament</Type>
+<Required>1</Required>
+</Property>
+
 <Property name="Competition">
 <Description>
 Соревнование турнира, в котором участвует</Description>
 <Type>Competition</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="FullName">
+<Description>
+Полное имя пары/соло участника </Description>
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Country">
+<Description>
+Страна участника</Description>
+<Type>Country</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="City">
+<Description>
+Город участника</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="Club">
+<Description>
+Клуб участника</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="MainTrainer">
+<Description>
+Главный тренер</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="OtherTrainers">
+<Description>
+Другие тренеры</Description>
+<Type>%Text</Type>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Property name="IsActive">
+<Description>
+Является ли активной запись в базе</Description>
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
 <Required>1</Required>
 </Property>
 
@@ -36,35 +93,11 @@ Couple - participant of the competition</Description>
 <Relationship>1</Relationship>
 </Property>
 
-<Property name="TicketStatus">
+<Property name="PrtObjKey">
 <Description>
-Статус билета участника</Description>
+Класс@ИД - объекта участника</Description>
 <Type>%String</Type>
-<Calculated>1</Calculated>
-<SqlComputeCode>set {TicketStatus} = ##class({%%CLASSNAME}).GetTicketStatus({%%ID})</SqlComputeCode>
-<SqlComputed>1</SqlComputed>
-</Property>
-
-<Property name="IsActive">
-<Description>
-Является ли активной запись в базе</Description>
-<Type>%Boolean</Type>
-<InitialExpression>1</InitialExpression>
-<Required>1</Required>
-</Property>
-
-<Property name="PType">
-<Description>
-Старое свойство, которое по сути уже не используем, но держим, чтобы не съехали глобалы</Description>
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="Created">
-<Description>
-Дата создания записи</Description>
-<Type>%TimeStamp</Type>
-<Required>1</Required>
+<Parameter name="MAXLEN" value="2000"/>
 </Property>
 
 <Property name="PrtObjPaymentsCount">
@@ -85,54 +118,30 @@ Couple - participant of the competition</Description>
 <SqlComputed>1</SqlComputed>
 </Property>
 
-<Property name="PrtObjKey">
+<Property name="TicketStatus">
 <Description>
-Класс@ИД - объекта участника</Description>
+Статус билета участника</Description>
 <Type>%String</Type>
-<Parameter name="MAXLEN" value="2000"/>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {TicketStatus} = ##class({%%CLASSNAME}).GetTicketStatus({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
 </Property>
 
-<Property name="Tournament">
-<Description>
-Турнир</Description>
-<Type>Tournament</Type>
-</Property>
-
-<Property name="Country">
-<Description>
-Страна участника</Description>
-<Type>Country</Type>
-</Property>
-
-<Property name="City">
-<Description>
-Город участника</Description>
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="Club">
-<Description>
-Клуб участника</Description>
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
+<Index name="TournamentPrtIdx">
+<Properties>Tournament</Properties>
+</Index>
 
 <Index name="CompetitionIdx">
 <Data>Competition</Data>
 <Properties>Competition</Properties>
 </Index>
 
-<Index name="IsActiveIndex">
-<Properties>IsActive</Properties>
-</Index>
-
 <Index name="PrtObjKeyIndex">
 <Properties>PrtObjKey</Properties>
 </Index>
 
-<Index name="TournamentPrtIdx">
-<Properties>Tournament</Properties>
+<Index name="IsActiveIndex">
+<Properties>IsActive</Properties>
 </Index>
 
 <Index name="CommonIdx">
@@ -267,88 +276,6 @@ Couple - participant of the competition</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="UpdateAllParticipantsLocation">
-<Description>
-Обновить город и страну для всех участников (актуальное значение присвоить) w ##class(Dance.Data.Participant).UpdateAllParticipantsLocation()</Description>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set st = $$$OK
-	
-	try{
-		&sql(DECLARE PrtLocationCur CURSOR FOR
-			 SELECT ID 
-			 FROM Dance_Data.Participant
-			 WHERE Tournament->IsActive = 1 AND Competition->IsActive = 1 AND IsActive = 1)
-		
-		&sql(OPEN PrtLocationCur)
-		for{
-			&sql(FETCH PrtLocationCur INTO :prtId) 
-			quit:(SQLCODE '= 0)
-			
-			set prt = ..%OpenId(prtId,,.st)
-			$$$THROWONERROR(st, st)
-			
-			$$$THROWONERROR(st, ..UpdateParticipantLocation(prt))	
-			kill prt
-		}
-		
-		&sql(CLOSE PrtLocationCur)
-		
-	}
-	catch(ex){
-		set st = ex.AsStatus()
-	}
-	
-	quit st
-]]></Implementation>
-</Method>
-
-<Method name="UpdateParticipantLocation">
-<Description>
-Обновить город и страну одного участника (актуальное значение присвоить) </Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>prt:Participant</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	set st = $$$OK
-	
-	try{
-		TSTART
-		
-		if (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
-			#dim prtUDSR As ParticipantCoupleUDSR = prt
-			set prtUDSR.Country = prtUDSR.Couple.Man.Country
-			set prtUDSR.City = prtUDSR.City
-		}
-		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleWDSF).%ClassName(1)){
-			#dim prtWDSF As ParticipantCoupleWDSF = prt
-			set prtUDSR.Country = prtUDSR.Couple.Man.Country
-			set prtUDSR.City = prtUDSR.City
-		}
-		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
-		}
-		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
-		}
-		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
-		}
-		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
-		}
-		elseif (prt.%ClassName(1) = ##class(ParticipantCoupleUDSR).%ClassName(1)){
-		}
-		
-		TCOMMIT
-	}
-	catch(ex){
-		TROLLBACK 1
-		
-		set st = ex.AsStatus()
-	}
-	
-	quit st
-]]></Implementation>
-</Method>
-
 <Method name="Deactivate">
 <Description>
 Change IsActive property to 0</Description>
@@ -452,69 +379,9 @@ Change IsActive property to 0</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="GetPrtObjCountry">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>prtId:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	set country = ""
-	
-	if (##class(ParticipantCoupleUDSR).%ExistsId(prtId)){
-		&sql(SELECT Couple->Man->Country->Name->Value INTO :country FROM Dance_Data.ParticipantCoupleUDSR WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantCoupleWDSF).%ExistsId(prtId)){
-		&sql(SELECT Couple->Man->Country->Name->Value INTO :country FROM Dance_Data.ParticipantCoupleWDSF WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantCoupleOther).%ExistsId(prtId)){
-		&sql(SELECT Country->Name->Value INTO :country FROM Dance_Data.ParticipantCoupleOther WHERE ID = :prtId)
-	}
-	if (##class(ParticipantSingleUDSR).%ExistsId(prtId)){
-		&sql(SELECT Athlete->Country->Name->Value INTO :country FROM Dance_Data.ParticipantSingleUDSR WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantSingleWDSF).%ExistsId(prtId)){
-		&sql(SELECT Athlete->Country->Name->Value INTO :country FROM Dance_Data.ParticipantSingleWDSF WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantSingleOther).%ExistsId(prtId)){
-		&sql(SELECT Country->Name->Value INTO :country FROM Dance_Data.ParticipantSingleOther WHERE ID = :prtId)
-	}
-	
-	quit country
-]]></Implementation>
-</Method>
-
-<Method name="GetPrtObjCity">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>prtId:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	set city = ""
-	
-	if (##class(ParticipantCoupleUDSR).%ExistsId(prtId)){
-		set manId = ""
-		&sql(SELECT Couple->Man INTO :manId FROM Dance_Data.ParticipantCoupleUDSR WHERE ID = :prtId)
-		&sql(SELECT City INTO :city FROM Dance_Data.PersonUDSR WHERE ID = :manId)
-	}
-	elseif (##class(ParticipantCoupleWDSF).%ExistsId(prtId)){
-		&sql(SELECT City INTO :city FROM Dance_Data.ParticipantCoupleWDSF WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantCoupleOther).%ExistsId(prtId)){
-		&sql(SELECT City INTO :city FROM Dance_Data.ParticipantCoupleOther WHERE ID = :prtId)
-	}
-	if (##class(ParticipantSingleUDSR).%ExistsId(prtId)){
-		&sql(SELECT Athlete->City INTO :city FROM Dance_Data.ParticipantSingleUDSR WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantSingleWDSF).%ExistsId(prtId)){
-		&sql(SELECT City INTO :city FROM Dance_Data.ParticipantSingleWDSF WHERE ID = :prtId)
-	}
-	elseif (##class(ParticipantSingleOther).%ExistsId(prtId)){
-		&sql(SELECT City INTO :city FROM Dance_Data.ParticipantSingleOther WHERE ID = :prtId)
-	}
-	
-	quit city
-]]></Implementation>
-</Method>
-
 <Method name="GetPrtObjKey">
+<Description>
+ClassName@ID - объекта участника</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>prtId:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -587,52 +454,5 @@ do ##class(Dance.Data.Participant).UpdatePrtKey()</Description>
 	}
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^Dance.Data.ParticipantD</DataLocation>
-<DefaultData>ParticipantDefaultData</DefaultData>
-<IdLocation>^Dance.Data.ParticipantD</IdLocation>
-<IndexLocation>^Dance.Data.ParticipantI</IndexLocation>
-<StreamLocation>^Dance.Data.ParticipantS</StreamLocation>
-<Data name="ParticipantDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>Recorder</Value>
-</Value>
-<Value name="3">
-<Value>Competition</Value>
-</Value>
-<Value name="4">
-<Value>IsActive</Value>
-</Value>
-<Value name="5">
-<Value>PType</Value>
-</Value>
-<Value name="6">
-<Value>Created</Value>
-</Value>
-<Value name="7">
-<Value>PrtObjIDClassName</Value>
-</Value>
-<Value name="8">
-<Value>Tournament</Value>
-</Value>
-<Value name="9">
-<Value>PrtObjKey</Value>
-</Value>
-<Value name="10">
-<Value>FullName</Value>
-</Value>
-<Value name="11">
-<Value>Country</Value>
-</Value>
-<Value name="12">
-<Value>City</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

@@ -1,74 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.ParticipantCoupleOther">
+<Description>
+Пара - другой участник</Description>
 <Super>Participant</Super>
 <TimeCreated>63440,4317.627564</TimeCreated>
 
 <Property name="CoupleKey">
+<Description>
+Ключ как хеш полей при заполнении, для определения уникальности</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="ManLastName">
+<Description>
+Фамилия партнера</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="ManFirstName">
+<Description>
+Имя партнера</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="ManDOB">
+<Description>
+ДР партнера</Description>
 <Type>%Date</Type>
 <Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
 <Property name="WomanLastName">
+<Description>
+Фамилия партнерши</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="WomanFirstName">
+<Description>
+Имя партнерши</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="WomanDOB">
+<Description>
+ДР партнерши</Description>
 <Type>%Date</Type>
 <Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
-</Property>
-
-<Property name="Country">
-<Type>Country</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="City">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="Club">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="MainTrainer">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="OtherTrainers">
-<Type>%Text</Type>
-<Parameter name="MAXLEN" value="2000"/>
 </Property>
 
 <Index name="CoupleKeyIdx">
@@ -119,15 +110,15 @@
 </Method>
 
 <Method name="Create">
+<Description>
+Создать запись</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[recorder:Recorder,competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
 	set obj = ..%New()
 
-	set obj.Recorder = recorder
-	set obj.Competition = competition 
-	
+	// Свойства класса
 	set obj.ManLastName = couple.man.lastName
 	set obj.ManFirstName = couple.man.firstName
 	set obj.ManDOB = $ZDH(couple.man.dob, 3)
@@ -136,15 +127,24 @@
 	set obj.WomanFirstName = couple.woman.firstName
 	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
 	
+	set obj.CoupleKey = couple.key	
+	
+	// Свойства базового класса
+	set obj.Recorder = recorder
+	set obj.Competition = competition 
+	set obj.Tournament = competition.Tournament
+	set obj.FullName = ##class(Dance.Data.Localization.LText).Create("")
+	set st = ..UpdateParticipantFullName(obj)
+	quit:$$$ISERR(st) $$$NULLOREF
+	
 	set obj.Country = ##class(Country).%OpenId(couple.otherInfo.country.id)	
 	set obj.City = couple.otherInfo.city
 	set obj.Club = couple.otherInfo.club
 	set obj.MainTrainer = couple.otherInfo.mainTrainer
 	set obj.OtherTrainers = couple.otherInfo.otherTrainers
 	
-	set obj.CoupleKey = couple.key	
-	set obj.PType = "CoupleOther"
 	set obj.PrtObjKey = ..%ClassName(1)_"@"_couple.key
+	
 	set st = obj.%Save()
 	
 	quit obj
@@ -152,6 +152,8 @@
 </Method>
 
 <Method name="GetByFilter">
+<Description>
+Найти пару по параметрам</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>filter:%RegisteredObject</FormalSpec>
 <ReturnType>ParticipantCoupleOther</ReturnType>
@@ -214,21 +216,6 @@
 </Value>
 <Value name="7">
 <Value>WomanDOB</Value>
-</Value>
-<Value name="8">
-<Value>Country</Value>
-</Value>
-<Value name="9">
-<Value>City</Value>
-</Value>
-<Value name="10">
-<Value>Club</Value>
-</Value>
-<Value name="11">
-<Value>MainTrainer</Value>
-</Value>
-<Value name="12">
-<Value>OtherTrainers</Value>
 </Value>
 </Data>
 </Storage>

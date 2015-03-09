@@ -1,44 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.ParticipantCoupleWDSF">
+<Description>
+Участник - пара WDSF</Description>
 <Super>Participant</Super>
 <TimeCreated>63440,4297.586433</TimeCreated>
 
 <Property name="Couple">
+<Description>
+Пара WDSF</Description>
 <Type>CoupleWDSF</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="ManDOB">
+<Description>
+Дата рождения партнера</Description>
 <Type>%Date</Type>
 <Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
 <Property name="WomanDOB">
+<Description>
+Дата рождения партнерши</Description>
 <Type>%Date</Type>
 <Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
-</Property>
-
-<Property name="City">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="Club">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="MainTrainer">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="OtherTrainers">
-<Type>%Text</Type>
-<Parameter name="MAXLEN" value="2000"/>
 </Property>
 
 <Index name="CmpCplWDSFIdx">
@@ -51,6 +39,8 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<Description>
+Коневертация в json</Description>
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -82,6 +72,8 @@
 </Method>
 
 <Method name="Create">
+<Description>
+Создать запись</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[recorder:Recorder,competition:Competition,couple:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
@@ -94,18 +86,31 @@
 	}
 	
 	set obj = ..%New()
-	set obj.Recorder = recorder
+	
+	// Свойства класса
 	set obj.Couple = ##class(Dance.Data.CoupleWDSF).%OpenId(couple.id)
-	set obj.Competition = competition 
 	set obj.ManDOB = $ZDH(couple.man.dob, 3)
 	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
+	
+	// Свойства базового класса
+	set obj.Recorder = recorder
+	set obj.Competition = competition 
+	set obj.Tournament = competition.Tournament
+	
+	set obj.FullName = ##class(Dance.Data.Localization.LText).Create("")
+	set st = ..UpdateParticipantFullName(obj)
+	quit:$$$ISERR(st) $$$NULLOREF
+	
+	set obj.Country = obj.Couple.Man.Country
 	set obj.City = couple.otherInfo.city
 	set obj.Club = couple.otherInfo.club
 	set obj.MainTrainer = couple.otherInfo.mainTrainer
 	set obj.OtherTrainers = couple.otherInfo.otherTrainers
-	set obj.PType = "CoupleWDSF"
+	
 	set obj.PrtObjKey = obj.Couple.%ClassName(1)_"@"_obj.Couple.%Id()
+	
 	set st = obj.%Save()
+	
 	quit obj
 ]]></Implementation>
 </Method>
@@ -132,18 +137,6 @@
 </Value>
 <Value name="3">
 <Value>WomanDOB</Value>
-</Value>
-<Value name="4">
-<Value>City</Value>
-</Value>
-<Value name="5">
-<Value>Club</Value>
-</Value>
-<Value name="6">
-<Value>MainTrainer</Value>
-</Value>
-<Value name="7">
-<Value>OtherTrainers</Value>
 </Value>
 </Data>
 </Storage>

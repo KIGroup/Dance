@@ -1,40 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.ParticipantSingleWDSF">
+<Description>
+Участник - одиночка - WDSF </Description>
 <Super>Participant</Super>
 <TimeCreated>63440,4342.608805</TimeCreated>
 
 <Property name="Athlete">
+<Description>
+WDSF спортсмен</Description>
 <Type>PersonWDSF</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="DOB">
+<Description>
+ДР </Description>
 <Type>%Date</Type>
 <Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
-</Property>
-
-<Property name="City">
-<Type>%String</Type>
-<Required>1</Required>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="Club">
-<Type>%String</Type>
-<Required>1</Required>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="MainTrainer">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="OtherTrainers">
-<Type>%Text</Type>
-<Parameter name="MAXLEN" value="2000"/>
 </Property>
 
 <Index name="CmpAtWDSFIdx">
@@ -43,6 +27,8 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<Description>
+Конвертация в JSON</Description>
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -70,6 +56,8 @@
 </Method>
 
 <Method name="Create">
+<Description>
+Создание записи</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[recorder:Recorder,competition:Competition,athlete:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
@@ -82,17 +70,30 @@
 	}
 	
 	set obj = ..%New()
-	set obj.Recorder = recorder
+	
+	// Свойства класса
 	set obj.Athlete = ##class(PersonWDSF).%OpenId(athlete.id)
-	set obj.Competition = competition 
 	set obj.DOB = $ZDH(athlete.dob, 3)
+	
+	// Свойства базового класса
+	set obj.Recorder = recorder
+	set obj.Competition = competition 
+	set obj.Tournament = competition.Tournament 
+	
+	set obj.FullName = ##class(Dance.Data.Localization.LText).Create("")
+	set st = ..UpdateParticipantFullName(obj)
+	quit:$$$ISERR(st) $$$NULLOREF
+
+	set obj.Country = obj.Athlete.Country
 	set obj.City = athlete.otherInfo.city
 	set obj.Club = athlete.otherInfo.club
 	set obj.MainTrainer = athlete.otherInfo.mainTrainer
 	set obj.OtherTrainers = athlete.otherInfo.otherTrainers
-	set obj.PType = "SingleWDSF"
-	set obj.PrtObjKey = obj.Athlet.%ClassName(1)_"@"_obj.Athlet.%Id()
+	
+	set obj.PrtObjKey = obj.Athlete.%ClassName(1)_"@"_obj.Athlete.%Id()
+	
 	set st = obj.%Save()
+	
 	quit obj
 ]]></Implementation>
 </Method>
@@ -116,18 +117,6 @@
 </Value>
 <Value name="2">
 <Value>DOB</Value>
-</Value>
-<Value name="3">
-<Value>City</Value>
-</Value>
-<Value name="4">
-<Value>Club</Value>
-</Value>
-<Value name="5">
-<Value>MainTrainer</Value>
-</Value>
-<Value name="6">
-<Value>OtherTrainers</Value>
 </Value>
 </Data>
 </Storage>

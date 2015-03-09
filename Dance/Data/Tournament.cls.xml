@@ -384,7 +384,7 @@ Check update privilege</Description>
 	
 	&sql(SELECT COUNT(DISTINCT totalP.FullName->Value) As TotalCount INTO :count
 		 FROM Dance_Data.Participant as totalP 
-		 WHERE totalP.Competition->Tournament = :tournamentId AND totalP.Competition->IsActive = 1 AND totalP.IsActive = 1)
+		 WHERE totalP.Tournament = :tournamentId AND totalP.Competition->IsActive = 1 AND totalP.IsActive = 1)
 	
 	quit count
 ]]></Implementation>
@@ -397,9 +397,9 @@ Check update privilege</Description>
 <Implementation><![CDATA[
 	set count = 0
 	
-	&sql(SELECT COUNT(ID) INTO :count
-		 FROM Dance_Data.Participant
-		 WHERE Tournament = :tournamentId AND Competition->IsActive = 1 AND TicketStatus = 'Paid')
+	&sql(SELECT COUNT (ID) INTO :count
+		 FROM Dance_Data.Ticket
+		 WHERE Tournament = :tournamentId AND TStatus = 1 AND Participant->IsActive = 1 AND Participant->Competition->IsActive = 1)
 	
 	quit count
 ]]></Implementation>
@@ -415,9 +415,9 @@ Check update privilege</Description>
 	&sql(SELECT COUNT (ID) INTO :count
 		 FROM (
 			SELECT ID
-			FROM Dance_Data.Participant
-			WHERE Tournament = :tournamentId AND Competition->IsActive = 1 AND TicketStatus = 'Paid'
-			GROUP BY FullName->Value))
+			FROM Dance_Data.Ticket
+			WHERE Tournament = :tournamentId AND TStatus = 1 AND Participant->IsActive = 1 AND Participant->Competition->IsActive = 1
+			GROUP BY Participant->FullName->Value))
 	
 	quit count
 ]]></Implementation>

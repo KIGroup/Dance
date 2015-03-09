@@ -1,62 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Dance.Data.ParticipantSingleOther">
+<Description>
+Участник - другой - одиночка</Description>
 <Super>Participant</Super>
 <TimeCreated>63440,4374.537436</TimeCreated>
 
 <Property name="AthleteKey">
+<Description>
+Хеш полей для определения уникальности</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="Gender">
+<Description>
+Пол</Description>
 <Type>%String</Type>
 <Parameter name="VALUELIST" value=",Male,Female"/>
 </Property>
 
 <Property name="LastName">
+<Description>
+Фамилия</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="FirstName">
+<Description>
+Имя</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="1000"/>
 </Property>
 
 <Property name="DOB">
+<Description>
+ДР</Description>
 <Type>%Date</Type>
 <Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
-</Property>
-
-<Property name="Country">
-<Type>Country</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="City">
-<Type>%String</Type>
-<Required>1</Required>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="Club">
-<Type>%String</Type>
-<Required>1</Required>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="MainTrainer">
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="1000"/>
-</Property>
-
-<Property name="OtherTrainers">
-<Type>%Text</Type>
-<Parameter name="MAXLEN" value="2000"/>
 </Property>
 
 <Index name="AthleteKeyIdx">
@@ -64,6 +49,8 @@
 </Index>
 
 <Method name="ConvertToProxyObject">
+<Description>
+Конвертация в JSON</Description>
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
@@ -99,19 +86,29 @@
 </Method>
 
 <Method name="Create">
+<Description>
+Создание записи</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[recorder:Recorder,competition:Competition,athlete:%ZEN.proxyObject,&st]]></FormalSpec>
 <ReturnType>Participant</ReturnType>
 <Implementation><![CDATA[
 	set obj = ..%New()
 	
-	set obj.Recorder = recorder
-	set obj.Competition = competition 
-	
+	// Свойства класса
 	set obj.Gender = athlete.gender
 	set obj.LastName = athlete.lastName
 	set obj.FirstName = athlete.firstName
 	set obj.DOB = $ZDH(athlete.dob, 3)
+	set obj.AthleteKey = athlete.key
+	
+	// Свойства базового класса
+	set obj.Recorder = recorder
+	set obj.Competition = competition 
+	set obj.Tournament = competition.Tournament 
+	
+	set obj.FullName = ##class(Dance.Data.Localization.LText).Create("")
+	set st = ..UpdateParticipantFullName(obj)
+	quit:$$$ISERR(st) $$$NULLOREF
 	
 	set obj.Country = ##class(Country).%OpenId(athlete.otherInfo.country.id)	
 	set obj.City = athlete.otherInfo.city
@@ -119,9 +116,8 @@
 	set obj.MainTrainer = athlete.otherInfo.mainTrainer
 	set obj.OtherTrainers = athlete.otherInfo.otherTrainers
 	
-	set obj.AthleteKey = athlete.key
-	set obj.PType = "SingleOther"
 	set obj.PrtObjKey = ..%ClassName(1)_"@"_athlete.key
+	
 	set st = obj.%Save()
 	
 	quit obj
@@ -129,6 +125,8 @@
 </Method>
 
 <Method name="GetByFilter">
+<Description>
+Найти по фильтру</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>filter:%RegisteredObject</FormalSpec>
 <ReturnType>ParticipantCoupleOther</ReturnType>
