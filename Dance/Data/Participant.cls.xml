@@ -198,7 +198,7 @@
 		//TSTART
 		
 		&sql(DECLARE PrtFullNameCur CURSOR FOR
-			 SELECT ID 
+			 SELECT %NOLOCK ID 
 			 FROM Dance_Data.Participant
 			 WHERE Tournament->IsActive = 1 AND Competition->IsActive = 1 AND IsActive = 1)
 		
@@ -246,7 +246,7 @@
 		TSTART
 		
 		&sql(DECLARE LangCurs CURSOR FOR
-			 SELECT Code 
+			 SELECT %NOLOCK  Code 
 			 FROM Dance_Data_Localization.LTextLanguage
 			 ORDER BY Code)
 		
@@ -301,7 +301,7 @@ Change IsActive property to 0</Description>
 <Implementation><![CDATA[
 	set status = "Not paid"
 	
-	&sql(SELECT TStatus->Code INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
+	&sql(SELECT %NOLOCK TStatus->Code INTO :status FROM Dance_Data.Ticket WHERE Participant = :participantId)	
 
 	quit status
 ]]></Implementation>
@@ -372,7 +372,7 @@ Change IsActive property to 0</Description>
 <FormalSpec>prtObjKey:%String,trnId:%String</FormalSpec>
 <Implementation><![CDATA[
 	set count = 0	
-	&sql(SELECT COUNT(ID) INTO :count 
+	&sql(SELECT %NOLOCK COUNT(ID) INTO :count 
 		 FROM Dance_Data.Participant 
 		 WHERE Tournament = :trnId AND PrtObjKey = :prtObjKey AND IsActive = 1)
 	quit count
@@ -454,5 +454,55 @@ do ##class(Dance.Data.Participant).UpdatePrtKey()</Description>
 	}
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Dance.Data.ParticipantD</DataLocation>
+<DefaultData>ParticipantDefaultData</DefaultData>
+<IdLocation>^Dance.Data.ParticipantD</IdLocation>
+<IndexLocation>^Dance.Data.ParticipantI</IndexLocation>
+<StreamLocation>^Dance.Data.ParticipantS</StreamLocation>
+<Data name="ParticipantDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Created</Value>
+</Value>
+<Value name="3">
+<Value>Recorder</Value>
+</Value>
+<Value name="4">
+<Value>Tournament</Value>
+</Value>
+<Value name="5">
+<Value>Competition</Value>
+</Value>
+<Value name="6">
+<Value>FullName</Value>
+</Value>
+<Value name="7">
+<Value>Country</Value>
+</Value>
+<Value name="8">
+<Value>City</Value>
+</Value>
+<Value name="9">
+<Value>Club</Value>
+</Value>
+<Value name="10">
+<Value>MainTrainer</Value>
+</Value>
+<Value name="11">
+<Value>OtherTrainers</Value>
+</Value>
+<Value name="12">
+<Value>IsActive</Value>
+</Value>
+<Value name="13">
+<Value>PrtObjKey</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/directives/competitionform.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/directives/competitionform.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 //     
 
@@ -62,8 +62,8 @@ directivesModule.directive('competitionform', function(){
                     });
             };
 
-            $scope.$watch('competition.isInternational', function(){
-                if (!$scope.competition || !$scope.competition.isInternational)
+            $scope.$watch('competition.isWDSF', function(){
+                if (!$scope.competition || !$scope.competition.isWDSF)
                     return;
 
                 $scope.loadCompetitionsWDSFByFilter();
@@ -72,7 +72,7 @@ directivesModule.directive('competitionform', function(){
             $scope.clickOnDate = function(){
                 $scope.competitionsWDSF = [];
                 $scope.competition.wdsf = {};
-                $scope.competition.isInternational = false;
+                $scope.competition.isWDSF = false;
             };
 
             $scope.loadDisciplines();

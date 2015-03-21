@@ -159,6 +159,10 @@ Imported competitions from other system</Description>
 			}
 			elseif (class = "0"){
 				for cc=1:1:proxy.dancerClasses.Count(){
+					if (proxy.dancerClasses.GetAt(cc).code = 7){
+						continue
+					}
+					
 					set proxy.dancerClasses.GetAt(cc).selected = $$$YES
 				}
 			}

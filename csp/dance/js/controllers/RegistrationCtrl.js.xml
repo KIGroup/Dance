@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 // dfdfdfdddddddddddddddd
  
@@ -81,7 +81,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                                 calculate: function(item){
                                     item.fullName = item.name;
                                     if (item.wdsf){
-                                        item.fullName += ' ' + (item.wdsf.status != 'Registering' ? 'WDSF STATUS = ' + item.wdsf.status : '');
+                                        item.fullName += ' ' + ((item.wdsf.status != 'Registering' && item.wdsf.status!= 'PreRegistration') ? 'WDSF STATUS = ' + item.wdsf.status : '');
                                     } 
                                 }},
                           {name:'discipline.name'},

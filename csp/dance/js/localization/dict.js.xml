@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/localization/dict.js" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/js/localization/dict.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 //---
 
 localizationModule.constant('DanceDictionary', {
@@ -284,7 +284,9 @@ localizationModule.constant('DanceDictionary', {
 		'Тренер. Фамилия, Имя' : 'Trainer. Full name',
 		'Оплачено участников' : 'Paid participants',
 		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.',
-		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.'
+		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.',
+		'Для всех номинаций стоимость участия указана для пары участников.' : 'For all competitions price is for couple of participants.',
+		'Доступные группы.' : 'Available competitions.'
 
  
 
@@ -561,7 +563,9 @@ localizationModule.constant('DanceDictionary', {
 		'Тренер. Фамилия, Имя' : 'Coach. Nachname Vorname',
 		'Оплачено участников' : 'Paid participants',
 		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.',
-		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.'
+		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.',
+		'Для всех номинаций стоимость участия указана для пары участников.' : 'For all competitions price is for couple of participants.',
+		'Доступные группы.' : 'Available competitions.'
 
 		
 		
@@ -569,7 +573,7 @@ localizationModule.constant('DanceDictionary', {
   },
   getTranslate: function(word, toLanguage){
 	var def = function(key){
-		//console.log("'" + key + "' : '',");
+		console.log("'" + key + "' : '',");
 		
 		return key;	
 	};  

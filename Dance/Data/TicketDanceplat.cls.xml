@@ -55,6 +55,8 @@
 	set obj.CodeOne = data.codeOne
 	set obj.CodeTwo = data.codeTwo
 	
+	set obj.Tournament = obj.Participant.Competition.Tournament
+	
 	set st = obj.%Save()
 
 	quit obj
@@ -72,9 +74,9 @@
 	try{
 		
 		&sql(DECLARE TicketCurs CURSOR FOR 
-		 	 SELECT ID
+		 	 SELECT %NOLOCK ID
 		 	 FROM Dance_Data_Import.TicketDanceplat as tic
-		 	 WHERE (SELECT cmp.Tournament->TStatus->Code 
+		 	 WHERE (SELECT %NOLOCK cmp.Tournament->TStatus->Code 
 		 	 		FROM Dance_Data.Competition as cmp 
 		 	 		WHERE cmp.IdInternal = tic.GroupIdInternal) IN ('Registration','RegistrationClosed'))	
 		 	 		
@@ -405,10 +407,10 @@
 	&sql(SELECT TOP 1 CountryWDSFName INTO :countryNameWDSF 
 		 FROM 
 		 (
-		 	SELECT Country->WDSFName As CountryWDSFName, City
+		 	SELECT %NOLOCK Country->WDSFName As CountryWDSFName, City
 		 	FROM Dance_Data.PersonUDSR
 		 	UNION
-		 	SELECT Couple->Man->Country->WDSFName As CountryWDSFName, City
+		 	SELECT %NOLOCK Couple->Man->Country->WDSFName As CountryWDSFName, City
 		 	FROM Dance_Data.ParticipantCoupleWDSF
 		 )
 		 WHERE %UPPER(City) = %UPPER(TRIM(BOTH ' ' FROM :data.otherInfo.city)))
@@ -455,7 +457,7 @@ do ##class(Dance.Data.TicketDanceplat).TestFakeTickets()</Description>
 	set tickets = ##class(%ListOfObjects).%New()
 	
 	set cmpId = 0
-	&sql(SELECT ID INTO :id FROM Dance_Data.Competition)
+	&sql(SELECT %NOLOCK ID INTO :id FROM Dance_Data.Competition)
 	set competition = ##class(Competition).%OpenId(id)
 	
 	// 1.

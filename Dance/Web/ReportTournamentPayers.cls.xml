@@ -196,7 +196,7 @@
 	set list = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE Cur1Top CURSOR FOR 
-	 	 SELECT ID
+	 	 SELECT %NOLOCK ID
 		 FROM Dance_Data.CoupleUDSR
 		 ORDER BY Man->LastName->Value)	
 	
@@ -212,7 +212,7 @@
 		
 		
 		&sql(DECLARE Cur1Level1sub1 CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal, Created
+	 	 	 SELECT %NOLOCK Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantCoupleUDSR
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleId AND TicketStatus = 'Paid' 
 	 	 	 ORDER BY Competition->StartDate)	
@@ -230,7 +230,7 @@
 		if (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(coupleId) = $$$YES){
 			set coupleWDSFId = ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(coupleId).WDSF.%Id()
 			&sql(DECLARE Cur1Level1sub2 CURSOR FOR 
-		 	 	 SELECT Competition->IdExternal, Created
+		 	 	 SELECT %NOLOCK Competition->IdExternal, Created
 		 	 	 FROM Dance_Data.ParticipantCoupleWDSF
 		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND Couple = :coupleWDSFId  AND TicketStatus = 'Paid'
 		 	 	 ORDER BY Competition->StartDate)	
@@ -269,7 +269,7 @@
 	set params.competitionParams = ##class(%ZEN.proxyObject).%New()
 			
 	&sql(DECLARE PrtWDSFCoupleCur CURSOR FOR 
-	 	 SELECT pW.ID
+	 	 SELECT %NOLOCK pW.ID
 	 	 FROM Dance_Data.ParticipantCoupleWDSF as pW
 	 	 WHERE pW.Competition->Tournament = :trnId AND pW.Competition->IsActive = 1 AND pW.IsActive = 1 AND pW.TicketStatus = 'Paid' AND 0 = (SELECT COUNT(mt.ID) FROM Dance_Data.MatchingCoupleUDSRWDSF as mt WHERE mt.WDSF = pW.Couple)
 	 	 GROUP BY pW.Couple
@@ -290,7 +290,7 @@
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpCplWDSFCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal
+	 	 	 SELECT %NOLOCK Competition->IdExternal
 	 	 	 FROM Dance_Data.ParticipantCoupleWDSF
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Couple = :proxy.couple.id  AND TicketStatus = 'Paid' 
 	 	 	 ORDER BY Competition->StartDate)	
@@ -343,7 +343,7 @@
 			set proxy.competitions = ""
 			
 			&sql(DECLARE CmpCplOtherCur CURSOR FOR 
-		 	 	 SELECT Competition->IdExternal, Created
+		 	 	 SELECT %NOLOCK Competition->IdExternal, Created
 		 	 	 FROM Dance_Data.ParticipantCoupleOther
 		 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND CoupleKey = :proxy.couple.key AND TicketStatus = 'Paid' 
 		 	 	 ORDER BY Competition->StartDate)	
@@ -380,7 +380,7 @@
 	set list = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE PrtSingleUDSRCur CURSOR FOR 
-	 	 SELECT DISTINCT Athlete
+	 	 SELECT %NOLOCK DISTINCT Athlete
 	 	 FROM Dance_Data.ParticipantSingleUDSR
 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1  AND TicketStatus = 'Paid'
 	 	 ORDER BY FullName->Value)	
@@ -396,7 +396,7 @@
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthUDSRCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal, Created
+	 	 	 SELECT %NOLOCK Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleUDSR
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :athId AND TicketStatus = 'Paid'
 	 	 	 ORDER BY Competition->StartDate)	
@@ -431,7 +431,7 @@
 	set params.competitionParams = ##class(%ZEN.proxyObject).%New()
 	
 	&sql(DECLARE PrtSingleWDSFCur CURSOR FOR 
-	 	 SELECT ID
+	 	 SELECT %NOLOCK ID
 	 	 FROM Dance_Data.ParticipantSingleWDSF
 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1 AND TicketStatus = 'Paid'
 	 	 GROUP BY Athlete
@@ -449,7 +449,7 @@
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthWDSFCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal, Created
+	 	 	 SELECT %NOLOCK Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleWDSF
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND Athlete = :proxy.athlete.id  AND TicketStatus = 'Paid'
 	 	 	 ORDER BY Competition->StartDate)	
@@ -484,7 +484,7 @@
 	set params.competitionParams = ##class(%ZEN.proxyObject).%New()
 	
 	&sql(DECLARE PrtOtherAthleteCur CURSOR FOR 
-	 	 SELECT ID
+	 	 SELECT %NOLOCK ID
 	 	 FROM Dance_Data.ParticipantSingleOther
 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND IsActive = 1  AND TicketStatus = 'Paid'
 	 	 GROUP BY AthleteKey
@@ -501,7 +501,7 @@
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpAthOtherCur CURSOR FOR 
-	 	 	 SELECT Competition->IdExternal, Created
+	 	 	 SELECT %NOLOCK Competition->IdExternal, Created
 	 	 	 FROM Dance_Data.ParticipantSingleOther
 	 	 	 WHERE Competition->Tournament = :trnId AND Competition->IsActive = 1 AND AthleteKey = :proxy.athlete.key  AND TicketStatus = 'Paid'
 	 	 	 ORDER BY Competition->StartDate)	

@@ -168,7 +168,7 @@ do ##class(Dance.Data.MatchingCoupleUDSRWDSF).FixLocalization()</Description>
 		TSTART
 		
 		&sql(DECLARE MtCur CURSOR FOR 
-			 SELECT UDSR, WDSF
+			 SELECT %NOLOCK UDSR, WDSF
 		 	 FROM Dance_Data.MatchingCoupleUDSRWDSF
 		 	 WHERE UDSR->Man->LastName->Value <> WDSF->Man->LastName->Value)	
 		&sql(OPEN MtCur)
@@ -204,7 +204,7 @@ do ##class(Dance.Data.MatchingCoupleUDSRWDSF).FixLocalization()</Description>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
 	set coupleId = ""
-	&sql(SELECT WDSF INTO :coupleId FROM Dance_Data.MatchingCoupleUDSRWDSF WHERE UDSR = :coupleUDSRId)
+	&sql(SELECT %NOLOCK  WDSF INTO :coupleId FROM Dance_Data.MatchingCoupleUDSRWDSF WHERE UDSR = :coupleUDSRId)
 	quit coupleId
 ]]></Implementation>
 </Method>

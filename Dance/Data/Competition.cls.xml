@@ -335,7 +335,7 @@ Payments</Description>
 <Implementation><![CDATA[
 	set count = 0
 	
-	&sql(SELECT COUNT(ID) INTO :count 
+	&sql(SELECT %NOLOCK COUNT(ID) INTO :count 
 		 FROM Dance_Data.Participant 
 		 WHERE Competition = :competitionId AND TicketStatus = 'Paid')
 	

@@ -30,6 +30,7 @@
     	}
     	
     	set auth=##class(%Net.Authenticator).%New()
+  		set auth.MechanismList = "LOGIN"
   		set auth.UserName = $GET(^Settings("Dance","EmailSMTPUSER"))
   		set auth.Password = $GET(^Settings("Dance","EmailSMTPPASSWORD"))
   	

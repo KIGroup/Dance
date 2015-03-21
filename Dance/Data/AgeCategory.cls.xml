@@ -206,7 +206,7 @@ Create or update age category</Description>
 	}
 	
 	&sql(DECLARE CurAgeCategories CURSOR FOR 
-		 	SELECT Code, TitleAge
+		 	SELECT %NOLOCK Code, TitleAge
 		 	FROM Dance_Data.AgeCategory
 		 	WHERE YoungestPartnerMinAge <= :minAge AND :minAge <= YoungestPartnerMaxAge 
       		    AND OldestPartnerMinAge <= :maxAge AND :maxAge <= OldestPartnerMaxAge)	
@@ -241,7 +241,7 @@ Create or update age category</Description>
 	}
 	
 	&sql(DECLARE CurAge2Categories CURSOR FOR 
-		 	SELECT ID
+		 	SELECT %NOLOCK ID
 		 	FROM Dance_Data.AgeCategory
 		 	WHERE YoungestPartnerMinAge <= :minAge AND :minAge <= YoungestPartnerMaxAge 
       		    AND OldestPartnerMinAge <= :maxAge AND :maxAge <= OldestPartnerMaxAge)	
@@ -279,14 +279,14 @@ Create or update age category</Description>
 	set count = 0
 	
 	&sql(DECLARE CurAC CURSOR FOR 
-		 	SELECT 
+		 	SELECT %NOLOCK 
 			ID
 			FROM Dance_Data.AgeCategory
 			WHERE SpecialLogic = 0 AND YoungestPartnerMinAge <= :maxAge AND :maxAge <= OldestPartnerMaxAge
 			
 			UNION
 			
-			SELECT 
+			SELECT %NOLOCK 
 			ID
 			FROM Dance_Data.AgeCategory
 			WHERE SpecialLogic = 1 AND YoungestPartnerMinAge <= :minAge AND :minAge <= YoungestPartnerMaxAge 
@@ -317,7 +317,7 @@ Create or update age category</Description>
 	try{
 		set count = 0
 		&sql(DECLARE Prt2Cur CURSOR FOR 
-		 	SELECT ID, FullName, Couple
+		 	SELECT %NOLOCK ID, FullName, Couple
 		 	FROM Dance_Data.ParticipantCoupleUDSR
 		 	WHERE Competition->Tournament = 6)	
 		

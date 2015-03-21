@@ -176,6 +176,24 @@ w ##class(Dance.Data.AgeCategoryWDSF).Import()</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="GetAllAvailableList">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ageCategoryName:%String</FormalSpec>
+<ReturnType>%List</ReturnType>
+<Implementation><![CDATA[
+	set list = $LISTBUILD("0")
+	
+	set prtAC = ..NameIdxOpen(ageCategoryName)
+	for i=1:1:prtAC.AllowedToDance.Count(){
+		set $LIST(list, i) = prtAC.AllowedToDance.GetAt(i).%Id()
+	}
+	
+	if ($LISTLENGTH(list) = 0) set list = $LISTBUILD("0")
+	
+	quit list
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.AgeCategoryWDSFD</DataLocation>

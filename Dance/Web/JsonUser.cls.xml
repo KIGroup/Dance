@@ -375,7 +375,7 @@ Get tournament by year for combobox</Description>
 	set proxy.children = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE CursTrnYear CURSOR FOR 
-		 SELECT ID, Name->Value, Country->Name->Value, City->Value
+		 SELECT %NOLOCK ID, Name->Value, Country->Name->Value, City->Value
 		 FROM Dance_Data.Tournament
 		 WHERE IsActive = 1 AND DATEPART('year', StartDate) = :year 
 		 ORDER BY StartDate DESC)	
@@ -435,7 +435,7 @@ Get all tournaments for grid</Description>
       	set convertParams.loadCompetitionsCount = $$$YES
       	set convertParams.loadParticipantsCount = $$$YES
       	
-      	do ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Tournament", "Dance.Data.Tournament", params, convertParams, whereCondition).%ToJSON()
+      	do ..GetProxyObjectsForGrid("SELECT %NOLOCK ID FROM Dance_Data.Tournament", "Dance.Data.Tournament", params, convertParams, whereCondition).%ToJSON()
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -455,7 +455,7 @@ Get all years of the tournaments for combobox</Description>
 	set proxy.children = ##class(%ListOfDataTypes).%New()
 	
 	&sql(DECLARE CursYear CURSOR FOR 
-		 	SELECT DISTINCT DATEPART('year', StartDate) As Year
+		 	SELECT %NOLOCK DISTINCT DATEPART('year', StartDate) As Year
 			FROM Dance_Data.Tournament
 			WHERE IsActive = 1
 			ORDER BY Year)	
@@ -486,7 +486,7 @@ Get tournament ranks for combobox</Description>
 	set proxy.children = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE TRCurFirst CURSOR FOR 
-		 	SELECT ID, Name->Value
+		 	SELECT %NOLOCK ID, Name->Value
 		 	FROM Dance_Data.TournamentRank
 		 	ORDER BY Name->Value)	
 		
@@ -518,7 +518,7 @@ Get tournament statuses for combobox</Description>
 	set proxy.children = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE CR1 CURSOR FOR 
-		 	SELECT ID, Name->Value, Code
+		 	SELECT %NOLOCK ID, Name->Value, Code
 		 	FROM Dance_Data.TournamentStatus
 		 	ORDER BY Sequence)	
 		
@@ -640,7 +640,7 @@ Get all tournament competitions for grid</Description>
       		set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL AND cmpT.IsInternational=1 AND cmpT.IsClosed = 0 "
       	}
       
-      	do ..GetProxyObjectsForGrid("SELECT cmpT.ID FROM Dance_Data.Competition as cmpT ", "Dance.Data.Competition", params, params.other.convertParams, whereCondition).%ToJSON()
+      	do ..GetProxyObjectsForGrid("SELECT %NOLOCK cmpT.ID FROM Dance_Data.Competition as cmpT ", "Dance.Data.Competition", params, params.other.convertParams, whereCondition).%ToJSON()
 	}
 	catch ex {
 		set st = ex.AsStatus()
@@ -712,12 +712,6 @@ Available participants competitions for grid</Description>
 			set whereCondition = whereCondition_" AND Type->Code = 'Solo' "
       	}
       	
-      	// Age filter
-      	// current year - year of birth
-      	set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
-      	set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P(woman.dob, "-", 1)
-      	set whereCondition = whereCondition_" AND AgeCategory IN ("_$LISTTOSTRING(##class(Dance.Data.AgeCategory).GetAllAvailableList(maleAge, femaleAge), ",")_") "
-      	
       	
       	
       	if (params.other.type = "UDSR"){
@@ -729,12 +723,27 @@ Available participants competitions for grid</Description>
       		}
       	}
       	elseif (params.other.type = "WDSF"){
-	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL "
+	      	if $ISOBJECT(params.other.couple){
+	      		set ageCategoryWDSFName = params.other.couple.otherInfo.ageCategory
+	      	}
+	      	else{
+		      	set ageCategoryWDSFName = params.other.athlete.otherInfo.ageCategory
+	      	}
+	      	
+	      	set whereCondition = whereCondition_" AND WDSF IS NOT NULL AND WDSF->AgeCategory IN ("_$LISTTOSTRING(##class(Dance.Data.AgeCategoryWDSF).GetAllAvailableList(ageCategoryWDSFName), ",")_") "
       	}
       	elseif (params.other.type = "OTHER"){
 	      	set whereCondition = whereCondition_" AND WDSF IS NULL AND IsInternational = 1 "
       	}	
       	
+      	
+      	if (params.other.type '= "WDSF"){
+      		// Age filter
+      		// current year - year of birth
+      		set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
+      		set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P(woman.dob, "-", 1)
+      		set whereCondition = whereCondition_" AND AgeCategory IN ("_$LISTTOSTRING(##class(Dance.Data.AgeCategory).GetAllAvailableList(maleAge, femaleAge), ",")_") "
+      	}
       	
      	
       	if $ISOBJECT(params.other.couple){
@@ -777,7 +786,7 @@ Available participants competitions for grid</Description>
       	
        
      	     	
-		set sql = "SELECT ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
+		set sql = "SELECT %NOLOCK ID FROM Dance_Data.Competition WHERE "_whereCondition_" ORDER BY StartDate"
 		set ^tt = sql
 		
 		set statement = ##class(%SQL.Statement).%New()	
@@ -860,7 +869,7 @@ Get WDSF competitions by filter</Description>
 		set list = ##class(%ListOfObjects).%New()
 		
 		&sql(DECLARE CmpWDSFCur1 CURSOR FOR
-			 SELECT cmpWDSF.ID
+			 SELECT %NOLOCK cmpWDSF.ID
 			 FROM Dance_Data.CompetitionWDSF as cmpWDSF
 			 WHERE cmpWDSF.StartDate = :date AND cmpWDSF.Country = :countryId 
 			 ORDER BY cmpWDSF.ID)
@@ -910,7 +919,7 @@ Get all participants for grid</Description>
  		set convertParams.competitionParams.tournamentParams.loadLocation = $$$YES
  		set convertParams.loadPrtObjCompetitionsCount = $$$YES
  		
- 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, "IsActive=1 AND Tournament->IsActive = 1")
+ 	  	set result = ..GetProxyObjectsForGrid("SELECT %NOLOCK ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, "IsActive=1 AND Tournament->IsActive = 1")
 		do result.%ToJSON()
 	}
 	catch ex {
@@ -941,7 +950,7 @@ Get all participants of the tournament for grid</Description>
  		set convertParams.loadPrtObjCompetitionsCount = $$$YES
  		set convertParams.loadPrtObjPaymentsCount = $$$YES
  		
- 	  	set result = ..GetProxyObjectsForGrid("SELECT ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, whereCondition, "GROUP BY FullName->Value")
+ 	  	set result = ..GetProxyObjectsForGrid("SELECT %NOLOCK ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, whereCondition, "GROUP BY FullName->Value")
 		do result.%ToJSON()
 	}
 	catch ex {
@@ -1027,15 +1036,17 @@ Get all participants of the competition for grid</Description>
 			set where = where_" AND Athlete = '"_..ParseParameter(athId)_"' "		
 		}
 		elseif (cplKey '= ""){
+			set cplKey = $REPLACE(cplKey, " ", "+")
 			set table = "Dance_Data.ParticipantCoupleOther"
 			set where = where_" AND CoupleKey = '"_cplKey_"' "		
 		}
 		elseif (athKey '= ""){
+			set athKey = $REPLACE(athKey, " ", "+")
 			set table = "Dance_Data.ParticipantSingleOther"
 			set where = where_" AND AthleteKey = '"_athKey_"' "		
 		}
 		
-		set sql = "SELECT ID "_
+		set sql = "SELECT %NOLOCK ID "_
 				  "FROM "_table_" "_
 				  "WHERE "_where_" "_
 				  "ORDER BY Created"
@@ -1044,14 +1055,14 @@ Get all participants of the competition for grid</Description>
 		// Костыль
 		if (cplId '= ""){ 
 			if (##class(Dance.Data.CoupleUDSR).%ExistsId(cplId)) && (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(cplId)){
-				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "_
+				set sql = "SELECT %NOLOCK ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "_
 						  " UNION "_
-						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(cplId).WDSF.%Id()_"' AND IsActive=1"			
+						  "SELECT %NOLOCK ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(cplId).WDSF.%Id()_"' AND IsActive=1"			
 			}
 			elseif (##class(Dance.Data.CoupleWDSF).%ExistsId(cplId)) && (##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(cplId)){
-				set sql = "SELECT ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(cplId).UDSR.%Id()_"' AND IsActive=1 "_
+				set sql = "SELECT %NOLOCK ID FROM Dance_Data.ParticipantCoupleUDSR WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(cplId).UDSR.%Id()_"' AND IsActive=1 "_
 						  " UNION "_
-						  "SELECT ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "
+						  "SELECT %NOLOCK ID FROM Dance_Data.ParticipantCoupleWDSF WHERE Tournament = '"_..ParseParameter(trnId)_"' AND Couple = '"_..ParseParameter(cplId)_"' AND IsActive=1 "
 						  			
 			}
 		}
@@ -1250,7 +1261,7 @@ WDSF countries for combobox</Description>
 	set proxy.children = ##class(%ListOfObjects).%New()
 	
 	&sql(DECLARE Curr1 CURSOR FOR 
-		 	SELECT ID, Name->Value
+		 	SELECT %NOLOCK ID, Name->Value
 		 	FROM Dance_Data.Country
 		 	ORDER BY Name->Value)	
 		
@@ -1287,7 +1298,7 @@ All System languages for combobox</Description>
 		set list = ##class(%ListOfObjects).%New()
 		
 		&sql(DECLARE LangCurs CURSOR FOR
-			 SELECT Code, Name 
+			 SELECT %NOLOCK Code, Name 
 			 FROM Dance_Data_Localization.LTextLanguage
 			 ORDER BY Code)
 		
@@ -1323,7 +1334,7 @@ All System languages for combobox</Description>
 All disciplines for combobox</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	quit ..WriteJsonFromSql("SELECT ID as id, Name->Value as name FROM Dance_Data.Discipline")
+<Implementation><![CDATA[	quit ..WriteJsonFromSql("SELECT %NOLOCK ID as id, Name->Value as name FROM Dance_Data.Discipline")
 ]]></Implementation>
 </Method>
 
@@ -1429,9 +1440,9 @@ Feedback from users </Description>
 	set proxy.wdsfCount = 0
 	set proxy.otherCount = 0
 	
-	&sql(SELECT COUNT(ID) INTO :proxy.allCount FROM Dance_Data.Person)
-	&sql(SELECT COUNT(ID) INTO :proxy.udsrCount FROM Dance_Data.PersonUDSR)
-	&sql(SELECT COUNT(ID) INTO :proxy.wdsfCount FROM Dance_Data.PersonWDSF)
+	&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.allCount FROM Dance_Data.Person)
+	&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.udsrCount FROM Dance_Data.PersonUDSR)
+	&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.wdsfCount FROM Dance_Data.PersonWDSF)
 	
 	set proxy.udsrLastUpdated = $G(^Settings("Dance","UDSRPersonsLastUpdated"))
 	
@@ -1466,7 +1477,7 @@ Feedback from users </Description>
 				set wdsfCplId = match.WDSF.%Id()
 				set udsrCount = 0
 				set wdsfCount = 0
-				&sql(SELECT COUNT(ID) INTO :udsrCount 
+				&sql(SELECT %NOLOCK COUNT(ID) INTO :udsrCount 
 					 FROM Dance_Data.ParticipantCoupleUDSR 
 					 WHERE Couple = :udsrCplId AND Tournament = :trnId AND IsActive = 1)
 				
@@ -1478,10 +1489,10 @@ Feedback from users </Description>
 			}
 			else{
 				if ($CLASSNAME(couple) = "Dance.Data.CoupleUDSR") {
-					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleUDSR WHERE Couple = :cplId AND Tournament = :trnId AND IsActive = 1)
+					&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleUDSR WHERE Couple = :cplId AND Tournament = :trnId AND IsActive = 1)
 				}
 				else {
-					&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleWDSF WHERE Couple = :cplId AND Tournament = :trnId AND IsActive = 1)
+					&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleWDSF WHERE Couple = :cplId AND Tournament = :trnId AND IsActive = 1)
 				}
 			}
 		}
@@ -1489,19 +1500,19 @@ Feedback from users </Description>
 			// WDSF or UDSR
 			set athlete = ##class(Dance.Data.Person).%OpenId(athId)
 			if ($CLASSNAME(athlete) = "Dance.Data.PersonUDSR") {
-				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleUDSR WHERE Athlete = :athId AND Tournament = :trnId AND IsActive = 1)
+				&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleUDSR WHERE Athlete = :athId AND Tournament = :trnId AND IsActive = 1)
 			}
 			else {
-				&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleWDSF WHERE Athlete = :athId AND Tournament = :trnId AND IsActive = 1)
+				&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleWDSF WHERE Athlete = :athId AND Tournament = :trnId AND IsActive = 1)
 			}
 		}
 		elseif (cplKey '= ""){
 			// Other couple
-			&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleOther WHERE CoupleKey = :cplKey AND Tournament = :trnId AND IsActive = 1)
+			&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantCoupleOther WHERE CoupleKey = :cplKey AND Tournament = :trnId AND IsActive = 1)
 		}
 		elseif (athKey '= ""){
 			// Other athlete
-			&sql(SELECT COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleOther WHERE AthleteKey = :athKey AND Tournament = :trnId AND IsActive = 1)
+			&sql(SELECT %NOLOCK COUNT(ID) INTO :proxy.count FROM Dance_Data.ParticipantSingleOther WHERE AthleteKey = :athKey AND Tournament = :trnId AND IsActive = 1)
 		}		
 	}
 	catch(ex){
