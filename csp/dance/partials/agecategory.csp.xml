@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/agecategory.csp" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/partials/agecategory.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <div class="row-fluid">
 	<div class="span3">
 	</div>
@@ -70,7 +70,7 @@
 					        <div class="control-group">
 						        <label class="control-label" ng-bind="('Organizer web-site'|localize) + ''"></label>
 						        <div class="controls">
-						            <input class="span12" type="text" ng-model="page.tournament.organizer.site"></input>
+						            <input class="span12" type="text" ng-model="page.tournament.infoUrl"></input>
 						        </div>
 						    </div>
 						    <div class="control-group">

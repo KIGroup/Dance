@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/payment.csp" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/partials/payment.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <div class="row-fluid">
 	<pre ng-bind="tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
 	<pre ng-hide="tournament.id" style="text-align: center;"><i class="fa fa-spinner fa-spin fa-lg" style="color: rgb(204, 204, 204);"></i></pre>
 </div>  
-<div ng-show="tournament && tournament.annUrl!=''" style="text-align: center; color: darkred; padding-top: 12px;" title="{{'Перейдите по ссылке для получения подробной информации'|localize}}">
-	<a class="trnAdditionInfoUrl" ng-href="{{tournament.annUrl}}" target="_blank">{{('ВАЖНОЕ ОБЪЯВЛЕНИЕ'|localize)}}</a>
+<div ng-show="tournament && tournament.addInfoUrl!=''" style="text-align: center; color: darkred; padding-top: 12px;" title="{{'Перейдите по ссылке для получения подробной информации'|localize}}">
+	<a class="trnAdditionInfoUrl" ng-href="{{tournament.addInfoUrl}}" target="_blank">{{('ВАЖНОЕ ОБЪЯВЛЕНИЕ'|localize)}}</a>
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="{{tournament.organizer.site}}" target="_blank" class="trnMenu" title="{{'Информация о турнире'|localize}}" ng-bind="'Информация »'|localize"></a>
+	<a ng-href="{{tournament.infoUrl}}" target="_blank" class="trnMenu" title="{{'Информация о турнире'|localize}}" ng-bind="'Информация »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href="" ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -189,10 +189,10 @@
 			    	</div>
 				</div>
 				<div class="span4">
-			        <div class="control-group">
-			        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+			        <div class="control-group" title="{{'ГГГГ-ММ-ДД'|localize}}">
+			        	<label class="control-label" ng-bind="('Дата рождения'|localize)"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.athlete.dob" show-weeks="false" ng-required="true" disabled/>
+			    			<input class="span12" type="text" ng-model="confirmData.athlete.dob" placeholder="{{'ГГГГ-ММ-ДД'|localize}}" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"/>
 	                	</div>
 			    	</div>
 				</div>
@@ -217,10 +217,10 @@
 			    	</div>
 				</div>
 				<div class="span4">
-			        <div class="control-group">
-			        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+			        <div class="control-group" title="{{'ГГГГ-ММ-ДД'|localize}}">
+			        	<label class="control-label" ng-bind="('Дата рождения'|localize)"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.couple.man.dob" show-weeks="false" ng-required="true" disabled/>
+			    			<input class="span12" type="text" ng-model="confirmData.couple.man.dob" placeholder="{{'ГГГГ-ММ-ДД'|localize}}" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"/>
 	                	</div>
 			    	</div>
 				</div>
@@ -244,10 +244,10 @@
 			    	</div>
 				</div>
 				<div class="span4">
-			        <div class="control-group">
-			        	<label class="control-label" ng-bind="('Дата рождения'|localize) + '*'"></label>
+			        <div class="control-group" title="{{'ГГГГ-ММ-ДД'|localize}}">
+			        	<label class="control-label" ng-bind="('Дата рождения'|localize)"></label>
 			        	<div class="controls">
-			    			<input class="span12" type="text" datepicker-popup="{{'d MMMM y'|localize}}" ng-model="confirmData.couple.woman.dob" show-weeks="false" ng-required="true" disabled/>
+			    			<input class="span12" type="text" ng-model="confirmData.couple.woman.dob" placeholder="{{'ГГГГ-ММ-ДД'|localize}}" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"/>
 	                	</div>
 			    	</div>
 				</div>

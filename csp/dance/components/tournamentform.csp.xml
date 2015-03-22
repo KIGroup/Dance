@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/components/tournamentform.csp" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/components/tournamentform.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <div class="row-fluid">
 	<div class="row-fluid">
 		<div class="span6">
@@ -105,15 +105,15 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label" ng-bind="('Веб-сайт организатора'|localize) + ''"></label>
+        <label class="control-label" ng-bind="('Информация о турнире'|localize) + ''"></label>
         <div class="controls">
-            <input class="span12" type="text" ng-model="tournament.organizer.site"></input>
+            <input class="span12" type="text" ng-model="tournament.infoUrl"></input>
         </div>
     </div>
     <div class="control-group">
         <label class="control-label" ng-bind="('Дополнительная информация о турнире'|localize)"></label>
         <div class="controls">
-            <input class="span12" type="text" ng-model="tournament.annUrl"></input>
+            <input class="span12" type="text" ng-model="tournament.addInfoUrl"></input>
         </div>
     </div>
     <div class="control-group" ng-show="tournament.prtsUrl" ng-init="showPrtUrl=true;">

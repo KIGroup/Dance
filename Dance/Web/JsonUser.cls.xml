@@ -354,6 +354,7 @@ Get one tournament by Id</Description>
  	set convertParams.loadStatus = $GET(%request.Data("loadStatus", 1), $$$NO) = $$$YES
  	set convertParams.loadRank = $GET(%request.Data("loadRank", 1), $$$NO) = $$$YES
  	set convertParams.loadLocation = $GET(%request.Data("loadLocation", 1), $$$NO) = $$$YES
+ 	set convertParams.loadUrls = $GET(%request.Data("loadUrls", 1), $$$NO) = $$$YES
  	set convertParams.loadOrganizer = $GET(%request.Data("loadOrganizer", 1), $$$NO) = $$$YES
  	set convertParams.loadCompetitionsCount = $GET(%request.Data("loadCompetitionsCount", 1), $$$NO) = $$$YES
  	set convertParams.loadParticipantsCount = $GET(%request.Data("loadParticipantsCount", 1), $$$NO) = $$$YES
@@ -432,6 +433,7 @@ Get all tournaments for grid</Description>
       	set convertParams.loadStatus = $$$YES
       	set convertParams.loadLocation = $$$YES
       	set convertParams.loadOrganizer = $$$YES
+      	set convertParams.loadUrls = $$$YES
       	set convertParams.loadCompetitionsCount = $$$YES
       	set convertParams.loadParticipantsCount = $$$YES
       	
@@ -917,6 +919,7 @@ Get all participants for grid</Description>
  		set convertParams.competitionParams.loadTournament = $$$YES
  		set convertParams.competitionParams.tournamentParams = ##class(%ZEN.proxyObject).%New()
  		set convertParams.competitionParams.tournamentParams.loadLocation = $$$YES
+ 		set convertParams.competitionParams.tournamentParams.loadName = params.other.loadTournamentName
  		set convertParams.loadPrtObjCompetitionsCount = $$$YES
  		
  	  	set result = ..GetProxyObjectsForGrid("SELECT %NOLOCK ID FROM Dance_Data.Participant", "Dance.Data.Participant", params, convertParams, "IsActive=1 AND Tournament->IsActive = 1")

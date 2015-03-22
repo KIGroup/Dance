@@ -7,76 +7,106 @@ Tournaments</Description>
 <TimeCreated>63274,63417.76954</TimeCreated>
 
 <Property name="AccessCode">
+<Description>
+Код доступа к турниру</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="IdInternal">
+<Description>
+Внутренний ИД, связка с данцплатом</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="IdExternal">
+<Description>
+Внешний ИД, связка с данцплатом</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="Hash">
+<Description>
+Хеш какой-то, связка с данцплатом</Description>
 <Type>%String</Type>
 <Parameter name="MAXLEN" value="100"/>
 </Property>
 
 <Property name="Name">
+<Description>
+Короткое имя турнира</Description>
 <Type>Dance.Data.Localization.LText</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="FullName">
+<Description>
+Полное имя турнира для страницы регистрации </Description>
 <Type>Dance.Data.Localization.LText</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="Country">
+<Description>
+Страна проведения</Description>
 <Type>Country</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="City">
+<Description>
+Город проведения</Description>
 <Type>Dance.Data.Localization.LText</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="StartDate">
+<Description>
+Дата начала</Description>
 <Type>%Date</Type>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
 <Property name="EndDate">
+<Description>
+Дата окончания</Description>
 <Type>%Date</Type>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
 <Property name="OrganizerInfo">
+<Description>
+Орагнизатор</Description>
 <Type>Dance.Data.Localization.LText</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="OrganizerSite">
+<Description>
+Не используется</Description>
 <Type>%String</Type>
 <Parameter name="MAXLEN" value="500"/>
 </Property>
 
 <Property name="TRank">
+<Description>
+Ранг турнира</Description>
 <Type>Dance.Data.TournamentRank</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="TStatus">
+<Description>
+Статус турнира</Description>
 <Type>Dance.Data.TournamentStatus</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="CompetitionsCount">
+<Description>
+Количество групп в турнире</Description>
 <Type>%Integer</Type>
 <Calculated>1</Calculated>
 <SqlComputeCode>set {CompetitionsCount} = ##class({%%CLASSNAME}).GetCompetitionsCount({%%ID})</SqlComputeCode>
@@ -84,6 +114,8 @@ Tournaments</Description>
 </Property>
 
 <Property name="ParticipantsCount">
+<Description>
+Количество участников в турнире</Description>
 <Type>%Integer</Type>
 <Calculated>1</Calculated>
 <SqlComputeCode>set {ParticipantsCount} = ##class({%%CLASSNAME}).GetParticipantsCount({%%ID})</SqlComputeCode>
@@ -91,6 +123,8 @@ Tournaments</Description>
 </Property>
 
 <Property name="ParticipantsUniqueCount">
+<Description>
+Количестов уникальных участников в турнире</Description>
 <Type>%Integer</Type>
 <Calculated>1</Calculated>
 <SqlComputeCode>set {ParticipantsUniqueCount} = ##class({%%CLASSNAME}).GetParticipantsUniqueCount({%%ID})</SqlComputeCode>
@@ -98,6 +132,8 @@ Tournaments</Description>
 </Property>
 
 <Property name="PaymentsCount">
+<Description>
+Количество платежей</Description>
 <Type>%Integer</Type>
 <Calculated>1</Calculated>
 <SqlComputeCode>set {PaymentsCount} = ##class({%%CLASSNAME}).GetPaymentsCount({%%ID})</SqlComputeCode>
@@ -105,6 +141,8 @@ Tournaments</Description>
 </Property>
 
 <Property name="PaymentsUniqueCount">
+<Description>
+Количестов платежей от уникальнх участников</Description>
 <Type>%Integer</Type>
 <Calculated>1</Calculated>
 <SqlComputeCode>set {PaymentsUniqueCount} = ##class({%%CLASSNAME}).GetPaymentsUniqueCount({%%ID})</SqlComputeCode>
@@ -112,6 +150,8 @@ Tournaments</Description>
 </Property>
 
 <Property name="Competitions">
+<Description>
+Группы</Description>
 <Type>Dance.Data.Competition</Type>
 <Cardinality>many</Cardinality>
 <Inverse>Tournament</Inverse>
@@ -119,36 +159,62 @@ Tournaments</Description>
 </Property>
 
 <Property name="IsActive">
+<Description>
+Турнир активен? </Description>
 <Type>%Boolean</Type>
 <InitialExpression>1</InitialExpression>
 <Required>1</Required>
 </Property>
 
 <Property name="TabUDSRAllowed">
+<Description>
+Доступна регистрация СТСР</Description>
 <Type>%Boolean</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="TabWDSFAllowed">
+<Description>
+Доступна регистрация WDSF</Description>
 <Type>%Boolean</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="TabOtherAllowed">
+<Description>
+Доступна регистрация другим участникам</Description>
 <Type>%Boolean</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="AnnouncementUrl">
+<Description>
+Не используется</Description>
 <Type>%String</Type>
 <Parameter name="MAXLEN" value="500"/>
 </Property>
 
 <Property name="IsContainsSolo">
+<Description>
+Есть ли соло в турнире?</Description>
 <Type>%Boolean</Type>
 <Calculated>1</Calculated>
 <SqlComputeCode>set {IsContainsSolo} = ##class({%%CLASSNAME}).IsContainsSolo({%%ID})</SqlComputeCode>
 <SqlComputed>1</SqlComputed>
+</Property>
+
+<Property name="InfoUrl">
+<Description>
+Мультияычная ссылка на инфу о турнире</Description>
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="AdditionInfoUrl">
+<Description>
+Мультияычная ссылка на дополнительную инфу о турнире</Description>
+<Type>Dance.Data.Localization.LText</Type>
+<Required>1</Required>
 </Property>
 
 <Index name="IdInternalIdx">
@@ -223,10 +289,15 @@ Tournaments</Description>
 		set proxy.location.cityName = ..City.Value
 	}
 	
-	set proxy.annUrl = ..AnnouncementUrl
+	if (params.loadUrls){		
+		set proxy.infoUrl = ..InfoUrl.Value
+		set proxy.addInfoUrl = ..AdditionInfoUrl.Value
+	}
+	
+	//set proxy.annUrl = ..AnnouncementUrl
 	
 	set proxy.organizer = ##class(%ZEN.proxyObject).%New()
-	set proxy.organizer.site = ..OrganizerSite
+	//set proxy.organizer.site = ..OrganizerSite
 	
 	if (params.loadOrganizer){	
 		set proxy.organizer.info = ..OrganizerInfo.Value
@@ -268,6 +339,8 @@ Create or Update object</Description>
       	set trn.FullName = ##class(Dance.Data.Localization.LText).Create(data.fullName)
       	set trn.City = ##class(Dance.Data.Localization.LText).Create(data.location.cityName)
       	set trn.OrganizerInfo = ##class(Dance.Data.Localization.LText).Create(data.organizer.info)
+      	set trn.InfoUrl = ##class(Dance.Data.Localization.LText).Create(data.infoUrl)
+      	set trn.AdditionInfoUrl = ##class(Dance.Data.Localization.LText).Create(data.addInfoUrl)
     }
     else{
 	    set trn = ..%OpenId(data.id)
@@ -275,14 +348,16 @@ Create or Update object</Description>
       	set trn.FullName.Value = data.fullName
       	set trn.City.Value = data.location.cityName
       	set trn.OrganizerInfo.Value = data.organizer.info
+      	set trn.InfoUrl.Value = data.infoUrl
+      	set trn.AdditionInfoUrl.Value = data.addInfoUrl
    	}
       	
     set trn.IdInternal = data.idInternal
     set trn.IdExternal = data.idExternal
     set trn.Hash = data.hash
     
-    set trn.AnnouncementUrl = data.annUrl  	
-    set trn.OrganizerSite = data.organizer.site
+    //set trn.AnnouncementUrl = data.annUrl  	
+    //set trn.OrganizerSite = data.organizer.site
     
    	set trn.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
     set trn.TStatus = ##class(Dance.Data.TournamentStatus).%OpenId(data.status.id)
@@ -530,6 +605,12 @@ Check update privilege</Description>
 </Value>
 <Value name="25">
 <Value>AnnouncementUrl</Value>
+</Value>
+<Value name="26">
+<Value>InfoUrl</Value>
+</Value>
+<Value name="27">
+<Value>AdditionInfoUrl</Value>
 </Value>
 </Data>
 </Storage>

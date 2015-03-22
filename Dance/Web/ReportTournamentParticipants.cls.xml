@@ -287,6 +287,15 @@
 		set proxy.couple.otherInfo.created = prtProxy.created
 		set proxy.couple.man.number = ""
 		set proxy.couple.woman.number = ""
+		
+		if (proxy.couple.man.dob = ""){
+			set proxy.couple.man.dob = proxy.couple.otherInfo.ageCategory
+		}
+		
+		if (proxy.couple.woman.dob = ""){
+			set proxy.couple.woman.dob = proxy.couple.otherInfo.ageCategory
+		}
+		
 		set proxy.competitions = ""
 		
 		&sql(DECLARE CmpCplWDSFCur CURSOR FOR 

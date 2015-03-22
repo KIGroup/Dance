@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/competitionparticipants.csp" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/partials/competitionparticipants.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <div class="row-fluid">
 	<pre ng-bind="page.competition.tournament.fullName" style="text-align: center; font-weight: bold; font-size: 1.3em !important;">
 	</pre>
 	<pre ng-hide="page.competition.tournament.id" style="text-align: center;"><i class="fa fa-spinner fa-spin fa-lg" style="color: rgb(204, 204, 204);"></i></pre>
 </div>
-<div ng-show="page.competition.tournament && page.competition.tournament.annUrl!=''" style="text-align: center; color: darkred; padding-top: 12px;" title="{{'Перейдите по ссылке для получения подробной информации'|localize}}">
-	<a class="trnAdditionInfoUrl" ng-href="{{page.competition.tournament.annUrl}}" target="_blank">{{('ВАЖНОЕ ОБЪЯВЛЕНИЕ'|localize)}}</a>
+<div ng-show="page.competition.tournament && page.competition.tournament.addInfoUrl!=''" style="text-align: center; color: darkred; padding-top: 12px;" title="{{'Перейдите по ссылке для получения подробной информации'|localize}}">
+	<a class="trnAdditionInfoUrl" ng-href="{{page.competition.tournament.addInfoUrl}}" target="_blank">{{('ВАЖНОЕ ОБЪЯВЛЕНИЕ'|localize)}}</a>
 </div>
 <br>
 <div class="row-fluid" style="text-align: center;">
-	<a ng-href="{{page.competition.tournament.organizer.site}}" target="_blank" class="trnMenu" title="{{'Информация о турнире'|localize}}" ng-bind="'Информация »'|localize"></a>
+	<a ng-href="{{page.competition.tournament.infoUrl}}" target="_blank" class="trnMenu" title="{{'Информация о турнире'|localize}}" ng-bind="'Информация »'|localize"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a ng-href=""  ng-class="recorderHash ? 'trnMenu' : 'disabled'" title="{{'Регистрация участников на турнир'|localize}}" ng-bind="'Регистрация »'|localize" ng-click="locationSrvc.goTo(':recorderHash/tournament/' + page.competition.tournament.id + '/registration', recorderHash)"></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

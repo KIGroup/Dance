@@ -17,7 +17,6 @@
 <Description>
 Дата рождения партнера</Description>
 <Type>%Date</Type>
-<Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
@@ -25,7 +24,6 @@
 <Description>
 Дата рождения партнерши</Description>
 <Type>%Date</Type>
-<Required>1</Required>
 <Parameter name="FORMAT" value="3"/>
 </Property>
 
@@ -47,8 +45,9 @@
 	set proxy = ##super(params)
 	set proxy.couple = ..Couple.ConvertToProxyObject()
 	
-	set proxy.couple.man.dob = $ZD(..ManDOB, 3)
-	set proxy.couple.woman.dob = $ZD(..WomanDOB, 3)
+	if (..ManDOB) set proxy.couple.man.dob = $ZD(..ManDOB, 3)
+	if (..WomanDOB) set proxy.couple.woman.dob = $ZD(..WomanDOB, 3)
+	
 	set proxy.couple.otherInfo.city = ..City
 	set proxy.couple.otherInfo.club = ..Club
 	set proxy.couple.otherInfo.mainTrainer = ..MainTrainer
@@ -89,8 +88,8 @@
 	
 	// Свойства класса
 	set obj.Couple = ##class(Dance.Data.CoupleWDSF).%OpenId(couple.id)
-	set obj.ManDOB = $ZDH(couple.man.dob, 3)
-	set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
+	if ($LENGTH(couple.man.dob) = 10) set obj.ManDOB = $ZDH(couple.man.dob, 3)
+	if ($LENGTH(couple.woman.dob) = 10) set obj.WomanDOB = $ZDH(couple.woman.dob, 3)
 	
 	// Свойства базового класса
 	set obj.Recorder = recorder

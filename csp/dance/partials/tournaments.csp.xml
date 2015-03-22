@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/tournaments.csp" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/partials/tournaments.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <p ng-show="menu.admin">[ <font COLOR="RED"><b>!</b></font> ] {{'Для регистрации в турнире нажмите на ссылку (») в колонке "Регистрация".'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех групп турнира нажмите на ссылку (») в колонке "Группы" или выберите внизу вкладку "Группы(N)".'|localize}}</p>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Для просмотра списка всех участников турнира нажмите на ссылку (») в колонке "Участники".'|localize}}</p>
@@ -77,7 +77,7 @@
 				<p><span class="spnTitle" ng-bind="'Название'|localize"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].name"></span></p>
 				<p><span class="spnTitle" ng-bind="('Город'|localize) + ', ' + ('Страна'|localize)"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].location.cityName + ', ' + page.tournamentTable.selectedItems[0].location.country.name"></span></p>
 				<p ng-hide="page.tournamentTable.selectedItems[0].organizer.info==''"><span class="spnTitle" ng-bind="'Организатор'|localize"></span>: <span ng-bind="page.tournamentTable.selectedItems[0].organizer.info"></span></p>
-				<p ng-hide="page.tournamentTable.selectedItems[0].organizer.site==''"><span class="spnTitle" ng-bind="'Веб-сайт организатора'|localize" ></span>: <a ng-href="{{'http://' + page.tournamentTable.selectedItems[0].organizer.site}}" target="_blank" ng-bind="'Перейти'|localize"></a></p>
+				<p ng-hide="page.tournamentTable.selectedItems[0].infoUrl==''"><span class="spnTitle" ng-bind="'Информация о турнире'|localize" ></span>: <a ng-href="{{'http://' + page.tournamentTable.selectedItems[0].infoUrl}}" target="_blank" ng-bind="'Перейти'|localize"></a></p>
 			</div>
 			<div class="span6">
 				<p><span class="spnTitle" ng-bind="'Дата начала / окончания'|localize"></span>: <span ng-bind="(page.tournamentTable.selectedItems[0].startDate|convertCacheDate:('d MMMM y'|localize)) + ' / ' + (page.tournamentTable.selectedItems[0].endDate|convertCacheDate:('d MMMM y'|localize))"></span></p>

@@ -286,7 +286,11 @@ localizationModule.constant('DanceDictionary', {
 		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.',
 		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.',
 		'Для всех номинаций стоимость участия указана для пары участников.' : 'For all competitions price is for couple of participants.',
-		'Доступные группы.' : 'Available competitions.'
+		'Доступные группы.' : 'Available competitions.',
+		'Доп. поля можно не заполнять.' : 'Other fields may be empty.',
+'-- Вкладка по умолчанию --' : '-- Default tab page --',
+'Другие' : 'Others',
+'-- Язык по умолчанию --' : '-- Default language --'
 
  
 
@@ -565,7 +569,11 @@ localizationModule.constant('DanceDictionary', {
 		'Регистрация в турнир завершена. Все платежи запрещены.' : 'Registration in the tournament is completed. All payments are prohibited.',
 		'Для всех номинаций кроме \"соло\", стоимость участия указана для пары участников.' : 'For all nominations except \"solo\", the price of participation is for couple of participants.',
 		'Для всех номинаций стоимость участия указана для пары участников.' : 'For all competitions price is for couple of participants.',
-		'Доступные группы.' : 'Available competitions.'
+		'Доступные группы.' : 'Available competitions.',
+		'Доп. поля можно не заполнять.' : 'Other fields may be empty.',
+	'-- Вкладка по умолчанию --' : '-- Default tab page --',
+	'Другие' : 'Others',
+	'-- Язык по умолчанию --' : '-- Default language --'
 
 		
 		

@@ -251,7 +251,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 
     /// Load Tournament by ID   
     $scope.loadTournament = function(id){
-        TournamentSrvc.getById(id, "?loadFullName=1&loadStatus=1").then(
+        TournamentSrvc.getById(id, "?loadFullName=1&loadStatus=1&loadUrls=1").then(
             function(data){
                 $scope.tournament = data;
                 if (data.status.code != 'Registration'){
@@ -630,10 +630,12 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.tabWDSF.couple.man.dob = UtilsSrvc.getValidDate($scope.tabWDSF.couple.man.dob);
         $scope.tabWDSF.couple.woman.dob = UtilsSrvc.getValidDate($scope.tabWDSF.couple.woman.dob);
         
+        /*
         if ($scope.tabWDSF.couple.man.dob == "" || $scope.tabWDSF.couple.woman.dob == ""){
             return;
         }
-
+		*/
+		
         $scope.tabWDSF.formCouple.disabled = true;
         $scope.tabWDSF.formCouple.btnNextVisible = false;
         $scope.tabWDSF.formCouple.btnRegistrationVisible = true;

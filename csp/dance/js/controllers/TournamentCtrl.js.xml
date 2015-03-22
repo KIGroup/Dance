@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/TournamentCtrl.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/TournamentCtrl.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 //dd d
 
@@ -44,7 +44,7 @@ controllersModule.controller('TournamentCtrl', function($scope, $window, $routeP
   
     /// Load Tournament by ID
     $scope.page.loadTournament = function(id){
-        TournamentSrvc.getByIdAdmin(id, '?loadName=1&loadFullName=1&loadLocation=1&loadOrganizer=1&loadStatus=1&loadRank=1').then(
+        TournamentSrvc.getByIdAdmin(id, '?loadName=1&loadFullName=1&loadLocation=1&loadOrganizer=1&loadStatus=1&loadRank=1&loadUrls=1').then(
             function(data){
                 $scope.page.tournament = data;
                 $scope.page.tournament.tabUDSRAllowed = $scope.page.tournament.tabUDSRAllowed == 1 ? "1" : "0";

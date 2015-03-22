@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/TournamentCompetitionsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/TournamentCompetitionsCtrl.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 //ddc вdd dddd
 
@@ -224,7 +224,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
 
     /// Load Tournament by ID
     $scope.page.loadTournament = function(id){
-        TournamentSrvc.getById(id, "?loadFullName=1&loadParticipantsCount=1&loadParticipantsUniqueCount=1&loadPaymentsCount=1").then(
+        TournamentSrvc.getById(id, "?loadFullName=1&loadParticipantsCount=1&loadParticipantsUniqueCount=1&loadPaymentsCount=1&loadUrls=1").then(
             function(data){
                 $scope.page.tournament = data;
             },

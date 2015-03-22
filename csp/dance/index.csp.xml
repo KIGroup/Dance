@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/index.csp" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/index.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <!doctype html>
 
 <html ng-app="mainModule" ng-controller="MainCtrl">
@@ -14,10 +14,10 @@
 
 	<script language="javascript"  src="js/common.js"></script>
  	<script language="javascript">
- 		/*/ На случай технических работ n
+ 		// На случай технических работ n
  		if (window.location.host != "146.185.160.138:57772" && window.location.host != "localhost:57772"){
  			window.location = "tech.csp";
- 		}*/
+ 		}
  	
  		var langIdx = window.location.href.indexOf('/lang/');
  	 	if (langIdx > 0)
