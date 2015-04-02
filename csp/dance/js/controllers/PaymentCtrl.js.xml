@@ -9,15 +9,15 @@ Payment
 ===========================================================================================*/
 
 controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $window, $location, $filter, LocationSrvc, UtilsSrvc, CoupleSrvc, TournamentSrvc, ParticipantSrvc, OtherSrvc){ 
-	$scope.menu.pages.selected = {};
-		
-	$scope.competitionTable = {};
+    $scope.menu.pages.selected = {};
+        
+    $scope.competitionTable = {};
     $scope.competitionList = [];
 
     $scope.recorderHash = $routeParams.recorderHash || null;
     $scope.locationSrvc = LocationSrvc; 
 
- 	if (!$scope.pageStore.tournamentPayment) 
+    if (!$scope.pageStore.tournamentPayment) 
         $scope.pageStore.tournamentPayment = {gridCompetitions:{ hideNumbersColumn: true}};
 
 
@@ -27,8 +27,8 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
 
     $scope.init = function(){
         //   
-    	// Competition table
-    	// 
+        // Competition table
+        // 
         $scope.competitionTable.columns = [
                           {name: '#'                 , sqlName: '%EXACT(Competition->idExternal)'      , isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '25px'}},
                           {name: 'Дата'              , sqlName: 'Competition->StartDate'               , isSorted: false , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
@@ -39,11 +39,13 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                           {name: 'Класс'             , sqlName: ''                                     , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {name: 'Тип'               , sqlName: 'Competition->Type->Name->Value'       , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},
                           {name: 'Цена, р.'              , sqlName: 'Competition->Price'                   , isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}},
-                          {name: 'Статус'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}}];
+                          {name: 'Статус'            , sqlName: 'PaymentStatus'                        , isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
+                          {name: 'Предел', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}},
+                          {name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}}];
         
         $scope.competitionTable.properties = [
-        				  {name:'competition.idExternal'},
-        				  {name:'competition.startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
+                          {name:'competition.idExternal'},
+                          {name:'competition.startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
                           {name:'competition.startTime'},
                           {name:'competition.name'},
                           {name:'competition.discipline.name'},
@@ -59,7 +61,25 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                                                         }},
                           {name:'competition.type.name'},
                           {name:'competition.price', cellStyle: {textAlign: 'right'}},
-                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center'}}];  
+                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center'}},
+                          {name:'competition.limitString', cellStyle: {textAlign: 'center'}, cellTitle: $filter('localize')('Количество доступных мест'),
+                                                    calculate: function(item){
+                                                        item.competition.limitString = item.competition.limit == 0 ? '---' : item.competition.limit;
+                                                    }},
+                          {name:'competition.freeSlotsCountString', cellStyle: {textAlign: 'center'}, cellTitle: $filter('localize')('Количество доступных мест'),
+                                                    calculate: function(item){
+                                                        item.competition.freeSlotsCountString = item.competition.freeSlotsCount >= 10000 ? '---' : item.competition.freeSlotsCount;
+                                                        item.competition.isBlocked = false;
+                                                        if (item.competition.freeSlotsCount == 0){
+                                                            item.competition.isBlocked = true;
+                                                        }
+                                                    },
+                                                    getCssClass: function(item){ 
+                                                        if (item.competition.freeSlotsCount <= 5)
+                                                            return 'competitionFreeSlotsCellWarning';
+                                                         
+                                                        return '';
+                                                    }}] 
 
         $scope.competitionTable.pageSize = 300;
         $scope.competitionTable.pageCurr = 1;
@@ -94,32 +114,32 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
         else if ($routeParams.athleteKey){
             filter += '&athleteKey=' + $routeParams.athleteKey;
         }
-		
+        
         ParticipantSrvc.getAllForDancer(filter).then(
             function(data){
-	            $scope.competitionTable.items = data.children;
-				$scope.competitionTable.itemsTotal = data.children.length;
+                $scope.competitionTable.items = data.children;
+                $scope.competitionTable.itemsTotal = data.children.length;
                 if ($scope.competitionTable.items.length != 0){
                     $scope.couple = angular.copy($scope.competitionTable.items[0].couple);
                     $scope.athlete = angular.copy($scope.competitionTable.items[0].athlete);
                     $scope.type = $scope.couple ? $scope.couple.type : $scope.athlete.type;
                     
                     try{
-                    	if ($scope.type == "WDSF" && $scope.couple && $scope.couple.idUDSR) {
-							CoupleSrvc.getById($scope.couple.idUDSR).then(
-					            function(data){
-						            console.log('UDSR Couple is loaded');
-					                $scope.couple = data;
-					                $scope.type = "UDSR";
-					                $scope.typeName = $filter('localize')('СТСР') + ' ';
-					            },
-					            function(data, status, headers, config){
-					                console.log('UDSR Couple is not loaded ', data);
-					            });
-                    	}
+                        if ($scope.type == "WDSF" && $scope.couple && $scope.couple.idUDSR) {
+                            CoupleSrvc.getById($scope.couple.idUDSR).then(
+                                function(data){
+                                    console.log('UDSR Couple is loaded');
+                                    $scope.couple = data;
+                                    $scope.type = "UDSR";
+                                    $scope.typeName = $filter('localize')('СТСР') + ' ';
+                                },
+                                function(data, status, headers, config){
+                                    console.log('UDSR Couple is not loaded ', data);
+                                });
+                        }
                     }
                     catch(ex){
-	                    console.log('Error', ex);
+                        console.log('Error', ex);
                     }
                     
                     switch($scope.type){
@@ -135,7 +155,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
                             $scope.typeName = '';   
                     };
                 }
-			}, 
+            }, 
             function(data){
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
             });
@@ -153,9 +173,19 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
     };
 
     $scope.competitionTable.onSelect = function(item){
+        if (item != null && item.competition.isBlocked){
+            item.rowClass = null;
+            $scope.competitionTable.selectedItems.pop();
+        }
+        
+        
         $scope.competitionList = [];
         
         for(var i=0; i < $scope.competitionTable.selectedItems.length; i++){
+            if ($scope.competitionTable.selectedItems[i].competition.isBlocked)
+                continue;
+            
+            console.log($scope.competitionTable.selectedItems[i].competition);
             $scope.competitionList.push($scope.competitionTable.selectedItems[i].competition);
         }
     };
@@ -170,7 +200,7 @@ controllersModule.controller('PaymentCtrl', function($scope, $routeParams, $wind
             function(data){
                 $scope.tournament = data;
                 if (data.status.code != 'Registration'){
-	                
+                    
                     $scope.alert = UtilsSrvc.getAlert('Внимание!', 'Регистрация в турнир завершена. Все платежи запрещены.', 'error', true);
                     return;
                 }  

@@ -9,14 +9,14 @@ Registration
 ===========================================================================================*/
   
 controllersModule.controller('RegistrationCtrl', function($scope, $interval, $routeParams, $filter, LocationSrvc, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
-	$scope.menu.pages.selected = {};
+    $scope.menu.pages.selected = {};
     $scope.menu.shortMenu = true;
-	 
+     
     $scope.recorderHash = $routeParams.recorderHash || null;
     $scope.locationSrvc = LocationSrvc; 
 
-	var intervalForTable = null;
-	
+    var intervalForTable = null;
+    
     $scope.pageStore.registration = $scope.pageStore.registration || {grid:{hideNumbersColumn: true}, gridStyle:{}};    
     
     if ($scope.pageStore.registration.tournament && $scope.pageStore.registration.tournament.id == parseInt($routeParams.tournamentId)){
@@ -65,18 +65,20 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         $scope.competitionTable.columns = [
                           {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
                           {name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
-                          {name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},
+                          /*{name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},*/
                           {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
                           {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
+                          {name: 'Предел', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}},
+                          {name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}},
                           {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}}];
         
         $scope.competitionTable.properties = [
                           {name:'idExternal'},
                           {name:'startDate', filter: 'date', filterParam: $filter('localize')('d MMMM y')},
-                          {name:'startTime'},
+                          /*{name:'startTime'},*/
                           {name:'fullName',
                                 calculate: function(item){
                                     item.fullName = item.name;
@@ -87,8 +89,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                           {name:'discipline.name'},
                           {name:'ageCategory.fullName', 
                                 calculate: function(item){
-	                                if (!item.ageCategory) 
-	                                	return '';
+                                    if (!item.ageCategory) 
+                                        return '';
                                     item.ageCategory.fullName = item.ageCategory.name + ' (' + item.ageCategory.titleAge + ')';
                                 }},
                           {name:'dancerClassesString', 
@@ -101,6 +103,22 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                                     item.dancerClassesString = item.dancerClassesString.substring(2, item.dancerClassesString.length);
                                 }},
                           {name:'type.name'},
+                          {name:'limitString', cellStyle: {textAlign: 'center'}, cellTitle: $filter('localize')('Количество доступных мест'),
+                                                    calculate: function(item){
+                                                        item.limitString = item.limit == 0 ? '---' : item.limit;
+                                                    }},
+                          {name:'freeSlotsCountString', cellStyle: {textAlign: 'center'}, cellTitle: $filter('localize')('Количество доступных мест'),
+                                                    calculate: function(item){
+                                                        item.freeSlotsCountString = item.freeSlotsCount >= 10000 ? '---' : item.freeSlotsCount;
+                                                        if (item.freeSlotsCount == 0)
+                                                            item.isBlocked = true;
+                                                    },
+                                                    getCssClass: function(item){ 
+                                                        if (item.freeSlotsCount <= 5)
+                                                            return 'competitionFreeSlotsCellWarning';
+                                                         
+                                                        return '';
+                                                    }},
                           {name:'price', cellStyle: {textAlign: 'right'}}];
 
         $scope.competitionTable.pageSize = 1000; 
@@ -133,40 +151,41 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         var dataSending= {
             type: $scope.selectedTab, /* UDSR, WDSF, OTHER*/
             tournamentId: $scope.tournament.id,
-        	convertParams: {
-	        	loadWDSF: true
-	        }
+            convertParams: {
+                loadWDSF: true,
+                loadPaymentsCount: true
+            }
         };
-		    
-			
-		if ($scope.pageStore.registration.grid.tableShortView){
-	        $('#divTypeOfView').hide();
+            
+            
+        if ($scope.pageStore.registration.grid.tableShortView){
+            $('#divTypeOfView').hide();
         }
         else{
-	        $('#divTableCmpButtons,#divTableCmpStatus').css('width', '100%');
-	        dataSending.convertParams.loadTournament = true;
-	        dataSending.convertParams.loadDiscipline = true;
-	        dataSending.convertParams.loadAgeCategory = true;
-	        dataSending.convertParams.loadType = true;
-	        dataSending.convertParams.loadDancerClasses = true;
-	        dataSending.convertParams.tournamentParams = {};
+            $('#divTableCmpButtons,#divTableCmpStatus').css('width', '100%');
+            dataSending.convertParams.loadTournament = true;
+            dataSending.convertParams.loadDiscipline = true;
+            dataSending.convertParams.loadAgeCategory = true;
+            dataSending.convertParams.loadType = true;
+            dataSending.convertParams.loadDancerClasses = true;
+            dataSending.convertParams.tournamentParams = {};
         }
         
-		var afterLoad = function(){
-			if ($scope.pageStore.registration.grid.tableShortView){
-				$interval.cancel(intervalForTable);
-				intervalForTable = $interval(function() {
-	      			console.log('interval reg!');
-	      			var tableWidth = $('#tableCmp').css('width');
-	                if (tableWidth != '0px'){
-	                	$('#divTableCmpButtons,#divTableCmpStatus').css('width', tableWidth);
-	                	$('#divTypeOfView').show();
-	                }
-	      		}, 100, 50);
+        var afterLoad = function(){
+            if ($scope.pageStore.registration.grid.tableShortView){
+                $interval.cancel(intervalForTable);
+                intervalForTable = $interval(function() {
+                    console.log('interval reg!');
+                    var tableWidth = $('#tableCmp').css('width');
+                    if (tableWidth != '0px'){
+                        $('#divTableCmpButtons,#divTableCmpStatus').css('width', tableWidth);
+                        $('#divTypeOfView').show();
+                    }
+                }, 100, 50);
             }   
-		};
-		
-		
+        };
+        
+        
         if ($scope.competitionTable.avialableMode){
             dataSending.couple = $scope['tab' + $scope.selectedTab].couple || null;
             dataSending.athlete = $scope['tab' + $scope.selectedTab].athlete || null;
@@ -180,7 +199,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                     $scope.competitionTable.onSelect(null);
 
                     $scope.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
-                	afterLoad();
+                    afterLoad();
                 },
                 function(data, status, headers, config){
                     $scope.cmpAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
@@ -197,7 +216,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                     $scope.competitionTable.caption = $filter('localize')('Все группы');
 
                     $scope.competitionTable.itemsStatus = data.items.length == 0 ? $filter('localize')('Нет доступных групп.') : '';
-                	afterLoad();
+                    afterLoad();
                 },
                 function(data, status, headers, config){
                     $scope.cmpAlert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
@@ -207,24 +226,30 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.competitionTable.setHiddenCoulumns = function(value){
-        var indexes = [2,4,5,6,7];
+        var indexes = [3,4,5,6];
         for(var n=0; n < indexes.length; n++){
             $scope.competitionTable.columns[indexes[n]].hidden = value;     
         }
         
         if (value){
-        	$scope.pageStore.registration.gridStyle = {width: 'auto', minWidth: '526px'};
+            $scope.pageStore.registration.gridStyle = {width: 'auto', minWidth: '526px'};
         }
         else{
-	        $scope.pageStore.registration.gridStyle = {width: '100%'};
+            $scope.pageStore.registration.gridStyle = {width: '100%'};
         }
 
-		$scope.pageStore.registration.grid.tableShortView = value;
+        $scope.pageStore.registration.grid.tableShortView = value;
         $scope.competitionTable.refresh();
     };
 
     // Select competition
     $scope.competitionTable.onSelect = function(item){
+        if (item != null && item.isBlocked){
+            item.rowClass = null;
+            $scope.competitionTable.selectedItems.pop();
+            return;
+        }
+        
         $scope.competitionTable.caption = $filter('localize')('Доступные группы.') + ' ' + $filter('localize')('Выбрано %1 из %2.')
                                                .replace(/%1/g, $scope.competitionTable.selectedItems.length)
                                                .replace(/%2/g, $scope.competitionTable.items.length);                                    
@@ -267,23 +292,23 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
                 
                 if ($routeParams.typeCode){
-                	if ($routeParams.typeCode == 'wdsf'){
-	                	$scope.tabWDSF.select();
-                	}
-                	else if ($routeParams.typeCode == 'other'){
-	                	$scope.tabOTHER.select();
-                	}
+                    if ($routeParams.typeCode == 'wdsf'){
+                        $scope.tabWDSF.select();
+                    }
+                    else if ($routeParams.typeCode == 'other'){
+                        $scope.tabOTHER.select();
+                    }
                 }
-                else{	             
-	                if (data.tabUDSRAllowed){	
-						$scope.tabUDSR.select();
-					}
-					else if (data.tabWDSFAllowed){
-					    $scope.tabWDSF.select();
-	                }
-					else if (data.tabOtherAllowed){
-						$scope.tabOTHER.select();
-	                }
+                else{                
+                    if (data.tabUDSRAllowed){   
+                        $scope.tabUDSR.select();
+                    }
+                    else if (data.tabWDSFAllowed){
+                        $scope.tabWDSF.select();
+                    }
+                    else if (data.tabOtherAllowed){
+                        $scope.tabOTHER.select();
+                    }
                 }
 
 
@@ -394,7 +419,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.tabUDSR.searchForm.search = function(manNumber, womanNumber){
-	    manNumber = manNumber || "";
+        manNumber = manNumber || "";
         womanNumber = womanNumber || "";
         
         if (manNumber == '' && womanNumber == '')
@@ -411,7 +436,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             $scope.competitionTable.refresh();
             $scope.loadCountParticipantCompetitions('UDSR');  
             if ($scope.tabUDSR.couple.man.otherInfo.club.toLowerCase() != $scope.tabUDSR.couple.woman.otherInfo.club.toLowerCase()){
-            	$scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', "Регистраця в СТСР группы запрещена. Партнер и партнерша должны быть из одного клуба! " + $scope.tabUDSR.couple.man.number + " - " + $scope.tabUDSR.couple.man.otherInfo.club + "; " + $scope.tabUDSR.couple.woman.number + " - " + $scope.tabUDSR.couple.woman.otherInfo.club + ".", 'error', true);
+                $scope.tabUDSR.alert = UtilsSrvc.getAlert('Внимание!', "Регистраця в СТСР группы запрещена. Партнер и партнерша должны быть из одного клуба! " + $scope.tabUDSR.couple.man.number + " - " + $scope.tabUDSR.couple.man.otherInfo.club + "; " + $scope.tabUDSR.couple.woman.number + " - " + $scope.tabUDSR.couple.woman.otherInfo.club + ".", 'error', true);
             }
         };
 
@@ -634,8 +659,8 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         if ($scope.tabWDSF.couple.man.dob == "" || $scope.tabWDSF.couple.woman.dob == ""){
             return;
         }
-		*/
-		
+        */
+        
         $scope.tabWDSF.formCouple.disabled = true;
         $scope.tabWDSF.formCouple.btnNextVisible = false;
         $scope.tabWDSF.formCouple.btnRegistrationVisible = true;
@@ -929,10 +954,10 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     $scope.init();  
     $scope.loadTournament($routeParams.tournamentId);
     $scope.loadCountries();
-    	
+        
    $scope.$on('$destroy', function() {
-      	// Make sure that the interval is destroyed too
-      	$interval.cancel(intervalForTable);
+        // Make sure that the interval is destroyed too
+        $interval.cancel(intervalForTable);
     });
 });  
 ]]></CSP>
