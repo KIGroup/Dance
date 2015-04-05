@@ -74,18 +74,26 @@ Competition in the tournament, has participants</Description>
 <Required>1</Required>
 </Property>
 
-<Property name="ParticipantsCount">
+<Property name="ParticipantsCountCalc">
 <Type>%Integer</Type>
 <Calculated>1</Calculated>
-<SqlComputeCode>set {ParticipantsCount} = ##class({%%CLASSNAME}).GetParticipantsCount({%%ID})</SqlComputeCode>
+<SqlComputeCode>set {ParticipantsCountCalc} = ##class({%%CLASSNAME}).GetParticipantsCount({%%ID})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Property name="ParticipantsCount">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="PaymentsCountCalc">
+<Type>%Integer</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode>set {PaymentsCountCalc} = ##class({%%CLASSNAME}).GetPaymentsCount({%%ID})</SqlComputeCode>
 <SqlComputed>1</SqlComputed>
 </Property>
 
 <Property name="PaymentsCount">
 <Type>%Integer</Type>
-<Calculated>1</Calculated>
-<SqlComputeCode>set {PaymentsCount} = ##class({%%CLASSNAME}).GetPaymentsCount({%%ID})</SqlComputeCode>
-<SqlComputed>1</SqlComputed>
 </Property>
 
 <Property name="IsActive">
@@ -121,21 +129,6 @@ Competition in the tournament, has participants</Description>
 <Index name="IsActiveIndex">
 <Properties>IsActive</Properties>
 </Index>
-
-<Method name="CalcTestConvert">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>id</FormalSpec>
-<ReturnType>%Integer</ReturnType>
-<Implementation><![CDATA[
-    set params = ##class(%ZEN.proxyObject).%New()
-    set params.loadTournament = $$$YES
-    set params.tournamentParams = ##class(%ZEN.proxyObject).%New()
-    set params.tournamentParams.loadParticipantsUniqueCount = $$$YES
-    set proxy = ..%OpenId(id).ConvertToProxyObject(params)
-    
-    quit 1
-]]></Implementation>
-</Method>
 
 <Method name="ConvertToProxyObject">
 <FormalSpec>params:%ZEN.proxyObject</FormalSpec>
@@ -189,12 +182,12 @@ Competition in the tournament, has participants</Description>
         }
     }
     
-    if (params.loadParticipantsCount){
+    //if (params.loadParticipantsCount){
         set proxy.participantsCount = ..ParticipantsCount
-    }
+    //}
     
     set proxy.freeSlotsCount = 10000
-    if (params.loadPaymentsCount){
+    //if (params.loadPaymentsCount){
         set proxy.paymentsCount = ..PaymentsCount
         
         if (..Limit > 0){
@@ -203,7 +196,7 @@ Competition in the tournament, has participants</Description>
                 set proxy.freeSlotsCount = 0
             }
         }
-    }
+    //}
     
     quit proxy
 ]]></Implementation>
@@ -277,6 +270,11 @@ Create or update competition</Description>
         
     set st = cmp.%Save()
     
+    if $$$ISOK(st){
+        do ##class(Tournament).UpdateIsContainsLimit(cmp.Tournament.%Id())
+        do ##class(Tournament).UpdateIsContainsSolo(cmp.Tournament.%Id())
+    }
+    
     quit st
 ]]></Implementation>
 </Method>
@@ -295,7 +293,14 @@ Change IsActive property to 0</Description>
     set cmp.IdInternal = cmp.IdInternal_";"_id
     set cmp.IdExternal = cmp.IdExternal_";"_id
     
-    quit cmp.%Save()
+    set st = cmp.%Save()
+    
+    if $$$ISOK(st){
+        do ##class(Tournament).UpdateIsContainsLimit(cmp.Tournament.%Id())
+        do ##class(Tournament).UpdateIsContainsSolo(cmp.Tournament.%Id())
+    }
+    
+    quit st
 ]]></Implementation>
 </Method>
 
@@ -330,6 +335,78 @@ Payments</Description>
          WHERE Competition = :competitionId AND TicketStatus = 'Paid')
     
     quit count
+]]></Implementation>
+</Method>
+
+<Method name="UpdateParticipantsCount">
+<Description>
+Обновить свойство: количество участников в группе</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>cmpId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set count = ..GetParticipantsCount(cmpId)
+    &sql(UPDATE %NOLOCK Dance_Data.Competition
+         SET ParticipantsCount = :count
+         WHERE ID = :cmpId)
+
+    quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="UpdatePaymentsCount">
+<Description>
+Обновить свойство: количество платежей в группе</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>cmpId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set count = ..GetPaymentsCount(cmpId)
+    &sql(UPDATE %NOLOCK Dance_Data.Competition
+         SET PaymentsCount = :count
+         WHERE ID = :cmpId)
+
+    quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="UpdateAllByTournament">
+<Description>
+Обновить свойства всех групп турнира</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set status = $$$OK
+    
+    try{       
+        //TSTART
+        
+        &sql(DECLARE CmpCurs CURSOR FOR
+             SELECT %NOLOCK ID
+             FROM Dance_Data.Competition
+             WHERE Tournament = :trnId)
+        
+        &sql(OPEN CmpCurs)
+        for{
+            &sql(FETCH CmpCurs INTO :id) 
+            quit:(SQLCODE '= 0)
+            
+            do ..UpdateParticipantsCount(id)
+            do ..UpdatePaymentsCount(id)
+        }
+        
+        &sql(CLOSE CmpCurs)
+        
+        //TCOMMIT
+    }
+    catch(ex){
+        //TROLLBACK 1
+        
+        set status = ex.AsStatus()
+    }
+    
+    quit status
 ]]></Implementation>
 </Method>
 
@@ -412,6 +489,12 @@ Payments</Description>
 </Value>
 <Value name="22">
 <Value>IsClosed</Value>
+</Value>
+<Value name="23">
+<Value>ParticipantsCount</Value>
+</Value>
+<Value name="24">
+<Value>PaymentsCount</Value>
 </Value>
 </Data>
 <Data name="DancerClasses">

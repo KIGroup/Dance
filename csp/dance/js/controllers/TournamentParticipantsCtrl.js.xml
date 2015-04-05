@@ -9,11 +9,11 @@ Tournament Participants
 ===========================================================================================*/
 
 controllersModule.controller('TournamentParticipantsCtrl', function($scope, $routeParams, $cookies, $location, $filter, ReportSrvc, UtilsSrvc, LocationSrvc, TournamentSrvc, CompetitionSrvc, ParticipantSrvc){
-	$scope.menu.pages.selected = {};
-	
-	$scope.page = {};
-  	$scope.page.participantTable = {};
- 	$scope.pageStore.participants = {grid:{}};
+    $scope.menu.pages.selected = {};
+    
+    $scope.page = {};
+    $scope.page.participantTable = {};
+    $scope.pageStore.participants = {grid:{}};
     
     $scope.recorderHash = $routeParams.recorderHash || null;
     $scope.locationSrvc = LocationSrvc; 
@@ -25,32 +25,19 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
 
     $scope.page.init = function(){
         //    
-    	// Participant table
-    	//  
+        // Participant table
+        //  
         $scope.page.participantTable.columns = [ 
                           {name: 'Партнер / Партнерша', sqlName: 'FullName->Value', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
                           {name: 'Клуб / Город', sqlName: 'City', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
-                          /*
-                          {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
-                          */
+                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Страна', sqlName: 'Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
-                          /*
-                          {name: 'Статус', sqlName: 'PaymentStatus', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
-                          {name: 'Группы', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '150px'}},
-                          {name: 'Группа в турнире', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center'}}
-                          */
                           {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}},
                           {name: 'Оплачены', sqlName: 'PrtObjPaymentsCount', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true, captionStyle: {textAlign: 'center', width: '160px'}}];
         
         $scope.page.participantTable.properties = [ 
-        				  {name:'fullName', /*cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
-                                            getCssClass: function(item){ 
-                                                    //return 'cellLink';
-                                            },
-                                            onClickCell: function(item){
-                                                $scope.openPrtCompetitions(item);
-                                            },*/
-        				  					calculate: function(item){
+                          {name:'fullName', 
+                                            calculate: function(item){
                                                         item.competition.fullName = item.competition.name + '\n' + $filter('convertCacheDate')(item.competition.startDate, $filter('localize')('d MMMM y')) + ' »';
                                                        
 
@@ -63,48 +50,43 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
                                                             item.clubAndCity = item.couple.otherInfo.club + '\n' + item.couple.otherInfo.city;
                                                             item.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
                                                             item.countryName = item.couple.otherInfo.country.name;
+                                                            
+                                                            item.classFullName = '';
+                                                            if (item.couple.man.laClass){
+                                                                item.classFullName += 'La: ' + item.couple.man.laClass.name + '. ';
+                                                            }
+                                                            if (item.couple.man.stClass){
+                                                                item.classFullName += 'St: ' + item.couple.man.stClass.name + '.\n';
+                                                            }
+                                                            if (item.couple.woman.laClass){
+                                                                item.classFullName += 'La: ' + item.couple.woman.laClass.name + '. ';
+                                                            }
+                                                            if (item.couple.woman.stClass){
+                                                                item.classFullName += 'St: ' + item.couple.woman.stClass.name + '.';
+                                                            }
                                                         }
                                                         else if (item.athlete){
                                                             item.competitionsLink = item.athlete.competitionsCount + ' »';
-															item.paymentsCount = item.athlete.paymentsCount;
+                                                            item.paymentsCount = item.athlete.paymentsCount;
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
                                                             item.clubAndCity = item.athlete.otherInfo.club + '\n' + item.athlete.otherInfo.city;
                                                             item.trainers = item.athlete.otherInfo.mainTrainer + (item.athlete.otherInfo.otherTrainers=='' ? '' : (', ' + item.athlete.otherInfo.otherTrainers));
                                                             item.countryName = item.athlete.otherInfo.country.name;
+                                                            
+                                                            item.classFullName = '';
+                                                            if (item.athlete.laClass){
+                                                                item.classFullName += 'La: ' + item.athlete.laClass.name + '. ';
+                                                            }
+                                                            if (item.athlete.stClass){
+                                                                item.classFullName += 'St: ' + item.athlete.stClass.name + '.\n';
+                                                            }
                                                         }
                                             }},
                           {name:'clubAndCity'}, 
-                          
+                          {name:'classFullName'}, 
                           {name:'countryName', cellStyle: {verticalAlign: 'middle'}},
-                          /*  
-                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}},                    
-                          {name:'competitionsLink', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
-                          						getCssClass: function(item){ 
-                                                    return 'cellLink';
-                                                },
-                                                onClickCell: function(item){
-	                                                console.log(item)
-	                                                if (item.couple && item.couple.id){
-                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/couple/' + item.couple.id + '/competitions');
-                                                    }    
-                                                    else if (item.athlete && item.athlete.id){
-                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/athlete/' + item.athlete.id + '/competitions');
-                                                    }
-                                                    else if (item.couple && item.couple.key){
-                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/other/couple/' + item.couple.key + '/competitions');
-                                                    }
-                                                    else if (item.athlete && item.athlete.key){
-                                                        $location.path('/tournament/' + $scope.page.tournament.id + '/other/athlete/' + item.athlete.key + '/competitions');
-                                                    }
-                                                }}, 
-                          {name:'competition.fullName', cellStyle: {textAlign: 'center'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
-                          		 				getCssClass: function(item){ 
-                                                    return 'cellLink';
-                                                },  
-                                                onClickCell: function(item){
-	                                                $location.path("/competition/" + item.competition.id +"/participants"); 
-                                                }}*/
+                          
                           {name:'competitionsLink', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
                                                 getCssClass: function(item){ 
                                                     return 'cellLink';
@@ -143,7 +125,7 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
 
         ParticipantSrvc.getAllForTournament(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {tournamentId: $scope.page.tournament.id}).then(
             function(data){
-	            data = data.children;
+                data = data.children;
                 $scope.page.participantTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
                 $scope.page.participantTable.itemsTotal = data.itemsTotal;
                 $scope.page.participantTable.items = data.items;
@@ -182,8 +164,8 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     };
 
 
-  	$scope.page.participantTable.refresh = function(){ 
-    	$scope.page.participantTable.forciblyUpdate++; 
+    $scope.page.participantTable.refresh = function(){ 
+        $scope.page.participantTable.forciblyUpdate++; 
     };
    
 
@@ -219,14 +201,14 @@ controllersModule.controller('TournamentParticipantsCtrl', function($scope, $rou
     };
     
     $scope.exportParticipants = function(){
-		ReportSrvc.tournamentParticipants($scope.page.tournament.id);
-	};
-	
-	$scope.exportPayers = function(){
-		ReportSrvc.tournamentPayers($scope.page.tournament.id);
-	};
+        ReportSrvc.tournamentParticipants($scope.page.tournament.id);
+    };
+    
+    $scope.exportPayers = function(){
+        ReportSrvc.tournamentPayers($scope.page.tournament.id);
+    };
 
- 	$scope.page.init();
+    $scope.page.init();
     $scope.page.loadTournament($routeParams.tournamentId);
 });
 

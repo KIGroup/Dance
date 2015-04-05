@@ -32,18 +32,18 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
         // Competition table
         //
         $scope.page.competitionTable.columns = [
-                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
-                          {name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          {id: "Number", name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
+                          {id: "Date", name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
                           /*{name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px'}},*/
-                          {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Возр. группа' , sqlName: 'AgeCategory', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '80px'}},
-                          {name: 'Участники', sqlName: 'ParticipantsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
-                          {name: 'Оплачено', sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
-                          {name: 'Предел', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}},
-                          {name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}}];
+                          {id: "Name", name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {id: "Discipline", name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {id: "AgeGroup", name: 'Возр. группа' , sqlName: 'AgeCategory', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {id: "Class", name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
+                          {id: "Price", name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '80px'}},
+                          {id: "PrtCount", name: 'Участники', sqlName: 'ParticipantsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
+                          {id: "PayCount", name: 'Оплачено', sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
+                          {id: "Limit", name: 'Предел', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}, hidden: true},
+                          {id: "FreeCount", name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}, hidden: true}];
         
         $scope.page.competitionTable.properties = [
                           {name:'idExternal'},
@@ -171,9 +171,11 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     };
 
     $scope.page.competitionTable.setHiddenCoulumns = function(value){
-        var indexes = [3,4,5,6];
-        for(var n=0; n < indexes.length; n++){
-            $scope.page.competitionTable.columns[indexes[n]].hidden = value;     
+        var columns = ["Discipline", "AgeGroup", "Class", "Price"];
+        for(var n=0; n < $scope.page.competitionTable.columns.length; n++){
+            var curColumn = $scope.page.competitionTable.columns[n];
+            if (columns.indexOf(curColumn.id) != -1)
+                curColumn.hidden = value;     
         }
         
         if (value){
@@ -243,6 +245,14 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
         TournamentSrvc.getById(id, "?loadFullName=1&loadParticipantsCount=1&loadParticipantsUniqueCount=1&loadPaymentsCount=1&loadUrls=1").then(
             function(data){
                 $scope.page.tournament = data;
+                $scope.page.tournament.isContainsLimit = data.isContainsLimit == 1;
+                
+                for(var n=0; n < $scope.page.competitionTable.columns.length; n++){
+                    var curColumn = $scope.page.competitionTable.columns[n];
+                    if (curColumn.id == "Limit" || curColumn.id == "FreeCount"){
+                        curColumn.hidden = !data.isContainsLimit;     
+                    }
+                }
             },
             function(data, status, headers, config){
                 $scope.page.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);

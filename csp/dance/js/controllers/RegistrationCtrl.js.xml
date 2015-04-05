@@ -63,17 +63,17 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         // Competition table
         //
         $scope.competitionTable.columns = [
-                          {name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
-                          {name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
-                          /*{name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},*/
-                          {name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
-                          {name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
-                          {name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
-                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
-                          {name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
-                          {name: 'Предел', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}},
-                          {name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}},
-                          {name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}}];
+                          {id: 'Number', name: '#', sqlName: '%EXACT(idExternal)', isSorted: true , isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, filter: 'date', captionStyle: {width: '30px'}},
+                          {id: 'Date', name: 'Дата', sqlName: 'StartDate', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, filter: 'date', captionStyle: {width: '130px'}},
+                          /*{id: 'Time', name: 'Время', sqlName: 'StartTime', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '70px'}},*/
+                          {id: 'Name', name: 'Название', sqlName: 'Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
+                          {id: 'Discipline', name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false},
+                          {id: 'AgeGroup', name: 'Возрастная группа', sqlName: 'AgeCategory', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
+                          {id: 'Class', name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true , isSearched: false , isSearchable: false},
+                          {id: 'Type', name: 'Тип', sqlName: 'Type->Name->Value', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {width: '50px'}},
+                          {id: 'Limit', name: 'Предел', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}, hidden: true},
+                          {id: 'FreeCount', name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}, hidden: true},
+                          {id: 'Price', name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: false , isDown: true , isSearched: false , isSearchable: false, captionStyle: {textAlign: 'right', width: '60px'}}];
         
         $scope.competitionTable.properties = [
                           {name:'idExternal'},
@@ -226,9 +226,11 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.competitionTable.setHiddenCoulumns = function(value){
-        var indexes = [3,4,5,6];
-        for(var n=0; n < indexes.length; n++){
-            $scope.competitionTable.columns[indexes[n]].hidden = value;     
+        var columns = ["Discipline", "AgeGroup", "Class", "Type"];
+        for(var n=0; n < $scope.competitionTable.columns.length; n++){
+            var curColumn = $scope.competitionTable.columns[n];
+            if (columns.indexOf(curColumn.id) != -1)
+                curColumn.hidden = value;     
         }
         
         if (value){
@@ -279,6 +281,16 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
         TournamentSrvc.getById(id, "?loadFullName=1&loadStatus=1&loadUrls=1").then(
             function(data){
                 $scope.tournament = data;
+                 
+                $scope.tournament.isContainsLimit = data.isContainsLimit == 1;
+                
+                for(var n=0; n < $scope.competitionTable.columns.length; n++){
+                    var curColumn = $scope.competitionTable.columns[n];
+                    if (curColumn.id == "Limit" || curColumn.id == "FreeCount"){
+                        curColumn.hidden = !data.isContainsLimit;     
+                    }
+                }
+                
                 if (data.status.code != 'Registration'){
                     $scope.tabUDSR.visible = false;
                     $scope.tabWDSF.visible = false;
@@ -290,6 +302,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                 $scope.tabUDSR.visible = data.tabUDSRAllowed == 1;
                 $scope.tabWDSF.visible = data.tabWDSFAllowed == 1;
                 $scope.tabOTHER.visible = data.tabOtherAllowed == 1;
+              
                 
                 if ($routeParams.typeCode){
                     if ($routeParams.typeCode == 'wdsf'){
@@ -743,7 +756,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
 
-
+ 
     // ===========================================================================================================================================
     // Tab OTHER                                                                                                                          Tab WDSF
     // ===========================================================================================================================================
@@ -756,9 +769,9 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     $scope.tabOTHER.formCouple.back = function(){
         if ($scope.tabOTHER.formCouple.btnRegistrationVisible){
             $scope.tabOTHER.formCouple.btnNextVisible = true;
+			$scope.tabOTHER.formCouple.btnBackVisible = false;
             $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
             $scope.tabOTHER.formCouple.disabled = false;
-            $scope.tabOTHER.formCouple.btnBackVisible = false;
         }
         else{
             $scope.tabUDSR.disabled = false;

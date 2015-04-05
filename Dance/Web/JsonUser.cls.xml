@@ -17,6 +17,8 @@ Registration UDSR participants in the tournament</Description>
 <Implementation><![CDATA[
     set st = $$$OK
     
+    set currentTournamentId = ""
+    
     set regResults = ##class(%ListOfObjects).%New()
     set proxy = ##class(%ZEN.proxyObject).%New()
     
@@ -51,7 +53,8 @@ Registration UDSR participants in the tournament</Description>
             set regResult = ##class(%ZEN.proxyObject).%New()
             set regResult.competition = competition.ConvertToProxyObject(##class(%ZEN.proxyObject).%New())
             set regResult.otherInfo = ##class(%ZEN.proxyObject).%New()
-                
+            
+            set currentTournamentId = competition.Tournament.%Id()   
             if (competition.Tournament.TStatus.Code '= "Registration") {
                 set regResult.status = 0
                 set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
@@ -107,6 +110,10 @@ Registration UDSR participants in the tournament</Description>
         set proxy.message = ##class(Dance.Utils.Msg).GetMsg("error_FatalError")_" "_$SYSTEM.Status.GetErrorText(ex.AsStatus())      
     }
     
+    if (proxy.status '= 0){
+        do ##class(Dance.Data.Tournament).UpdateTournament(currentTournamentId)
+    }
+    
     quit proxy.%ToJSON()
 ]]></Implementation>
 </Method>
@@ -121,6 +128,8 @@ Registration WDSF participants in the tournament</Description>
     set proxy = ##class(%ZEN.proxyObject).%New()
     set proxy.status = $$$OK
     
+    
+    set currentTournamentId = ""
     set regResults = ##class(%ListOfObjects).%New()
     
     try{
@@ -163,6 +172,7 @@ Registration WDSF participants in the tournament</Description>
             set regResult = ##class(%ZEN.proxyObject).%New()
             set regResult.competition = competition.ConvertToProxyObject(convertParams)
             
+            set currentTournamentId = competition.Tournament.%Id()   
             if (competition.Tournament.TStatus.Code '= "Registration"){
                 set regResult.status = 0 
                 set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
@@ -250,6 +260,10 @@ Registration WDSF participants in the tournament</Description>
         set proxy.message = ##class(Dance.Utils.Msg).GetMsg("error_FatalError")_" "_$SYSTEM.Status.GetErrorText(ex.AsStatus())      
     }
     
+    if (proxy.status '= 0){
+        do ##class(Dance.Data.Tournament).UpdateTournament(currentTournamentId)
+    }
+    
     quit proxy.%ToJSON()
 ]]></Implementation>
 </Method>
@@ -263,6 +277,8 @@ Registration OTHER participants in the tournament</Description>
     set st = $$$OK
     set regResults = ##class(%ListOfObjects).%New()
     set proxy = ##class(%ZEN.proxyObject).%New()
+    
+    set currentTournamentId = ""   
     
     try{
         set content = $ZCVT(%request.Content.Read(10000000), "I", "UTF8")
@@ -292,7 +308,8 @@ Registration OTHER participants in the tournament</Description>
             set regResult.competition = competition.ConvertToProxyObject(convertParams)
             set regResult.participant = ##class(%ZEN.proxyObject).%New()
             set regResult.otherInfo = ##class(%ZEN.proxyObject).%New()
-                
+            
+            set currentTournamentId = competition.Tournament.%Id()       
             if (competition.Tournament.TStatus.Code '= "Registration") {
                 set regResult.status = 0
                 set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationClosed")
@@ -330,6 +347,10 @@ Registration OTHER participants in the tournament</Description>
         set %response.Status = 400
         set proxy.status = 0
         set proxy.message = ##class(Dance.Utils.Msg).GetMsg("error_FatalError")_" "_$SYSTEM.Status.GetErrorText(ex.AsStatus())      
+    }
+    
+    if (proxy.status '= 0){
+        do ##class(Dance.Data.Tournament).UpdateTournament(currentTournamentId)
     }
     
     quit proxy.%ToJSON()

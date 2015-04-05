@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/js/controllers/CompetitionParticipantsCtrl.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 // d
   
@@ -13,11 +13,11 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
 
     $scope.recorderHash = $routeParams.recorderHash || null;
     $scope.locationSrvc = LocationSrvc;     
-      	
+        
     $scope.page = {};
     $scope.page.participantTable = {};
 
- 	if (!$scope.pageStore.participants) $scope.pageStore.participants = {grid:{}};
+    if (!$scope.pageStore.participants) $scope.pageStore.participants = {grid:{}};
 
     
     if ($scope.pageStore.registration && $scope.pageStore.registration.tournament){
@@ -27,14 +27,12 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
 
     $scope.page.init = function(){
         //    
-    	// Participant table
-    	//   
+        // Participant table
+        //   
         $scope.page.participantTable.columns = [ 
                           {name: 'Партнер / Партнерша', sqlName: 'FullName->Value', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
                           {name: 'Клуб / Город', sqlName: 'City', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
-                          /*
-                          {name: 'Тренер(ы)', sqlName: '-', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
-                          */
+                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Страна', sqlName: 'Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'TicketStatus', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
                           {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '130px'}}];
@@ -53,25 +51,45 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             item.clubAndCity = item.couple.otherInfo.club + '\n' + item.couple.otherInfo.city;
                                                             item.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
                                                             item.countryName = item.couple.otherInfo.country.name;
+                                                            
+                                                            
+                                                            item.classFullName = '';
+                                                            if (item.couple.man.laClass){
+                                                                item.classFullName += 'La: ' + item.couple.man.laClass.name + '. ';
+                                                            }
+                                                            if (item.couple.man.stClass){
+                                                                item.classFullName += 'St: ' + item.couple.man.stClass.name + '.\n';
+                                                            }
+                                                            if (item.couple.woman.laClass){
+                                                                item.classFullName += 'La: ' + item.couple.woman.laClass.name + '. ';
+                                                            }
+                                                            if (item.couple.woman.stClass){
+                                                                item.classFullName += 'St: ' + item.couple.woman.stClass.name + '.';
+                                                            }
                                                         }
                                                         else if (item.athlete){
-	                                                        item.competitionsLink = item.athlete.competitionsCount +' »';
+                                                            item.competitionsLink = item.athlete.competitionsCount +' »';
 
                                                             item.fullName = item.athlete.lastName + ' ' + item.athlete.firstName + '\n';
 
                                                             item.clubAndCity = item.athlete.otherInfo.club + '\n' + item.athlete.otherInfo.city;
                                                             item.trainers = item.athlete.otherInfo.mainTrainer + (item.athlete.otherInfo.otherTrainers=='' ? '' : (', ' + item.athlete.otherInfo.otherTrainers));
                                                             item.countryName = item.athlete.otherInfo.country.name;
+                                                            
+                                                            
+                                                            item.classFullName = '';
+                                                            if (item.athlete.laClass){
+                                                                item.classFullName += 'La: ' + item.athlete.laClass.name + '. ';
+                                                            }
+                                                            if (item.athlete.stClass){
+                                                                item.classFullName += 'St: ' + item.athlete.stClass.name + '.\n';
+                                                            }
                                                         }
                                                     }},
                           {name:'clubAndCity', getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
                                                 }},
-                          /*
-                          {name:'trainers', getCssClass: function(item){
-                                                    return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
-                                                }},
-                          */
+                          {name:'classFullName'}, 
                           {name:'countryName', cellStyle: {verticalAlign: 'middle'}, 
                                                 getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
@@ -112,7 +130,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
 
         ParticipantSrvc.getAllForCompetition(pageCurr, pageSize, sqlName, isDown, searchSqlName, searchText, {competitionId: $scope.page.competition.id}).then(
             function(data){
-	            data = data.children;
+                data = data.children;
                 $scope.page.participantTable.pageTotal = Math.ceil(data.itemsTotal / pageSize);
                 $scope.page.participantTable.itemsTotal = data.itemsTotal;
                 $scope.page.participantTable.items = data.items;
@@ -138,8 +156,8 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
         return '';
     };
 
-  	$scope.page.participantTable.refresh = function(){ 
-    	$scope.page.participantTable.forciblyUpdate++; 
+    $scope.page.participantTable.refresh = function(){ 
+        $scope.page.participantTable.forciblyUpdate++; 
     };
      
     $scope.page.participantTable.onSelectCell = function(item, property){ 

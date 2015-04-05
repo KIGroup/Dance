@@ -6,7 +6,11 @@
 
 <Method name="OnTask">
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Quit ##class(Dance.Utils.TaskTickets).Import()
+<Implementation><![CDATA[
+	set st = ##class(Dance.Utils.TaskTickets).Import()
+	do ##class(Dance.Data.Tournament).UpdateAllTournaments()
+	
+	quit st
 ]]></Implementation>
 </Method>
 
