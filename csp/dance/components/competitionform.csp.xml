@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/components/competitionform.csp" application="/csp/testdance/" default="1"><![CDATA[
+<CSP name="dance/components/competitionform.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 <div class="row-fluid">
 	<div class="control-group">
         <div class="row-fluid">
@@ -75,7 +75,7 @@
 	        	</div>
 	 		</div>
 	 		<div class="span2">	
-	 			<label class="control-label" ng-bind="('Предел'|localize) + ''"></label>
+	 			<label class="control-label" ng-bind="('Лимит'|localize) + ''"></label>
 	        	<div class="controls">
 	            	 <input type="text" class="span12" ng-model="competition.limit"></input>
 	        	</div>

@@ -170,7 +170,7 @@ localizationModule.constant('DanceDictionary', {
         'Нажмите на ссылку (») в колонке "Группы" для просмотра списка групп турнира, в которых зарегистрирована пара (участник).' : 'Click the link (») in "Competitions" column  to see a list of the tournament where the couple (participant) is registered.',
         'Партнер / партнерша' : 'Male / Female',
         'Показать ошибки' : 'Show errors',
-        'Предел' : 'Limit',
+        'Лимит' : 'Limit',
         'Просмотр формы' : 'View form',
         'Редактирование группы' : 'Competition editing',
         'Редактирование турнира' : 'Tournament editing',
@@ -292,7 +292,7 @@ localizationModule.constant('DanceDictionary', {
         'Другие' : 'Others',
         '-- Язык по умолчанию --' : '-- Default language --',
         'Количество доступных мест' : 'The number of tickets available for the participants',
-        'Для некоторых групп могут быть введены ограничения. "Доступно мест" это "Предел" минус "Количество проданных билетов".' : 'Some competition may be restrictions. "Available" this "Limit" minus "Number of tickets sold."',
+        'Для некоторых групп могут быть введены ограничения. "Доступно мест" это "Лимит" минус "Количество проданных билетов".' : 'Some competition may be restrictions. "Available" this "Limit" minus "Number of tickets sold."',
         'Группы, в которых не осталось мест(0) закрыты для регистрации и продажи билетов.' : 'Competitions in which there is no available tickets (0) closed to registration and ticket sales.',
         'Доступно мест' : 'Available'
 
@@ -432,7 +432,7 @@ localizationModule.constant('DanceDictionary', {
         'После завершения регистрации произойдет переход на страницу с группами пары, там вы сможете выбрать необходимые группы и перейти к оплате.' : 'Nach abschluss der registrierung der datenübertragung auftreten danceplat.ru, für einige zeit nach dem abschluss ihrer zahlungsdaten in den meldelisten angezeigt',
         'Последнее обновление спортсменов СТСР было' : 'Letztes update war UDSR athleten',
         'Последняя страница' : 'Letzte seite',
-        'Предел' : 'Limit',
+        'Лимит' : 'Limit',
         'Предыдущая страница' : 'Vorherige seite',
         'Программа' : 'Programm',
         'Просмотр формы' : 'Formularvorschau',
@@ -580,7 +580,7 @@ localizationModule.constant('DanceDictionary', {
     'Другие' : 'Others',
     '-- Язык по умолчанию --' : '-- Default language --',
     'Количество доступных мест' : 'The number of tickets available for the participants',
-    'Для некоторых групп могут быть введены ограничения. "Доступно мест" это "Предел" минус "Количество проданных билетов".' : 'Some competition may be restrictions. "Available" this "Limit" minus "Number of tickets sold."',
+    'Для некоторых групп могут быть введены ограничения. "Доступно мест" это "Лимит" минус "Количество проданных билетов".' : 'Some competition may be restrictions. "Available" this "Limit" minus "Number of tickets sold."',
     'Группы, в которых не осталось мест(0) закрыты для регистрации и продажи билетов.' : 'Competitions in which there is no available tickets (0) closed to registration and ticket sales.',
     'Доступно мест' : 'Available'
 
