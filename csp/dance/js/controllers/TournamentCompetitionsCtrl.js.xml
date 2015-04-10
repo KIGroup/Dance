@@ -42,8 +42,8 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                           {id: "Price", name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '80px'}},
                           {id: "PrtCount", name: 'Участники', sqlName: 'ParticipantsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
                           {id: "PayCount", name: 'Оплачено', sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
-                          {id: "Limit", name: 'Лимит', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}, hidden: true},
-                          {id: "FreeCount", name: 'Доступно мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}, hidden: true}];
+                          {id: "Limit", name: 'Лимит', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}},
+                          {id: "FreeCount", name: 'Осталось мест', sqlName: '', isSorted: false, isSortable: false, isDown: true,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center'}, hidden: true}];
         
         $scope.page.competitionTable.properties = [
                           {name:'idExternal'},
@@ -171,7 +171,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
     };
 
     $scope.page.competitionTable.setHiddenCoulumns = function(value){
-        var columns = ["Discipline", "AgeGroup", "Class", "Price"];
+        var columns = ["Discipline", "AgeGroup", "Class", "Price", "Limit"];
         for(var n=0; n < $scope.page.competitionTable.columns.length; n++){
             var curColumn = $scope.page.competitionTable.columns[n];
             if (columns.indexOf(curColumn.id) != -1)
@@ -249,7 +249,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                 
                 for(var n=0; n < $scope.page.competitionTable.columns.length; n++){
                     var curColumn = $scope.page.competitionTable.columns[n];
-                    if (curColumn.id == "Limit" || curColumn.id == "FreeCount"){
+                    if (curColumn.id == "FreeCount"){
                         curColumn.hidden = !data.isContainsLimit;     
                     }
                 }

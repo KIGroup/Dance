@@ -294,7 +294,7 @@ localizationModule.constant('DanceDictionary', {
         'Количество доступных мест' : 'The number of tickets available for the participants',
         'Для некоторых групп могут быть введены ограничения. "Доступно мест" это "Лимит" минус "Количество проданных билетов".' : 'Some competition may be restrictions. "Available" this "Limit" minus "Number of tickets sold."',
         'Группы, в которых не осталось мест(0) закрыты для регистрации и продажи билетов.' : 'Competitions in which there is no available tickets (0) closed to registration and ticket sales.',
-        'Доступно мест' : 'Available'
+        'Осталось мест' : 'Available'
 
 
  
@@ -582,7 +582,7 @@ localizationModule.constant('DanceDictionary', {
     'Количество доступных мест' : 'The number of tickets available for the participants',
     'Для некоторых групп могут быть введены ограничения. "Доступно мест" это "Лимит" минус "Количество проданных билетов".' : 'Some competition may be restrictions. "Available" this "Limit" minus "Number of tickets sold."',
     'Группы, в которых не осталось мест(0) закрыты для регистрации и продажи билетов.' : 'Competitions in which there is no available tickets (0) closed to registration and ticket sales.',
-    'Доступно мест' : 'Available'
+    'Осталось мест' : 'Available'
 
 
         
