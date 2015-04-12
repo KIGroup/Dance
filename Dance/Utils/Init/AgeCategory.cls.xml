@@ -12,11 +12,11 @@
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	w !,"=== "_..#PClassName_" ==="
-	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LText", "LTextXData")
-	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LTextValue", "LTextValueXData")
-	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data."_..#PClassName, "ClassXData")
-	quit $$$OK
+    w !,"=== "_..#PClassName_" ==="
+    do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LText", "LTextXData")
+    do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LTextValue", "LTextValueXData")
+    do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data."_..#PClassName, "ClassXData")
+    quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -185,5 +185,44 @@
 </LTextValueXData>
 ]]></Data>
 </XData>
+
+<Method name="CopyValueFromEngToAnother">
+<Description>
+w ##class(Dance.Utils.Init.AgeCategory).CopyValueFromEngToAnother("it")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>newLang:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    
+    try{
+        TSTART
+    
+        &sql(DECLARE CCur CURSOR FOR
+             SELECT %NOLOCK ID
+             FROM Dance_Data.AgeCategory)
+        
+        &sql(OPEN CCur)
+        for{
+            &sql(FETCH CCur INTO :id) 
+            quit:(SQLCODE '= 0)
+            
+            set obj = ##class(Dance.Data.AgeCategory).%OpenId(id)
+            $$$THROWONERROR(st, obj.Name.SetValueByLang(obj.Name.GetValueByLang("en"), newLang))
+        }
+        
+        &sql(CLOSE CCur)
+    
+        TCOMMIT
+    }
+    catch ex {
+        TROLLBACK
+        
+        set st = ex.AsStatus()
+    }
+    
+    quit st
+]]></Implementation>
+</Method>
 </Class>
 </Export>

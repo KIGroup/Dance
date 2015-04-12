@@ -33,6 +33,20 @@ Two-letter code = ID</Description>
 <Relationship>1</Relationship>
 </Property>
 
+<Method name="Create">
+<Description>
+w ##class(Dance.Data.Localization.LTextLanguage).Create("Italiana versione","it")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name:%String,code:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set obj = ..%New()
+    set obj.Code = code
+    set obj.Name = name
+    quit obj.%Save()
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.LD180.LTextLanguageD</DataLocation>

@@ -53,28 +53,28 @@ Date of birth</Description>
 <FormalSpec>params:%ZEN.proxyObject=""</FormalSpec>
 <ReturnType>%ZEN.proxyObject</ReturnType>
 <Implementation><![CDATA[
-	set proxy = ##super(params)
-	set proxy.type = "UDSR"
-	
-	if (..DOB){
-		set proxy.dob = $ZD(..DOB, 3)
-	}
-	
-	if $ISOBJECT(..LAClass){
-		set proxy.laClass = ..LAClass.ConvertToProxyObject()
-	}
-	
-	if $ISOBJECT(..STClass){
-		set proxy.stClass = ..STClass.ConvertToProxyObject()
-	}
-	
-	set proxy.otherInfo.city = ..City
-	set proxy.otherInfo.club = ..Club
-	set proxy.otherInfo.mainTrainer = ..MainTrainer
-	set proxy.otherInfo.otherTrainers = ..OtherTrainers
-	set proxy.otherInfo.regionNumber = ..RegionNumber
-			
-	quit proxy
+    set proxy = ##super(params)
+    set proxy.type = "UDSR"
+    
+    if (..DOB){
+        set proxy.dob = $ZD(..DOB, 3)
+    }
+    
+    if $ISOBJECT(..LAClass){
+        set proxy.laClass = ..LAClass.ConvertToProxyObject()
+    }
+    
+    if $ISOBJECT(..STClass){
+        set proxy.stClass = ..STClass.ConvertToProxyObject()
+    }
+    
+    set proxy.otherInfo.city = ..City
+    set proxy.otherInfo.club = ..Club
+    set proxy.otherInfo.mainTrainer = ..MainTrainer
+    set proxy.otherInfo.otherTrainers = ..OtherTrainers
+    set proxy.otherInfo.regionNumber = ..RegionNumber
+            
+    quit proxy
 ]]></Implementation>
 </Method>
 
@@ -83,87 +83,93 @@ Date of birth</Description>
 <FormalSpec>data:%String,gender:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	do ##class(%MessageDictionary).SetSessionLanguage("ru")
-	set st = $$$OK
-	
-	try{
-		TSTART
-			
-		set propList = $LISTFROMSTRING(data, ";")
-		set person = ..NumberUDSRIdxOpen($LIST(propList, 1))
-			
-		if ($ISOBJECT(person) = 0){
-			set person = ##class(Dance.Data.PersonUDSR).%New()
-			set person.Gender = gender
-			
-			//1 Номер
-			set person.Number = $LIST(propList, 1)
-				
-			//2 Фамилия Имя
-			set person.LastName =  ##class(Dance.Data.Localization.LText).Create($P($LIST(propList, 2)," ",1), "Dance.Data.Localization.Translation;PersonLTextValue")		
-			set person.FirstName =  ##class(Dance.Data.Localization.LText).Create($P($LIST(propList, 2)," ",2), "Dance.Data.Localization.Translation;PersonLTextValue")		
-			
-			//11 Фио на англ.
-			do person.LastName.SetValueByLang($P($LIST(propList, 11)," ",1), "en")
-			do person.FirstName.SetValueByLang($P($LIST(propList, 11)," ",2), "en")
-		}
-			
-		//4 Дата рождения
-		set dob = $LIST(propList, 4)
-		if (dob '= "") && ($LENGTH(dob) = 10) set person.DOB = $ZDATEH($REPLACE(dob,".","/"), 4)
-			
-		//5 Класс ST
-		set person.STClass = ##class(Dance.Data.DancerClass).GetByName($REPLACE($ZCONVERT($LIST(propList, 5), "U"), "М", "M"), .st)
-			
-		//7 Класс LA
-		set person.LAClass = ##class(Dance.Data.DancerClass).GetByName( $REPLACE($ZCONVERT($LIST(propList, 7), "U"), "М", "M"), .st)		
-			
-		//12 Клуб
-		set person.Club = $LIST(propList, 12)
-	
-		//13 Город/регион
-		set person.City = $LIST(propList, 13)
-	
-		//14 Старший тренер
-		set person.MainTrainer = $LIST(propList, 14)
+    do ##class(%MessageDictionary).SetSessionLanguage("ru")
+    set st = $$$OK
+    
+    try{
+        TSTART
+            
+        set propList = $LISTFROMSTRING(data, ";")
+        set person = ..NumberUDSRIdxOpen($LIST(propList, 1))
+            
+        if ($ISOBJECT(person) = 0){
+            set person = ##class(Dance.Data.PersonUDSR).%New()
+            set person.Gender = gender
+            
+            //1 Номер
+            set person.Number = $LIST(propList, 1)
+                
+            //2 Фамилия Имя
+            set person.LastName =  ##class(Dance.Data.Localization.LText).Create($P($LIST(propList, 2)," ",1), "Dance.Data.Localization.Translation;PersonLTextValue")      
+            set person.FirstName =  ##class(Dance.Data.Localization.LText).Create($P($LIST(propList, 2)," ",2), "Dance.Data.Localization.Translation;PersonLTextValue")     
+            
+            //11 Фио на англ. Пусть и для других языков будет на анлийском
+            do person.LastName.SetValueByLang($P($LIST(propList, 11)," ",1), "en")
+            do person.FirstName.SetValueByLang($P($LIST(propList, 11)," ",2), "en")
+            
+            do person.LastName.SetValueByLang($P($LIST(propList, 11)," ",1), "de")
+            do person.FirstName.SetValueByLang($P($LIST(propList, 11)," ",2), "de")
 
-		//15 Тренер 2
-		//16 Тренер 3
-		if ($LIST(propList, 16) '= ""){
-			set person.OtherTrainers = $LIST(propList, 15)_", "_$LIST(propList, 16)
-		}
-		else{
-			set person.OtherTrainers = $LIST(propList, 15)
-		}
-		
-		//17 Номер региона
-		if ($LIST(propList, 17) '= ""){
-			set person.RegionNumber = $LIST(propList, 17)
-		}
-		
-		//19 Номер партнера
-		//w !,"POST 8"
-		if (person.Gender = "Male"){
-			set partnerNumber = $LIST(propList, 19)
-			if (partnerNumber'="") {
-				set ^Dance.Data.ManPartnersUDSR(person.Number) = partnerNumber
-			}
-		}	
-		
-		set person.Country = ##class(Dance.Data.Country).WDSFNameIdxOpen("Russian Federation")
-			
-		set person.Updated = $ZDT($ZTS,3)
+            do person.LastName.SetValueByLang($P($LIST(propList, 11)," ",1), "it")
+            do person.FirstName.SetValueByLang($P($LIST(propList, 11)," ",2), "it")
+        }
+            
+        //4 Дата рождения
+        set dob = $LIST(propList, 4)
+        if (dob '= "") && ($LENGTH(dob) = 10) set person.DOB = $ZDATEH($REPLACE(dob,".","/"), 4)
+            
+        //5 Класс ST
+        set person.STClass = ##class(Dance.Data.DancerClass).GetByName($REPLACE($ZCONVERT($LIST(propList, 5), "U"), "М", "M"), .st)
+            
+        //7 Класс LA
+        set person.LAClass = ##class(Dance.Data.DancerClass).GetByName( $REPLACE($ZCONVERT($LIST(propList, 7), "U"), "М", "M"), .st)        
+            
+        //12 Клуб
+        set person.Club = $LIST(propList, 12)
+    
+        //13 Город/регион
+        set person.City = $LIST(propList, 13)
+    
+        //14 Старший тренер
+        set person.MainTrainer = $LIST(propList, 14)
+
+        //15 Тренер 2
+        //16 Тренер 3
+        if ($LIST(propList, 16) '= ""){
+            set person.OtherTrainers = $LIST(propList, 15)_", "_$LIST(propList, 16)
+        }
+        else{
+            set person.OtherTrainers = $LIST(propList, 15)
+        }
+        
+        //17 Номер региона
+        if ($LIST(propList, 17) '= ""){
+            set person.RegionNumber = $LIST(propList, 17)
+        }
+        
+        //19 Номер партнера
+        //w !,"POST 8"
+        if (person.Gender = "Male"){
+            set partnerNumber = $LIST(propList, 19)
+            if (partnerNumber'="") {
+                set ^Dance.Data.ManPartnersUDSR(person.Number) = partnerNumber
+            }
+        }   
+        
+        set person.Country = ##class(Dance.Data.Country).WDSFNameIdxOpen("Russian Federation")
+            
+        set person.Updated = $ZDT($ZTS,3)
  
-		$$$THROWONERROR(st, person.%Save())		
-		
-		TCOMMIT
-	}
-	catch(ex){
-		TROLLBACK
-		set st = ex.AsStatus()
-	}
-	
-	quit st
+        $$$THROWONERROR(st, person.%Save())     
+        
+        TCOMMIT
+    }
+    catch(ex){
+        TROLLBACK
+        set st = ex.AsStatus()
+    }
+    
+    quit st
 ]]></Implementation>
 </Method>
 
@@ -172,27 +178,27 @@ Date of birth</Description>
 <FormalSpec>filter:%RegisteredObject</FormalSpec>
 <ReturnType>PersonUDSR</ReturnType>
 <Implementation><![CDATA[
-	set id = ""
+    set id = ""
 
-	&sql(SELECT person.ID INTO :id
-		 FROM Dance_Data.PersonUDSR as person 
-		 	INNER JOIN 
-		 	Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
-		 	INNER JOIN 
-		 	Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
-		 WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
-		 	   AND 
-		 	   %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)) 
-		 	   AND 
-		 	   (DATEPART('YEAR', person.DOB) || '-' || DATEPART('MONTH', person.DOB) || '-' || DATEPART('DAY', person.DOB) = :filter.dob
-		 	   	OR
-		 	   	DATEDIFF(YEAR, person.DOB, NOW()) = :filter.age
-		 	   	OR
-		 	   	%UPPER(person.City) = %UPPER(TRIM(BOTH ' ' FROM :filter.city))
-		 	   	OR
-		 	   	%UPPER(person.Club) = %UPPER(TRIM(BOTH ' ' FROM :filter.club))))
+    &sql(SELECT person.ID INTO :id
+         FROM Dance_Data.PersonUDSR as person 
+            INNER JOIN 
+            Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
+            INNER JOIN 
+            Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
+         WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
+               AND 
+               %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)) 
+               AND 
+               (DATEPART('YEAR', person.DOB) || '-' || DATEPART('MONTH', person.DOB) || '-' || DATEPART('DAY', person.DOB) = :filter.dob
+                OR
+                DATEDIFF(YEAR, person.DOB, NOW()) = :filter.age
+                OR
+                %UPPER(person.City) = %UPPER(TRIM(BOTH ' ' FROM :filter.city))
+                OR
+                %UPPER(person.Club) = %UPPER(TRIM(BOTH ' ' FROM :filter.club))))
 
-	quit ..%OpenId(id)
+    quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
 
@@ -201,19 +207,19 @@ Date of birth</Description>
 <FormalSpec>filter:%RegisteredObject</FormalSpec>
 <ReturnType>PersonUDSR</ReturnType>
 <Implementation><![CDATA[
-	set id = ""
+    set id = ""
 
-	&sql(SELECT person.ID INTO :id
-		 FROM Dance_Data.PersonUDSR as person 
-		 	INNER JOIN 
-		 	Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
-		 	INNER JOIN 
-		 	Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
-		 WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
-		 	   AND 
-		 	   %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)))
+    &sql(SELECT person.ID INTO :id
+         FROM Dance_Data.PersonUDSR as person 
+            INNER JOIN 
+            Dance_Data_Localization.LTextValue as ltvalLN ON ltvalLN.LText = person.LastName 
+            INNER JOIN 
+            Dance_Data_Localization.LTextValue as ltvalFN ON ltvalFN.LText = person.FirstName
+         WHERE %UPPER(ltvalLN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.lastName)) 
+               AND 
+               %UPPER(ltvalFN.Value) = %UPPER(TRIM(BOTH ' ' FROM :filter.firstName)))
 
-	quit ..%OpenId(id)
+    quit ..%OpenId(id)
 ]]></Implementation>
 </Method>
 

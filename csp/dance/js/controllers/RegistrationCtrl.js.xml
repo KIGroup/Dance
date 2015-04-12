@@ -5,7 +5,7 @@
 // dfdfdfdddddddddddddddd
  
 /*===========================================================================================
-Registration          
+Registration           
 ===========================================================================================*/
   
 controllersModule.controller('RegistrationCtrl', function($scope, $interval, $routeParams, $filter, LocationSrvc, UtilsSrvc, OtherSrvc, PersonSrvc, TournamentSrvc, CompetitionSrvc, RegistrationSrvc, ParticipantSrvc, CoupleSrvc){
@@ -305,7 +305,10 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
               
                 
                 if ($routeParams.typeCode){
-                    if ($routeParams.typeCode == 'wdsf'){
+                    if ($routeParams.typeCode == 'udsr'){
+                        $scope.tabUDSR.select();
+                    }
+					if ($routeParams.typeCode == 'wdsf'){
                         $scope.tabWDSF.select();
                     }
                     else if ($routeParams.typeCode == 'other'){

@@ -12,11 +12,11 @@
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	w !,"=== "_..#PClassName_" ==="
-	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LText", "LTextXData")
-	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LTextValue", "LTextValueXData")
-	do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data."_..#PClassName, "ClassXData")
-	quit $$$OK
+    w !,"=== "_..#PClassName_" ==="
+    do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LText", "LTextXData")
+    do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data.Localization.LTextValue", "LTextValueXData")
+    do ..ImportXData("Dance.Utils.Init."_..#PClassName, "Dance.Data."_..#PClassName, "ClassXData")
+    quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -53,5 +53,31 @@
 </LTextValueXData>
 ]]></Data>
 </XData>
+
+<Method name="SetItalian">
+<Description>
+w ##class(Dance.Utils.Init.CompetitionType).SetItalian()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    
+    try{
+        TSTART
+        
+        $$$THROWONERROR(st, ##class(Dance.Data.CompetitionType).CodeIdxOpen("Couples").Name.SetValueByLang("Coppie", "it"))
+        $$$THROWONERROR(st, ##class(Dance.Data.CompetitionType).CodeIdxOpen("Solo").Name.SetValueByLang("Assolo", "it"))
+        
+        TCOMMIT
+    }
+    catch ex {
+        TROLLBACK
+        
+        set st = ex.AsStatus()
+    }
+    
+    quit st
+]]></Implementation>
+</Method>
 </Class>
 </Export>

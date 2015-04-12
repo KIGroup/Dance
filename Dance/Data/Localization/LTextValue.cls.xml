@@ -55,24 +55,17 @@ Get value for language=lang for object with id=ltxt</Description>
 <FormalSpec>ltxt,lang</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	// ISO 639-1
-	set lang = $e(lang,1,2)
-	set value = "! no value for [ISO 639-1] lang="_lang
-	
-	set id = $O(^Dance.Data.LocaD180.LTextValueI("KeyIdx",ltxt,lang,""))
-	quit $LISTGET(^Dance.Data.LocaD180.LTextValueD(id), 4)
-	
-	
-	/*
-	// ISO 639-1
-	set lang = $e(lang,1,2)
-	set value = "! no value for [ISO 639-1] lang="_lang
-	
-	&sql(SELECT Value INTO :value 
-	     FROM Dance_Data_Localization.LTextValue 
-	     WHERE LText = :ltxt AND Lang = :lang)
-	
-	quit value*/
+    // ISO 639-1
+    set lang = $e(lang, 1, 2)
+    
+    set id = $O(^Dance.Data.LocaD180.LTextValueI("KeyIdx", ltxt, lang, ""))
+    if (id = ""){
+        // Ну если нет значения для такого языка для текстового поля, то скорее всего это для нового языка, поэтому вернем для английского
+        set id = $O(^Dance.Data.LocaD180.LTextValueI("KeyIdx", ltxt, "en", ""))
+        quit:(id="") "No value for language - "_lang_" (ISO 639-1)"
+    }   
+    
+    quit $LISTGET(^Dance.Data.LocaD180.LTextValueD(id), 4)
 ]]></Implementation>
 </Method>
 
@@ -83,31 +76,31 @@ Set value for language=lang for object with id=ltxt</Description>
 <FormalSpec>value,ltxt,lang</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	set st = $$$OK
-	
-	&sql(UPDATE Dance_Data_Localization.LTextValue (Value) VALUES (:value) 
-	     WHERE LText = :ltxt AND Lang = :lang)
-	
-	if (SQLCODE = 100){
-		set lv = ..%New()
-		set lv.Lang = ##class(LTextLanguage).%OpenId(lang)
-		set lv.LText = ##class(LText).%OpenId(ltxt)
-		set lv.Value = value
-		set sc = lv.%Save()
-		
-		if $$$ISERR(sc){
-			set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| "_sc)
-		}
-	}
-	elseif (SQLCODE '= 0) {
-		set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| SQLCODE="_SQLCODE)
-	}
+    set st = $$$OK
+    
+    &sql(UPDATE Dance_Data_Localization.LTextValue (Value) VALUES (:value) 
+         WHERE LText = :ltxt AND Lang = :lang)
+    
+    if (SQLCODE = 100){
+        set lv = ..%New()
+        set lv.Lang = ##class(LTextLanguage).%OpenId(lang)
+        set lv.LText = ##class(LText).%OpenId(ltxt)
+        set lv.Value = value
+        set sc = lv.%Save()
+        
+        if $$$ISERR(sc){
+            set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| "_sc)
+        }
+    }
+    elseif (SQLCODE '= 0) {
+        set st = ##class(Dance.Utils.Msg).GetErrorStatus("error_SaveLocalization", "| SQLCODE="_SQLCODE)
+    }
 
-	if $$$ISERR(st) {
-		do ##class(Dance.Utils.Journal).Create("Log", "Localization.LTextValue. SetValue", "st="_$SYSTEM.Status.GetErrorText(st))
-	}
-	
-	quit st
+    if $$$ISERR(st) {
+        do ##class(Dance.Utils.Journal).Create("Log", "Localization.LTextValue. SetValue", "st="_$SYSTEM.Status.GetErrorText(st))
+    }
+    
+    quit st
 ]]></Implementation>
 </Method>
 
@@ -118,10 +111,10 @@ Delete all values for all languages for object LText</Description>
 <FormalSpec>ltxt</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	&sql(DELETE FROM Dance_Data_Localization.LTextValue WHERE LText = :ltxt)
-	if (SQLCODE '= 0) && (SQLCODE '= 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_DeleteLocalization", " | SQLCODE="_SQLCODE)
-	
-	quit $$$OK
+    &sql(DELETE FROM Dance_Data_Localization.LTextValue WHERE LText = :ltxt)
+    if (SQLCODE '= 0) && (SQLCODE '= 100) quit ##class(Dance.Utils.Msg).GetErrorStatus("error_DeleteLocalization", " | SQLCODE="_SQLCODE)
+    
+    quit $$$OK
 ]]></Implementation>
 </Method>
 

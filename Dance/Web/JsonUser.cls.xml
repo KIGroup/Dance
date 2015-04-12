@@ -1336,7 +1336,7 @@ All System languages for combobox</Description>
             set proxy = ##class(%ZEN.proxyObject).%New()
             set proxy.code = code
             set proxy.name = name
-            set proxy.flagUrl = "img/flags/"_code_".png"
+            set proxy.flagUrl = "img/flags/"_code_".gif"
             
             do list.Insert(proxy)   
         }

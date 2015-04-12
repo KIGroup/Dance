@@ -9,84 +9,148 @@
 do ##class(Dance.Utils.Service).BuildAllIndices()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LText).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LTextLanguage).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LTextValue).%BuildIndices())
-	
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Tournament).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.AgeCategory).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.AgeCategoryWDSF).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Competition).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CompetitionType).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CompetitionWDSF).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Country).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Couple).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CoupleUDSR).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CoupleWDSF).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.DancerClass).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Discipline).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.FeedBack).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Participant).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleOther).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleUDSR).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleWDSF).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleOther).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleUDSR).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleWDSF).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Person).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Ticket).%BuildIndices())
-	do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.TicketDanceplat).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LText).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LTextLanguage).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Localization.LTextValue).%BuildIndices())
+    
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Tournament).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.AgeCategory).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.AgeCategoryWDSF).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Competition).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CompetitionType).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CompetitionWDSF).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Country).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Couple).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CoupleUDSR).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.CoupleWDSF).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.DancerClass).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Discipline).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.FeedBack).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Participant).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleOther).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleUDSR).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantCoupleWDSF).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleOther).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleUDSR).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.ParticipantSingleWDSF).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Person).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.Ticket).%BuildIndices())
+    do $SYSTEM.OBJ.DisplayError(##class(Dance.Data.TicketDanceplat).%BuildIndices())
 ]]></Implementation>
 </Method>
 
 <Method name="UpdateTournamentUrl">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-		set st = $$$OK
-	try{
-		TSTART
-		
-		&sql(DECLARE TRNCurs CURSOR FOR 
-		 	 SELECT ID
-		 	 FROM Dance_Data.Tournament)	
-		 	 		
-		&sql(OPEN TRNCurs)
-		for  
-		{	
-			&sql(FETCH TRNCurs INTO :id) 
-			quit:(SQLCODE '= 0)
-			
-			set trn = ##class(Dance.Data.Tournament).%OpenId(id)
-			
-			
-			if ($ISOBJECT(trn.InfoUrl) = $$$NO){
-				set trn.InfoUrl = ##class(Dance.Data.Localization.LText).Create(trn.OrganizerSite)
-			}
-			else{
-				w !,"TRN ID = "_id_" Info exists"
-			}
-			
-			
-			if ($ISOBJECT(trn.AdditionInfoUrl) = $$$NO){
-				set trn.AdditionInfoUrl = ##class(Dance.Data.Localization.LText).Create(trn.AnnouncementUrl)
-			}
-			else{
-				w !,"TRN ID = "_id_" AdditionInfoUrl exists"
-			}
-			
-			$$$THROWONERROR(st, trn.%Save())
-		}
-		
-		&sql(CLOSE TRNCurs)
-		
-		TCOMMIT	
-	}
-	catch(ex){
-		TROLLBACK
-		
-		set st = ex.AsStatus()
-		w !,$SYSTEM.Status.GetErrorText(st)
-	}
+        set st = $$$OK
+    try{
+        TSTART
+        
+        &sql(DECLARE TRNCurs CURSOR FOR 
+             SELECT ID
+             FROM Dance_Data.Tournament)    
+                    
+        &sql(OPEN TRNCurs)
+        for  
+        {   
+            &sql(FETCH TRNCurs INTO :id) 
+            quit:(SQLCODE '= 0)
+            
+            set trn = ##class(Dance.Data.Tournament).%OpenId(id)
+            
+            
+            if ($ISOBJECT(trn.InfoUrl) = $$$NO){
+                set trn.InfoUrl = ##class(Dance.Data.Localization.LText).Create(trn.OrganizerSite)
+            }
+            else{
+                w !,"TRN ID = "_id_" Info exists"
+            }
+            
+            
+            if ($ISOBJECT(trn.AdditionInfoUrl) = $$$NO){
+                set trn.AdditionInfoUrl = ##class(Dance.Data.Localization.LText).Create(trn.AnnouncementUrl)
+            }
+            else{
+                w !,"TRN ID = "_id_" AdditionInfoUrl exists"
+            }
+            
+            $$$THROWONERROR(st, trn.%Save())
+        }
+        
+        &sql(CLOSE TRNCurs)
+        
+        TCOMMIT 
+    }
+    catch(ex){
+        TROLLBACK
+        
+        set st = ex.AsStatus()
+        w !,$SYSTEM.Status.GetErrorText(st)
+    }
+]]></Implementation>
+</Method>
+
+<Method name="UpdateFullNameForLangs">
+<Description>
+w ##class(Dance.Utils.Service).UpdateFullNameForLangs()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+    set st = $$$OK
+    try{
+        TSTART
+        
+        &sql(DECLARE FNCurs CURSOR FOR 
+             SELECT ID
+             FROM Dance_Data.Person)    
+                    
+        &sql(OPEN FNCurs)
+        for  
+        {   
+            &sql(FETCH FNCurs INTO :id) 
+            quit:(SQLCODE '= 0)
+            
+            set obj = ##class(Dance.Data.Person).%OpenId(id)
+            $$$THROWONERROR(st, obj.LastName.SetValueByLang(obj.LastName.GetValueByLang("en"), "de"))
+            $$$THROWONERROR(st, obj.LastName.SetValueByLang(obj.LastName.GetValueByLang("en"), "it"))
+            
+            $$$THROWONERROR(st, obj.FirstName.SetValueByLang(obj.FirstName.GetValueByLang("en"), "de"))
+            $$$THROWONERROR(st, obj.FirstName.SetValueByLang(obj.FirstName.GetValueByLang("en"), "it"))
+        }
+        
+        &sql(CLOSE FNCurs)
+        
+       //====================================== 
+        
+       &sql(DECLARE FNCurs2 CURSOR FOR 
+             SELECT ID
+             FROM Dance_Data.Participant)    
+                    
+        &sql(OPEN FNCurs2)
+        for  
+        {   
+            &sql(FETCH FNCurs2 INTO :id) 
+            quit:(SQLCODE '= 0)
+            
+            set obj = ##class(Dance.Data.Participant).%OpenId(id)
+            if ($ISOBJECT(obj.FullName) = $$$NO){
+                continue
+            }
+            $$$THROWONERROR(st, obj.FullName.SetValueByLang(obj.FullName.GetValueByLang("en"), "de"))
+            $$$THROWONERROR(st, obj.FullName.SetValueByLang(obj.FullName.GetValueByLang("en"), "it"))
+        }
+        
+        &sql(CLOSE FNCurs2)
+        
+        TCOMMIT 
+    }
+    catch(ex){
+        TROLLBACK
+        
+        set st = ex.AsStatus()
+        w !,$SYSTEM.Status.GetErrorText(st)
+    }
+    
+    quit st
 ]]></Implementation>
 </Method>
 </Class>

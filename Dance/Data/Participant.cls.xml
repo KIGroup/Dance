@@ -267,9 +267,11 @@
             &sql(FETCH LangCurs INTO :code) 
             quit:(SQLCODE '= 0)
             
-            // Чтобы в немецком были английские имена, всяко лучше чем по русски
+            // Чтобы в немецком|(другом) были английские имена, всяко лучше чем по русски
             set langCodeForSearch = code
-            if (code = "de") set langCodeForSearch = "en" 
+            if (code = "de") || (code = "it"){
+                set langCodeForSearch = "en" 
+            }
             
             $$$THROWONERROR(st, prt.FullName.SetValueByLang(prt.GetFullNameForLang(langCodeForSearch), code))   
         }
@@ -366,7 +368,7 @@ Change IsActive property to 0</Description>
         
         set count = count + ..GetCompetitionsCountForPrtObject(prtObjWDSFKey, trnId)    
     }
-    elseif (##class(ParticipantCoupleWDSF).%ExistsId(prtId)) && (##class(MatchingCoupleUDSRWDSF).WDSFIdxExists(prtId)){
+    elseif (##class(ParticipantCoupleWDSF).%ExistsId(prtId)) && (##class(MatchingCoupleUDSRWDSF).WDSFIdxExists(prtObjId)){
         set udsrCoupleId = ##class(MatchingCoupleUDSRWDSF).GetUDSRCoupleIDByWDSF(prtObjId)
         set prtObjUDSRKey = ##class(CoupleUDSR).%ClassName(1)_"@"_udsrCoupleId
         
