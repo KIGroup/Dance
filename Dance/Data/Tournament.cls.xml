@@ -244,6 +244,12 @@ Tournaments</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="Currency">
+<Description>
+Валюта</Description>
+<Type>Currency</Type>
+</Property>
+
 <Index name="IdInternalIdx">
 <Properties>IdInternal</Properties>
 <Unique>1</Unique>
@@ -271,6 +277,11 @@ Tournaments</Description>
     set proxy.isContainsLimit = ..IsContainsLimit
     set proxy.startDate = $ZDATE(..StartDate, 3)
     set proxy.endDate = $ZDATE(..EndDate, 3)
+    
+    set proxy.currency = ##class(%ZEN.proxyObject).%New()
+    if $ISOBJECT(..Currency){
+        set proxy.currency.id = ..Currency.%Id()
+    }
         
     if (##class(Dance.Data.Tournament).CheckUpdatePrivilege() = $$$OK){
         set proxy.hash = ..Hash
@@ -388,6 +399,7 @@ Create or Update object</Description>
     //set trn.OrganizerSite = data.organizer.site
     
     set trn.Country = ##class(Dance.Data.Country).%OpenId(data.location.country.id)
+    set trn.Currency = ##class(Dance.Data.Currency).%OpenId(data.currency.id)
     set trn.TStatus = ##class(Dance.Data.TournamentStatus).%OpenId(data.status.id)
     set trn.TRank = ##class(Dance.Data.TournamentRank).%OpenId(data.rank.id)
         
@@ -797,6 +809,9 @@ Check update privilege</Description>
 </Value>
 <Value name="33">
 <Value>PaymentsUniqueCount</Value>
+</Value>
+<Value name="34">
+<Value>Currency</Value>
 </Value>
 </Data>
 </Storage>

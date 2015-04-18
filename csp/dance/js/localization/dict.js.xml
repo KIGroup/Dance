@@ -155,7 +155,8 @@ localizationModule.constant('DanceDictionary', {
         'Фильтр: Ранг турнира' : 'Filter: Rank of tournament',
         'Фильтр: Статус турнира' : 'Filter: Status of tournament',
         'Форма обратной связи' : 'Feedback form',
-        'Цена, р.' : 'Price, r.',
+        'Цена' : 'Price',
+        'руб.' : 'rub.',
         'Щелчком мыши выберите группы, в которые необходимо зарегистрировать пару.' : 'Click to select the competitions to which you must register coulpe.',
         'Щелчком мыши выберите необходимые группы для передачи данных в платежную систему.' : 'Click to select the desired competitions for data transmission to the payment system.',
         'Язык' : 'Lang',
@@ -308,11 +309,11 @@ localizationModule.constant('DanceDictionary', {
   toRussian: {
   },
   toDeutsch: {
-	    'Регистрация выполнена.': 'Die Registrierung ist abgeschlossen.',
+        'Регистрация выполнена.': 'Die Registrierung ist abgeschlossen.',
         'Регистрация не выполнена.': 'Registrierung fehlgeschlagen.',
         'Обнаружены конфликтные группы для участника' : 'Gefunden Konfliktgruppen zu feiern',
         'Место проведения':'Austragungsort',
-	  
+      
         ' - участие в группе не оплачено.' : ' - teilnahme an der gruppe ist nicht bezahlt.',
         ' - участие в группе отменено.'    : ' - teilnahme an der gruppe abgebrochen.',
         'Cписок всех групп »' : 'Liste aller gruppen »',
@@ -501,7 +502,8 @@ localizationModule.constant('DanceDictionary', {
         'Фильтр: Статус турнира' : 'Filter: Wettbewerbsstatus',
         'Форма обратной связи' : 'Feedback-formular',
         'Хеш' : 'Hasch',
-        'Цена, р.' : 'Preis, r.',
+        'Цена' : 'Preis',
+        'руб.':'rub.',
         'Часть данных получена от WDSF.' : 'Ein teil der von der WDSF erhaltenen daten.',
         'Черный цвет - участие в группе оплачено.' : 'Schwarz - die teilnahme an der gruppe bezahlt.',
         'Чтобы разблокировать вкладку нажмите ″Назад″' : 'Um die registerkarte entsperren, klicken sie auf "Zurück"',
@@ -595,10 +597,10 @@ localizationModule.constant('DanceDictionary', {
     'Осталось мест' : 'Available'
   },
   toItalian: {
-	'Регистрация выполнена.': 'La registrazione è completa.',
-	'Регистрация не выполнена.': 'Registrazione fallita.',
-	'Обнаружены конфликтные группы для участника' : 'Gruppi in conflitto trovati al partito',
-	'Место проведения':'Sede',
+    'Регистрация выполнена.': 'La registrazione è completa.',
+    'Регистрация не выполнена.': 'Registrazione fallita.',
+    'Обнаружены конфликтные группы для участника' : 'Gruppi in conflitto trovati al partito',
+    'Место проведения':'Sede',
     'Размер страницы' : 'Dimensioni pagina',
     'Поиск в столбце' : 'Cerca nella colonna',
     'Все группы' : 'Tutti i gruppi',
@@ -762,7 +764,8 @@ localizationModule.constant('DanceDictionary', {
     'Фильтр: Ранг турнира' : 'Filtro: Classifica torneo',
     'Фильтр: Статус турнира' : 'Ordina per: Titolo Tournament',
     'Форма обратной связи' : 'Modulo di feedback',
-    'Цена, р.' : 'Price, p.',
+    'Цена' : 'Price',
+    'руб.':'rub.',
     'Щелчком мыши выберите группы, в которые необходимо зарегистрировать пару.' : 'Fare clic per selezionare il gruppo a cui si desidera registrare coppia.',
     'Щелчком мыши выберите необходимые группы для передачи данных в платежную систему.' : 'Fare clic per selezionare la banda desiderata per trasmettere i dati al sistema di pagamento.',
     'Язык' : 'La Lingua',

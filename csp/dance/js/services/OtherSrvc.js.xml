@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/services/OtherSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/services/OtherSrvc.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
-//dddd
+//dddddd
 
 /*===========================================================================================
 Other
@@ -22,7 +22,10 @@ servicesModule.factory('OtherSrvc', function(RESTSrvc) {
         setUnknownKey: function(key){
 	        console.log('unknownkey = '+key);
 	        return RESTSrvc.getPromise({method: 'POST', url: AppSettings.user + '/unknownkey', data: {key: key}});
-	    } 
+	    },
+        getCurrencies: function(){
+            return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/currency'});
+        }		
     }
 });
 ]]></CSP>

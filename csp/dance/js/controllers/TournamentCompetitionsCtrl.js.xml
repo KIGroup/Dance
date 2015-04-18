@@ -39,7 +39,7 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                           {id: "Discipline", name: 'Программа', sqlName: 'Discipline->Name->Value', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false},
                           {id: "AgeGroup", name: 'Возр. группа' , sqlName: 'AgeCategory', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false},
                           {id: "Class", name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true ,  isSearched: false ,  isSearchable: false},
-                          {id: "Price", name: 'Цена, р.', sqlName: 'Price', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '80px'}},
+                          {id: "Price", name: 'Цена', sqlName: 'Price', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'right', width: '80px'}},
                           {id: "PrtCount", name: 'Участники', sqlName: 'ParticipantsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
                           {id: "PayCount", name: 'Оплачено', sqlName: 'PaymentsCount', isSorted: false, isSortable: true, isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {textAlign: 'center', width: '100px'}},
                           {id: "Limit", name: 'Лимит', sqlName: 'Limit', isSorted: false, isSortable: true , isDown: true ,  isSearched: false ,  isSearchable: false, captionStyle: {width: '70px', textAlign: 'center'}},
@@ -252,6 +252,13 @@ controllersModule.controller('TournamentCompetitionsCtrl', function($scope, $int
                     if (curColumn.id == "FreeCount"){
                         curColumn.hidden = !data.isContainsLimit;     
                     }
+                }
+                
+                
+                var idxColPrice = UtilsSrvc.getIndexes($scope.page.competitionTable.columns, 'id', 'Price');
+                if (idxColPrice.length != 0){ 
+                    var colName = $filter('localize')('Цена') + ', ' + UtilsSrvc.getCurrencySignByISOCode(data.currency.id);
+                    $scope.page.competitionTable.columns[idxColPrice[0]].name = colName;
                 }
             },
             function(data, status, headers, config){

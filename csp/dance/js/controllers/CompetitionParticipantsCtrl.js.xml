@@ -32,7 +32,7 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
         $scope.page.participantTable.columns = [ 
                           {name: 'Партнер / Партнерша', sqlName: 'FullName->Value', isSorted: true, isSortable: true, isDown: true, isSearched: true, isSearchable: true},
                           {name: 'Клуб / Город', sqlName: 'City', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: true},
-                          {name: 'Класс', sqlName: '', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
+                          {name: 'Класс ST, LA', sqlName: '', isSorted: false, isSortable: false, isDown: true, isSearched: false, isSearchable: false},
                           {name: 'Страна', sqlName: 'Country->Name->Value', isSorted: false, isSortable: true , isDown: true, isSearched: false, isSearchable: true},
                           {name: 'Статус', sqlName: 'TicketStatus', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '110px'}},
                           {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '130px'}}];
@@ -52,19 +52,18 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             item.trainers = item.couple.otherInfo.mainTrainer + (item.couple.otherInfo.otherTrainers=='' ? '' : (', ' + item.couple.otherInfo.otherTrainers));
                                                             item.countryName = item.couple.otherInfo.country.name;
                                                             
-                                                            
                                                             item.classFullName = '';
-                                                            if (item.couple.man.laClass){
-                                                                item.classFullName += 'La: ' + item.couple.man.laClass.name + '. ';
-                                                            }
                                                             if (item.couple.man.stClass){
-                                                                item.classFullName += 'St: ' + item.couple.man.stClass.name + '.\n';
+                                                                item.classFullName += item.couple.man.stClass.name + ', ';
                                                             }
-                                                            if (item.couple.woman.laClass){
-                                                                item.classFullName += 'La: ' + item.couple.woman.laClass.name + '. ';
+                                                            if (item.couple.man.laClass){
+                                                                item.classFullName += item.couple.man.laClass.name + '\n';
                                                             }
                                                             if (item.couple.woman.stClass){
-                                                                item.classFullName += 'St: ' + item.couple.woman.stClass.name + '.';
+                                                                item.classFullName += item.couple.woman.stClass.name + ', ';
+                                                            }
+                                                            if (item.couple.woman.laClass){
+                                                                item.classFullName += item.couple.woman.laClass.name;
                                                             }
                                                         }
                                                         else if (item.athlete){

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/services/TournamentSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/services/TournamentSrvc.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 //dd
 
@@ -48,7 +48,7 @@ servicesModule.factory('TournamentSrvc', function(RESTSrvc) {
         },
         getRecordersHashes: function(trnId){
             return RESTSrvc.getPromise({method: 'GET', url: AppSettings.admin + '/recorder/tournament/' + trnId});
-        }
+        } 
         
     }
 });

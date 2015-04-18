@@ -53,8 +53,6 @@
             set proxy.woman.stClass = coupleUDSR.Woman.STClass.ConvertToProxyObject()
         }
         
-        set proxy.otherInfo.club = coupleUDSR.Man.Club
-        set proxy.otherInfo.city = coupleUDSR.Man.City
     }
     
 

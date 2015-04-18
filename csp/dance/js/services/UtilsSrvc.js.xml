@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/js/services/UtilsSrvc.js" application="/csp/dance/" default="1"><![CDATA[
+<CSP name="dance/js/services/UtilsSrvc.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
 //ddвddddв
 
@@ -9,35 +9,35 @@ Utils
 ===========================================================================================*/
 
 servicesModule.factory('UtilsSrvc', function($dialog, $filter) {
-	
-	return {
-		openMessageBox: function(title, msg, func){
-    		var btns = [{result: true, label: 'Ок', cssClass: 'btn-primary btn-small'}, 
+    
+    return {
+        openMessageBox: function(title, msg, func){
+            var btns = [{result: true, label: 'Ок', cssClass: 'btn-primary btn-small'}, 
                         {result: false, label: $filter('localize')('Отмена'), cssClass: 'btn-small'}];
-			
-    		$dialog.messageBox($filter('localize')(title), $filter('localize')(msg), btns).open().then(function(result){
-    		 	if (result && func)
-    		 		func(); 
-    		 });
-    	},
-    	openCustomMessageBox: function(title, msg, btns){
-    		$dialog.messageBox($filter('localize')(title), $filter('localize')(msg), btns).open().then(function(result){
-    		 	for (var i=0; i < btns.length; i++){
-	    			if (result == btns[i].result && btns[i].func)
-	    				btns[i].func();
-	    		}
-    		 });
-    	},
-    	getAlert: function(title, msg, eventType, visible){ 	
-        	if (msg && eventType == 'error'){
-				msg = msg.replace(/#5001/g, '');
-			}
+            
+            $dialog.messageBox($filter('localize')(title), $filter('localize')(msg), btns).open().then(function(result){
+                if (result && func)
+                    func(); 
+             });
+        },
+        openCustomMessageBox: function(title, msg, btns){
+            $dialog.messageBox($filter('localize')(title), $filter('localize')(msg), btns).open().then(function(result){
+                for (var i=0; i < btns.length; i++){
+                    if (result == btns[i].result && btns[i].func)
+                        btns[i].func();
+                }
+             });
+        },
+        getAlert: function(title, msg, eventType, visible){     
+            if (msg && eventType == 'error'){
+                msg = msg.replace(/#5001/g, '');
+            }
 
-        	return {title: $filter('localize')(title),
+            return {title: $filter('localize')(title),
                     msg: $filter('localize')(msg),
                     cssClass: 'alert alert-' + eventType,
                     visible: visible};
-    	},
+        },
         getIndexes: function(array, objField, valueField){
             var indexes = [];
             
@@ -50,12 +50,12 @@ servicesModule.factory('UtilsSrvc', function($dialog, $filter) {
             return indexes;
         },
         getValidDate: function(str){
-	        var date = new Date(str);
-	        if (isNaN(date))
-	        	return "";
-	        	
-	        return $filter('date')(date, 'yyyy-MM-dd');
-	    },
+            var date = new Date(str);
+            if (isNaN(date))
+                return "";
+                
+            return $filter('date')(date, 'yyyy-MM-dd');
+        },
         getPropertyValue: function (item, propertyStr, defaultValue){
             var value;
             defaultValue = defaultValue ? defaultValue : '';
@@ -88,11 +88,20 @@ servicesModule.factory('UtilsSrvc', function($dialog, $filter) {
             return value == undefined ? defaultValue : value;
         },
         base64Encode: function(s) {
-    		return btoa(unescape(encodeURIComponent(s)));
-  		},
-  		base64Decode: function(s) {
-    		return decodeURIComponent(escape(atob(s)));
-  		}
+            return btoa(unescape(encodeURIComponent(s)));
+        },
+        base64Decode: function(s) {
+            return decodeURIComponent(escape(atob(s)));
+        },
+        getCurrencySignByISOCode: function(code){
+            switch(code){
+                case 'EUR': return '€';
+                case 'USD': return '$';
+                case 'GBR': return '£'; 
+                case 'RUB': return $filter('localize')('руб.');
+                default: return '???'; 
+            }
+        }
     }
 });
   

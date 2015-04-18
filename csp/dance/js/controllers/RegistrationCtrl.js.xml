@@ -308,7 +308,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
                     if ($routeParams.typeCode == 'udsr'){
                         $scope.tabUDSR.select();
                     }
-					if ($routeParams.typeCode == 'wdsf'){
+                    if ($routeParams.typeCode == 'wdsf'){
                         $scope.tabWDSF.select();
                     }
                     else if ($routeParams.typeCode == 'other'){
@@ -329,6 +329,14 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
 
 
                 $scope.pageStore.registration.tournament = $scope.tournament;
+                
+                // Столбец цены меняем для валюты
+                var idxColPrice = UtilsSrvc.getIndexes($scope.competitionTable.columns, 'id', 'Price');
+                if (idxColPrice.length != 0){ 
+                    var colName = $filter('localize')('Цена') + ', ' + UtilsSrvc.getCurrencySignByISOCode(data.currency.id);
+                    $scope.competitionTable.columns[idxColPrice[0]].name = colName;
+                }
+                
             },
             function(data, status, headers, config){
                 $scope.alert = UtilsSrvc.getAlert('Внимание!', data, 'error', true);
@@ -772,7 +780,7 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     $scope.tabOTHER.formCouple.back = function(){
         if ($scope.tabOTHER.formCouple.btnRegistrationVisible){
             $scope.tabOTHER.formCouple.btnNextVisible = true;
-			$scope.tabOTHER.formCouple.btnBackVisible = false;
+            $scope.tabOTHER.formCouple.btnBackVisible = false;
             $scope.tabOTHER.formCouple.btnRegistrationVisible = false;
             $scope.tabOTHER.formCouple.disabled = false;
         }
