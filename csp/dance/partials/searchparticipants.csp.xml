@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<CSP name="dance/partials/searchparticipants.csp" application="/csp/dancereg/" default="1"><![CDATA[
+<CSP name="dance/partials/searchparticipants.csp" application="/csp/dancesport_loc/" default="1"><![CDATA[
 
 <form name="form_search" ng-submit="participantTable.refresh()">
 	<div class="row-fluid">
@@ -11,8 +11,6 @@
  
 <br>
 <p>[ <font COLOR="RED"><b>!</b></font> ] {{'Вы можете найти все группы, в которых зарегистрирован спортсмен. Поиск по всем турнирам.'|localize}}</p>
-
-<p>[ <font COLOR="RED"><b>!</b></font> ] {{'Черный цвет - участие в группе оплачено.'|localize}} <span class="noneCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие не оплачено.'|localize}} <span class="cancelCouplePayment">{{'Серый цвет'|localize}}</span>{{' - участие отменено.'|localize}}</p>
 <br>
 
 <span style="font-weight: bold;" ng-bind="('Группы, в которых зарегистрирован спортсмен'|localize)"></span>

@@ -38,10 +38,8 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                           {name: 'Группы', sqlName: 'PrtObjCompetitionsCount', isSorted: false, isSortable: true, isDown: true, isSearched: false, isSearchable: false, captionStyle: {textAlign: 'center', width: '130px'}}];
         
         $scope.page.participantTable.properties = [ 
-                          {name:'fullName', getCssClass: function(item){
-                                                return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
-                                            },
-                                            calculate: function(item){
+                          {name:'fullName',
+                                                calculate: function(item){
                                                         if (item.couple){
                                                             item.competitionsLink = item.couple.competitionsCount +' »';
 
@@ -85,15 +83,13 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
                                                             }
                                                         }
                                                     }},
-                          {name:'clubAndCity', getCssClass: function(item){
-                                                    return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
-                                                }},
+                          {name:'clubAndCity'},
                           {name:'classFullName'}, 
-                          {name:'countryName', cellStyle: {verticalAlign: 'middle'}, 
+                          {name:'countryName', cellStyle: {verticalAlign: 'middle'}},
+                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center', verticalAlign: 'middle'},
                                                 getCssClass: function(item){
                                                     return $scope.page.participantTable.getCssClassForTicketStatus(item.ticketStatus.code);
-                                                }},
-                          {name:'ticketStatus.name', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}},                    
+                                                }},                    
                           {name:'competitionsLink', cellStyle: {textAlign: 'center', verticalAlign: 'middle'}, cellSelectable: true, cellTitle: $filter('localize')('Открыть список групп'),
                                                 getCssClass: function(item){ 
                                                     return 'cellLink';
@@ -147,9 +143,9 @@ controllersModule.controller('CompetitionParticipantsCtrl', function($scope, $lo
             case 'Canceled':
                 return 'cancelCouplePayment';
             case 'Not paid':
-                return 'noneCouplePayment';
-            case 'Paid': 
                 return '';
+            case 'Paid': 
+                return 'paidCouplePayment';
         }
 
         return '';

@@ -390,12 +390,12 @@ filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
     color: #B9B9B9;
 }
 
-.noneCouplePayment,.cancelCouplePayment{
-    color: rgb(130,130,130)!important;
+.paidCouplePayment{
+    color: green!important;
 }
 
 .cancelCouplePayment{
-    text-decoration: line-through!important;
+    color: red!important;
 }
 
 

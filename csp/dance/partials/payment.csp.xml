@@ -76,6 +76,8 @@
 
 <button type="button" class="btn btn-small" ng-click="openConfirmDlg()" ng-disabled="competitionTable.selectedItems.length==0 || tournament.status.code != 'Registration'"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;{{'Оплатить на danceplat.ru'|localize}}</button>
 <span style="padding-left: 20px;" ng-bind="('Выбрано'|localize) + ' ' + competitionTable.selectedItems.length + ' ' + ('групп из'|localize) + ' ' + competitionTable.itemsTotal"></span>
+&nbsp;&nbsp;&nbsp;
+<a ng-show="type=='Other' && recorderHash && tournament.status.code=='Registration'" href="" ng-click="doRegAgain()" class="cellLink" ng-bind="('Зарегистрировать ещё группы'|localize) + ' »'"></a>
 
 <div class="row-fluid">
     <div class="span4">
