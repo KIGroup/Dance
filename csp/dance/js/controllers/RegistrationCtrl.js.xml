@@ -2,7 +2,7 @@
 <Export generator="Cache" version="25">
 <CSP name="dance/js/controllers/RegistrationCtrl.js" application="/csp/dancesport_loc/" default="1"><![CDATA[
 'use strict';
-// dfdfdfddddddddddddddddd
+// dfdfdfddddddddddddddвd
  
 /*===========================================================================================
 Registration           
@@ -615,6 +615,13 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
             $scope.tabUDSR.disabled = true;
             $scope.tabOTHER.disabled = true;
             $scope.tabWDSF.searchForm.processing = false;
+			
+			$scope.tabWDSF.formCouple.btnRegistrationVisible = true;
+        
+			$scope.competitionTable.selectable = true; 
+			$scope.competitionTable.avialableMode = true;
+			$scope.competitionTable.refresh();  
+		
             $scope.loadCountParticipantCompetitions('WDSF');
         };
 
@@ -663,17 +670,11 @@ controllersModule.controller('RegistrationCtrl', function($scope, $interval, $ro
     };
 
     $scope.tabWDSF.formCouple.back = function(){
-        if ($scope.tabWDSF.formCouple.btnRegistrationVisible){
-            $scope.tabWDSF.formCouple.btnNextVisible = true;
-            $scope.tabWDSF.formCouple.btnRegistrationVisible = false;
-        }
-        else{
-            $scope.tabWDSF.searchForm.clear();
-            $scope.tabUDSR.disabled = false;
-            $scope.tabOTHER.disabled = false;
-            $scope.tabWDSF.searchForm.processing = false;    
-        }
-
+        $scope.tabWDSF.searchForm.clear();
+        $scope.tabUDSR.disabled = false;
+        $scope.tabOTHER.disabled = false;
+        $scope.tabWDSF.searchForm.processing = false;    
+        
         $scope.tabWDSF.alert.visible = false;
         $scope.tabWDSF.formCouple.disabled = false;
         $scope.competitionTable.avialableMode = false;

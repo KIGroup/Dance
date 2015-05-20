@@ -5,6 +5,7 @@
 
 localizationModule.constant('DanceDictionary', {
   toEnglish: {
+        'Зарегистрировать ещё группы':'Register another competitions',
         'Регистрация выполнена.': 'Registration is complete.',
         'Регистрация не выполнена.': 'Registration failed.',
         'Обнаружены конфликтные группы для участника' : 'Found conflicting competitions for participant',
@@ -240,7 +241,6 @@ localizationModule.constant('DanceDictionary', {
         'участника' : 'participant',
         'пары' : 'couple',
         'СТСР' : 'UDSR',
-        'руб.' : 'rub.',
         'Перейти' : 'Watch',
         'Фамилия спортсмена' : 'Last name',
         'Вы можете найти все группы, в которых зарегистрирован спортсмен. Поиск по всем турнирам.' : 'You can find all competitions in which the registered athlete. Search All tournaments.',
@@ -309,6 +309,7 @@ localizationModule.constant('DanceDictionary', {
   toRussian: {
   },
   toDeutsch: {
+        'Зарегистрировать ещё группы': 'Registrieren Mehr Gruppe',
         'Регистрация выполнена.': 'Die Registrierung ist abgeschlossen.',
         'Регистрация не выполнена.': 'Registrierung fehlgeschlagen.',
         'Обнаружены конфликтные группы для участника' : 'Gefunden Konfliktgruppen zu feiern',
@@ -542,7 +543,6 @@ localizationModule.constant('DanceDictionary', {
         'участника' : 'participant',
         'пары' : 'couple',
         'СТСР' : 'UDSR',
-        'руб.' : 'rub.',
         'Перейти' : 'Watch',
         'Фамилия спортсмена' : 'Last name',
         'Вы можете найти все группы, в которых зарегистрирован спортсмен. Поиск по всем турнирам.' : 'You can find all competitions in which the registered athlete. Search All tournaments.',
@@ -597,6 +597,7 @@ localizationModule.constant('DanceDictionary', {
     'Осталось мест' : 'Available'
   },
   toItalian: {
+    'Зарегистрировать ещё группы': 'Registrati altro gruppo',
     'Регистрация выполнена.': 'La registrazione è completa.',
     'Регистрация не выполнена.': 'Registrazione fallita.',
     'Обнаружены конфликтные группы для участника' : 'Gruppi in conflitto trovati al partito',
@@ -843,7 +844,6 @@ localizationModule.constant('DanceDictionary', {
     'участника' : 'Membro',
     'пары' : 'vapore',
     'СТСР' : 'STSR',
-    'руб.' : 'rub.',
     'Перейти' : 'Andare',
     'Фамилия спортсмена' : 'Atleta Cognome',
     'Вы можете найти все группы, в которых зарегистрирован спортсмен. Поиск по всем турнирам.' : 'Potete trovare tutti i gruppi in cui l\'atleta è stato registrato. Cerca in tutti i tornei.',
