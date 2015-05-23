@@ -198,56 +198,56 @@ Registration WDSF participants in the tournament</Description>
             else{
                 set regResult.status = $$$OK
                 set regResult.participantId = participant.%Id()
-                do wcPostData.competitions.Insert(competition.WDSF.%Id())
+                
+                if $ISOBJECT(competition.WDSF){
+                    do wcPostData.competitions.Insert(competition.WDSF.%Id())
+                }
             }
             
             do regResults.Insert(regResult)
-        }
-        
-        if (wcPostData.competitions.Count() = 0){
-            set proxy.results = regResults
-            $$$ThrowStatus(##class(Dance.Utils.Msg).GetMsg("FFFFF"))
         }
         
         // Not removed! This is string fix a bug! Bug - empty response.
         w ""
         
         // Registration in the wdsf controller
-        set wcResponseData = ##class(Dance.Wdsf.ControllerAPI).Registration(wcPostData, recorder, .st)
-        
-        if $$$ISERR(st){
-            if ($ISOBJECT(wcResponseData) && (wcResponseData.status '= $$$OK)) || '$ISOBJECT(wcResponseData){
-                set proxy.errorDetails = wcResponseData
-                $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_ConnectionWDSFControllerFailed", "| "_$SYSTEM.Status.GetErrorText(st)))
-            }
-        }  
-        
-        for i=1:1:wcResponseData.results.Count(){
-            set wcRequest = wcResponseData.results.GetAt(i).request
-            set wcResponse = wcResponseData.results.GetAt(i).response
+        if (wcPostData.competitions.Count() > 0){
+            set wcResponseData = ##class(Dance.Wdsf.ControllerAPI).Registration(wcPostData, recorder, .st)
             
-            set regResult = ##class(%ZEN.proxyObject).%New()
-            for r=1:1:regResults.Count(){
-                if (regResults.GetAt(r).competition.wdsf.id = wcRequest.competitionId){
-                    set regResult = regResults.GetAt(r)
-                    quit
+            if $$$ISERR(st){
+                if ($ISOBJECT(wcResponseData) && (wcResponseData.status '= $$$OK)) || '$ISOBJECT(wcResponseData){
+                    set proxy.errorDetails = wcResponseData
+                    $$$ThrowStatus(##class(Dance.Utils.Msg).GetErrorStatus("error_ConnectionWDSFControllerFailed", "| "_$SYSTEM.Status.GetErrorText(st)))
                 }
-            }
+            }  
             
-            set regResult.otherInfo = wcResponse
-            if (wcResponse.code < 2000){
-                set regResult.status = $$$OK
-            }
-            else{
-                set st = ##class(Dance.Data.Participant).%DeleteId(regResult.participantId)
-                if $$$ISERR(st){
-                    do ##class(Dance.Data.Participant).Deactivate(regResult.participantId)
+            for i=1:1:wcResponseData.results.Count(){
+                set wcRequest = wcResponseData.results.GetAt(i).request
+                set wcResponse = wcResponseData.results.GetAt(i).response
+                
+                set regResult = ##class(%ZEN.proxyObject).%New()
+                for r=1:1:regResults.Count(){
+                    if (regResults.GetAt(r).competition.wdsf.id = wcRequest.competitionId){
+                        set regResult = regResults.GetAt(r)
+                        quit
+                    }
                 }
                 
-                set regResult.participantId = ""
-                set regResult.status = 0
-                set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationInWDSFController")
-            }       
+                set regResult.otherInfo = wcResponse
+                if (wcResponse.code < 2000){
+                    set regResult.status = $$$OK
+                }
+                else{
+                    set st = ##class(Dance.Data.Participant).%DeleteId(regResult.participantId)
+                    if $$$ISERR(st){
+                        do ##class(Dance.Data.Participant).Deactivate(regResult.participantId)
+                    }
+                    
+                    set regResult.participantId = ""
+                    set regResult.status = 0
+                    set regResult.message = ##class(Dance.Utils.Msg).GetMsg("error_RegistrationInWDSFController")
+                }       
+            }
         }
      
         TCOMMIT
@@ -647,20 +647,20 @@ Get all tournament competitions for grid</Description>
     try{
         $$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
         
-        set whereCondition = "cmpT.IsActive = 1 AND cmpT.Tournament = '"_..ParseParameter(params.other.tournamentId)_"'"
+        set whereCondition = "cmpT.IsActive = 1 AND cmpT.Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND cmpT.IsClosed = 0 "
         
         if (params.other.date '= ""){
             set whereCondition = whereCondition_" AND cmpT.StartDate = "_$ZDATEH(params.other.date,15)
         }
         
         if (params.other.type = "UDSR"){
-            set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL AND cmpT.IsClosed = 0 "
+            set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL  "
         }
         elseif (params.other.type = "WDSF"){
-            set whereCondition = whereCondition_" AND cmpT.WDSF IS NOT NULL AND cmpT.IsClosed = 0 "
+            set whereCondition = whereCondition_" AND (cmpT.WDSF IS NOT NULL OR cmpT.IsInternational = 1) "
         }
         elseif (params.other.type = "OTHER"){
-            set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL AND cmpT.IsInternational=1 AND cmpT.IsClosed = 0 "
+            set whereCondition = whereCondition_" AND cmpT.WDSF IS NULL AND cmpT.IsInternational=1 "
         }
       
         do ..GetProxyObjectsForGrid("SELECT %NOLOCK cmpT.ID FROM Dance_Data.Competition as cmpT ", "Dance.Data.Competition", params, params.other.convertParams, whereCondition).%ToJSON()
@@ -718,29 +718,6 @@ Available participants competitions for grid</Description>
     try{
         $$$THROWONERROR(st, ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject($ZCVT(%request.Content.Read(10000000), "I", "UTF8"),,.params, 1))
         
-        set sql = "SELECT %NOLOCK ID FROM Dance_Data.Competition WHERE Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 AND IsClosed = 0 "
-        if $ISOBJECT(params.other.couple){
-            set sql = sql_" AND Type->Code = 'Couples' "
-        }
-        elseif $ISOBJECT(params.other.athlete){
-            set sql = sql_" AND Type->Code = 'Solo' "
-        }
-                
-        set statement = ##class(%SQL.Statement).%New()  
-        $$$THROWONERROR(st, statement.%Prepare(sql))        
-
-        set rs = statement.%Execute()
-        
-        set competitionsList = ##class(%ListOfObjects).%New()         
-        
-        while (rs.%Next() '= 0){
-            set cmp = ##class(Dance.Data.Competition).%OpenId(rs.%GetData(1),,.st)
-            do competitionsList.Insert(cmp)
-        }
-        
-        do rs.%Close()                      
-        do statement.%Close()
-        
         if (params.other.type = "UDSR"){
             set prtObj = ""
             if $ISOBJECT(params.other.couple){
@@ -750,7 +727,7 @@ Available participants competitions for grid</Description>
                 set prtObj = ##class(Dance.Data.PersonUDSR).%OpenId(params.other.athlete.id)
             }
             
-            set competitionsList = ..FilteringCompetitionsForUDSRRegistration(prtObj, competitionsList)
+            set competitionsList = ..GetCompetitionsListForUDSRRegistration(params.other.tournamentId, prtObj)
         }
         elseif(params.other.type = "WDSF"){
             set prtObj = ""
@@ -761,9 +738,10 @@ Available participants competitions for grid</Description>
                 set prtObj = ##class(Dance.Data.PersonWDSF).%OpenId(params.other.athlete.id)
             }
             
-            set competitionsList = ..FilteringCompetitionsForWDSFRegistration(prtObj, params.other, competitionsList)
+            set competitionsList = ..GetCompetitionsListForWDSFRegistration(params.other.tournamentId, prtObj, params.other)
         }
         elseif (params.other.type = "OTHER"){
+            set competitionsList = ..GetCompetitionsListForOTHERRegistration(params.other.tournamentId, params.other)
         }
         
        
@@ -772,6 +750,7 @@ Available participants competitions for grid</Description>
         set proxyResult.children.items = ##class(%ListOfObjects).%New()
         set proxyResult.children.itemsTotal = competitionsList.Count()
         
+        // Конвертируем в %ZEN.poxyObject
         for i=1:1:competitionsList.Count(){
             do proxyResult.children.items.Insert(competitionsList.GetAt(i).ConvertToProxyObject(params.other.convertParams))
         }
@@ -786,9 +765,52 @@ Available participants competitions for grid</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="FilteringCompetitionsForUDSRRegistration">
+<Method name="GetTournamentCompetitionsList">
+<Description>
+Список групп турнира выбранного типа</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>prtData:%RegisteredObject,sourceList:%ListOfObjects</FormalSpec>
+<FormalSpec>trnId:%String,isCouple:%Boolean</FormalSpec>
+<Private>1</Private>
+<ReturnType>%ListOfObjects</ReturnType>
+<Implementation><![CDATA[
+    set competitionsList = ##class(%ListOfObjects).%New()         
+    
+    set sql = ""_
+    "SELECT %NOLOCK ID "_
+    "FROM Dance_Data.Competition "_
+    "WHERE Tournament = '"_..ParseParameter(trnId)_"' AND IsActive = 1 AND IsClosed = 0 "
+    
+    if (isCouple = $$$YES){
+        set sql = sql_" AND Type->Code = 'Couples' "
+    }
+    elseif $ISOBJECT(params.other.athlete){
+        set sql = sql_" AND Type->Code = 'Solo' "
+    }
+    
+    set sql = sql_" ORDER BY StartDate, IdInternal"
+            
+    set statement = ##class(%SQL.Statement).%New()  
+    $$$THROWONERROR(st, statement.%Prepare(sql))        
+
+    set rs = statement.%Execute()
+    
+    while (rs.%Next() '= 0){
+        set cmp = ##class(Dance.Data.Competition).%OpenId(rs.%GetData(1),,.st)
+        do competitionsList.Insert(cmp)
+    }
+    
+    do rs.%Close()                      
+    do statement.%Close()
+    
+    quit competitionsList
+]]></Implementation>
+</Method>
+
+<Method name="GetCompetitionsListForUDSRRegistration">
+<Description>
+Отобрать только те группы, которые соответствуют правилам для регистрации СТСР</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>trnId:%String,prtData:%RegisteredObject</FormalSpec>
 <Private>1</Private>
 <ReturnType>%ListOfObjects</ReturnType>
 <Implementation><![CDATA[
@@ -810,8 +832,8 @@ Available participants competitions for grid</Description>
         
         // Если есть WDSF версия, то открываем её
         if (##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxExists(couple.%Id()) = $$$YES){
-            set coupleWDSF = ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(couple.%Id())
-            set ageWDSFList = ##class(Dance.Data.AgeCategoryWDSF).GetAllAvailableList(coupleWDSF.AgeCategory.Name) 
+            set coupleWDSF = ##class(Dance.Data.MatchingCoupleUDSRWDSF).UDSRIdxOpen(couple.%Id(),,.st).WDSF
+            set ageWDSFList = ##class(Dance.Data.AgeCategoryWDSF).GetAllAvailableList(coupleWDSF.AgeCategory) 
         }
     }
     
@@ -819,17 +841,35 @@ Available participants competitions for grid</Description>
     set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P($ZDT(woman.DOB, 3), "-", 1)
     set ageUDSRList = ##class(Dance.Data.AgeCategory).GetAllAvailableList(maleAge, femaleAge) 
     
+    
+    set sourceList = ..GetTournamentCompetitionsList(trnId, $ISOBJECT(couple))
     set resultList = ##class(%ListOfObjects).%New()
     
     for i=1:1:sourceList.Count(){
         #dim cmp As Dance.Data.Competition = sourceList.GetAt(i)
         
+        // Если СТСР пара уже записалась в эту группу, то исключаем эту группу
+        if (##class(Dance.Data.Participant).IsParticipationExists(couple.%Id(), couple.%ClassName(1), cmp.%Id()) = $$$YES){
+            continue
+        }
+        
+        // Если WDSF версия пары уже записалась в эту группу, то исключаем эту группу
+        if $ISOBJECT(coupleWDSF) && (##class(Dance.Data.Participant).IsParticipationExists(coupleWDSF.%Id(), coupleWDSF.%ClassName(1), cmp.%Id()) = $$$YES){
+            continue
+        }
+        
         // Если группа WDSF и есть у СТСР пары версия WDSF
-        if $ISOBJECT(cmp.WDSF) && $ISOBJECT(coupleWDSF){
-            // Если по возрасту нельзя записаться в группу, то переходим к следующей группе
-            if ($LISTFIND(ageWDSFList, cmp.WDSF.AgeCategory.Name) = 0){
-                continue
-            }
+        if $ISOBJECT(cmp.WDSF){
+             if $ISOBJECT(coupleWDSF){
+                // Если по возрасту нельзя записаться в группу, то переходим к следующей группе
+                if ($LISTFIND(ageWDSFList, cmp.WDSF.AgeCategory.%Id()) = 0){
+                    continue
+                }
+             }
+             else{
+                 // Если группа для WDSF и нет WDSF-версии пары, то пропускаем группу
+                 continue
+             }
         }
         else{       
             // Если по возрасту нельзя записаться в группу, то переходим к следующей группе
@@ -839,14 +879,14 @@ Available participants competitions for grid</Description>
         
             if $ISOBJECT(man.LAClass){
                 // Если Латина и группа НЕ доступна для класса партнера, то НЕ добавляем в рез. список
-                if (cmp.Discipline.Code = "Ла") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.LAClass.%Id() = $$$NO)){
+                if (cmp.Discipline.Code = "Ла") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.LAClass.%Id()) = $$$NO){
                     continue            
                 }
             }
             
             if $ISOBJECT(man.STClass){
                 // Если Стандарт и группа НЕ доступна для класса партнера, то НЕ добавляем в рез. список
-                if (cmp.Discipline.Code = "Ст") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.STClass.%Id() = $$$NO)){
+                if (cmp.Discipline.Code = "Ст") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.STClass.%Id()) = $$$NO){
                     continue            
                 }
             }
@@ -859,9 +899,11 @@ Available participants competitions for grid</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="FilteringCompetitionsForWDSFRegistration">
+<Method name="GetCompetitionsListForWDSFRegistration">
+<Description>
+Отобрать только те группы, которые соответствуют правилам для регистрации WDSF</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>prtData:%RegisteredObject,params:%ZEN.proxyObject,sourceList:%ListOfObjects</FormalSpec>
+<FormalSpec>trnId:%String,prtData:%RegisteredObject,params:%ZEN.proxyObject</FormalSpec>
 <Private>1</Private>
 <ReturnType>%ListOfObjects</ReturnType>
 <Implementation><![CDATA[
@@ -879,7 +921,7 @@ Available participants competitions for grid</Description>
         
         // Если есть UDSR версия, то открываем её
         if (##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(couple.%Id()) = $$$YES){
-            set coupleUDSR = ##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(couple.%Id())
+            set coupleUDSR = ##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(couple.%Id()).UDSR
             
             set man = coupleUDSR.Man
             set woman = coupleUDSR.Woman
@@ -895,22 +937,34 @@ Available participants competitions for grid</Description>
                 set ageUDSRList = ##class(Dance.Data.AgeCategory).GetAllAvailableList(maleAge, femaleAge) 
             }
             else{
-                set ageUDSRList = ##class(Dance.Data.AgeCategory).GetAllAvailableList(couple.AgeCategory.FromAge, couple.AgeCategory.FromAge)
+                set wdsfAgeCategory = ##class(Dance.Data.AgeCategoryWDSF).NameIdxOpen(couple.AgeCategory)
+                set ageUDSRList = ##class(Dance.Data.AgeCategory).GetAllAvailableList(wdsfAgeCategory.FromAge, wdsfAgeCategory.FromAge)
             }
         }
     }
     
-    set ageWDSFList = ##class(Dance.Data.AgeCategoryWDSF).GetAllAvailableList(couple.AgeCategory.Name) 
+    set ageWDSFList = ##class(Dance.Data.AgeCategoryWDSF).GetAllAvailableList(couple.AgeCategory) 
     
+    set sourceList = ..GetTournamentCompetitionsList(trnId, $ISOBJECT(couple))
     set resultList = ##class(%ListOfObjects).%New()
     
     for i=1:1:sourceList.Count(){
         #dim cmp As Dance.Data.Competition = sourceList.GetAt(i)
         
+        // Если WDSF версия пары уже записалась в эту группу, то исключаем эту группу
+        if (##class(Dance.Data.Participant).IsParticipationExists(couple.%Id(), couple.%ClassName(1), cmp.%Id()) = $$$YES){
+            continue
+        }
+        
+         // Если СТСР пара уже записалась в эту группу, то исключаем эту группу
+        if $ISOBJECT(coupleUDSR) && (##class(Dance.Data.Participant).IsParticipationExists(coupleUDSR.%Id(), coupleUDSR.%ClassName(1), cmp.%Id()) = $$$YES){
+            continue
+        }
+        
         // Если группа WDSF и есть у WDSF пары версия UDSR
         if $ISOBJECT(cmp.WDSF){
             // Если по возрасту нельзя записаться в группу, то переходим к следующей группе
-            if ($LISTFIND(ageWDSFList, cmp.WDSF.AgeCategory.Name) = 0){
+            if ($LISTFIND(ageWDSFList, cmp.WDSF.AgeCategory.%Id()) = 0){
                 continue
             }
         }
@@ -926,17 +980,19 @@ Available participants competitions for grid</Description>
             }
             else{
                 // Если у WDSF пары есть СТСР версия, то проверяем классы 
-                if $ISOBJECT(man.LAClass){
-                    // Если Латина и группа НЕ доступна для класса партнера, то НЕ добавляем в рез. список
-                    if (cmp.Discipline.Code = "Ла") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.LAClass.%Id() = $$$NO)){
-                        continue            
+                if $ISOBJECT(coupleUDSR){
+                    if $ISOBJECT(man.LAClass){
+                        // Если Латина и группа НЕ доступна для класса партнера, то НЕ добавляем в рез. список
+                        if (cmp.Discipline.Code = "Ла") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.LAClass.%Id()) = $$$NO){
+                            continue            
+                        }
                     }
-                }
-            
-                if $ISOBJECT(man.STClass){
-                    // Если Стандарт и группа НЕ доступна для класса партнера, то НЕ добавляем в рез. список
-                    if (cmp.Discipline.Code = "Ст") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.STClass.%Id() = $$$NO)){
-                        continue            
+                
+                    if $ISOBJECT(man.STClass){
+                        // Если Стандарт и группа НЕ доступна для класса партнера, то НЕ добавляем в рез. список
+                        if (cmp.Discipline.Code = "Ст") && (##class(Dance.Data.Competition).IsAvailableForDancerClass(cmp.%Id(), man.STClass.%Id()) = $$$NO){
+                            continue            
+                        }
                     }
                 }
             }
@@ -949,57 +1005,61 @@ Available participants competitions for grid</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="GetSqlQueryForWDSFAvailableCompetitions">
+<Method name="GetCompetitionsListForOTHERRegistration">
+<Description>
+Отобрать только те группы, которые соответствуют правилам для регистрации ПРОЧИХ УЧАСТНИКОВ</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>params:%RegisteredObject</FormalSpec>
+<FormalSpec>trnId:%String,params:%ZEN.proxyObject</FormalSpec>
 <Private>1</Private>
-<ReturnType>%String</ReturnType>
+<ReturnType>%ListOfObjects</ReturnType>
 <Implementation><![CDATA[
-    set sql = "SELECT %NOLOCK ID FROM Dance_Data.Competition WHERE Tournament = '"_..ParseParameter(params.other.tournamentId)_"' AND IsActive = 1 AND IsClosed = 0 "
+    set (man, woman) = ""
+    set (athleteData, coupleData) = ""
+    set (prtObjKey, prtObjClassName) = ""
     
-    // Связь WDSF & UDSR пар, если есть
-    #dim match As Dance.Data.MatchingCoupleUDSRWDSF = ""
-    
-    // Возрастная группа пары/атлета
-    set ageCategoryWDSFName = ""
-    
-    // Если это пара
-    if $ISOBJECT(params.other.couple){
-        set sql = sql_" AND Type->Code = 'Couples' "
-        set ageCategoryWDSFIds = $LISTTOSTRING(##class(Dance.Data.AgeCategoryWDSF).GetAllAvailableList(params.other.couple.otherInfo.ageCategory), ",")
-        
-        // Если у WDSF пары есть русская версия, то не надо включать группы, в которых есть СТСР и WDSF версия
-        if ((##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxExists(params.other.couple.id))){
-            set match = ##class(Dance.Data.MatchingCoupleUDSRWDSF).WDSFIdxOpen(params.other.couple.id)
-            set sql = sql_" AND ID NOT IN (SELECT DISTINCT prtc.Competition "_ 
-                                          "FROM Dance_Data.ParticipantCoupleUDSR as prtc "_
-                                          "WHERE prtc.IsActive = 1 AND prtc.Couple = "_match.UDSR.%Id()_" "_
-                                          "UNION "_
-                                          "SELECT DISTINCT prtc.Competition "_ 
-                                          "FROM Dance_Data.ParticipantCoupleWDSF as prtc "_
-                                          "WHERE prtc.IsActive = 1 AND prtc.Couple = "_match.WDSF.%Id()_") "    
-                    
-            set sql = sql_" AND ("_
-                                  "(WDSF IS NOT NULL AND WDSF->AgeCategory IN ("_ageCategoryWDSFIds_")) "_
-                                  " OR "_
-                                  "(WDSF IS NULL AND ))"
-                   
-       
-       }
-       else{
-           set sql = sql_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantCoupleWDSF as prtc WHERE prtc.IsActive = 1 AND prtc.Couple="_params.other.couple.id_") "
-           set sql = sql_" AND WDSF IS NOT NULL AND WDSF->AgeCategory IN ("_ageCategoryWDSFIds_") "
-       }
+    if $ISOBJECT(params.athlete){
+        set athleteData = params.athlete
+        set (man, woman) = params.athlete.man
+        set prtObjKey = params.athlete.key
+        set prtObjClassName = ##class(Dance.Data.ParticipantSingleOther).%ClassName(1)
     }
-    elseif $ISOBJECT(params.other.athlete){
-        set sql = sql_" AND Type->Code = 'Solo' "
-        set ageCategoryWDSFName = params.other.athlete.otherInfo.ageCategory
+    elseif $ISOBJECT(params.couple){
+        set coupleData = params.couple
+        set man = params.couple.man
+        set woman = params.couple.woman
+        set prtObjKey = params.couple.key
+        set prtObjClassName = ##class(Dance.Data.ParticipantCoupleOther).%ClassName(1)
+    }
+   
+    set maleAge = $P($ZD($NOW(),3), "-", 1) - $P(man.dob, "-", 1)
+    set femaleAge = $P($ZD($NOW(),3), "-", 1) - $P(woman.dob, "-", 1)
+    set ageList = ##class(Dance.Data.AgeCategory).GetAllAvailableList(maleAge, femaleAge) 
         
-        set sql = sql_" AND ID NOT IN (SELECT DISTINCT prtc.Competition FROM Dance_Data.ParticipantCoupleWDSF as prtc WHERE prtc.IsActive = 1 AND prtc.Athlete="_params.other.athlete.id_") "
+    set sourceList = ..GetTournamentCompetitionsList(trnId, $ISOBJECT(coupleData))
+    set resultList = ##class(%ListOfObjects).%New()
+    
+    for i=1:1:sourceList.Count(){
+        #dim cmp As Dance.Data.Competition = sourceList.GetAt(i)
+        
+        // Если пара/соло уже записалась в эту группу, то пропускаем
+        if (##class(Dance.Data.Participant).IsParticipationExists(prtObjKey, prtObjClassName, cmp.%Id()) = $$$YES){
+            continue
+        }
+        
+        // Нельзя допускать в WDSF группы и в группы, которые не разрешены для международников
+        if $ISOBJECT(cmp.WDSF) || (cmp.IsInternational = $$$NO){
+            continue
+        }
+        
+        // Если по возрасту нельзя записаться в группу, то переходим к следующей группе
+        if ($LISTFIND(ageList, cmp.AgeCategory.%Id()) = 0){
+            continue
+        }
+        
+        do resultList.Insert(cmp)
     }
     
-     
-    quit sql
+    quit resultList
 ]]></Implementation>
 </Method>
 
@@ -1139,6 +1199,8 @@ Get all participants of the competition for grid</Description>
 </Method>
 
 <Method name="GetAllDancerParticipants">
+<Description>
+Все группы участника в турнире</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
@@ -1200,7 +1262,7 @@ Get all participants of the competition for grid</Description>
         set sql = "SELECT %NOLOCK ID "_
                   "FROM "_table_" "_
                   "WHERE "_where_" "_
-                  "ORDER BY Created"
+                  "ORDER BY Competition->StartDate, Competition->IdInternal"
         
         
         // Костыль

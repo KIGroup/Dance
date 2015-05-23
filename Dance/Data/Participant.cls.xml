@@ -553,6 +553,26 @@ do ##class(Dance.Data.Participant).UpdatePrtKey()</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="IsParticipationExists">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>prtObjId:%String,prtObjClassName:%String,cmpId:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+    SET SQLCODE = ""
+    
+    set prtObjKey = prtObjClassName_"@"_prtObjId
+     
+    set prtId = ""
+    &sql(SELECT ID INTO :prtId
+         FROM Dance_Data.Participant 
+         WHERE PrtObjKey = :prtObjKey AND Competition = :cmpId AND IsActive = 1)
+    
+    quit:(SQLCODE=0) $$$YES
+    
+    quit $$$NO
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Dance.Data.ParticipantD</DataLocation>

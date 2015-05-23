@@ -416,7 +416,16 @@ Payments</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>cmpId:%String,classId:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[    quit $$$NO
+<Implementation><![CDATA[
+    set SQLCODE = ""
+    set recordId = ""
+    &sql(SELECT ID INTO :recordId
+         FROM Dance_Data.Competition_DancerClasses
+         WHERE Competition = :cmpId AND DancerClasses = :classId)
+    
+    quit:(SQLCODE = 0) $$$YES
+    
+    quit $$$NO
 ]]></Implementation>
 </Method>
 
