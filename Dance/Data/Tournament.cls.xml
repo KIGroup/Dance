@@ -653,7 +653,8 @@ Check update privilege</Description>
 <Implementation><![CDATA[
     &sql(DECLARE TrnCurs CURSOR FOR
          SELECT %NOLOCK ID
-         FROM Dance_Data.Tournament)
+         FROM Dance_Data.Tournament
+         WHERE IsActive = 1 AND (TStatus->Code='Registration' OR TStatus->Code='RegistrationClosed'))
     
     &sql(OPEN TrnCurs)
     for{

@@ -7,7 +7,7 @@
 <Method name="RebuildAll">
 <Description>
 Перестроить индексы классов в пакете
-w ##class(Dance.Utils.IndexBuilder).RebuildAll("Protos")</Description>
+w ##class(Dance.Utils.IndexBuilder).RebuildAll("Dance")</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>mainPackageName:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
